@@ -15,4 +15,3 @@ services:
   react:
     environment:
       NEXTAUTH_URL: "https://www.modularhistory.com"
-      NEXTAUTH_URL_INTERNAL: "http://react:3000"

@@ -184,7 +184,7 @@ services:
         condition: on-failure
     env_file: .env
     environment:
-      NEXTAUTH_URL: "https://modularhistory.com"
+      NEXTAUTH_URL_INTERNAL: "http://react:3000"
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
