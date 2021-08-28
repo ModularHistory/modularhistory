@@ -166,6 +166,13 @@ class HTMLField(TextField):
         return html or ''
 
     def pre_save(self, model_instance: 'ExtendedModel', add: bool) -> str:
+        """
+        Modify the value immediately before saving.
+
+        This is necessary for cases in which the `clean` method is not called; e.g.,
+        if the value is modified and saved programmatically (rather than through the
+        use of a model form in the Django admin site).
+        """
         value: str = getattr(model_instance, self.attname, '')
         try:
             value = self._clean(value, model_instance=model_instance)
