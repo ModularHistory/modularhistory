@@ -169,6 +169,7 @@ jobs:
       with:
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./build/Dockerfile.django
         load: false
@@ -285,6 +286,7 @@ jobs:
       with:
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./build/Dockerfile.react
         load: false
@@ -401,6 +403,7 @@ jobs:
       with:
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./build/Dockerfile.webserver
         load: false

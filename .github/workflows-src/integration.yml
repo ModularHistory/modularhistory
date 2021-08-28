@@ -231,6 +231,7 @@ jobs:
         browser: [ chrome, firefox ]
         container: [ 1, 2 ]
       max-parallel: 4
+    continue-on-error: true
     steps:
     - includes: ./.github/actions/setup
       with:
@@ -244,12 +245,26 @@ jobs:
     - run: |
         docker-compose -f docker-compose.yml pull --include-deps -q django react webserver
         docker-compose -f docker-compose.yml up -d webserver
-    - run: cat .env
+    - run: docker-compose ps
     - run: curl "http://localhost"
+      if: always()
     - run: curl "http://localhost:8080"
+      if: always()
     - run: curl "http://modularhistory.dev.net"
+      if: always()
     - run: curl "http://modularhistory.dev.net:8080"
+      if: always()
+    - run: docker-compose exec django curl "http://modularhistory.dev.net:8080"
+      if: always()
+    - run: docker-compose exec django curl "http://modularhistory.dev.net"
+      if: always()
+    - run: docker-compose exec django curl "http://localhost:8080"
+      if: always()
+    - run: docker-compose exec django curl "http://localhost"
+      if: always()
+    - run: cat .env
     - name: Run Cypress
+      if: always()
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         # Pass the GitHub token to determine the unique run id necessary to re-run the checks.
