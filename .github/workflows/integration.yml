@@ -709,6 +709,7 @@ jobs:
       matrix:
         executable: [mypy, pytype]
         python-version: [3.9]
+    continue-on-error: ${{ matrix.executable == 'mypy' }}
     environment: integration
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
@@ -774,7 +775,7 @@ jobs:
     - name: Determine args
       id: args
       run: |
-        if [ ${{ matrix.executable }} = mypy ]; then args="--config-file=./setup.cfg";
+        if [ ${{ matrix.executable }} = mypy ]; then args="--config-file=./setup.cfg .";
         elif [ ${{ matrix.executable }} = pytype ]; then args="--config=./setup.cfg"; fi;
         echo "::set-output name=args::$args"
     - name: Run static type checker
