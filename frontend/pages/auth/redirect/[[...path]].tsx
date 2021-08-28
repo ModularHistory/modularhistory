@@ -78,6 +78,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
   }
   return {
-    props: { path }, // passed to the page component as props
+    props: { path: path ?? null }, // passed to the page component as props
   };
 };

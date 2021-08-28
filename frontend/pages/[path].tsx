@@ -25,7 +25,7 @@ const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
 export default StaticPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let page;
+  let page = null;
   let notFound = false;
   const { path } = params || {};
 

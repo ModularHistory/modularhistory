@@ -21,7 +21,7 @@ interface EntitiesProps {
 }
 
 const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
-  const entities = entitiesData["results"] || [];
+  const entities = entitiesData.results || [];
   const entityCards = entities.map((entity) => (
     <Grid item key={entity.slug} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity.slug}`}>

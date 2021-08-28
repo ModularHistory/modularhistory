@@ -26,6 +26,7 @@ export default ImageDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let image;
+  let notFound;
   const { slug } = params || {};
   const body = {
     query: `{
@@ -48,16 +49,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       image = data.data.image;
     })
     .catch((error) => {
-      console.error(error);
-      return {
-        notFound: true,
-      };
+      if (error.response.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
 
   return {
     props: {
       image,
     },
+    notFound,
     revalidate: 10,
   };
 };
