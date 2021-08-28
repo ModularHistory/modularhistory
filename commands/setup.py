@@ -260,7 +260,6 @@ def write_env_file(context: 'Context', dev: bool = False, dry: bool = False):
             continue
         var_name, var_value = match.group(1), match.group(2)
         env_vars[var_name] = var_value
-        input(f'{var_name}: {var_value}')
     destination_file = dry_destination_file if dry else destination_file
     with open(destination_file, 'w') as env_file:
         for var_name, var_value in sorted(env_vars.items()):
