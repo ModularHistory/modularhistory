@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  webserver:
+    hostname: modularhistory.dev.net
+    volumes:
+      - ./config/nginx/dev:/etc/nginx/conf.d
+
+  react:
+    environment:
+      NEXTAUTH_URL: "http://modularhistory.dev.net"
+  
+  cypress:
+    environment:
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080
