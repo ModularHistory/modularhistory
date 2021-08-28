@@ -235,7 +235,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
         docker-compose -f docker-compose.yml run cypress 
-        --browser ${{ matrix.browser }} 
+        --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
         --parallel --ci-build-id $GITHUB_TOKEN 
         --record --key $CYPRESS_RECORD_KEY 
 
