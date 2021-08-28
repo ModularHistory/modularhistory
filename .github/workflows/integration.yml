@@ -697,6 +697,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
+        executable: [mypy, pytype]
         python-version: [3.9]
     environment: integration
     steps:
@@ -758,10 +759,17 @@ jobs:
       id: cache-stubs
       uses: actions/cache@v2
       with:
-        path: .pytype
-        key: ${{ matrix.python-version }}-type-stubs
+        path: .cache/${{ matrix.executable }}
+        key: ${{ matrix.python-version }}-${{ matrix.executable }}-types
+    - name: Determine args
+      id: args
+      run: |
+        if [ ${{ matrix.executable }} = mypy ]; then args="--config-file=./setup.cfg";
+        elif [ ${{ matrix.executable }} = pytype ]; then args="--config=./setup.cfg";
+        fi
+        echo "::set-output name=args::$args"
     - name: Run static type checker
-      run: poetry run pytype --config=./setup.cfg
+      run: poetry run ${{ matrix.executable }} ${{ steps.args.outputs.args }}
   analyze:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
