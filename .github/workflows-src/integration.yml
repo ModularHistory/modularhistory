@@ -254,12 +254,13 @@ jobs:
         compose up -d webserver
         healthy=false
         timeout=100
+        interval=10
         waited=0
         while [[ "$healthy" = false ]]; do
         healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then 
         echo "Waiting for containers to be healthy...";
-        sleep 1; waited=$((waited + 1);
+        sleep $interval; waited=$((waited + interval);
         if [[ $waited > $timeout ]]; then echo "Timed out."; exit 1; fi
         fi
         done
