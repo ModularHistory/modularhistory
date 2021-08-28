@@ -635,12 +635,10 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
     - run: |
-        docker-compose pull
-        docker-compose up -d dev
-    - name: Check service
-      run: curl --fail http://modularhistory.dev.net || exit 1
+        docker-compose -f docker-compose.yml pull
+        docker-compose -f docker-compose.yml up -d webserver
     - name: Run Cypress
-      run: docker-compose up cypress
+      run: docker-compose -f docker-compose.yml up cypress
   check-types:
     name: Check types
     runs-on: ubuntu-latest

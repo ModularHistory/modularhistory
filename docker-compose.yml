@@ -244,6 +244,7 @@ services:
   webserver:
     depends_on:
       - django
+      - celery_beat
       - react
     deploy:
       restart_policy:
@@ -258,12 +259,21 @@ services:
     volumes:
       - ./_media:/modularhistory/_media
       - ./_static:/modularhistory/_static
-      - ./config/nginx/prod:/etc/nginx/conf.d
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
     networks:
       default:
         ipv4_address: 172.27.0.5
+  
+  cypress:
+    # https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:7.1.0"
+    depends_on:
+      - webserver
+    environment:
+      - CYPRESS_baseUrl=https://www.modularhistory.com
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
 
 networks:
   default:

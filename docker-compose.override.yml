@@ -6,29 +6,16 @@ x-common-env-vars: &common-env-vars
   POSTGRES_HOST: "postgres"
 
 services:
-  dev:
+  webserver:
     build:
       context: .
       dockerfile: ./build/Dockerfile.webserver
       args:
         ENVIRONMENT: dev
-    depends_on:
-      - django
-      - celery_beat
-      - react
-    deploy:
-      restart_policy:
-        condition: on-failure
     hostname: modularhistory.dev.net
-    image: webserver
-    ports:
-      - "80:8080"
+    image: webserver:latest
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
-      - .:/modularhistory
-    networks:
-      default:
-        ipv4_address: 172.27.0.5
 
   celery:
     image: django:latest
@@ -100,16 +87,9 @@ services:
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
       - ./core/static/:/modularhistory/core/static
-
-  # run Cypress tests and exit with command
-  #   docker-compose up --exit-code-from cypress
+  
   cypress:
-    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
-    image: "cypress/included:7.1.0"
-    depends_on:
-      - dev
     environment:
-      # pass base url to test pointing at the web application
       - CYPRESS_baseUrl=http://modularhistory.dev.net
     # share the current folder as volume to avoid copying
     working_dir: /e2e
