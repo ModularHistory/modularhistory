@@ -166,7 +166,7 @@ jobs:
       max-parallel: 3
       matrix:
         python-version: [3.9]
-    environment: integration
+    environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -278,7 +278,7 @@ jobs:
       max-parallel: 3
       matrix:
         python-version: [3.9]
-    environment: integration
+    environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -390,7 +390,7 @@ jobs:
       max-parallel: 3
       matrix:
         python-version: [3.9]
-    environment: integration
+    environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -523,7 +523,7 @@ jobs:
         - 6379:6379
         # Set health checks to wait until redis has started.
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-    environment: integration
+    environment: test
     env:
       TESTING: true
     steps:
@@ -589,7 +589,7 @@ jobs:
       run: poetry run invoke test --no-docker
   test-frontend:
     name: Run e2e tests
-    environment: integration
+    environment: test
     needs: [build-django, build-react, build-webserver]
     runs-on: ubuntu-latest
     strategy:
@@ -718,7 +718,7 @@ jobs:
         executable: [mypy, pytype]
         python-version: [3.9]
     continue-on-error: ${{ matrix.executable == 'mypy' }}
-    environment: integration
+    environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
