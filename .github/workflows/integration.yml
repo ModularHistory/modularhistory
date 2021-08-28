@@ -660,9 +660,18 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - run: |
+    - name: Start up containers
+      shell: bash
+      run: |
         docker-compose -f docker-compose.yml pull --include-deps -q django react webserver
         docker-compose -f docker-compose.yml up -d webserver
+        healthy=false
+        while [[ "$healthy" = false ]]; do
+        healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        if [[ "$healthy" = false ]]; then 
+        echo "Waiting for containers to be healthy..."; sleep 10; 
+        fi
+        done
     - run: docker-compose ps
     - run: curl "http://localhost"
       if: always()
@@ -681,6 +690,7 @@ jobs:
     - run: docker-compose exec django curl "http://localhost"
       if: always()
     - run: cat .env
+      if: always()
     - name: Run Cypress
       if: always()
       env:
@@ -765,8 +775,7 @@ jobs:
       id: args
       run: |
         if [ ${{ matrix.executable }} = mypy ]; then args="--config-file=./setup.cfg";
-        elif [ ${{ matrix.executable }} = pytype ]; then args="--config=./setup.cfg";
-        fi
+        elif [ ${{ matrix.executable }} = pytype ]; then args="--config=./setup.cfg"; fi;
         echo "::set-output name=args::$args"
     - name: Run static type checker
       run: poetry run ${{ matrix.executable }} ${{ steps.args.outputs.args }}
