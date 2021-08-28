@@ -643,7 +643,7 @@ jobs:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
-        docker-compose -f docker-compose.yml run cypress  --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
+        docker-compose -f docker-compose.yml -f docker-compose.override.yml run cypress  --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
         --parallel --ci-build-id $GITHUB_TOKEN  --record --key $CYPRESS_RECORD_KEY 
   check-types:
     name: Check types
