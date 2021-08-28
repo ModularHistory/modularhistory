@@ -663,6 +663,7 @@ jobs:
     - run: cat .env
       if: always()
     - name: Start up containers
+      if: always()
       shell: bash
       run: |
         shopt -s expand_aliases
