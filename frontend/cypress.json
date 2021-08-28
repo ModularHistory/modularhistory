@@ -2,5 +2,5 @@
   "baseUrl": "http://modularhistory.dev.net/",
   "chromeWebSecurity": false,
   "ignoreTestFiles": "**/examples/**/*",
-  "preojectId": "sasfo6"
+  "projectId": "sasfo6"
 }
