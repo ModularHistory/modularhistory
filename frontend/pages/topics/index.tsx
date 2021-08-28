@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
+import { Topic } from "@/types/modules";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import { createStyles, makeStyles } from "@material-ui/styles";
@@ -7,7 +8,6 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import { Topic } from "@/types/modules";
 
 interface TopicsProps {
   topicsData: {

@@ -2,7 +2,7 @@ import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
 import MuiPagination, { PaginationProps as MuiPaginationProps } from "@material-ui/core/Pagination";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
-import { ChangeEvent, ChangeEventHandler, FC, useState } from "react";
+import { FC, useState } from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
