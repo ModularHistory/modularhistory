@@ -227,7 +227,12 @@ jobs:
         docker-compose -f docker-compose.yml pull --include-deps -q django react webserver
         docker-compose -f docker-compose.yml up -d webserver
     - name: Run Cypress
-      run: docker-compose -f docker-compose.yml up cypress
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        # Recommended: pass the GitHub token lets this action correctly
+        # determine the unique run id necessary to re-run the checks
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: docker-compose -f docker-compose.yml --exit-code-from cypress run cypress --browser ${{ matrix.browser }} --record --key $CYPRESS_RECORD_KEY 
 
   check-types:
     name: Check types
