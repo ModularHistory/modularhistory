@@ -3,7 +3,7 @@ import ModuleCard from "@/components/cards/ModuleCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Entity } from "@/interfaces";
+import { Entity } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";

@@ -12,7 +12,8 @@ interface UserProps {
 }
 
 const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
-  const [_session, _loading] = useSession();
+  const [_session, loading] = useSession();
+  if (!user || loading) return null;
   return (
     <Layout title={String(user.name || user.handle)}>
       <Container style={{ paddingTop: "2rem" }}>
@@ -71,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   return {
     props: {
-      user: session.user,
+      user: session?.user,
     },
   };
 };

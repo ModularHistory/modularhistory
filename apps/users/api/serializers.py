@@ -16,8 +16,6 @@ class SocialAccountSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     """Serializer for users."""
 
-    isSuperuser = BooleanField(source='is_superuser')
-
     class Meta:
         model = User
-        fields = ['id', 'handle', 'name', 'email', 'avatar', 'isSuperuser']
+        fields = ['id', 'handle', 'name', 'email', 'avatar', 'is_superuser']

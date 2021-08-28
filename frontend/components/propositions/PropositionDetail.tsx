@@ -1,4 +1,4 @@
-import { Proposition } from "@/interfaces";
+import { Proposition } from "@/types/modules";
 import Slider from "@material-ui/core/Slider";
 import { useSession } from "next-auth/client";
 import { FC } from "react";

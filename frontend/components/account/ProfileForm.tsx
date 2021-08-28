@@ -4,7 +4,7 @@ import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { AxiosResponse } from "axios";
 import { User } from "next-auth";
-import { FC, useState } from "react";
+import { FC, FormEventHandler, useState } from "react";
 
 interface ProfileFormProps {
   user: User;
@@ -15,7 +15,7 @@ const ProfileForm: FC<ProfileFormProps> = ({ user, csrfToken }: ProfileFormProps
   const [name, setName] = useState(user.name || "");
   const [handle, setHandle] = useState(user.handle || "");
   const [error, setError] = useState("");
-  const handleProfileChange = async (event) => {
+  const handleProfileChange: FormEventHandler = async (event) => {
     event.preventDefault();
     if (!handle) {
       setError("Enter a handle.");
@@ -25,14 +25,8 @@ const ProfileForm: FC<ProfileFormProps> = ({ user, csrfToken }: ProfileFormProps
           name,
           handle,
         })
-        .then(function (response: AxiosResponse) {
-          if (response["error"]) {
-            setError("Invalid.");
-          }
-        })
-        .catch(function (error) {
+        .catch((error) => {
           setError(String(error));
-          return Promise.resolve(null);
         });
     }
   };

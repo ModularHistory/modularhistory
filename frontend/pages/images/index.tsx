@@ -3,7 +3,7 @@ import ImageCard from "@/components/images/ImageCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Image } from "@/interfaces";
+import { Image } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -13,11 +13,12 @@ import { FC } from "react";
 interface ImagesProps {
   imagesData: {
     results: Image[];
+    totalPages: number;
   };
 }
 
 const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
-  const images = imagesData["results"] || [];
+  const images = imagesData.results || [];
   const imageCards = images.map((image) => (
     <Grid item key={image.id} xs={6} sm={4} md={3}>
       <Link href={`/images/${image.id}`}>
@@ -32,11 +33,11 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
     <Layout title={"Images"}>
       <Container>
         <PageHeader>Images</PageHeader>
-        <Pagination count={imagesData["totalPages"]} />
+        <Pagination count={imagesData.totalPages} />
         <Grid container spacing={2}>
           {imageCards}
         </Grid>
-        <Pagination count={imagesData["totalPages"]} />
+        <Pagination count={imagesData.totalPages} />
       </Container>
     </Layout>
   );

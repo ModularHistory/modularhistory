@@ -1,4 +1,4 @@
-import { Image } from "@/interfaces";
+import { Image } from "@/types/modules";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "../cards/ModuleCard";

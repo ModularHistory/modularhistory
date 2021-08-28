@@ -1,5 +1,5 @@
 import ModuleCard from "@/components/cards/ModuleCard";
-import { Topic } from "@/interfaces";
+import { Topic } from "@/types/modules";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 

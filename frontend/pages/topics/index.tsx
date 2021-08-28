@@ -7,9 +7,12 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
+import { Topic } from "@/types/modules";
 
 interface TopicsProps {
-  topicsData: any;
+  topicsData: {
+    topics: Pick<Topic, "name" | "slug">[];
+  };
 }
 
 const useStyles = makeStyles(() =>
@@ -23,7 +26,7 @@ const useStyles = makeStyles(() =>
 );
 
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
-  const topics = topicsData["data"]["topics"] || [];
+  const topics = topicsData.topics || [];
   const classes = useStyles();
 
   return (
@@ -51,9 +54,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/graphql/?query={topics{name%20slug}}", {})
-    .then((response) => {
-      topicsData = response.data;
+    .get("http://django:8000/graphql/", {
+      params: { query: "{ topics { name slug } }" },
+    })
+    .then(({ data }) => {
+      topicsData = data.data;
     });
 
   return {

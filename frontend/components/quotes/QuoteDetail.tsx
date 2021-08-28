@@ -1,4 +1,4 @@
-import { Quote } from "@/interfaces";
+import { Quote } from "@/types/modules";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
 import TagList from "../topics/TagList";

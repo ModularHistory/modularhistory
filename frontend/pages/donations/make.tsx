@@ -1,9 +1,9 @@
 import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
-import DropIn from "braintree-web-drop-in-react";
+import DropIn, { IDropInProps } from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC, MouseEventHandler, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 interface DonateProps {
   clientToken: string;
@@ -11,7 +11,7 @@ interface DonateProps {
 
 const Donate: FC<DonateProps> = (props: DonateProps) => {
   const [clientToken, setClientToken] = useState(props.clientToken);
-  const [instance, setInstance] = useState(null);
+  const [instance, setInstance] = useState<any>();
   const router = useRouter();
   useEffect(() => {
     async function getClientToken() {
@@ -32,7 +32,7 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
     getClientToken();
   });
 
-  const makeDonation = (e) => {
+  const makeDonation: MouseEventHandler = (e) => {
     e.preventDefault();
     async function getNonce() {
       const { nonce } = await instance.requestPaymentMethod();
@@ -89,8 +89,10 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
                 />
               </div>
             </div>
-            <DropIn options={{ authorization: clientToken }} onInstance={(_) => setInstance(_)} />
-            <button onClick={makeDonation}>Make donation</button>
+            <DropIn options={{ authorization: clientToken }} onInstance={setInstance} />
+            <button onClick={makeDonation} disabled={!instance}>
+              Make donation
+            </button>
           </div>
         )}
       </Container>

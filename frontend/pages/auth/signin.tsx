@@ -6,7 +6,14 @@ import Alert from "@material-ui/lab/Alert";
 import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  Component,
+  FormEventHandler,
+  FunctionComponent,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
 import {
   DiscordLoginButton,
@@ -26,7 +33,7 @@ const SOCIAL_LOGIN_BUTTONS = {
 };
 
 interface Provider {
-  id: string;
+  id: typeof CREDENTIALS_KEY | keyof typeof SOCIAL_LOGIN_BUTTONS;
   name: string;
 }
 
@@ -63,7 +70,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       }
     }
   }, [redirecting, router, redirectUrl]);
-  const handleCredentialLogin = async (event) => {
+  const handleCredentialLogin: FormEventHandler = async (event) => {
     event.preventDefault();
     if (!username || !password) {
       setError("You must enter your username and password.");
@@ -80,7 +87,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       } catch (error) {
         response = { error: `${error}` };
       }
-      if (response["error"]) {
+      if (response?.error) {
         // Response contains `error`, `status`, and `url` (intended redirect url).
         setError("Invalid credentials.");
       } else {
@@ -96,7 +103,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       setError(`${error}`);
     }
   };
-  const socialAuthLoginComponents = [];
+  const socialAuthLoginComponents: ReactElement[] = [];
   let SocialLoginButton;
   if (providers) {
     Object.entries(providers).forEach(([, provider]) => {

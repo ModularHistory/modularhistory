@@ -1,4 +1,4 @@
-import { Argument } from "@/interfaces";
+import { Argument } from "@/types/modules";
 import { alpha, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
 import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";

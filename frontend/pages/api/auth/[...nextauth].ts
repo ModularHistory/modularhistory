@@ -17,7 +17,7 @@ import NextAuth, {
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 
-const makeDjangoApiUrl = (endpoint) => {
+const makeDjangoApiUrl = (endpoint: string) => {
   return `http://django:8000/api${endpoint}`;
 };
 
@@ -79,7 +79,7 @@ callbacks.signIn = async function signIn(user: User, account: Account) {
   }
   // If there is no error, return true to permit signing in.
   // If there is an error, return false to reject the sign-in attempt.
-  return user.error ? false : true;
+  return !user.error;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
@@ -135,7 +135,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
               Authorization: `Bearer ${accessToken}`,
             },
           })
-          .then(function (response: AxiosResponse) {
+          .then((response) => {
             userData = response.data;
           })
           .catch(function (error) {
@@ -146,7 +146,6 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
                 `${Date.now()} <> ${jwt.accessTokenExpiry}`
               );
             }
-            return null;
           });
         session.user = userData;
       }

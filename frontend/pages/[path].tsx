@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { StaticPage as StaticPageType } from "@/interfaces";
+import { StaticPage as StaticPageType } from "@/types/modules";
 import { Container, useMediaQuery } from "@material-ui/core";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";

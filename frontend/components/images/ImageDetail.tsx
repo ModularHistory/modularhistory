@@ -1,4 +1,4 @@
-import { Image } from "@/interfaces";
+import { Image } from "@/types/modules";
 import { FC } from "react";
 import ImageCard from "./ImageCard";
 

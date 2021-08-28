@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Topic } from "@/interfaces";
+import { Topic } from "@/types/modules";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
@@ -38,7 +38,8 @@ export default TopicDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let topic = {};
-  const { slug } = params;
+  let notFound = false;
+  const { slug } = params || {};
   const body = {
     query: `{
       topic(slug: "${slug}") {
@@ -61,19 +62,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       topic = response.data.data.topic;
     })
-    .catch(() => {
-      topic = null;
+    .catch((error) => {
+      if (error.response.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
-  if (!topic) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
+
   return {
     props: {
       topic,
     },
+    notFound,
     revalidate: 10,
   };
 };

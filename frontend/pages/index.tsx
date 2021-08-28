@@ -1,5 +1,4 @@
 import Layout from "@/components/Layout";
-// import { styled } from "@material-ui/core/styles";
 import SearchButton from "@/components/search/SearchButton";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -7,28 +6,14 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { EventHandler, KeyboardEventHandler, MouseEventHandler, useState } from "react";
 import { Box } from "@material-ui/core";
 
-// const PREFIX = "index";
-//
-// const classes = {
-//   root: `${PREFIX}-root`,
-// };
-
-// const StyledLayout = styled(Layout)({
-//   [`& .${classes.root}`]: {
-//     flex: "1 1",
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     margin: "1.5rem 1rem 1.5rem 1rem",
-//   },
-// });
-
-function useQueryState(initialState) {
+function useQueryState(initialState: string) {
   const [query, setQuery] = useState(initialState);
-  return [query, ({ target: { value } }) => setQuery(value)];
+  const setQueryFromEvent = ({ target: { value } }: { target: { value: string } }) =>
+    setQuery(value);
+  return [query, setQueryFromEvent] as const;
 }
 
 export default function Home() {
@@ -36,7 +21,7 @@ export default function Home() {
   const [query, setQuery] = useQueryState("");
 
   // event handler for pressing enter or clicking search button
-  const search = ({ key }) => {
+  const search = ({ key }: { key?: string }) => {
     if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
@@ -65,7 +50,7 @@ export default function Home() {
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search} data-cy={"searchButton"} />
+        <SearchButton onClick={search as MouseEventHandler} data-cy={"searchButton"} />
       </Grid>
     </Grid>
   );

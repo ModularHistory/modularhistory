@@ -43,7 +43,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
+      jssStyles.parentElement?.removeChild(jssStyles);
     }
 
     // Set the Django CSRF cookie if necessary.
