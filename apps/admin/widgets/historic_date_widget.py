@@ -56,7 +56,6 @@ def get_year(year: int, year_system: str = CE) -> tuple[int, int, int]:
         inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
         year = 1
-        # TODO
     return year, second, microsecond
 
 
