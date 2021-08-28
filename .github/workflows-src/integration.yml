@@ -277,13 +277,13 @@ jobs:
       if: always()
     - run: curl "http://modularhistory.dev.net:8080"
       if: always()
-    - run: docker-compose exec django curl "http://modularhistory.dev.net:8080"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080"
       if: always()
-    - run: docker-compose exec django curl "http://modularhistory.dev.net"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net"
       if: always()
-    - run: docker-compose exec django curl "http://localhost:8080"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080"
       if: always()
-    - run: docker-compose exec django curl "http://localhost"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
       if: always()
     - run: cat .env
       if: always()
@@ -295,10 +295,9 @@ jobs:
         # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
-        docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress 
+        docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress
         --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
-        --parallel --ci-build-id $GITHUB_TOKEN 
-        --record --key $CYPRESS_RECORD_KEY 
+        --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY
 
   check-types:
     name: Check types

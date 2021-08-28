@@ -39,6 +39,8 @@ runs:
     -
       name: Build image
       id: build
+      # https://github.com/docker/build-push-action/issues/449
+      if: ${{ inputs.image != 'react' }}
       continue-on-error: true
       # https://github.com/docker/build-push-action
       uses: docker/build-push-action@v2
@@ -55,8 +57,9 @@ runs:
         secret-files: ENV_FILE=./.env
         tags: ${{ inputs.tags }}
     -
-      name: Build image (retry without cache)
-      if: ${{ steps.build.outcome == 'failure' }}
+      name: Build image without cache
+      # https://github.com/docker/build-push-action/issues/449
+      if: ${{ steps.build.outcome == 'failure' || inputs.image == 'react' }}
       uses: docker/build-push-action@v2
       with:
         build-args: |

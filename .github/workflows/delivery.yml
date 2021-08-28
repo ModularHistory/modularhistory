@@ -165,7 +165,7 @@ jobs:
         push: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/django:${{ github.sha }},ghcr.io/modularhistory/django:latest
-    - name: Build image (retry without cache)
+    - name: Build image without cache
       if: ${{ steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
@@ -268,24 +268,8 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - name: Build image
-      id: build
-      continue-on-error: true
-      uses: docker/build-push-action@v2
-      with:
-        build-args: |
-          ENVIRONMENT=prod
-        builder: ${{ steps.buildx.outputs.name }}
-        cache-from: type=gha,scope=react
-        cache-to: type=gha,mode=max,scope=react
-        context: .
-        file: ./build/Dockerfile.react
-        load: false
-        push: true
-        secret-files: ENV_FILE=./.env
-        tags: ghcr.io/modularhistory/react:${{ github.sha }},ghcr.io/modularhistory/react:latest
-    - name: Build image (retry without cache)
-      if: ${{ steps.build.outcome == 'failure' }}
+    - name: Build image without cache
+      if: ${{ steps.build.outcome == true }}
       uses: docker/build-push-action@v2
       with:
         build-args: |
@@ -403,7 +387,7 @@ jobs:
         push: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/webserver:${{ github.sha }},ghcr.io/modularhistory/webserver:latest
-    - name: Build image (retry without cache)
+    - name: Build image without cache
       if: ${{ steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:

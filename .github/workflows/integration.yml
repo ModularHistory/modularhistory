@@ -253,7 +253,7 @@ jobs:
         push: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/django:${{ github.sha }}
-    - name: Build image (retry without cache)
+    - name: Build image without cache
       if: ${{ steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
@@ -351,24 +351,8 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - name: Build image
-      id: build
-      continue-on-error: true
-      uses: docker/build-push-action@v2
-      with:
-        build-args: |
-          ENVIRONMENT=prod
-        builder: ${{ steps.buildx.outputs.name }}
-        cache-from: type=gha,scope=react
-        cache-to: type=gha,mode=max,scope=react
-        context: .
-        file: ./build/Dockerfile.react
-        load: false
-        push: true
-        secret-files: ENV_FILE=./.env
-        tags: ghcr.io/modularhistory/react:${{ github.sha }}
-    - name: Build image (retry without cache)
-      if: ${{ steps.build.outcome == 'failure' }}
+    - name: Build image without cache
+      if: ${{ steps.build.outcome == true }}
       uses: docker/build-push-action@v2
       with:
         build-args: |
@@ -481,7 +465,7 @@ jobs:
         push: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/webserver:${{ github.sha }}
-    - name: Build image (retry without cache)
+    - name: Build image without cache
       if: ${{ steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
@@ -706,13 +690,13 @@ jobs:
       if: always()
     - run: curl "http://modularhistory.dev.net:8080"
       if: always()
-    - run: docker-compose exec django curl "http://modularhistory.dev.net:8080"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080"
       if: always()
-    - run: docker-compose exec django curl "http://modularhistory.dev.net"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net"
       if: always()
-    - run: docker-compose exec django curl "http://localhost:8080"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080"
       if: always()
-    - run: docker-compose exec django curl "http://localhost"
+    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
       if: always()
     - run: cat .env
       if: always()
@@ -722,8 +706,9 @@ jobs:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
-        docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress  --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
-        --parallel --ci-build-id $GITHUB_TOKEN  --record --key $CYPRESS_RECORD_KEY 
+        docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress
+        --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
+        --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY
   check-types:
     name: Check types
     needs: get-changed-files
