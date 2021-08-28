@@ -105,7 +105,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment dev
+      run: |
+        echo "Creating a .env file for dev environment..."
+        poetry run invoke setup.write-env-file --environment dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:

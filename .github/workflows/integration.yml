@@ -155,7 +155,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -221,7 +223,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -333,7 +337,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -445,7 +451,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -580,7 +588,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -653,7 +663,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for test environment..."
+        poetry run invoke setup.write-env-file --environment test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
@@ -778,7 +790,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment prod
+      run: |
+        echo "Creating a .env file for prod environment..."
+        poetry run invoke setup.write-env-file --environment prod
     - name: Cache type stubs
       id: cache-stubs
       uses: actions/cache@v2

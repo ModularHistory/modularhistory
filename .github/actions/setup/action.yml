@@ -82,4 +82,6 @@ runs:
       run: poetry run invoke debug
     # Write a .env file.
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --environment ${{ inputs.environment }}
+      run: |
+        echo "Creating a .env file for ${{ inputs.environment }} environment..."
+        poetry run invoke setup.write-env-file --environment ${{ inputs.environment }}
