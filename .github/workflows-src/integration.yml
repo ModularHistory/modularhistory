@@ -70,8 +70,12 @@ jobs:
       modified-files: ${{ steps.changed-files.outputs.modified_files }}
       all-changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
     steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Get changed files
       id: changed-files
+      # https://github.com/tj-actions/changed-files
       uses: tj-actions/changed-files@v1.0.1
 
   test-setup:

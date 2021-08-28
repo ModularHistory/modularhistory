@@ -80,6 +80,9 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v1.0.1
