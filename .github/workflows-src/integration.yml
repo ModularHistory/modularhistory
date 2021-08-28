@@ -263,6 +263,8 @@ jobs:
 
   check-types:
     name: Check types
+    needs: get-changed-files
+    if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'py') }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
