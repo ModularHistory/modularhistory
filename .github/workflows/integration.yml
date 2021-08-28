@@ -669,7 +669,8 @@ jobs:
       if: always()
       shell: bash
       run: |
-        shopt -s expand_aliases && alias compose="docker-compose -f docker-compose.yml"
+        shopt -s expand_aliases
+        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
         compose pull --include-deps -q django react webserver && compose up -d webserver
         healthy=false; timeout=100; interval=10; waited=0
         while [[ "$healthy" = false ]]; do
