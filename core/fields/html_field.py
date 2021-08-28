@@ -249,6 +249,10 @@ class HTMLField(TextField):
         Including HTML in the placeholders (1) improves readability when editing
         and (2) reduces time to process search results.
         """
+        soup = soupify(html)
+        referenced_modules = soup.find_all('module')
+        for referenced_module in referenced_modules:
+            print(referenced_module)
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:

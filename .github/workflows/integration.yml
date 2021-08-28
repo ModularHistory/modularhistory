@@ -666,8 +666,8 @@ jobs:
       run: |
         writable_dirs=( ".backups" ".init" "_static" "_media" )
         for writable_dir in "${writable_dirs[@]}"; do
-        mkdir -p $writable_dir
-        sudo chown -R www-data:www-data $writable_dir && sudo chmod g+w -R writable_dir
+        mkdir -p "$writable_dir"
+        sudo chown -R www-data:www-data "$writable_dir" && sudo chmod g+w -R "$writable_dir" || exit 1
         done
     - name: Start up containers
       if: always()
