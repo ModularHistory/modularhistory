@@ -675,7 +675,7 @@ jobs:
         healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
         if [[ "$healthy" = false ]]; then 
         echo "Waiting for containers..."; sleep $interval; waited=$((waited + interval));
-        if [[ $waited > $timeout ]]; then echo "Timed out."; exit 1; fi;
+        if [[ $waited -gt $timeout ]]; then echo "Timed out."; exit 1; fi;
         fi;
         done
     - run: docker-compose ps
