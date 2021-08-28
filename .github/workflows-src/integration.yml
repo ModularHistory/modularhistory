@@ -256,19 +256,19 @@ jobs:
       if: always()
       shell: bash
       run: |
-        shopt -s expand_aliases
-        alias compose="docker-compose -f docker-compose.yml"
-        compose pull --include-deps -q django react webserver
-        compose up -d webserver
-        healthy=false; timeout=100; interval=10; waited=0;
+        shopt -s expand_aliases && alias compose="docker-compose -f docker-compose.yml"
+        compose pull --include-deps -q django react webserver && compose up -d webserver
+        healthy=false; timeout=100; interval=10; waited=0
         while [[ "$healthy" = false ]]; do
-        healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
-        if [[ "$healthy" = false ]]; then 
-        echo "Waiting for containers (${waited}s) ...";
-        sleep $interval; waited=$((waited + interval));
-        if [[ $waited -gt $timeout ]]; then echo "Timed out."; compose logs; exit 1; fi;
-        fi;
-        done
+          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
+          if [[ "$healthy" = false ]]; then 
+            echo "Waiting for containers (${waited}s) ...";
+            sleep $interval; waited=$((waited + interval));
+            if [[ $waited -gt $timeout ]]; then 
+              echo "Timed out."; compose logs; exit 1
+            fi; 
+          fi; 
+        done; compose ps
     - run: curl "http://localhost"
       if: always()
     - run: curl "http://localhost:8080"
