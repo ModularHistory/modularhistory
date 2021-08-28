@@ -656,14 +656,14 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - run: cat .env
-      if: always()
     - name: Create writable volume directories
       run: |
         writable_dirs=( ".backups" ".init" "_static" "_media" )
         for writable_dir in "${writable_dirs[@]}"; do
-        mkdir -p "$writable_dir"
-        sudo chown -R www-data:www-data "$writable_dir" && sudo chmod g+w -R "$writable_dir" || exit 1
+          mkdir -p "$writable_dir"; {
+            sudo chown -R www-data:www-data "$writable_dir" && 
+            sudo chmod g+w -R "$writable_dir"
+          } || exit 1
         done
     - name: Start up containers
       if: always()
@@ -682,30 +682,22 @@ jobs:
             fi; 
           fi; 
         done; compose ps
-    - run: curl "http://localhost"
-      if: always()
-    - run: curl "http://localhost:8080"
-      if: always()
-    - run: curl "http://modularhistory.dev.net"
-      if: always()
-    - run: curl "http://modularhistory.dev.net:8080"
-      if: always()
-    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080"
-      if: always()
-    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net"
-      if: always()
-    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080"
-      if: always()
-    - run: COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
-      if: always()
-    - run: cat .env
-      if: always()
+    - run: |
+        curl "http://localhost" ||
+        curl "http://localhost:8080" ||
+        curl "http://modularhistory.dev.net" ||
+        curl "http://modularhistory.dev.net:8080" ||
+        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080" ||
+        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net" ||
+        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080" ||
+        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost" ||
     - name: Run Cypress
       if: always()
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
+        docker-compose -f docker-compose.yml -f docker-compose.test.yml ps;
         docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress
         --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
         --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY

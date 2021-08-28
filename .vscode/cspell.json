@@ -10,6 +10,7 @@
         "Bennion",
         "braintree",
         "buildx",
+        "chmod",
         "crontabschedule",
         "CSRF",
         "ctype",
