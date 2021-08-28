@@ -271,13 +271,13 @@ jobs:
         done; compose ps
     - run: |
         curl "http://localhost" ||
-        curl "http://localhost:8080" ||
-        curl "http://modularhistory.dev.net" ||
-        curl "http://modularhistory.dev.net:8080" ||
-        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080" ||
-        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net" ||
-        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080" ||
-        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
+        echo ""; curl "http://localhost:8080" ||
+        echo ""; curl "http://modularhistory.dev.net" ||
+        echo ""; curl "http://modularhistory.dev.net:8080" ||
+        echo ""; COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080" ||
+        echo ""; COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net" ||
+        echo ""; COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080" ||
+        echo ""; COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
     - name: Run Cypress
       if: always()
       env:
