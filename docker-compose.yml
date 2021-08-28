@@ -57,10 +57,14 @@ services:
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
-      - celery
-      - postgres
-      - redis
-      - elasticsearch
+      celery:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
     deploy:
       restart_policy:
         condition: on-failure
