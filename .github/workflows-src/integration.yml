@@ -38,8 +38,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
   IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
-  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
   POSTGRES_HOST: postgres
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
@@ -63,8 +61,23 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }} 
 
 jobs:
+  get-changed-files:
+    name: Get changed files
+    runs-on: ubuntu-latest
+    outputs:
+      added-files: ${{ steps.changed-files.outputs.added_files }}
+      deleted-files: ${{ steps.changed-files.outputs.deleted_files }}
+      modified-files: ${{ steps.changed-files.outputs.modified_files }}
+      all-changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+    steps:
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v1.0.1
+
   test-setup:
     name: Test setup script
+    needs: get-changed-files
+    if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'setup.sh') }}
     strategy:
       max-parallel: 3
       matrix:
