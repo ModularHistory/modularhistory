@@ -14,14 +14,14 @@ from zipfile import BadZipFile, ZipFile
 
 from colorama import Style
 from django.conf import settings
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 from requests import Session
 
+from commands.command import command
 from core.constants.strings import NEGATIVE
 from core.utils import db as db_utils
 from core.utils import files as file_utils
 from core.utils import github as github_utils
-from commands.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -260,9 +260,13 @@ def write_env_file(context: 'Context', dev: bool = False, dry: bool = False):
             continue
         var_name, var_value = match.group(1), match.group(2)
         env_vars[var_name] = var_value
+        input(f'{var_name}: {var_value}')
     destination_file = dry_destination_file if dry else destination_file
     with open(destination_file, 'w') as env_file:
         for var_name, var_value in sorted(env_vars.items()):
             env_file.write(f'{var_name}={var_value}\n')
+    # Confirm dotenv can load values.
+    values = dotenv_values(destination_file)
     if dry:
         context.run(f'cat {destination_file} && rm {destination_file}')
+        print(f'Parsed values: {pformat(values)}')
