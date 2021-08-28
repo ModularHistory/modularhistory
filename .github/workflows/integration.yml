@@ -155,7 +155,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -221,7 +221,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -333,7 +333,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -445,7 +445,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx
@@ -580,7 +580,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -653,7 +653,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
@@ -670,17 +670,15 @@ jobs:
         alias compose="docker-compose -f docker-compose.yml"
         compose pull --include-deps -q django react webserver
         compose up -d webserver
-        healthy=false
-        timeout=100
-        interval=10
-        waited=0
+        healthy=false; timeout=100; interval=10; waited=0;
         while [[ "$healthy" = false ]]; do
-        healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
         if [[ "$healthy" = false ]]; then 
-        echo "Waiting for containers to be healthy...";
-        sleep $interval; waited=$((waited + interval);
-        if [[ $waited > $timeout ]]; then echo "Timed out."; exit 1; fi
-        fi
+        echo "Waiting for containers..."; sleep $interval; waited=$((waited + interval);
+        if [[ $waited > $timeout ]]; then 
+        echo "Timed out."; exit 1; 
+        fi;
+        fi;
         done
     - run: docker-compose ps
     - run: curl "http://localhost"
@@ -775,7 +773,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment prod
     - name: Cache type stubs
       id: cache-stubs
       uses: actions/cache@v2

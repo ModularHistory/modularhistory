@@ -19,7 +19,7 @@ inputs:
   environment:
     description: 'Environment (e.g., "dev" or "prod")'
     required: false
-    default: ""
+    default: "prod"
 
 runs:
   # https://github.com/mithro/actions-includes
@@ -82,4 +82,4 @@ runs:
       run: poetry run invoke debug
     # Write a .env file.
     - name: Create .env file
-      run: echo "${{ inputs.environment }}" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-env-file --environment ${{ inputs.environment }}

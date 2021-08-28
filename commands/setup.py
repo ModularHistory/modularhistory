@@ -228,13 +228,13 @@ def update_git_hooks(context: 'Context'):
 
 
 @command
-def write_env_file(context: 'Context', dev: bool = False, dry: bool = False):
+def write_env_file(context: 'Context', environment: str = 'prod', dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'
     dry_destination_file = '.env.tmp'
     config_dir = settings.CONFIG_DIR
     template_file = join(config_dir, 'env.yaml')
-    dev_overrides_file = join(config_dir, 'env.dev.yaml')
+    overrides_file = join(config_dir, f'env.{environment}.yaml')
     if dry and os.path.exists(destination_file):
         load_dotenv(dotenv_path=destination_file)
     elif os.path.exists(destination_file):
@@ -247,11 +247,11 @@ def write_env_file(context: 'Context', dev: bool = False, dry: bool = False):
         if envsubst
         else file_utils.envsubst(template_file)
     ).splitlines()
-    if dev:
+    if os.path.exists((overrides_file)):
         vars += (
-            context.run(f'envsubst < {dev_overrides_file}', hide='out').stdout
+            context.run(f'envsubst < {overrides_file}', hide='out').stdout
             if envsubst
-            else file_utils.envsubst(dev_overrides_file)
+            else file_utils.envsubst(overrides_file)
         ).splitlines()
     env_vars = {}
     for line in vars:
