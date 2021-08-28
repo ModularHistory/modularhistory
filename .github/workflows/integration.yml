@@ -674,7 +674,7 @@ jobs:
         while [[ "$healthy" = false ]]; do
         healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
         if [[ "$healthy" = false ]]; then 
-        echo "Waiting for containers..."; sleep $interval; waited=$((waited + interval);
+        echo "Waiting for containers..."; sleep $interval; waited=$((waited + interval));
         if [[ $waited > $timeout ]]; then 
         echo "Timed out."; exit 1; 
         fi;
