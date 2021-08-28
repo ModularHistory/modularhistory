@@ -594,7 +594,7 @@ jobs:
       matrix:
         browser: [chrome, firefox]
         container: [1, 2]
-      max-parallel: 3
+      max-parallel: 4
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -659,6 +659,11 @@ jobs:
     - run: |
         docker-compose -f docker-compose.yml pull --include-deps -q django react webserver
         docker-compose -f docker-compose.yml up -d webserver
+    - run: cat .env
+    - run: curl "http://localhost"
+    - run: curl "http://localhost:8080"
+    - run: curl "http://modularhistory.dev.net"
+    - run: curl "http://modularhistory.dev.net:8080"
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
