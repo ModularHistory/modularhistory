@@ -212,6 +212,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [ chrome, firefox ]
+        container: [ 1, 2 ]
       max-parallel: 3
     steps:
     - includes: ./.github/actions/setup
@@ -229,10 +230,14 @@ jobs:
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        # Recommended: pass the GitHub token lets this action correctly
-        # determine the unique run id necessary to re-run the checks
+        # Pass the GitHub token to determine the unique run id necessary to re-run the checks.
+        # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: docker-compose -f docker-compose.yml --exit-code-from cypress run cypress --browser ${{ matrix.browser }} --record --key $CYPRESS_RECORD_KEY 
+      run: >
+        docker-compose -f docker-compose.yml run cypress 
+        --browser ${{ matrix.browser }} 
+        --parallel --ci-build-id $GITHUB_TOKEN 
+        --record --key $CYPRESS_RECORD_KEY 
 
   check-types:
     name: Check types
