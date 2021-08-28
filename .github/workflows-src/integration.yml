@@ -258,10 +258,9 @@ jobs:
         if [[ "$healthy" = false ]]; then 
         echo "Waiting for containers (${waited}s) ...";
         sleep $interval; waited=$((waited + interval));
-        if [[ $waited -gt $timeout ]]; then echo "Timed out."; exit 1; fi;
+        if [[ $waited -gt $timeout ]]; then echo "Timed out."; compose logs; exit 1; fi;
         fi;
         done
-    - run: docker-compose ps
     - run: curl "http://localhost"
       if: always()
     - run: curl "http://localhost:8080"
