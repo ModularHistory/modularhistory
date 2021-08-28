@@ -690,7 +690,7 @@ jobs:
         COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net:8080" ||
         COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://modularhistory.dev.net" ||
         COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost:8080" ||
-        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost" ||
+        COMPOSE_INTERACTIVE_NO_CLI=0 docker-compose exec django curl "http://localhost"
     - name: Run Cypress
       if: always()
       env:
