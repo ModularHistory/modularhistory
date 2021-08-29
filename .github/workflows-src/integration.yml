@@ -207,19 +207,19 @@ jobs:
         shopt -s expand_aliases
         alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
         # echo "Starting containers with version $SHA ..."
-        compose up -d webserver; compose logs; echo ""; compose ps; 
+        compose up -d webserver; compose logs; echo ""; compose ps
         [[ ! "$(compose ps)" =~ webserver ]] && exit 1
         healthy=false; timeout=300; interval=20; waited=0
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
+          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then 
-            compose logs --tail 20; echo ""; compose ps; echo "";
-            echo "Waiting for containers (${waited}s) ..."; echo "";
-            sleep $interval; waited=$((waited + interval));
+            compose logs --tail 20; echo ""; compose ps; echo ""
+            echo "Waiting for containers (${waited}s) ..."; echo ""
+            sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
               echo "Timed out."; compose logs; exit 1
-            fi; 
-          fi; 
+            fi
+          fi
         done; compose ps
     - run: |
         curl "http://localhost" ||
