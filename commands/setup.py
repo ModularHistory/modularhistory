@@ -270,7 +270,7 @@ def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool =
         for var_name, var_value in sorted(env_vars.items()):
             dotenv_file.write(f'{var_name}={var_value}\n')
     # If possible, lint the dotenv file.
-    context.run('dotenv-linter --help &>/dev/null && dotenv-linter')
+    context.run('dotenv-linter --help &>/dev/null && dotenv-linter', warn=True)
     # Confirm dotenv can load values.
     stdout = io.StringIO()
     with redirect_stdout(stdout):
