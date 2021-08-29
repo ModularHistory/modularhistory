@@ -83,7 +83,6 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
         environment: prod
@@ -113,7 +112,6 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
         environment: prod
