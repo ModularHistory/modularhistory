@@ -3,11 +3,6 @@ version: "3.8"
 services:
   webserver:
     hostname: modularhistory.dev.net
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
 
