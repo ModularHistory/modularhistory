@@ -8,13 +8,13 @@ import { setCookie } from "nookies";
 import { FC, useEffect, useState } from "react";
 
 interface RedirectProps {
-  path: string;
+  path?: string;
 }
 
 const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
   const router = useRouter();
   const [_session, loading] = useSession();
-  const [redirect, setRedirect] = useState(null);
+  const [redirect, setRedirect] = useState(false);
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const redirectPath = path ? `/${path}` : "";
   const redirectUrl = baseUrl + redirectPath;
@@ -60,25 +60,24 @@ export default Redirect;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let { path } = context.params;
+  let { path } = context.params || {};
   if (Array.isArray(path)) {
     path = path.join("/");
-  } else if (!path) {
-    path = null;
   }
+
   const session = await getSession(context);
   if (typeof session?.sessionIdCookie == "string") {
     const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
     setCookie(context, cookieName, cookieValue, {
       secure: process.env.ENVIRONMENT === "prod",
       // expires: Date.parse(session.sessionIdCookie.match(/expires=(.+?);/)[1]);
-      maxAge: parseInt(session.sessionIdCookie.match(/Max-Age=(.+?);/)[1]),
+      maxAge: parseInt(session.sessionIdCookie.match(/Max-Age=(.+?);/)?.[1] || "0"),
       sameSite: "lax",
       httpOnly: true,
       path: "/",
     });
   }
   return {
-    props: { path }, // passed to the page component as props
+    props: { path: path ?? null }, // passed to the page component as props
   };
 };

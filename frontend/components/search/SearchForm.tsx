@@ -8,6 +8,7 @@ import {
   createContext,
   Dispatch,
   FC,
+  KeyboardEventHandler,
   SetStateAction,
   useCallback,
   useContext,
@@ -22,14 +23,14 @@ import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
 import InstantSearch from "@/components/search/InstantSearch";
 
-interface SearchFormStateType {
-  state?: { [key: string]: any };
-  setState?: Dispatch<SetStateAction<any>>;
-  setStateFromEvent?: ChangeEventHandler;
-  disabled?: boolean;
+interface SearchFormState {
+  formState: Record<string, string | number | (string | number)[] | undefined>;
+  setFormState: Dispatch<SetStateAction<SearchFormState["formState"]>>;
+  setFormStateFromEvent: ChangeEventHandler;
+  disabled: boolean;
 }
 
-export const SearchFormContext = createContext<SearchFormStateType>({});
+export const SearchFormContext = createContext<SearchFormState>({} as SearchFormState);
 
 /**
  * This hook is used to centralize the state of all search form inputs.
@@ -39,15 +40,15 @@ export const SearchFormContext = createContext<SearchFormStateType>({});
  *   `setStateFromEvent`: function that accepts an event and extracts
  *                        the new state from the event.
  */
-function useSearchFormState(): SearchFormStateType {
+function useSearchFormState(): SearchFormState {
   const router = useRouter();
 
   // load the initial state from url query params
-  const [state, setState] = useState(router.query);
+  const [formState, setFormState] = useState<SearchFormState["formState"]>(router.query);
 
   // event handler used by several inputs to set their state
-  const setStateFromEvent = useCallback(
-    ({ target }) => setState((prevState) => ({ ...prevState, [target.name]: target.value })),
+  const setFormStateFromEvent = useCallback(
+    ({ target }) => setFormState((prevState) => ({ ...prevState, [target.name]: target.value })),
     []
   );
 
@@ -56,13 +57,13 @@ function useSearchFormState(): SearchFormStateType {
     // and update form state when browser history is navigated.
     // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
     const { page, ...query } = router.query;
-    setState(query);
+    setFormState(query || {});
   }, [router.query]);
 
   // Disable the entire form when page transition are occurring
   const isLoading = useContext(PageTransitionContext);
 
-  return { state, setState, setStateFromEvent, disabled: isLoading };
+  return { formState, setFormState, setFormStateFromEvent, disabled: isLoading };
 }
 
 interface SearchFormProps {
@@ -97,30 +98,30 @@ const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
   const classes = useStyles({ inSidebar });
   const router = useRouter();
-  const formState = useSearchFormState();
+  const formContext = useSearchFormState();
 
   // When `sm` is 6, inputs may be rendered side-by-side.
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
   const sm = inSidebar ? 12 : 6;
 
-  const submitForm = () => router.push({ query: formState.state });
-  const handleKeyUp = (event) => {
+  const submitForm = () => router.push({ query: formContext.formState as any });
+  const handleKeyUp: KeyboardEventHandler = (event) => {
     if (event.key === "Enter") {
       submitForm();
     }
   };
 
   return (
-    <SearchFormContext.Provider value={formState}>
+    <SearchFormContext.Provider value={formContext}>
       <Container className={classes.root}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={sm}>
             <TextField
               label="Query"
               name="query"
-              defaultValue={formState.state["query"] || ""}
-              disabled={formState.disabled}
-              onChange={formState.setStateFromEvent}
+              defaultValue={formContext.formState["query"] || ""}
+              disabled={formContext.disabled}
+              onChange={formContext.setFormStateFromEvent}
               onKeyUp={handleKeyUp}
             />
           </Grid>

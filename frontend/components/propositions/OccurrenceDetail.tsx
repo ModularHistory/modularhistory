@@ -1,7 +1,6 @@
-import { Occurrence } from "@/interfaces";
+import { Occurrence } from "@/types/modules";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
-import Tag from "../topics/Tag";
 import TagList from "../topics/TagList";
 
 interface OccurrenceDetailProps {
@@ -28,7 +27,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
         className="text-center card-title lead"
         dangerouslySetInnerHTML={{ __html: occurrence.dateString }}
       />
-      {occurrence.cachedImages.map(
+      {occurrence.cachedImages?.map(
         (image, index) =>
           occurrence.elaboration.includes(image.srcUrl) || (
             <div className="img-container" style={{ maxWidth: "44%" }} key={index}>

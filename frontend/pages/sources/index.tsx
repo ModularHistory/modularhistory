@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Source } from "@/interfaces";
+import { Source } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -23,6 +23,7 @@ const useStyles = makeStyles({
 interface SourcesProps {
   sourcesData: {
     results: Source[];
+    totalPages: number;
   };
 }
 
@@ -34,7 +35,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
     <Layout title={"Sources"}>
       <Container>
         <PageHeader>Sources</PageHeader>
-        <Pagination count={sourcesData["totalPages"]} />
+        <Pagination count={sourcesData.totalPages} />
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="source table">
             <TableBody>

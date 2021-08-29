@@ -56,9 +56,9 @@ function TabPanel(props: TabPanelProps) {
 }
 
 interface UserSettingsPageProps {
-  user?: User;
+  user: User;
   csrfToken: string;
-  providers: Provider[];
+  providers: Record<string, Provider>;
   socialAccounts: any;
 }
 
@@ -68,6 +68,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   providers,
   socialAccounts,
 }: UserSettingsPageProps) => {
+  console.log({ providers });
   const classes = useStyles();
   const theme = useTheme();
   const [session, _loading] = useSession();

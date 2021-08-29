@@ -1,10 +1,10 @@
-import { Entity, Image, ModuleUnion, Occurrence, Proposition, Quote, Source } from "@/interfaces";
+import { ModuleUnion, Topic } from "@/types/modules";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "./ModuleCard";
 
 interface ModuleUnionCardProps {
-  module: ModuleUnion;
+  module: Exclude<ModuleUnion, Topic>;
   selected?: boolean;
 }
 
@@ -19,25 +19,22 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
-      content = (
-        <HTMLEllipsis unsafeHTML={(module as Image).captionHtml} maxLine="3" basedOn="words" />
-      );
+      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Occurrence).title }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
       break;
     case "propositions.proposition":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Proposition).title }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
       break;
     case "quotes.quote": {
-      const quote: Quote = module as Quote;
       content = (
         <blockquote className="blockquote">
-          <HTMLEllipsis unsafeHTML={quote.bite} maxLine="4" basedOn="words" />
-          {quote.attributeeString && (
+          <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />
+          {module.attributeeString && (
             <footer
               className="blockquote-footer"
-              dangerouslySetInnerHTML={{ __html: quote.attributeeString }}
+              dangerouslySetInnerHTML={{ __html: module.attributeeString }}
             />
           )}
         </blockquote>
@@ -45,12 +42,17 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       break;
     }
     case "sources.source":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Source).citationHtml }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: module.citationHtml }} />;
       break;
     case "entities.person":
     case "entities.organization":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Entity).name }} />;
+    case "entities.entity":
+      content = <div dangerouslySetInnerHTML={{ __html: module.name }} />;
       break;
+    default:
+      ((module: never) => {
+        throw new Error(`Unexpected module type encountered: ${(module as any).model}`);
+      })(module);
   }
   return (
     <ModuleCard module={module} className={selected ? "selected" : ""} {...childProps}>

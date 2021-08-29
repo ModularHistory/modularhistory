@@ -73,7 +73,7 @@ export const handleLogout = (session: Session): void => {
 export const removeServerSideCookies = (cookies: string[]): string[] => {
   // Given an array of cookie strings, remove any HttpOnly cookies.
   // Return the modified array.
-  const clientSideCookies = [];
+  const clientSideCookies: string[] = [];
   cookies.forEach((cookie) => {
     if (!cookie.includes("HttpOnly;")) {
       clientSideCookies.push(cookie);
@@ -85,7 +85,7 @@ export const removeServerSideCookies = (cookies: string[]): string[] => {
   return clientSideCookies;
 };
 
-const getUserFromAuthResponse = (response: AxiosResponse): User => {
+const getUserFromAuthResponse = (response: AxiosResponse): User | null => {
   const user = response.data["user"];
   if (!user) {
     // eslint-disable-next-line no-console
@@ -98,10 +98,15 @@ const getUserFromAuthResponse = (response: AxiosResponse): User => {
   */
   user.accessToken = response.data.accessToken;
   user.refreshToken = response.data.refreshToken;
-  const cookies = response.headers["set-cookie"];
+  const cookies: string[] = response.headers["set-cookie"];
   cookies.forEach((cookie) => {
     if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
-      user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
+      const match = cookie.match(/expires=(.+?);/);
+      if (match) {
+        user.accessTokenExpiry = Date.parse(match[1]);
+      } else {
+        user.accessTokenExpiry = Date.now();
+      }
     } else if (cookie.startsWith(`sessionid=`)) {
       user.sessionIdCookie = cookie;
     }
@@ -163,9 +168,9 @@ export const authenticateWithSocialMediaAccount = async (
         const emailRes = await fetch("https://api.github.com/user/emails", {
           headers: { Authorization: `token ${account.accessToken}` },
         });
-        const emails = await emailRes.json();
+        const emails: { email: string; primary: boolean }[] = await emailRes.json();
         if (emails?.length !== 0) {
-          user.email = emails.find((emails) => emails.primary).email;
+          user.email = emails.find((emails) => emails.primary)?.email;
         }
       }
       credentials.accessToken = account.accessToken;

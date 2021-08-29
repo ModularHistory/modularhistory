@@ -5,7 +5,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import { AxiosResponse } from "axios";
-import { FC, useState } from "react";
+import { FC, FormEventHandler, useState } from "react";
 
 interface PasswordChangeFormProps {
   csrfToken: string;
@@ -18,7 +18,7 @@ const PasswordChangeForm: FC<PasswordChangeFormProps> = ({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const handlePasswordChange = async (event) => {
+  const handlePasswordChange: FormEventHandler = async (event) => {
     event.preventDefault();
     if (!oldPassword) {
       setError("Enter your current password.");
@@ -27,28 +27,16 @@ const PasswordChangeForm: FC<PasswordChangeFormProps> = ({
     } else if (!confirmPassword) {
       setError("Confirm your new password.");
     } else {
-      let response;
-      try {
-        await axios
-          .post(makeDjangoApiUrl("/users/auth/password/change/"), {
-            old_password: oldPassword,
-            new_password1: newPassword,
-            new_password2: confirmPassword,
-          })
-          .then(function (response: AxiosResponse) {
-            console.log(`${response}`);
-          })
-          .catch(function (error) {
-            setError(String(error));
-            return Promise.resolve(null);
-          });
-      } catch (error) {
-        setError(String(error));
-      }
-      if (response["error"]) {
-        // Response contains `error`, `status`, and `url` (intended redirect url).
-        setError("Invalid credentials.");
-      }
+      await axios
+        .post(makeDjangoApiUrl("/users/auth/password/change/"), {
+          old_password: oldPassword,
+          new_password1: newPassword,
+          new_password2: confirmPassword,
+        })
+        .then(console.log)
+        .catch(function (error) {
+          setError(String(error));
+        });
     }
   };
   return (

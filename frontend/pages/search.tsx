@@ -4,14 +4,22 @@ import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
-import { ModuleUnion } from "@/interfaces";
+import { ModuleUnion, Topic } from "@/types/modules";
 import { Container, Drawer, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import qs from "qs";
-import { Dispatch, FC, SetStateAction, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  MouseEventHandler,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 const useStyles = makeStyles({
   drawer: {
@@ -42,7 +50,7 @@ const useStyles = makeStyles({
 interface SearchProps {
   count: number;
   totalPages: number;
-  results: ModuleUnion[];
+  results: Exclude<ModuleUnion, Topic>[];
 }
 
 const Search: FC<SearchProps> = (props: SearchProps) => {
@@ -135,7 +143,7 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
 interface TwoPaneState {
   moduleIndex: number;
   setModuleIndex: Dispatch<SetStateAction<number>>;
-  setModuleIndexFromEvent: (event: MouseEvent) => void;
+  setModuleIndexFromEvent: MouseEventHandler;
 }
 
 function useTwoPaneState(): TwoPaneState {
@@ -196,7 +204,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
 }) => {
   const classes = useStyles();
 
-  const selectModule = (event) => {
+  const selectModule: MouseEventHandler = (event) => {
     setModuleIndexFromEvent(event);
     setModalOpen(true);
   };

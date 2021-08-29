@@ -6,8 +6,8 @@ if TYPE_CHECKING:
     from django.core.mail.backends.smtp import EmailBackend
 
 
-# (subject, text_content, html_content, from_email, recipient_list)
-DataTuple = tuple[str, str, str, str, str]
+# subject, text_content, html_content, from_email, recipient_list
+DataTuple = tuple[str, str, str, str, list[str]]
 
 
 def send_mass_html_mail(
@@ -16,11 +16,12 @@ def send_mass_html_mail(
     username: Optional[str] = None,
     password: Optional[str] = None,
     connection: Optional['EmailBackend'] = None,
-):
+) -> int:
     """
+    Send a mass HTML email, and return the number of emails sent.
+
     Given a datatuple of (subject, text_content, html_content, from_email,
-    recipient_list), sends each message to each recipient list. Returns the
-    number of emails sent.
+    recipient_list), sends each message to each recipient list.
 
     If from_email is None, the DEFAULT_FROM_EMAIL setting is used.
     If auth_user and auth_password are set, they're used to log in.

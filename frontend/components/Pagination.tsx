@@ -1,5 +1,5 @@
 import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
-import MuiPagination from "@material-ui/core/Pagination";
+import MuiPagination, { PaginationProps as MuiPaginationProps } from "@material-ui/core/Pagination";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
@@ -25,13 +25,13 @@ function usePageState() {
   const pageNum = Number(router.query["page"] || 1);
   const [loading, setLoading] = useState(false);
 
-  const setPage = (event, newPageNum) => {
+  const setPage: MuiPaginationProps["onChange"] = (event, newPageNum) => {
     // remove page query param when page=1
     const query = { ...router.query };
     if (newPageNum > 1) {
-      query["page"] = newPageNum;
+      query.page = String(newPageNum);
     } else {
-      delete query["page"];
+      delete query.page;
     }
 
     // `loading` is true during page transitions so the paginator
