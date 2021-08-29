@@ -10,8 +10,12 @@ services:
   celery:
     command: bash config/scripts/init/celery.sh
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      django:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -39,10 +43,12 @@ services:
   celery_beat:
     command: bash config/scripts/init/celery_beat.sh
     depends_on:
-      - celery
-      - django
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -57,8 +63,6 @@ services:
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
-      celery:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -248,6 +252,7 @@ services:
   webserver:
     depends_on:
       - django
+      - celery
       - celery_beat
       - react
     deploy:
