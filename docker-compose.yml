@@ -66,9 +66,9 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
