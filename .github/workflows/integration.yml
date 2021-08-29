@@ -88,8 +88,8 @@ jobs:
       uses: tj-actions/changed-files@v1.0.1
   setup-script:
     name: Test setup script
-    needs: get-changed-files
-    if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'setup.sh') }}
+    needs: changed-files
+    if: ${{ contains(needs.changed-files.outputs.modified-files, 'setup.sh') }}
     strategy:
       matrix:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -474,8 +474,8 @@ jobs:
         --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY
   check-types:
     name: Check types
-    needs: get-changed-files
-    if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'py') }}
+    needs: changed-files
+    if: ${{ contains(needs.changed-files.outputs.modified-files, 'py') }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
