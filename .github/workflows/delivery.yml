@@ -166,7 +166,7 @@ jobs:
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/django:${{ github.sha }},ghcr.io/modularhistory/django:latest
     - name: Build image without cache
-      if: ${{ steps.build.outcome == 'failure' }}
+      if: ${{ 'django' == 'react' || steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
         build-args: |
@@ -269,7 +269,7 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
     - name: Build image without cache
-      if: ${{ steps.build.outcome == true }}
+      if: ${{ 'react' == 'react' || steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
         build-args: |
@@ -388,7 +388,7 @@ jobs:
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/webserver:${{ github.sha }},ghcr.io/modularhistory/webserver:latest
     - name: Build image without cache
-      if: ${{ steps.build.outcome == 'failure' }}
+      if: ${{ 'webserver' == 'react' || steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
         build-args: |

@@ -59,7 +59,7 @@ runs:
     -
       name: Build image without cache
       # https://github.com/docker/build-push-action/issues/449
-      if: ${{ steps.build.outcome == 'failure' || inputs.image == 'react' }}
+      if: ${{ inputs.image == 'react' || steps.build.outcome == 'failure' }}
       uses: docker/build-push-action@v2
       with:
         build-args: |
