@@ -61,6 +61,8 @@ def relativize(path: str):
     return join('.', path)
 
 
+
+
 def sync(
     local_dir: str,
     remote_dir: str,
@@ -87,11 +89,9 @@ def sync(
         # https://rclone.org/flags/
         f'--config {join(settings.CONFIG_DIR, "rclone/rclone.conf")} '
         f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
-        f'--order-by="size,ascending" --progress'
-    )
-    # https://rclone.org/drive/#standard-options
-    command = (
-        f"{command} --drive-service-account-credentials='{credentials}' "
+        f'--order-by="size,ascending" --progress '
+        # https://rclone.org/drive/#standard-options
+        f"--drive-service-account-credentials='{credentials}' "
         '--drive-use-trash=false'
     )
     if push:
