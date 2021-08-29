@@ -108,21 +108,19 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        python-version: [ 3.9 ]
         image: [ django, react, webserver ]
     environment: test
     steps:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: ${{ matrix.python-version }}
         environment: test
     - includes: ./.github/actions/build
       with:
         os: ${{ runner.os }}
         image: ${{ matrix.image }}
-        push: true
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
+        push: true
 
   test-backend:
     name: Run backend integration tests
