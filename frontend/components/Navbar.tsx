@@ -2,7 +2,7 @@ import { Divider } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -69,7 +69,7 @@ const WrappedNavLink: FC<GlobalMenuItemWithoutSubmenuItems> = ({
   }
 };
 
-type WrappedNavDropdownProps = Pick<GlobalMenuItem, "title" | "submenuItems">;
+type WrappedNavDropdownProps = Required<Pick<GlobalMenuItem, "title" | "submenuItems">>;
 
 const WrappedNavDropdown: FC<WrappedNavDropdownProps> = ({
   title,
@@ -95,12 +95,12 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
   // TODO: Create session type and remove this cast to `any`.
   const [session, loading] = useSession() as any;
 
-  const login = (e) => {
+  const login: MouseEventHandler = (e) => {
     e.preventDefault();
     handleLogin(router);
   };
 
-  const logout = (e) => {
+  const logout: MouseEventHandler = (e) => {
     e.preventDefault();
     handleLogout(session);
   };

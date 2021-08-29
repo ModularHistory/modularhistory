@@ -1,7 +1,15 @@
-import Autocomplete from "@material-ui/core/Autocomplete";
+import Autocomplete, { AutocompleteProps } from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/styles";
-import React, { FC, useContext, useRef, useEffect, useState, useCallback } from "react";
+import React, {
+  FC,
+  useContext,
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  SyntheticEvent,
+} from "react";
 import { SearchFormContext } from "./SearchForm";
 import axios, { AxiosRequestConfig, CancelToken } from "axios";
 import { throttle } from "throttle-debounce";
@@ -31,8 +39,8 @@ interface InstantSearchProps {
   label: string;
   name: string;
   getDataForInput: (input: string, config: AxiosRequestConfig) => Promise<Option[]>;
-  getInitialValue: (ids: number[]) => Promise<Option[]>;
-  labelKey?: string;
+  getInitialValue: (ids: (string | number)[]) => Promise<Option[]>;
+  labelKey: string;
   idKey?: string;
   minimumSearchLength?: number;
   throttleDelay?: number;
@@ -62,14 +70,14 @@ const InstantSearch: FC<InstantSearchProps> = ({
   throttleDelay = 250,
 }: InstantSearchProps) => {
   const classes = useStyles();
-  const { state, setState, disabled } = useContext(SearchFormContext);
-  const [options, setOptions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const { formState, setFormState, disabled } = useContext(SearchFormContext);
+  const [options, setOptions] = useState<Option[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   // load labels for values initially loaded from url parameters
   useEffect(() => {
-    let initialValue: number | number[] = state[name];
+    let initialValue = formState[name] || [];
     if (!Array.isArray(initialValue)) {
       initialValue = [initialValue];
     }
@@ -78,10 +86,10 @@ const InstantSearch: FC<InstantSearchProps> = ({
     getInitialValue(initialValue).then((options) => {
       setSelectedOptions((prevState) => [...prevState, ...options]);
     });
-  }, []); // eslint-disable-line
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleValueChange = (event, values) => {
-    setState((prevState) => ({ ...prevState, [name]: values.map((value) => value[idKey]) }));
+  const handleValueChange = (event: SyntheticEvent, values: Option[]) => {
+    setFormState((prevState) => ({ ...prevState, [name]: values.map((value) => value[idKey]) }));
     setSelectedOptions(values);
   };
 
@@ -102,7 +110,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
     [getDataForInput]
   );
   const cancelTokenSourceRef = useRef(axios.CancelToken.source());
-  const handleInputChange = (event, value) => {
+  const handleInputChange = (event: SyntheticEvent, value: string) => {
     setInputValue(value);
 
     // when input changes, cancel any pending requests
@@ -126,7 +134,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
       noOptionsText={"Type to search"}
       options={[...options, ...selectedOptions]}
       filterOptions={() => options}
-      getOptionLabel={(option) => option[labelKey]}
+      getOptionLabel={(option) => option[labelKey] as string}
       value={selectedOptions}
       onChange={handleValueChange}
       // we do not use strict equality here since ids may be numbers or strings

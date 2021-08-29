@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { AxiosResponse } from "axios";
 import { signIn, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
-import { FC } from "react";
+import { Component, FC } from "react";
 import {
   DiscordLoginButton,
   FacebookLoginButton,
@@ -12,10 +12,10 @@ import {
 } from "react-social-login-buttons";
 
 interface SocialAccountListProps {
-  providers: Provider[];
+  providers: Record<string, Provider>;
   accounts: any[];
 }
-const SOCIAL_LOGIN_BUTTONS = {
+const SOCIAL_LOGIN_BUTTONS: Record<string, typeof GithubLoginButton> = {
   facebook: FacebookLoginButton,
   discord: DiscordLoginButton,
   google: GoogleLoginButton,
@@ -58,22 +58,17 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
   const [_session, _loading] = useSession();
   return (
     <div>
-      {Object.keys(providers).map(
-        (provider, index) =>
-          providers[provider].name != "Credentials" && (
-            <div key={index}>
-              <p>{providers[provider].name}</p>
-              {(accounts.find((account) => account["provider"] === providers[provider].id) && (
+      {Object.entries(providers).map(
+        ([providerKey, provider]) =>
+          provider.name != "Credentials" && (
+            <div key={providerKey}>
+              <p>{provider.name}</p>
+              {(accounts.find((account) => account["provider"] === provider.id) && (
                 <p>
                   Connected (
-                  {
-                    accounts.find((account) => account["provider"] === providers[provider].id)[
-                      "uid"
-                    ]
-                  }
-                  )
+                  {accounts.find((account) => account["provider"] === provider.id)["uid"]})
                 </p>
-              )) || <SocialConnectButton provider={providers[provider]} />}
+              )) || <SocialConnectButton provider={provider} />}
             </div>
           )
       )}

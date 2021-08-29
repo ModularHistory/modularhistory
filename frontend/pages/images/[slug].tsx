@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Image } from "@/interfaces";
+import { Image } from "@/types/modules";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
@@ -25,8 +25,9 @@ const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
 export default ImageDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let image = {};
-  const { slug } = params;
+  let image;
+  let notFound;
+  const { slug } = params || {};
   const body = {
     query: `{
       image(slug: "${slug}") {
@@ -44,24 +45,22 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
   await axiosWithoutAuth
     .post("http://django:8000/graphql/", body)
-    .then((response) => {
-      image = response.data.data.image;
+    .then(({ data }) => {
+      image = data.data.image;
     })
-    .catch(() => {
-      image = null;
+    .catch((error) => {
+      if (error.response.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
-
-  if (!image) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
       image,
     },
+    notFound,
     revalidate: 10,
   };
 };

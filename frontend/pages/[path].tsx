@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { StaticPage as StaticPageType } from "@/interfaces";
+import { StaticPage as StaticPageType } from "@/types/modules";
 import { Container, useMediaQuery } from "@material-ui/core";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -17,7 +17,7 @@ const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
     <Layout title={page.title}>
       <Container style={{ padding: `1.25rem ${isSmall ? "1.25rem" : "5rem"}`, maxWidth: "50rem" }}>
         <h1>{page.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: page["content"] }} />
+        <div dangerouslySetInnerHTML={{ __html: page.content }} />
       </Container>
     </Layout>
   );
@@ -25,8 +25,9 @@ const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
 export default StaticPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let page = {};
-  const { path } = params;
+  let page = null;
+  let notFound = false;
+  const { path } = params || {};
 
   await axios
     // the "extra" slashes around `path` are currently needed to
@@ -34,12 +35,20 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .get(`http://django:8000/api/staticpages//${path}/`)
     .then((response) => {
       page = response.data;
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
 
   return {
     props: {
       page,
     },
+    notFound,
     revalidate: 10,
   };
 };

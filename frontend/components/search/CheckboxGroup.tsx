@@ -1,5 +1,12 @@
-import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from "@material-ui/core";
-import { FC, useContext } from "react";
+import {
+  Checkbox,
+  CheckboxProps,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+} from "@material-ui/core";
+import { ChangeEventHandler, FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 
 interface CheckboxGroupProps {
@@ -22,13 +29,14 @@ interface CheckboxGroupProps {
  */
 const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: CheckboxGroupProps) => {
   // get current input values
-  const { state, setState, disabled } = useContext(SearchFormContext);
+  const { formState, setFormState, disabled } = useContext(SearchFormContext);
 
   // If the current state is not set, default to all options.
   // This is the default behavior expected by the API.
+  const state = formState[name];
   let checkedItems: string[];
-  if (state[name]) {
-    checkedItems = Array.isArray(state[name]) ? state[name] : Array(state[name]);
+  if (state) {
+    checkedItems = (Array.isArray(state) ? state : [state]).map(String);
   } else {
     checkedItems = children.reduce((filtered: string[], item) => {
       if (item.defaultChecked !== false) filtered.push(item.key);
@@ -37,8 +45,8 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: Checkb
   }
 
   // event handler for user input
-  const handleChange = ({ target }) => {
-    if (target.checked) {
+  const handleChange: CheckboxProps["onChange"] = ({ target }, checked) => {
+    if (checked) {
       // add option to selected values
       checkedItems.push(target.name);
     } else {
@@ -46,7 +54,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: Checkb
       const index = checkedItems.findIndex((item) => item === target.name);
       if (index >= 0) checkedItems.splice(index, 1);
     }
-    setState((prevState) => ({ ...prevState, [name]: checkedItems }));
+    setFormState((prevState) => ({ ...prevState, [name]: checkedItems }));
   };
 
   // The component structure below is similar to the demo at

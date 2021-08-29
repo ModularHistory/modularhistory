@@ -2,7 +2,6 @@ import { DJANGO_CSRF_COOKIE_NAME } from "@/auth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { PageTransitionContextProvider } from "@/components/PageTransitionContext";
 import { initializeSentry } from "@/sentry";
-import "@/styles/globals.css";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@material-ui/core/styles";
 import { StylesProvider } from "@material-ui/styles";
 import { NextPage } from "next";
@@ -11,6 +10,7 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
+import "@/styles/globals.css";
 import "../../core/static/styles/base.scss";
 
 initializeSentry();
@@ -43,7 +43,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
+      jssStyles.parentElement?.removeChild(jssStyles);
     }
 
     // Set the Django CSRF cookie if necessary.

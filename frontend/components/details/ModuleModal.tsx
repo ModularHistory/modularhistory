@@ -1,5 +1,5 @@
 import ModuleDetail from "@/components/details/ModuleDetail";
-import { ModuleUnion } from "@/interfaces";
+import { ModuleUnion } from "@/types/modules";
 import {
   Button,
   Dialog,
@@ -44,7 +44,7 @@ const ModuleModal: FC<ModuleModalProps> = (props: ModuleModalProps) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   // TODO: add logic for selecting title based on module type
-  const title = module["title"] || module["name"] || "";
+  const title = module["title"];
 
   return (
     <Dialog open={open} onClose={close} fullScreen={fullScreen} {...dialogProps}>

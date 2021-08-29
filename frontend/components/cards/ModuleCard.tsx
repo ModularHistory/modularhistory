@@ -1,4 +1,4 @@
-import { BaseModule } from "@/interfaces";
+import { BaseModule, Image } from "@/types/modules";
 import { Card } from "@material-ui/core";
 import { CSSProperties, makeStyles } from "@material-ui/styles";
 import { FC, ReactNode } from "react";
@@ -139,11 +139,11 @@ const ModuleCard: FC<ModuleCardProps> = ({
   children,
 }: ModuleCardProps) => {
   const classes = useStyles();
-  let bgImage;
-  if (module.model != "images.image") {
-    bgImage = module.cachedImages?.[0];
+  let bgImage: Image | undefined;
+  if (module.model == "images.image") {
+    bgImage = module as Image;
   } else {
-    bgImage = module;
+    bgImage = module.cachedImages?.[0];
   }
   return (
     <Card

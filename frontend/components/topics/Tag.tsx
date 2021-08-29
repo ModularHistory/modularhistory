@@ -1,4 +1,4 @@
-import { Topic } from "@/interfaces";
+import { Topic } from "@/types/modules";
 import Chip from "@material-ui/core/Chip";
 import { makeStyles } from "@material-ui/styles";
 import Link from "next/link";

@@ -6,9 +6,13 @@ import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
-import { FC, useRef, useState } from "react";
-import { Braintree, HostedField } from "react-braintree-fields";
+import { ErrorInfo, FC, MouseEventHandler, useRef, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { Braintree, HostedField } from "react-braintree-fields";
+import { Exception } from "@sentry/node";
 
 interface DonateProps {
   clientToken: string;
@@ -18,10 +22,10 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   // Set the initial value of tokenize to be an anonymous function that returns null.
   // Subsequently, tokenize is set by the Braintree drop-in component.
   const [tokenize, setTokenizeFunc] = useState(() => {
-    return () => null;
+    return () => Promise.reject(new Error("tokenize function is not yet available"));
   });
   const [cardType, _setCardType] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const [token, setToken] = useState(null);
   const [focusedFieldName, _setFocusedField] = useState("");
   const numberField = useRef();
@@ -31,7 +35,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   const _getToken = () => {
     tokenize().then(setToken).catch(handleError);
   };
-  const handleError = (newError) => {
+  const handleError = (newError: Error) => {
     setError(newError.message || String(newError));
   };
 
@@ -60,7 +64,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   //   }
   // };
 
-  async function makeDonation(e) {
+  const makeDonation: MouseEventHandler = async (e) => {
     e.preventDefault();
     try {
       // Set donor name in localstorage.
@@ -80,7 +84,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   return (
     <Layout title="Donate">
@@ -101,7 +105,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
               // onDataCollectorInstanceReady={onDataCollectorInstanceReady}
               onError={handleError}
               // onCardTypeChange={onCardTypeChange}
-              getNonceRef={ref => setTokenizeFunc(() => ref)} // prettier-ignore
+              getNonceRef={(ref:any) => setTokenizeFunc(() => ref)} // prettier-ignore
               styles={{
                 input: {
                   "font-size": "inherit",

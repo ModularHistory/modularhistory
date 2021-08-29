@@ -2,7 +2,7 @@ import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent, PropsWithChildren, useEffect } from "react";
-import { AUTH_COOKIES } from "../auth";
+import { AUTH_COOKIES } from "@/auth";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 

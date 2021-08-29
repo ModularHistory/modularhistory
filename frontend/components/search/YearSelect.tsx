@@ -15,15 +15,15 @@ const YearSelect: FC<YearSelectProps> = ({ label, name }: YearSelectProps) => {
    * `name` is the query parameter key used in the search API request.
    */
 
-  const { state, setStateFromEvent, disabled } = useContext(SearchFormContext);
+  const { formState, setFormStateFromEvent, disabled } = useContext(SearchFormContext);
 
   // `typeName` is the query param key for the year type (e.g. "CE").
   // TODO: this feature is not yet implemented.
   const typeName = `${name}_type`;
 
   // set default values if not in state
-  const value = state[name] ?? "";
-  const type = state[typeName] ?? "CE";
+  const value = formState[name] ?? "";
+  const type = formState[typeName] ?? "CE";
 
   // https://material-ui.com/api/text-field/
   return (
@@ -35,7 +35,7 @@ const YearSelect: FC<YearSelectProps> = ({ label, name }: YearSelectProps) => {
           InputProps={{ inputProps: { min: 1 } }}
           name={name}
           value={value}
-          onChange={setStateFromEvent}
+          onChange={setFormStateFromEvent}
           disabled={disabled}
         />
       </Grid>
@@ -44,7 +44,7 @@ const YearSelect: FC<YearSelectProps> = ({ label, name }: YearSelectProps) => {
           select
           name={typeName}
           value={type}
-          onChange={setStateFromEvent}
+          onChange={setFormStateFromEvent}
           disabled={disabled}
         >
           {["CE", "BCE", "YBP"].map((opt) => (
