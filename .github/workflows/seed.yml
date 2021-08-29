@@ -105,7 +105,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: poetry run invoke setup.write-dotenv-file --environment=dev
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
