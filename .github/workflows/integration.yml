@@ -671,7 +671,10 @@ jobs:
       run: |
         shopt -s expand_aliases
         alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
-        compose pull --include-deps -q django react webserver && compose up -d webserver
+        echo "Pulling images for version $SHA ..."
+        compose pull --include-deps -q django react webserver
+        echo "Starting containers ...
+        compose up -d webserver
         healthy=false; timeout=100; interval=10; waited=0
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
