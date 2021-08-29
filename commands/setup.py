@@ -275,7 +275,12 @@ def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool =
     stdout = io.StringIO()
     with redirect_stdout(stdout):
         values = dotenv_values(destination_file)
-    assert not 'failed to parse' in stdout.getvalue()
+    error_warning = re.search(
+        r'could not parse statement starting at line (\d+)', stdout.getvalue()
+    )
+    if error_warning:
+        failed_line_number = error_warning.group(1)
+        raise ValueError(f'Failed to parse line {failed_line_number}.')
     if dry:
         context.run(f'cat {destination_file} && rm {destination_file}')
         print(f'Parsed values: {pformat(values)}')
