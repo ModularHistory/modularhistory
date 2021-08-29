@@ -177,7 +177,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [ chrome, firefox ]
+        browser: [ chrome ]
         container: [ 1, 2 ]
       max-parallel: 4
     continue-on-error: true

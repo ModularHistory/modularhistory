@@ -1,13 +1,13 @@
-import { Button, CircularProgress } from "@material-ui/core";
+import { Button, ButtonProps, CircularProgress } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { FC, MouseEventHandler, useContext, useEffect } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 
-interface SearchButtonProps {
+interface SearchButtonProps extends Partial<ButtonProps> {
   onClick: MouseEventHandler;
 }
 
-const SearchButton: FC<SearchButtonProps> = ({ onClick }: SearchButtonProps) => {
+const SearchButton: FC<SearchButtonProps> = ({ onClick, ...childProps }: SearchButtonProps) => {
   // A button with "Search" label.
   // The label changes to "Loading" with a circular progress indicator when a page transition occurs.
   // All props are passed along to the Mui Button.
@@ -39,6 +39,7 @@ const SearchButton: FC<SearchButtonProps> = ({ onClick }: SearchButtonProps) => 
       size={"large"}
       disabled={isLoading}
       onClick={onClick}
+      {...childProps}
     >
       {buttonText}
     </Button>
