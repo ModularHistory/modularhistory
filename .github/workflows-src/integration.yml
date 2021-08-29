@@ -209,7 +209,9 @@ jobs:
     - name: Fetch data
       if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
       run: |
-        test -w .init || exit 1
+        test -w .init || {
+          echo "Cannot write in .init directory."; exit 1
+        }
         rclone --help &>/dev/null || {
           curl https://rclone.org/install.sh | sudo bash 
         } || exit 1
