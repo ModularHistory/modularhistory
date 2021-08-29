@@ -208,7 +208,9 @@ jobs:
     - name: Fetch data
       if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
       run: |
-        rclone --help &>/dev/null || curl https://rclone.org/install.sh | bash
+        rclone --help &>/dev/null || {
+          curl https://rclone.org/install.sh | sudo bash 
+        } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
       if: always()
