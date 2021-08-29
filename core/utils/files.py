@@ -92,8 +92,6 @@ def sync(
         f"--drive-service-account-credentials='{credentials}' "
         '--drive-use-trash=false'
     )
-    if os.getenv('SUDO') == 1:
-        command = f'sudo {command}'
     if push:
         command = f'{command} --drive-stop-on-upload-limit'
         context.run(f'echo "" && {command} --dry-run; echo ""')
