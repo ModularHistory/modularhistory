@@ -89,7 +89,7 @@ services:
   
   cypress:
     environment:
-      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
     # share the current folder as volume to avoid copying
     working_dir: /e2e
     volumes:

@@ -12,4 +12,4 @@ services:
   
   cypress:
     environment:
-      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
