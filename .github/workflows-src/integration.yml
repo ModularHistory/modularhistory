@@ -206,7 +206,7 @@ jobs:
       run: |
         shopt -s expand_aliases
         alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
-        # echo "Starting containers with version $SHA ..."
+        echo "Starting containers with version $SHA ..."
         compose up -d webserver; compose logs; echo ""; compose ps
         [[ ! "$(compose ps)" =~ webserver ]] && exit 1
         healthy=false; timeout=300; interval=20; waited=0
