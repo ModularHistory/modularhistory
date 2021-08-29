@@ -83,7 +83,6 @@ jobs:
     needs: get-changed-files
     if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'setup.sh') }}
     strategy:
-      max-parallel: 3
       matrix:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
@@ -102,13 +101,14 @@ jobs:
       run: bash setup.sh
       shell: bash
 
-  build-django:
-    name: Build Django image
+  build-image:
+    name: Build image
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
       matrix:
         python-version: [ 3.9 ]
+        image: [ django, react, webserver ]
     environment: test
     steps:
     - 
@@ -116,66 +116,14 @@ jobs:
       with:
         os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
-    -
-      name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
+        environment: test
     - 
       includes: ./.github/actions/build
       with:
         os: ${{ runner.os }}
-        image: django
+        image: ${{ matrix.image }}
         push: true
-        tags: ghcr.io/modularhistory/django:${{ github.sha }}
-
-  build-react:
-    name: Build React image
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 3
-      matrix:
-        python-version: [ 3.9 ]
-    environment: test
-    steps:
-    - 
-      includes: ./.github/actions/setup
-      with:
-        os: ${{ runner.os }}
-        python-version: ${{ matrix.python-version }}
-    -
-      name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
-    - 
-      includes: ./.github/actions/build
-      with:
-        os: ${{ runner.os }}
-        image: react
-        push: true
-        tags: ghcr.io/modularhistory/react:${{ github.sha }}
-
-  build-webserver:
-    name: Build webserver image
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 3
-      matrix:
-        python-version: [ 3.9 ]
-    environment: test
-    steps:
-    - 
-      includes: ./.github/actions/setup
-      with:
-        os: ${{ runner.os }}
-        python-version: ${{ matrix.python-version }}
-    -
-      name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
-    - 
-      includes: ./.github/actions/build
-      with:
-        os: ${{ runner.os }}
-        image: webserver
-        push: true
-        tags: ghcr.io/modularhistory/webserver:${{ github.sha }}
+        tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
 
   test-backend:
     name: Run backend integration tests
@@ -222,7 +170,7 @@ jobs:
 
   test-frontend:
     name: Run e2e tests
-    needs: [build-django, build-react, build-webserver]
+    needs: [build-image]
     environment: test
     env:
       ENVIRONMENT: test
