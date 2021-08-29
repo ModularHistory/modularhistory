@@ -7,6 +7,7 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
+import scrubadub
 from celery import shared_task
 from celery_singleton import Singleton
 from django.conf import settings
@@ -69,17 +70,24 @@ def backup(
         with open(backup_filepath, 'w') as processed_backup:
             previous_line = ''  # falsy and compatible with `startswith`
             for line in unprocessed_backup:
-                discard_conditions = [
-                    line == '\n' and re.match(r'(\n|--\n)', previous_line),
-                    re.match(r'(.*DROP\ |--\n?$)', line),
+                discard = (
                     # fmt: off
-                    redact and not line.startswith(r'\.') and re.match(
-                        r'COPY public\.(users_user|.+user_id|silk_)', previous_line
-                    )
+                    (line == '\n' and re.match(r'(\n|--\n)', previous_line)) or
+                    re.match(r'(.*DROP\ |--\n?$)', line) or
+                    (redact and not line.startswith(r'\.') and re.match(
+                        r'COPY public\.(silk_)', previous_line
+                    ))
                     # fmt: on
-                ]
-                if any(discard_conditions):
+                )
+                if discard:
                     continue
+                scrub = (
+                    redact
+                    and not line.startswith(r'\.')
+                    and re.match(r'COPY public\.(users_user)', previous_line)
+                )
+                if scrub:
+                    line = scrubadub.clean(line, replace_with='identifier')
                 processed_backup.write(line)
                 previous_line = line
     context.run(f'rm {temp_file}')

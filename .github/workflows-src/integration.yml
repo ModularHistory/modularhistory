@@ -61,7 +61,7 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }} 
 
 jobs:
-  get-changed-files:
+  changed-files:
     name: Get changed files
     runs-on: ubuntu-latest
     outputs:
@@ -78,7 +78,7 @@ jobs:
       # https://github.com/tj-actions/changed-files
       uses: tj-actions/changed-files@v1.0.1
 
-  test-setup-script:
+  setup-script:
     name: Test setup script
     needs: get-changed-files
     if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'setup.sh') }}
@@ -102,7 +102,7 @@ jobs:
       run: bash setup.sh
       shell: bash
 
-  build-image:
+  build:
     name: Build image
     runs-on: ubuntu-latest
     strategy:
@@ -122,7 +122,7 @@ jobs:
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
         push: true
 
-  test-backend:
+  pytest:
     name: Run backend integration tests
     runs-on: ubuntu-latest
     strategy:
@@ -166,7 +166,7 @@ jobs:
     - name: Run tests
       run: poetry run invoke test --no-docker
 
-  test-frontend:
+  e2e:
     name: Run e2e tests
     needs: [build-image]
     environment: test
@@ -200,6 +200,14 @@ jobs:
             sudo chmod g+w -R "$writable_dir"
           } || exit 1
         done
+    - uses: actions/cache@v2
+      id: data-cache
+      with:
+        path: .init
+        key: data
+    - name: Fetch data
+      if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
+      run: poetry run invoke db.seed --remote
     - name: Start up containers
       if: always()
       shell: bash
