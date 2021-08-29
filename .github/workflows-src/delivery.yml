@@ -116,7 +116,7 @@ jobs:
         fetch-depth: 0
         environment: prod
     - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-dotenv-file
     - name: Deploy images to server
       id: deploy-image
       run: |

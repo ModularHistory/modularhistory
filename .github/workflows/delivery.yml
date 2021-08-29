@@ -138,9 +138,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+      run: poetry run invoke setup.write-dotenv-file --environment=prod
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
@@ -239,11 +237,9 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
     - name: Create .env file
-      run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+      run: poetry run invoke setup.write-dotenv-file --environment=prod
     - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-dotenv-file
     - name: Deploy images to server
       id: deploy-image
       run: |

@@ -1,9 +1,11 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
+import io
 import json
 import logging
 import os
 import re
+from contextlib import redirect_stdout
 from datetime import datetime
 from glob import iglob
 from os.path import join
@@ -228,8 +230,9 @@ def update_git_hooks(context: 'Context'):
 
 
 @command
-def write_env_file(context: 'Context', environment: str = 'prod', dry: bool = False):
+def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool = False):
     """Write a .env file."""
+    print(f'Creating a .env file for {environment} environment...')
     destination_file = '.env'
     dry_destination_file = '.env.tmp'
     config_dir = settings.CONFIG_DIR
@@ -266,8 +269,15 @@ def write_env_file(context: 'Context', environment: str = 'prod', dry: bool = Fa
     with open(destination_file, 'w') as env_file:
         for var_name, var_value in sorted(env_vars.items()):
             env_file.write(f'{var_name}={var_value}\n')
+    # If possible, lint the dotenv file.
+    context.run('dotenv-linter --help &>/dev/null && dotenv-linter')
     # Confirm dotenv can load values.
-    values = dotenv_values(destination_file)
+    stdout = io.StringIO()
+    with redirect_stdout(stdout):
+        values = dotenv_values(destination_file)
+    assert not 'failed to parse' in stdout.getvalue()
     if dry:
         context.run(f'cat {destination_file} && rm {destination_file}')
         print(f'Parsed values: {pformat(values)}')
+    else:
+        print('Done.')
