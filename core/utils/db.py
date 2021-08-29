@@ -21,6 +21,7 @@ from core.constants.misc import (
     RcloneStorageProviders,
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
+from core.environment import IS_DEV
 from core.utils import files
 
 DAYS_TO_KEEP_BACKUP = 7
@@ -283,14 +284,15 @@ def seed(
     sleep(15)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
-    email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-    context.run(
-        "docker-compose run django_helper bash -c '"
-        'python manage.py createsuperuser --no-input '
-        f'--username={email} --email={email} &>/dev/null'
-        "'",
-        pty=True,
-    )
+    if IS_DEV:
+        email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+        context.run(
+            "docker-compose run django_helper bash -c '"
+            'python manage.py createsuperuser --no-input '
+            f'--username={email} --email={email} &>/dev/null'
+            "'",
+            pty=True,
+        )
     if up:
         context.run('docker-compose up -d dev')
 
