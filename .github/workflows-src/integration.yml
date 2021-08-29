@@ -222,8 +222,10 @@ jobs:
 
   test-frontend:
     name: Run e2e tests
-    environment: test
     needs: [build-django, build-react, build-webserver]
+    environment: test
+    env:
+      ENVIRONMENT: test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -236,7 +238,6 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        environment: test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:

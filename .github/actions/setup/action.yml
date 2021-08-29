@@ -16,10 +16,6 @@ inputs:
     description: 'Fetch depth'
     required: false
     default: 1
-  environment:
-    description: 'Environment (e.g., "dev" or "prod")'
-    required: false
-    default: "prod"
 
 runs:
   # https://github.com/mithro/actions-includes
@@ -83,5 +79,5 @@ runs:
     # Write a .env file.
     - name: Create .env file
       run: |
-        echo "Creating a .env file for ${{ inputs.environment }} environment..."
-        poetry run invoke setup.write-env-file --environment ${{ inputs.environment }}
+        echo "Creating a .env file for $ENVIRONMENT environment..."
+        poetry run invoke setup.write-env-file --environment $ENVIRONMENT
