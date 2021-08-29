@@ -445,11 +445,11 @@ jobs:
         # echo "Starting containers with version $SHA ..."
         compose up -d webserver && compose ps
         [[ ! "$(compose ps)" =~ webserver ]] && exit 1
-        healthy=false; timeout=200; interval=10; waited=0
+        healthy=false; timeout=200; interval=20; waited=0
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
           if [[ "$healthy" = false ]]; then 
-            echo "Waiting for containers (${waited}s) ...";
+            compose logs; echo ""; echo "Waiting for containers (${waited}s) ...";
             sleep $interval; waited=$((waited + interval));
             if [[ $waited -gt $timeout ]]; then 
               echo "Timed out."; compose logs; exit 1
