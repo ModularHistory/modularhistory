@@ -481,7 +481,7 @@ fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed --no-env-file && echo "Finished seeding." || {
+  poetry run invoke seed --no-dotenv-file && echo "Finished seeding." || {
     _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "

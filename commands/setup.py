@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 NEWLINE = '\n'
 GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
-SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
+SEEDS = {'dotenv-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
 HOSTS_FILEPATH = '/etc/hosts'
 WSL_HOSTS_FILEPATH = '/mnt/c/Windows/System32/drivers/etc/hosts'
 
@@ -91,7 +91,7 @@ def dispatch_and_get_workflow(context: 'Context', session: Session, email: str) 
     return workflow_runs[0]
 
 
-def seed_env_file(context: 'Context', username: str, pat: str):
+def seed_dotenv_file(context: 'Context', username: str, pat: str):
     """Acquire a .env file."""
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
@@ -124,7 +124,7 @@ def seed_env_file(context: 'Context', username: str, pat: str):
             'Failed to complete workflow: '
             f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}'
         )
-    seed_name, dest_filepath = 'env-file', '.env'
+    seed_name, dest_filepath = 'dotenv-file', '.env'
     for artifact in artifacts:
         artifact_name = artifact['name']
         if artifact_name != seed_name:
@@ -168,13 +168,13 @@ def seed(
     username: Optional[str] = None,
     pat: Optional[str] = None,
     db: bool = True,
-    env_file: bool = True,
+    dotenv_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
-    env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
+    dotenv_file = dotenv_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     db = db and input('Seed database? [Y/n] ') != NEGATIVE
-    if env_file:
-        seed_env_file(context, username, pat)
+    if dotenv_file:
+        seed_dotenv_file(context, username, pat)
     if db:
         # Pull the db init file from remote storage and seed the db.
         db_utils.seed(context, remote=True, migrate=True)
@@ -266,9 +266,9 @@ def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool =
             var_value = f'"{var_value}"'
         env_vars[var_name] = var_value
     destination_file = dry_destination_file if dry else destination_file
-    with open(destination_file, 'w') as env_file:
+    with open(destination_file, 'w') as dotenv_file:
         for var_name, var_value in sorted(env_vars.items()):
-            env_file.write(f'{var_name}={var_value}\n')
+            dotenv_file.write(f'{var_name}={var_value}\n')
     # If possible, lint the dotenv file.
     context.run('dotenv-linter --help &>/dev/null && dotenv-linter')
     # Confirm dotenv can load values.

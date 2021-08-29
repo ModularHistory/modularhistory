@@ -18,7 +18,7 @@ env:
   ENVIRONMENT: dev
   SHA: latest
 jobs:
-  env_file:
+  dotenv_file:
     runs-on: ubuntu-latest
     environment: dev
     env:
@@ -109,6 +109,6 @@ jobs:
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
-        name: env-file
+        name: dotenv-file
         path: .env
         retention-days: 1
