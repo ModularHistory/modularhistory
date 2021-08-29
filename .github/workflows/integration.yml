@@ -86,7 +86,7 @@ jobs:
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v1.0.1
-  test-setup:
+  test-setup-script:
     name: Test setup script
     needs: get-changed-files
     if: ${{ contains(needs.get-changed-files.outputs.modified-files, 'setup.sh') }}
@@ -155,8 +155,8 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+        echo "Creating a .env file for dev environment..."
+        poetry run invoke setup.write-env-file --environment=dev
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -342,8 +342,8 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+        echo "Creating a .env file for test environment..."
+        poetry run invoke setup.write-env-file --environment=test
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -419,8 +419,8 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+        echo "Creating a .env file for test environment..."
+        poetry run invoke setup.write-env-file --environment=test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
@@ -542,8 +542,8 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+        echo "Creating a .env file for test environment..."
+        poetry run invoke setup.write-env-file --environment=test
     - name: Cache type stubs
       id: cache-stubs
       uses: actions/cache@v2

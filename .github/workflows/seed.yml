@@ -106,8 +106,8 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        echo "Creating a .env file for prod environment..."
-        poetry run invoke setup.write-env-file --environment=prod
+        echo "Creating a .env file for dev environment..."
+        poetry run invoke setup.write-env-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
