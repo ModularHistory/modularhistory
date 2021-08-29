@@ -351,7 +351,7 @@ jobs:
       run: poetry run invoke test --no-docker
   e2e:
     name: Run e2e tests
-    needs: [build-image]
+    needs: [build]
     environment: test
     env:
       ENVIRONMENT: test
