@@ -212,7 +212,7 @@ jobs:
         rclone --help &>/dev/null || {
           curl https://rclone.org/install.sh | sudo bash 
         } || exit 1
-        sudo poetry run invoke db.seed --remote
+        SUDO=1 poetry run invoke db.seed --remote
     - name: Start up containers
       shell: bash
       run: |
