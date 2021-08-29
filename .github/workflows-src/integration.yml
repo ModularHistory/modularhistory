@@ -222,14 +222,12 @@ jobs:
           fi
         done; compose ps
     - name: Run Cypress
-      if: always()
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         # Pass the GitHub token to determine the unique run id necessary to re-run the checks.
         # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
-        docker-compose -f docker-compose.yml -f docker-compose.test.yml ps;
         docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress
         --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
         --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY
