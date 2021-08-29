@@ -448,7 +448,7 @@ jobs:
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false;
           if [[ "$healthy" = false ]]; then 
-            compose logs; echo ""; compose ps; echo "";
+            compose logs --tail 100; echo ""; compose ps; echo "";
             echo "Waiting for containers (${waited}s) ..."; echo "";
             sleep $interval; waited=$((waited + interval));
             if [[ $waited -gt $timeout ]]; then 
