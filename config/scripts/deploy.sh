@@ -16,14 +16,18 @@ echo "Pulling images..."
 compose pull --include-deps -q django react webserver || {
     echo "Failed to pull required images."; exit 1
 }
-echo "" && echo "Restarting server..."
+echo "" && echo "Stopping containers..."
 compose down --remove-orphans
-# Start up the containers.
-compose up -d webserver; compose ps; compose up -d webserver
-compose logs; echo ""
+echo "" && echo "Restarting containers..."
+compose up -d webserver
+echo "" && compose ps
+echo "" && compose logs
+echo ""
 healthy=false; timeout=300; interval=20; waited=0
 while [[ "$healthy" = false ]]; do
-    healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+    healthy=true
+    [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+    [[ ! "$(compose ps)" =~ webserver ]] && healthy=false && compose up -d webserver
     if [[ "$healthy" = false ]]; then 
         compose logs --tail 20; echo ""; compose ps; echo ""
         echo "Waiting for containers (${waited}s) ..."; echo ""
@@ -32,7 +36,8 @@ while [[ "$healthy" = false ]]; do
             echo "Timed out."; compose logs; exit 1
         fi
     fi
-done; compose ps
+done
+compose ps
 [[ ! "$(compose ps)" =~ webserver ]] && exit 1
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
 docker image prune -a -f
