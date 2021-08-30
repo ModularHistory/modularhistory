@@ -8,6 +8,7 @@ from apps.entities.views import EntityCategorySearchView, EntitySearchView
 from apps.moderation.admin.moderated_model import ModeratedModelAdmin
 from apps.search import models
 from apps.topics.views import TagSearchView
+from apps.users.views import UserSearchView
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -103,6 +104,11 @@ class SearchableModelAdmin(ModeratedModelAdmin):
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='tag_search',
+            ),
+            path(
+                'user_search/',
+                self.admin_site.admin_view(UserSearchView.as_view(model_admin=self)),
+                name='user_search',
             ),
             path(
                 'collection_search/',

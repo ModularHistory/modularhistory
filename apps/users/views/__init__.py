@@ -7,3 +7,4 @@ from .password import (
     PasswordResetView,
 )
 from .profile import ProfileView
+from .search import UserSearchView
