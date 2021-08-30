@@ -511,14 +511,14 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up -d dev && echo 'Finished.' || {
+docker-compose up -d webserver && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. 
     Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker-compose up -d dev
+      ${BOLD}cd ~/modularhistory && docker-compose up -d webserver
 
   "
 }

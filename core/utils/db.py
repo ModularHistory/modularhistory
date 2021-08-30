@@ -294,7 +294,7 @@ def seed(
             pty=True,
         )
     if up:
-        context.run('docker-compose up -d dev')
+        context.run('docker-compose up -d webserver')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):
