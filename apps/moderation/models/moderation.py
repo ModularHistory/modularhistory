@@ -89,7 +89,7 @@ class Moderation(models.Model):
             else 'reviewed'
         )
         subject = f'Change was {passive_verb}'
-        if moderator.handle:
+        if moderator:
             subject = f'{subject} by {moderator.handle}'
         message_body_html = render_to_string(
             'moderation/moderation_notification_body.html', ctx

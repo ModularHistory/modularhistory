@@ -13,7 +13,7 @@ The change you contributed to
 The change you moderated 
 {% endif %}
 for "{% firstof content_object.title content_object %}" was 
-{% if moderation.is_rejection %}rejected{% elif moderation.is_approval %}accepted{% else %}reviewed{% endif %}{% if moderation.moderator %} by <a href="{{ protocol }}://{{ site.domain }}/users/{{ moderation.moderator.handle }}/">@{{ moderation.moderator.handle }}</a>{% endif %}.
+{% if moderation.is_rejection %}rejected{% elif moderation.is_approval %}accepted{% else %}reviewed{% endif %}{% if moderation.moderator %} by <a href="{{ protocol }}://{{ site.domain }}/users/{{ moderator.handle }}/">@{{ moderator.handle }}</a>{% endif %}.
 </p>
 
 {% if moderation.reason %}
