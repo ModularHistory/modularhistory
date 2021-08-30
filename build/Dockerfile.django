@@ -81,3 +81,6 @@ EXPOSE 8000
 
 # Switch from root to non-root user.
 USER www-data
+
+# Specify the default command to run when the container is started.
+CMD /bin/bash /modularhistory/config/scripts/init/django.sh

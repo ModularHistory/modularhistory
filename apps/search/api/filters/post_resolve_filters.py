@@ -63,13 +63,11 @@ class SortByFilterBackend(filters.BaseFilterBackend):
         default_score = 1.0  # The max score is 1.0 when there is no query.
         highest_score = view.search._response.hits.max_score or 0
         score_sortable = query and highest_score > default_score
-        print(f'{view.search._response.hits.max_score=}')
         sort_by = score_sorter
         reverse = True
         if sort_by_date or not score_sortable:
             sort_by = date_sorter
             reverse = False
-        print(f'>>> {sort_by}')
         return sorted(queryset, key=sort_by, reverse=reverse)
 
 

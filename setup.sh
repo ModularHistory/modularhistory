@@ -399,6 +399,9 @@ rclone version &>/dev/null || {
 }
 mkdir -p "$HOME/config/rclone"
 
+# Install dotenv linter.
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin
+
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
   echo "Disabling THP ..."
@@ -478,7 +481,7 @@ fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed --no-env-file && echo "Finished seeding." || {
+  poetry run invoke seed --no-dotenv-file && echo "Finished seeding." || {
     _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "

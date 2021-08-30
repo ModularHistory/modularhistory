@@ -10,8 +10,12 @@ services:
   celery:
     command: bash config/scripts/init/celery.sh
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      django:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -24,7 +28,7 @@ services:
       timeout: 30s
       interval: 30s
       retries: 3
-      start_period: 20s
+      start_period: 30s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
@@ -39,10 +43,12 @@ services:
   celery_beat:
     command: bash config/scripts/init/celery_beat.sh
     depends_on:
-      - celery
-      - django
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -57,10 +63,12 @@ services:
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
-      - celery
-      - postgres
-      - redis
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -76,8 +84,8 @@ services:
         ]
       timeout: 7s
       interval: 30s
-      retries: 2
-      start_period: 30s
+      retries: 3
+      start_period: 60s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
@@ -167,6 +175,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     image: postgres
     networks:
       default:
@@ -184,7 +193,7 @@ services:
         condition: on-failure
     env_file: .env
     environment:
-      NEXTAUTH_URL: "https://modularhistory.com"
+      NEXTAUTH_URL_INTERNAL: "http://react:3000"
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
@@ -244,6 +253,8 @@ services:
   webserver:
     depends_on:
       - django
+      - celery
+      - celery_beat
       - react
     deploy:
       restart_policy:
@@ -258,12 +269,22 @@ services:
     volumes:
       - ./_media:/modularhistory/_media
       - ./_static:/modularhistory/_static
-      - ./config/nginx/prod:/etc/nginx/conf.d
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
     networks:
       default:
         ipv4_address: 172.27.0.5
+  
+  cypress:
+    # https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:7.1.0"
+    depends_on:
+      webserver:
+        condition: service_healthy
+    environment:
+      - CYPRESS_baseUrl=https://www.modularhistory.com/
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
 
 networks:
   default:

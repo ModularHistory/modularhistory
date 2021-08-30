@@ -1,7 +1,6 @@
 """Base model classes for ModularHistory."""
 
 import logging
-from pprint import pformat
 from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Sequence, Type
 
 import regex
@@ -68,7 +67,7 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     objects: 'Manager' = ModuleManager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: Type[Serializer]
+    serializer: Type[Serializer] = ModuleSerializer
     placeholder_regex: Optional[str] = None
     slug_base_fields: Sequence[str] = ('title',)
 
@@ -175,16 +174,7 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
-        try:
-            serialized_instance = self.serializer(self).data
-        except AttributeError as err:
-            logging.error(f'{err}')
-            serialized_instance = ModuleSerializer(self).data
-        logging.debug(
-            f'Serialized {self.__class__.__name__.lower()}:\n'
-            f'{pformat(serialized_instance)}'
-        )
-        return serialized_instance
+        return self.serializer(self).data
 
     @classmethod
     def get_object_html(

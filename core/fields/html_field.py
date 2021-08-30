@@ -163,9 +163,16 @@ class HTMLField(TextField):
             html = self._clean(html, model_instance=model_instance)
         except Exception as err:
             raise ValidationError(f'{err}')
-        return html
+        return html or ''
 
     def pre_save(self, model_instance: 'ExtendedModel', add: bool) -> str:
+        """
+        Modify the value immediately before saving.
+
+        This is necessary for cases in which the `clean` method is not called; e.g.,
+        if the value is modified and saved programmatically (rather than through the
+        use of a model form in the Django admin site).
+        """
         value: str = getattr(model_instance, self.attname, '')
         try:
             value = self._clean(value, model_instance=model_instance)
@@ -242,10 +249,14 @@ class HTMLField(TextField):
         Including HTML in the placeholders (1) improves readability when editing
         and (2) reduces time to process search results.
         """
+        soup = soupify(html)
+        referenced_modules = soup.find_all('module')
+        for referenced_module in referenced_modules:
+            print(referenced_module)
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
-                model_cls = import_string(model_cls_str)
+                model_cls: Type['ExtendedModel'] = import_string(model_cls_str)
                 for match in model_cls.get_admin_placeholder_regex().finditer(html):
                     if match.group(PlaceholderGroups.MODEL_NAME) != content_type:
                         logging.error(

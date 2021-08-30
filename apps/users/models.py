@@ -91,6 +91,12 @@ class User(AbstractUser):
         """Return a string representation of the user."""
         return self.name or self.username
 
+    def save(self, *args, **kwargs):
+        """Save the user data to the db."""
+        if not self.handle:
+            self.handle = handlify(self.get_handle_base())
+        super().save(*args, **kwargs)
+
     @property
     def name(self) -> str:
         """Return the user's name."""

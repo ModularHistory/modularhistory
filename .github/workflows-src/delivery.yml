@@ -38,8 +38,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
   IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
-  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
   POSTGRES_DB: modularhistory
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -65,9 +63,12 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 
 jobs:
-  push-django:
+  push-image:
     environment: prod
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [ django, react, webserver ]
     services:
       postgres:
         image: postgres:12
@@ -82,78 +83,19 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
-    - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
+        environment: prod
     - includes: ./.github/actions/build
       with:
         os: ${{ runner.os }}
-        image: django
+        image: ${{ matrix.image }}
         push: true
         environment: prod
-
-  push-react:
-    environment: prod
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-    - includes: ./.github/actions/setup
-      with:
-        os: ${{ runner.os }}
-        python-version: 3.9
-        # Fetch entire history so we can analyze commits since last tag.
-        fetch-depth: 0
-    - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
-    - includes: ./.github/actions/build
-      with:
-        os: ${{ runner.os }}
-        image: react
-        push: true
-        environment: prod  
-    
-  push-webserver:
-    environment: prod
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-    - includes: ./.github/actions/setup
-      with:
-        os: ${{ runner.os }}
-        python-version: 3.9
-        # Fetch entire history so we can analyze commits since last tag.
-        fetch-depth: 0
-    - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
-    - includes: ./.github/actions/build
-      with:
-        os: ${{ runner.os }}
-        image: webserver
-        push: true
-        environment: prod
+        tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }},ghcr.io/modularhistory/${{ matrix.image }}:latest
   
   deploy:
-    needs: [push-django, push-react, push-webserver]
+    needs: [push-image]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -170,11 +112,11 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
+        environment: prod
     - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file
+      run: poetry run invoke setup.write-dotenv-file
     - name: Deploy images to server
       id: deploy-image
       run: |
@@ -184,7 +126,7 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r ./.env ./docker-compose.yml ./config modularhistory@$SERVER:~/
+        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r ./.env ./docker-compose.yml ./docker-compose.prod.yml ./config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} modularhistory@$SERVER << 'ENDSSH'
           echo "" && echo "Setting environment variables..."

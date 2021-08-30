@@ -1,6 +1,6 @@
 """Serializers for the account app."""
 
-from rest_framework.serializers import BooleanField, ModelSerializer
+from rest_framework.serializers import ModelSerializer
 
 from apps.users.models import SocialAccount, User
 

@@ -14,7 +14,7 @@ env:
   SHA: latest
 
 jobs:
-  env_file:
+  dotenv_file:
     runs-on: ubuntu-latest
     environment: dev
     env:
@@ -34,8 +34,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
       SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
       SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
@@ -53,13 +51,12 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
         environment: dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
-        name: env-file
+        name: dotenv-file
         path: .env
         retention-days: 1

@@ -22,10 +22,10 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
       break;
     case "propositions.proposition":
-      content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
       break;
     case "quotes.quote": {
       content = (

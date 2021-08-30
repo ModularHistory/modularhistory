@@ -10,21 +10,22 @@ inputs:
     required: true
   python-version:
     description: 'Python version'
-    required: true
+    required: false
+    default: 3.9
   fetch-depth:
     description: 'Fetch depth'
     required: false
     default: 1
   environment:
-    description: 'Environment (e.g., "dev" or "prod")'
+    description: 'Environment ("prod", "test", or "dev")'
     required: false
-    default: ""
+    default: 'prod'
 
 runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
   steps:
-    # Check out.
+    # Check out source code.
     - name: Check out main branch
       uses: actions/checkout@v2.3.4
       with:
@@ -51,6 +52,7 @@ runs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
+      # https://github.com/snok/install-poetry
       uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
@@ -79,19 +81,8 @@ runs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    # Load cached node_modules dir, if it exists.
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ inputs.os }}-${{ hashFiles('**/package-lock.json') }}
-    # Install node modules if necessary.
-    - name: Install JavaScript dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
-      run: |
-        cd frontend
-        npm ci
-        cd ..
+    # Write a .env file.
     - name: Create .env file
-      run: echo "${{ inputs.environment }}" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }}

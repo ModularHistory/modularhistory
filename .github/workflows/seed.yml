@@ -18,7 +18,7 @@ env:
   ENVIRONMENT: dev
   SHA: latest
 jobs:
-  env_file:
+  dotenv_file:
     runs-on: ubuntu-latest
     environment: dev
     env:
@@ -38,8 +38,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
       SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
       SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
@@ -106,23 +104,13 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
-      run: echo "dev" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
-        name: env-file
+        name: dotenv-file
         path: .env
         retention-days: 1

@@ -76,3 +76,5 @@ HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
 
 # Switch from root to non-root user.
 USER www-data
+
+CMD npm run start
