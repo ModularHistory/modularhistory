@@ -18,6 +18,7 @@ compose pull --include-deps -q django react webserver || {
 }
 echo "" && echo "Restarting server..."
 compose down --remove-orphans
+# Start up the containers.
 compose up -d webserver; compose ps; compose up -d webserver
 compose logs; echo ""
 healthy=false; timeout=300; interval=20; waited=0
