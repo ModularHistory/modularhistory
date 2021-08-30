@@ -13,12 +13,10 @@ from apps.moderation.models.changeset.model import ChangeSet
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
     from django.forms import ModelForm
     from django.forms.formsets import BaseFormSet as FormSet
     from django.http import HttpRequest
 
-    from apps.moderation.models.moderated_model import ModeratedModel
     from core.models.relations.moderated import ModeratedRelation
 
 
@@ -34,6 +32,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     def get_model_cls(
         self, obj: Optional['ModeratedModel'] = None
     ) -> Optional[Type['ModeratedModel']]:
+        """Return the class of the moderated model."""
         if obj is not None:
             return obj.__class__
         return getattr(self, 'model', None)
@@ -47,7 +46,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
             model_cls = self.get_model_cls(obj)
             if model_cls:
                 excluded_fields = list(
-                    set([*model_cls.Moderation.excluded_fields, *excluded_fields])
+                    set(*model_cls.Moderation.excluded_fields, *excluded_fields)
                 )
             print(excluded_fields)
         return excluded_fields
@@ -107,7 +106,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         # or create a new `Change` instance.
         if self.admin_integration_enabled:
             formset.save(commit=False)
-            relations_queryset: 'QuerySet' = formset.queryset
+            # relations_queryset: 'QuerySet' = formset.queryset
             parent_change: Change = (
                 instance.change_in_progress
                 if instance.has_change_in_progress
