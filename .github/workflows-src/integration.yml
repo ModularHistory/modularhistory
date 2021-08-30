@@ -77,7 +77,7 @@ jobs:
     - name: Get changed files
       id: changed-files
       # https://github.com/tj-actions/changed-files
-      uses: tj-actions/changed-files@v1.0.1
+      uses: tj-actions/changed-files@v9.3
 
   setup-script:
     name: Test setup script

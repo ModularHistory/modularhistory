@@ -55,10 +55,10 @@ class ChangeAdmin(admin.ModelAdmin):
         ContributorFilter,
     )
     ordering = [
-        'updated_date',
-        'created_date',
         'moderation_status',
         'n_remaining_approvals_required',
+        'updated_date',
+        'created_date',
     ]
     search_fields = ['changed_object']
     change_form_template = 'moderation/changes/moderate_change.html'
