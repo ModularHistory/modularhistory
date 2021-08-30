@@ -18,8 +18,8 @@ compose pull --include-deps -q django react webserver || {
 }
 echo "" && echo "Restarting server..."
 compose down --remove-orphans
-compose up -d webserver || echo "Trying again..."; compose up -d webserver
-compose logs; echo ""; compose ps
+compose up -d webserver; compose ps; compose up -d webserver
+compose logs; echo ""
 healthy=false; timeout=300; interval=20; waited=0
 while [[ "$healthy" = false ]]; do
     healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
