@@ -51,7 +51,7 @@ class EntityAdmin(SearchableModelAdmin):
         EntityTypeFilter,
     ]
     ordering = ['name', 'birth_date']
-    readonly_fields = SearchableModelAdmin.readonly_fields + ['title', 'slug']
+    readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = ['name', 'aliases']
 
 

@@ -10,6 +10,3 @@ class DatedModelAdmin(ExtendedModelAdmin):
     """Model admin for searchable models."""
 
     model: Type['DatedModel']
-
-    exclude = ['cache']
-    readonly_fields = ['pretty_cache']
