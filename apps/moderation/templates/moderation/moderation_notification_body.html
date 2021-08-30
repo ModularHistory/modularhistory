@@ -22,8 +22,14 @@ Reason: {{ moderation.reason }}
 </p>
 {% endif %}
 
+{% if moderation.is_approval and change.n_remaining_approvals_required %}
 <p>
-{% if moderation.absolute_url %}
-You can view the current status of the change here: {{ moderation.absolute_url }}
-{% endif %}
+The change requires <b>{{ change.n_remaining_approvals_required }}</b> additional approvals.
 </p>
+{% endif %}
+
+{% if moderation.absolute_url %}
+<p>
+You can view the current status of the change here: {{ moderation.absolute_url }}
+</p>
+{% endif %}
