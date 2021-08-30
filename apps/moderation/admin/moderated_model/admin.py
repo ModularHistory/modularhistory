@@ -34,7 +34,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     def get_model_cls(
         self, obj: Optional['ModeratedModel'] = None
     ) -> Optional[Type['ModeratedModel']]:
-        if obj:
+        if obj is not None:
             return obj.__class__
         return getattr(self, 'model', None)
 
