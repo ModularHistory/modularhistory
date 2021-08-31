@@ -1,5 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
+import InstantSearch from "@/components/search/InstantSearch";
 import { Container, Grid, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
@@ -21,7 +22,6 @@ import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
-import InstantSearch from "@/components/search/InstantSearch";
 
 interface SearchFormState {
   formState: Record<string, string | number | (string | number)[] | undefined>;
@@ -182,11 +182,11 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
           <Grid item xs={12} sm={sm}>
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {{ label: "Occurrences", key: "propositions.occurrence" }}
-              {{ label: "Quotes", key: "quotes.quote" }}
-              {{ label: "Images", key: "images.image", defaultChecked: false }}
-              {{ label: "Sources", key: "sources.source" }}
-              {{ label: "Entities", key: "entities.entity" }}
+              {{ label: "Occurrences", key: "occurrences" }}
+              {{ label: "Quotes", key: "quotes" }}
+              {{ label: "Images", key: "images", defaultChecked: false }}
+              {{ label: "Sources", key: "sources" }}
+              {{ label: "Entities", key: "entities" }}
             </CheckboxGroup>
           </Grid>
 
