@@ -208,9 +208,8 @@ MIDDLEWARE = [
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # Memory profiler
