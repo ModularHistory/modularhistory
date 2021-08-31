@@ -44,7 +44,6 @@ class AbstractChange(models.Model):
         REJECTED = ModerationStatus.REJECTED, _('Rejected')
         PENDING = ModerationStatus.PENDING, _('Pending')
         APPROVED = ModerationStatus.APPROVED, _('Approved')
-        MERGED = ModerationStatus.MERGED, _('Merged')
 
     initiator = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
