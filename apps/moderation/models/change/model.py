@@ -160,11 +160,6 @@ class Change(AbstractChange):
         """Return a boolean reflecting whether the change has been approved."""
         return self.moderation_status in (ModerationStatus.APPROVED, ModerationStatus.MERGED)
 
-    @property
-    def is_merged(self) -> bool:
-        """Return a boolean reflecting whether the change has been merged."""
-        return self.moderation_status == ModerationStatus.MERGED
-
     def get_n_remaining_approvals_required(self) -> int:
         """Return the number of remaining approvals required before the change is applied."""
         if self.is_approved:

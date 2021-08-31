@@ -77,7 +77,9 @@ class TestModeration:
         handle_approval(relation_approval.pk)
         change.refresh_from_db()
         relation_change.refresh_from_db()
-        assert change.is_merged, f'{change.n_remaining_approvals_required=}'
-        assert relation_change.is_merged, f'{relation_change.n_remaining_approvals_required=}'
+        assert change.merged_date, f'{change.n_remaining_approvals_required=}'
+        assert (
+            relation_change.merged_date
+        ), f'{relation_change.n_remaining_approvals_required=}'
         assert p.topic_relations.exists()
         assert p.topic_relations.first().topic == topic
