@@ -197,7 +197,9 @@ class Change(AbstractChange):
 
         Return a boolean reflecting whether the change was applied successfully.
         """
-        if self.is_approved:
+        if self.requires_rebase:
+            raise Exception(f'{self} cannot be applied because it requires rebasing.')
+        elif self.is_approved:
             # Draft state should already be set to "ready".
             self.draft_state = DraftState.READY
             try:
