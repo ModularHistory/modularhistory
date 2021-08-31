@@ -9,7 +9,6 @@ class ModerationStatus(Constant):
     REJECTED = 0
     PENDING = 1
     APPROVED = 2
-    MERGED = 3
 
 
 class DraftState(Constant):

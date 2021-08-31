@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import DraftState, ModerationStatus
@@ -114,7 +115,7 @@ class Change(AbstractChange):
     @property
     def is_approved(self) -> bool:
         """Return a boolean reflecting whether the change has been approved."""
-        return self.moderation_status in (ModerationStatus.APPROVED, ModerationStatus.MERGED)
+        return self.moderation_status == ModerationStatus.APPROVED
 
     @property
     def unchanged_object(self) -> 'ModeratedModel':
@@ -208,7 +209,7 @@ class Change(AbstractChange):
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
                     model_instance.save()
-                    self.moderation_status = ModerationStatus.MERGED
+                    self.merged_date = timezone.now()
                     self.save()
             except Exception as err:
                 logging.error(err)
