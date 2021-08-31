@@ -121,13 +121,13 @@ class Change(AbstractChange):
         `changed_object` value of the change that was applied immediately before this one.
         """
         if self.merged_date:
-            previously_merged_change: Optional[Change] = self.get_previously_merged_change()
+            previously_merged_change: Optional['Change'] = self.get_previously_merged_change()
             if previously_merged_change:
                 return previously_merged_change.changed_object
         return self.content_object
 
     @property
-    def get_previously_merged_change(self) -> Optional[Change]:
+    def get_previously_merged_change(self) -> Optional['Change']:
         """
         Return the latest-merged change preceding this one, or None.
 
