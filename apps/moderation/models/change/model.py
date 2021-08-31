@@ -198,8 +198,10 @@ class Change(AbstractChange):
         Return a boolean reflecting whether the change was applied successfully.
         """
         parent: Optional['Change'] = self.parent
-        if self.requires_rebase or (parent and parent.requires_rebase):
-            raise Exception(f'{self} cannot be applied because it requires rebasing.')
+        if self.requires_rebase:
+            raise Exception(f'{self} cannot be applied; it requires rebasing.')
+        elif parent and parent.requires_rebase:
+            raise Exception(f'{self} cannot be applied; its parent change requires rebasing.')
         elif self.is_approved:
             # Draft state should already be set to "ready".
             self.draft_state = DraftState.READY
