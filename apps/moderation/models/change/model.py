@@ -214,7 +214,7 @@ class Change(AbstractChange):
                 logging.error(err)
                 return False
             # Update other changes that require rebasing on this one.
-            Change.objects.filter(
+            self.__class__.objects.filter(
                 content_type=self.content_type,
                 object_id=self.object_id,
                 merged_date__isnull=True,
