@@ -18,7 +18,6 @@ from .manager import ChangeManager
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
-    from apps.moderation.models.change import Change
     from apps.moderation.models.change.queryset import ChangeQuerySet
     from apps.moderation.models.moderated_model import ModeratedModel
     from apps.users.models import User
