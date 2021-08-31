@@ -6,13 +6,11 @@ import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
-import { ErrorInfo, FC, MouseEventHandler, useRef, useState } from "react";
-import axiosWithoutAuth from "../../axiosWithoutAuth";
-
+import { FC, MouseEventHandler, useRef, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Braintree, HostedField } from "react-braintree-fields";
-import { Exception } from "@sentry/node";
+import axiosWithoutAuth from "../../axiosWithoutAuth";
 
 interface DonateProps {
   clientToken: string;

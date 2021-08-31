@@ -1,23 +1,26 @@
+import "@/../core/static/styles/base.scss";
 import { DJANGO_CSRF_COOKIE_NAME } from "@/auth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { PageTransitionContextProvider } from "@/components/PageTransitionContext";
 import { initializeSentry } from "@/sentry";
+import "@/styles/globals.css";
+import createCache from "@emotion/cache";
+import { CacheProvider, EmotionCache } from "@emotion/react";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@material-ui/core/styles";
-import { StylesProvider } from "@material-ui/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
-import "@/styles/globals.css";
-import "../../core/static/styles/base.scss";
 
 initializeSentry();
 
 const cookies = new Cookies();
 
 const theme = createTheme({});
+
+const clientSideEmotionCache = createCache({ key: "css", prepend: true });
 
 interface SessionKillerProps {
   children: ReactElement;
@@ -34,18 +37,17 @@ const SessionKiller: FC<SessionKillerProps> = ({ children }: SessionKillerProps)
 };
 
 interface ExtendedAppProps extends AppProps {
+  emotionCache: EmotionCache;
   err?: string;
 }
 
-const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps) => {
+const App: NextPage<ExtendedAppProps> = ({
+  Component,
+  pageProps,
+  emotionCache = clientSideEmotionCache,
+  err,
+}: ExtendedAppProps) => {
   useEffect(() => {
-    // Remove the server-side injected CSS.
-    // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
-    }
-
     // Set the Django CSRF cookie if necessary.
     if (!cookies.get(DJANGO_CSRF_COOKIE_NAME)) {
       // Get Django CSRF cookie.
@@ -56,7 +58,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
   }, []);
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         {/*<title>Home | ModularHistory</title>*/}
         <meta charSet="UTF-8" />
@@ -83,16 +85,14 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
         <SessionKiller>
           <PageTransitionContextProvider>
             <StyledEngineProvider injectFirst>
-              <StylesProvider>
-                <ThemeProvider theme={theme}>
-                  <Component {...pageProps} err={err} />
-                </ThemeProvider>
-              </StylesProvider>
+              <ThemeProvider theme={theme}>
+                <Component {...pageProps} err={err} />
+              </ThemeProvider>
             </StyledEngineProvider>
           </PageTransitionContextProvider>
         </SessionKiller>
       </Provider>
-    </>
+    </CacheProvider>
   );
 };
 
