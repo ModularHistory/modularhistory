@@ -7,7 +7,6 @@ import "@/styles/globals.css";
 import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@material-ui/core/styles";
-import { StylesProvider } from "@material-ui/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
@@ -21,7 +20,7 @@ const cookies = new Cookies();
 
 const theme = createTheme({});
 
-const clientSideEmotionCache = createCache({ key: "css" });
+const clientSideEmotionCache = createCache({ key: "css", prepend: true });
 
 interface SessionKillerProps {
   children: ReactElement;
@@ -86,11 +85,9 @@ const App: NextPage<ExtendedAppProps> = ({
         <SessionKiller>
           <PageTransitionContextProvider>
             <StyledEngineProvider injectFirst>
-              <StylesProvider>
-                <ThemeProvider theme={theme}>
-                  <Component {...pageProps} err={err} />
-                </ThemeProvider>
-              </StylesProvider>
+              <ThemeProvider theme={theme}>
+                <Component {...pageProps} err={err} />
+              </ThemeProvider>
             </StyledEngineProvider>
           </PageTransitionContextProvider>
         </SessionKiller>
