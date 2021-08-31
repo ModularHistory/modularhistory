@@ -167,11 +167,11 @@ class Change(AbstractChange):
         """
         Return the latest-merged change preceding this one, or None.
 
-        If this change has been merged:
-            Return the change that was merged immediately before this one.
-
         If this change has not been merged:
             Return the most recently merged change.
+
+        If this change has been merged:
+            Return the change that was merged immediately before this one.
 
         If no changes, excluding this one, have been merged, return None.
         """
