@@ -131,6 +131,23 @@ class Change(AbstractChange):
                 return previously_merged_change.changed_object
         return self.content_object
 
+    def get_initial_object_of_change(self) -> 'ModeratedModel':
+        """
+        Return the object against which this change was initially proposed.
+
+        This can be used for rebasing the change (Change A) on another change (Change B)
+        that was applied to the referenced model instance after Change A was initiated.
+
+        Change A's initial object of change can be compared against the `changed_object`
+        value of Change B. Note: Change B is probably the return value of
+        `change_a.get_previously_merged_change()`.
+        """
+        prior_changes = self.__class__.objects.filter(merged_date__lt=self.created_date)
+        if prior_changes.exists():
+            prior_change: 'Change' = prior_changes.order_by('-merged_date')[0]
+            return prior_change.changed_object
+        return self.content_object
+
     def get_n_remaining_approvals_required(self) -> int:
         """Return the number of remaining approvals required before the change is applied."""
         if self.is_approved:
