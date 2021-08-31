@@ -113,6 +113,11 @@ class Change(AbstractChange):
         return f'Change affecting {self.content_object}'
 
     @property
+    def is_approved(self) -> bool:
+        """Return a boolean reflecting whether the change has been approved."""
+        return self.moderation_status in (ModerationStatus.APPROVED, ModerationStatus.MERGED)
+
+    @property
     def unchanged_object(self) -> 'ModeratedModel':
         """
         Return the object prior to application of the change.
@@ -126,7 +131,19 @@ class Change(AbstractChange):
                 return previously_merged_change.changed_object
         return self.content_object
 
-    @property
+    def get_n_remaining_approvals_required(self) -> int:
+        """Return the number of remaining approvals required before the change is applied."""
+        if self.is_approved:
+            return 0
+        n_required_approvals = self.n_required_approvals
+        latest_moderations = self.moderations.order_by('-date')[:n_required_approvals]
+        for moderation in latest_moderations:
+            if moderation.verdict == ModerationStatus.APPROVED:
+                n_required_approvals -= 1
+            else:
+                break
+        return n_required_approvals
+
     def get_previously_merged_change(self) -> Optional['Change']:
         """
         Return the latest-merged change preceding this one, or None.
@@ -154,24 +171,6 @@ class Change(AbstractChange):
             )[0]
             return previously_merged_change
         return None
-
-    @property
-    def is_approved(self) -> bool:
-        """Return a boolean reflecting whether the change has been approved."""
-        return self.moderation_status in (ModerationStatus.APPROVED, ModerationStatus.MERGED)
-
-    def get_n_remaining_approvals_required(self) -> int:
-        """Return the number of remaining approvals required before the change is applied."""
-        if self.is_approved:
-            return 0
-        n_required_approvals = self.n_required_approvals
-        latest_moderations = self.moderations.order_by('-date')[:n_required_approvals]
-        for moderation in latest_moderations:
-            if moderation.verdict == ModerationStatus.APPROVED:
-                n_required_approvals -= 1
-            else:
-                break
-        return n_required_approvals
 
     def apply(self) -> bool:
         """
