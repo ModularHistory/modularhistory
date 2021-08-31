@@ -146,6 +146,8 @@ class Change(AbstractChange):
         if prior_changes.exists():
             prior_change: 'Change' = prior_changes.order_by('-merged_date')[0]
             return prior_change.changed_object
+        # If there were no changes merged before this change was initiated, we will
+        # assume that the initial object of change is the current content object.
         return self.content_object
 
     def get_n_remaining_approvals_required(self) -> int:
