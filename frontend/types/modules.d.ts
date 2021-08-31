@@ -101,7 +101,7 @@ export interface Topic extends BaseModule {
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
 
-export interface StaticPage {
+export interface FlatPage {
   title: string;
   content: string;
 }

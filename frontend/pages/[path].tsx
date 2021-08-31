@@ -1,15 +1,15 @@
 import Layout from "@/components/Layout";
-import { StaticPage as StaticPageType } from "@/types/modules";
+import { FlatPage as FlatPageType } from "@/types/modules";
 import { Container, useMediaQuery } from "@material-ui/core";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
-interface StaticPageProps {
-  page: StaticPageType;
+interface FlatPageProps {
+  page: FlatPageType;
 }
 
-const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
+const FlatPage: FC<FlatPageProps> = ({ page }: FlatPageProps) => {
   // check if the viewport width is less than 36rem
   const isSmall = useMediaQuery("@media (max-width:36rem)");
 
@@ -22,7 +22,7 @@ const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
     </Layout>
   );
 };
-export default StaticPage;
+export default FlatPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let page = null;
@@ -31,7 +31,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   await axios
     // the "extra" slashes around `path` are currently needed to
-    // match the `url` attribute of the StaticPage model.
+    // match the `url` attribute of the FlatPage model.
     .get(`http://django:8000/api/staticpages//${path}/`)
     .then((response) => {
       page = response.data;
