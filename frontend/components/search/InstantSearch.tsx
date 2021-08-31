@@ -1,18 +1,18 @@
-import Autocomplete, { AutocompleteProps } from "@material-ui/core/Autocomplete";
+import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/styles";
+import axios, { AxiosRequestConfig } from "axios";
 import React, {
   FC,
-  useContext,
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
   SyntheticEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import { SearchFormContext } from "./SearchForm";
-import axios, { AxiosRequestConfig, CancelToken } from "axios";
 import { throttle } from "throttle-debounce";
+import { SearchFormContext } from "./SearchForm";
 
 const useStyles = makeStyles({
   root: {
@@ -126,7 +126,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
   };
 
   // https://next.material-ui.com/components/autocomplete/
-  console.log("autocomplete render");
   return (
     <Autocomplete
       multiple
