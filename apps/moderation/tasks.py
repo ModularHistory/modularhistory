@@ -15,14 +15,21 @@ def handle_approval(approval_id: int):
     """Post-process an approval."""
     approval: Approval = Approval.objects.get(pk=approval_id)
     change: 'Change' = approval.change
-    n_remaining_approvals_required = change.get_n_remaining_approvals_required()
+    # If the change was force-approved by a superuser, update
+    # `n_remaining_approvals_required` to 0; otherwise, get the remaining number
+    # of approvals required before the moderation status is to be updated.
+    if change.moderation_status == ModerationStatus.APPROVED:
+        n_remaining_approvals_required = 0
+    else:
+        n_remaining_approvals_required = change.get_n_remaining_approvals_required()
     if n_remaining_approvals_required != change.n_remaining_approvals_required:
         change.n_remaining_approvals_required = n_remaining_approvals_required
         change.save()
+    # If `n_remaining_approvals_required` is 0, apply the change.
     if change.n_remaining_approvals_required == 0:
-        # The change has enough approvals; update its status to "approved"
-        # and set the `verified` field on the changed object.
+        # Update moderation status to "approved".
         change.moderation_status = ModerationStatus.APPROVED
+        # Set `verified=True` on the changed object.
         changed_object: 'ModeratedModel' = change.changed_object
         changed_object.verified = True
         change.save()
