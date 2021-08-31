@@ -262,8 +262,9 @@ def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool =
         if not match:
             continue
         var_name, var_value = match.group(1), match.group(2)
-        if '=' in var_value and not re.match(r'"[^"]+"$', var_value):
-            var_value = f'"{var_value}"'
+        is_wrapped = re.match(r'"[^"]+"$', var_value) or re.match(r"'[^']+'$", var_value)
+        if '=' in var_value and not is_wrapped:
+            var_value = f'"{var_value}"' if not '"' in var_value else f"'{var_value}'"
         env_vars[var_name] = var_value
     destination_file = dry_destination_file if dry else destination_file
     with open(destination_file, 'w') as dotenv_file:

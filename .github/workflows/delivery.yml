@@ -242,8 +242,6 @@ jobs:
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=prod
-    - name: Inject environment vars
-      run: poetry run invoke setup.write-dotenv-file
     - name: Deploy images to server
       id: deploy-image
       run: |

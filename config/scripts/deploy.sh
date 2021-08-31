@@ -13,22 +13,32 @@ echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
     echo "GHCR login failed."; exit 1
 }
 echo "Pulling images..."
-compose pull --include-deps django react webserver || {
+compose pull --include-deps -q django react webserver || {
     echo "Failed to pull required images."; exit 1
 }
-echo "" && echo "Restarting server..."
+echo "" && echo "Stopping containers..."
 compose down --remove-orphans
-containers=( "django" "celery_beat" "react" "webserver" )
-for container in "${containers[@]}"; do
-    compose up -d "$container"
-done
-sleep 10
-healthy=false
+echo "" && echo "Restarting containers..."
+compose up -d webserver
+echo "" && compose ps
+echo "" && compose logs
+echo ""
+healthy=false; timeout=300; interval=20; waited=0
 while [[ "$healthy" = false ]]; do
     healthy=true
     [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
-    if [[ "$healthy" = false ]]; then echo "Waiting for containers to be healthy..."; sleep 20; fi
+    [[ ! "$(compose ps)" =~ webserver ]] && healthy=false && compose up -d webserver
+    if [[ "$healthy" = false ]]; then 
+        compose logs --tail 20; echo ""; compose ps; echo ""
+        echo "Waiting for containers (${waited}s) ..."; echo ""
+        sleep $interval; waited=$((waited + interval))
+        if [[ $waited -gt $timeout ]]; then 
+            echo "Timed out."; compose logs; exit 1
+        fi
+    fi
 done
+compose ps
+[[ ! "$(compose ps)" =~ webserver ]] && exit 1
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
 docker image prune -a -f
 docker system prune -f

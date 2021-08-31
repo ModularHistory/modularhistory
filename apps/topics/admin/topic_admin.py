@@ -1,8 +1,9 @@
 from django.urls import path
 
-from apps.admin import ExtendedModelAdmin, admin_site
+from apps.admin import admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.boolean_filters import HasRelationFilter
+from apps.moderation.admin.moderated_model.admin import ModeratedModelAdmin
 from apps.topics import models
 from apps.topics.admin.inlines import TopicRelationsInline
 from apps.topics.views import TagSearchView
@@ -25,7 +26,7 @@ class HasParentFilter(HasRelationFilter):
     relation = 'parent'
 
 
-class TopicAdmin(ExtendedModelAdmin):
+class TopicAdmin(ModeratedModelAdmin):
     """Admin for topics."""
 
     model = models.Topic
@@ -34,7 +35,7 @@ class TopicAdmin(ExtendedModelAdmin):
     inlines = [
         TopicRelationsInline,
     ]
-    exclude = ['key', 'cache']
+    exclude = ['key', 'cache', 'related_topics']
     list_display = [
         'name',
         'aliases',
@@ -46,7 +47,7 @@ class TopicAdmin(ExtendedModelAdmin):
     list_filter = [RelatedTopicFilter, HasParentFilter]
     list_per_page = 25
     ordering = ['name', 'path']
-    readonly_fields = ['pretty_cache', 'slug', 'path']
+    readonly_fields = ['path']
     search_fields = [
         'name',
         'aliases',

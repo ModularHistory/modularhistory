@@ -19,7 +19,7 @@ def forwards_func(apps, schema_editor):
             r'src="\g<1>" loading="lazy"',
             elaboration,
         )
-        elaboration = re.sub(r'"(\.\.\/)+', '"/', p.elaboration)
+        elaboration = re.sub(r'"(\.\.\/)+', '"/', elaboration)
         elaboration = re.sub(
             r'<figure>(<img [^>]+(style="max-width: \d+px); )',
             r'<figure \g<2>">\g<1>',

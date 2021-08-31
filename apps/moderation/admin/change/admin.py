@@ -57,6 +57,7 @@ class ChangeAdmin(admin.ModelAdmin):
     ordering = [
         'updated_date',
         'created_date',
+        'moderation_status',
         'n_remaining_approvals_required',
     ]
     search_fields = ['changed_object']
