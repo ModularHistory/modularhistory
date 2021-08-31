@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Optional, Type, Union
 
+from django.apps import apps
 from django.db.models import Model
 from django.db.models.base import ModelBase
 from django.template import loader
@@ -52,18 +53,13 @@ def deserialize_model(serialized_model: Optional[Dict[str, str]]) -> Optional[Mo
     """
     Accepts a serialized django.db.models.Model class and returns the class.
     """
-    from django.apps import apps
-
     if not serialized_model:
         return None
-
     app = serialized_model.get('app')
     model = serialized_model.get('model')
-
-    if not (app and model):
-        return None
-
-    return apps.get_model(app, model)
+    if app and model:
+        return apps.get_model(app, model)
+    return None
 
 
 def serialize_model_instance(instance: Optional[Model]) -> Optional[Dict[str, str]]:
@@ -115,7 +111,7 @@ def has_been_indexed_since(instance: Model, *, timestamp: Optional[datetime]):
         return False
     if not timestamp and instance.indexed_at:
         return True
-    if type(timestamp) == str:
+    if isinstance(timestamp, str):
         timestamp = dateparse.parse_datetime(timestamp)
     return instance.indexed_at > timestamp
 
