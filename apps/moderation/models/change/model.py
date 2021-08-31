@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
+from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.fields import SerializedObjectField
@@ -95,6 +96,13 @@ class Change(AbstractChange):
         blank=True,
     )
 
+    # Boolean reflecting whether the change needs to be rebased on a preceding change.
+    requires_rebase = models.BooleanField(
+        verbose_name=_('requires rebase'),
+        editable=False,
+        default=False,
+    )
+
     # `merged_date` must be set automatically when change is applied to the moderated
     # model instance and the moderation status is updated from "approved" to "merged".
     merged_date = models.DateTimeField(null=True, blank=True, editable=False)
@@ -109,23 +117,43 @@ class Change(AbstractChange):
         """
         Return the object prior to application of the change.
 
-        If the change has not yet been saved to the moderated model instance,
-        then the `unchanged_object` is simply the moderated model instance.
-
-        If the change has already been applied, regardless of whether additional
-        changes have been applied since the time this change was applied, the
-        value of `unchanged_object` is the `changed_object` value of the
-        change that immediately preceded this one.
+        If the change has already been applied, the value of `unchanged_object` is the
+        `changed_object` value of the change that was applied immediately before this one.
         """
         if self.merged_date:
-            prior_change: Change = Change.objects.filter(
-                content_type=self.content_type,
-                object_id=self.object_id,
-                moderation_status=ModerationStatus.MERGED,
-                merged_date__lt=self.merged_date,
-            ).order_by('-merged_date')[0]
-            return prior_change.changed_object
+            previously_merged_change: Optional[Change] = self.get_previously_merged_change()
+            if previously_merged_change:
+                return previously_merged_change.changed_object
         return self.content_object
+
+    @property
+    def get_previously_merged_change(self) -> Optional[Change]:
+        """
+        Return the latest-merged change preceding this one, or None.
+
+        If this change has been merged:
+            Return the change that was merged immediately before this one.
+
+        If this change has not been merged:
+            Return the most recently merged change.
+
+        If no changes, excluding this one, have been merged, return None.
+        """
+        previously_merged_change_kwargs = {
+            'content_type': self.content_type,
+            'object_id': self.object_id,
+        }
+        if self.merged_date:
+            previously_merged_change_kwargs['merged_date__lt'] = self.merged_date
+        else:
+            previously_merged_change_kwargs['merged_date__isnull'] = False
+        previously_merged_changes = Change.objects.filter(**previously_merged_change_kwargs)
+        if previously_merged_changes.exists():
+            previously_merged_change: Change = previously_merged_changes.order_by(
+                '-merged_date'
+            )[0]
+            return previously_merged_change
+        return None
 
     @property
     def is_approved(self) -> bool:
@@ -168,6 +196,12 @@ class Change(AbstractChange):
             except Exception as err:
                 logging.error(err)
                 return False
+            # Update other changes that require rebasing on this one.
+            Change.objects.filter(
+                content_type=self.content_type,
+                object_id=self.object_id,
+                merged_date__isnull=True,
+            ).exclude(pk=self.pk).update(requires_rebase=True)
             return True
         logging.error(f'Ignored request to apply unapproved change: {self}')
         return False
