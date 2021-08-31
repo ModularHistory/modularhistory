@@ -228,12 +228,22 @@ class Change(AbstractChange):
         self,
         moderator: Optional['User'] = None,
         reason: Optional[str] = None,
+        force: bool = False,
     ) -> Moderation:
-        """Add an approval."""
+        """
+        Add an approval to the change.
+
+        By default, this does not change the moderation status of the change
+        until the total number of approvals reaches the required number of
+        approvals (`n_required_approvals`). However, if the moderator is a
+        superuser and `force=True` is specified, the moderation status is
+        immediately updated to APPROVED, and the change is applied.
+        """
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
             moderator=moderator,
             reason=reason,
+            force=force,
         )
         self.constituent_changes.all().approve(moderator=moderator, reason=reason)
         handle_approval.delay(approval.pk)
@@ -244,6 +254,7 @@ class Change(AbstractChange):
         verdict: int,
         moderator: Optional['User'] = None,
         reason: Optional[str] = None,
+        force: bool = False,
     ) -> Moderation:
         """Moderate the change."""
         if verdict not in self._ModerationStatus.values:
@@ -254,6 +265,9 @@ class Change(AbstractChange):
             verdict=verdict,
             reason=reason,
         )
+        if force:
+            self.moderation_status = verdict
+            self.save()
         return moderation
 
     def reject(

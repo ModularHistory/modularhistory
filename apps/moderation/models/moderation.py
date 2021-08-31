@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -67,6 +67,7 @@ class Moderation(models.Model):
         """Notify users of the moderation."""
         # TODO: ensure the notification is only sent once per moderation
         change: 'Change' = self.change
+        moderator: Optional['User'] = self.moderator
         contributors: 'QuerySet[User]' = change.contributors.all()
         moderators: 'QuerySet[User]' = change.moderators.all()
         # https://docs.djangoproject.com/en/dev/ref/models/querysets/#union
@@ -75,10 +76,12 @@ class Moderation(models.Model):
         protocol = 'https' if IS_PROD else 'http'
         ctx = {
             'moderation': self,
+            'moderator': moderator,
+            'change': change,
             'content_object': change.content_object,
+            'content_type': change.content_type,
             'site': site,
             'protocol': protocol,
-            'content_type': change.content_type,
         }
         passive_verb = (
             self.ModerationOutcome(self.verdict).label.lower()
@@ -86,6 +89,8 @@ class Moderation(models.Model):
             else 'reviewed'
         )
         subject = f'Change was {passive_verb}'
+        if moderator:
+            subject = f'{subject} by {moderator.handle}'
         message_body_html = render_to_string(
             'moderation/moderation_notification_body.html', ctx
         )
