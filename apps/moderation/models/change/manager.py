@@ -24,4 +24,5 @@ class ChangeManager(Manager):
             object_id=instance.pk,
             content_type=ContentType.objects.get_for_model(instance.__class__),
             moderation_status__gt=ModerationStatus.REJECTED,
-        ).exclude(moderation_status=ModerationStatus.MERGED)[0]
+            merged_date__isnull=True,
+        )[0]

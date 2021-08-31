@@ -33,9 +33,9 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         self, obj: Optional['ModeratedModel'] = None
     ) -> Optional[Type['ModeratedModel']]:
         """Return the class of the moderated model."""
-        if obj is not None:
-            return obj.__class__
-        return getattr(self, 'model', None)
+        if obj is None:
+            return getattr(self, 'model', None)
+        return obj.__class__  # type: ignore
 
     def get_exclude(
         self, request: 'HttpRequest', obj: Optional['ModeratedModel']

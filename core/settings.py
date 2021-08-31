@@ -178,7 +178,6 @@ INSTALLED_APPS = [
     'apps.topics.apps.TopicsConfig',
     'apps.trees.apps.TreesConfig',
     'apps.users.apps.UsersConfig',
-    'apps.verifications.apps.VerificationsConfig',
 ]
 
 MIDDLEWARE = [
