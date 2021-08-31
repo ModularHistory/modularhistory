@@ -4,7 +4,6 @@ import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
-import { AxiosResponse } from "axios";
 import { FC, FormEventHandler, useState } from "react";
 
 interface PasswordChangeFormProps {
