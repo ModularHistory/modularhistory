@@ -5,7 +5,7 @@ import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
-interface FlatPageProps {
+export interface FlatPageProps {
   page: FlatPageType;
 }
 

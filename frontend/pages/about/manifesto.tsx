@@ -1,14 +1,10 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { FlatPage } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import axios from "axios";
 import { GetStaticProps } from "next";
 import { FC } from "react";
-
-interface FlatPageProps {
-  page: FlatPage;
-}
+import { FlatPageProps } from "../[path]";
 
 const Manifesto: FC<FlatPageProps> = ({ page }: FlatPageProps) => {
   return (
