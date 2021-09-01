@@ -199,7 +199,7 @@ class HTMLField(TextField):
         soup = soupify(html, features='html.parser')
         for deletion in DELETIONS:
             try:
-                soup.find(deletion).decompose()
+                soup.find(*deletion).decompose()
             except AttributeError:  # no match
                 pass
         return str(soup)
