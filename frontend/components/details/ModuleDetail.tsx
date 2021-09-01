@@ -23,6 +23,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     case "entities.entity":
     case "entities.person":
     case "entities.organization":
+    case "entities.group":
       details = <EntityDetail entity={module} />;
       break;
     case "images.image":

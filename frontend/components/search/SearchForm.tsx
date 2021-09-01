@@ -1,8 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
 import InstantSearch from "@/components/search/InstantSearch";
-import { Container, Grid, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Container, Grid } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
@@ -70,24 +70,22 @@ interface SearchFormProps {
   inSidebar?: boolean;
 }
 
-const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
-  root: {
-    paddingTop: "20px",
-    maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
-    "& input": {
-      backgroundColor: "white",
-    },
-    "& .MuiTextField-root": {
-      backgroundColor: "white",
-    },
-    "& .MuiRadio-root, & .MuiCheckbox-root": {
-      marginBottom: "-9px",
-      marginTop: "-9px",
-    },
-    // to prevent hidden search button when navbar is visible
-    "&:last-child": { marginBottom: "50px" },
+const StyledContainer = styled(Container)({
+  paddingTop: "20px",
+  // maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
+  "& input": {
+    backgroundColor: "white",
   },
-}));
+  "& .MuiTextField-root": {
+    backgroundColor: "white",
+  },
+  "& .MuiRadio-root, & .MuiCheckbox-root": {
+    marginBottom: "-9px",
+    marginTop: "-9px",
+  },
+  // to prevent hidden search button when navbar is visible
+  "&:last-child": { marginBottom: "50px" },
+});
 
 /**
  * A component for an advanced/full search form.
@@ -96,7 +94,6 @@ const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
  *    If false, the inputs may be rendered side-by-side.
  */
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
-  const classes = useStyles({ inSidebar });
   const router = useRouter();
   const formContext = useSearchFormState();
 
@@ -113,7 +110,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
   return (
     <SearchFormContext.Provider value={formContext}>
-      <Container className={classes.root}>
+      <StyledContainer>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={sm}>
             <TextField
@@ -194,7 +191,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <SearchButton onClick={submitForm} />
           </Grid>
         </Grid>
-      </Container>
+      </StyledContainer>
     </SearchFormContext.Provider>
   );
 };
