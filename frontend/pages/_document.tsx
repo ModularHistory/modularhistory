@@ -13,7 +13,7 @@ class Document extends BaseDocument {
     // Render app and page and get the context of the page with collected side effects.
     const originalRenderPage = ctx.renderPage;
 
-    const cache = createCache({ key: "css", prepend: true });
+    const cache = createCache({ key: "css" });
     const { extractCriticalToChunks } = createEmotionServer(cache);
 
     ctx.renderPage = () =>

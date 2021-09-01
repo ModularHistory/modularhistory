@@ -10,15 +10,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
-import { makeStyles } from "@material-ui/styles";
 import { GetServerSideProps } from "next";
 import { FC } from "react";
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
 
 interface SourcesProps {
   sourcesData: {
@@ -29,7 +22,6 @@ interface SourcesProps {
 
 const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
   const sources = sourcesData["results"] || [];
-  const classes = useStyles();
 
   return (
     <Layout title={"Sources"}>
@@ -37,7 +29,12 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
         <PageHeader>Sources</PageHeader>
         <Pagination count={sourcesData.totalPages} />
         <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="source table">
+          <Table
+            sx={{
+              minWidth: 650,
+            }}
+            aria-label="source table"
+          >
             <TableBody>
               {sources.map((source) => (
                 <TableRow key={source.slug}>
