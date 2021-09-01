@@ -32,7 +32,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   await axios
     // the "extra" slashes around `path` are currently needed to
     // match the `url` attribute of the FlatPage model.
-    .get(`http://django:8000/api/staticpages//${path}/`)
+    .get(`http://django:8000/api/flatpages//${path}/`)
     .then((response) => {
       page = response.data;
     })

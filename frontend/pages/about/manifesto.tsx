@@ -11,9 +11,9 @@ interface FlatPageProps {
 
 const Manifesto: FC<FlatPageProps> = ({ content }: FlatPageProps) => {
   return (
-    <Layout title={"Mission"}>
+    <Layout title={"Manifesto"}>
       <Container>
-        <PageHeader>Mission</PageHeader>
+        <PageHeader>Manifesto</PageHeader>
         <div dangerouslySetInnerHTML={{ __html: content }} />
       </Container>
     </Layout>
