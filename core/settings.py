@@ -208,7 +208,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
+    # 'apps.flatpages.middleware.FlatPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
