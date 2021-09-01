@@ -3,12 +3,12 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
-import SearchForm from "@/components/search/SearchForm";
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Box, Container, Drawer, useMediaQuery } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import qs from "qs";
 import {
@@ -20,6 +20,10 @@ import {
   useEffect,
   useState,
 } from "react";
+
+const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
+  ssr: false,
+});
 
 const SliderToggle = styled("button")({
   border: "2px solid black !important",
@@ -70,7 +74,7 @@ const EmptySearchResults: FC = () => (
         There are no results for your search. Please try a different search.
       </p>
       <div className="row">
-        <SearchForm />
+        <DynamicSearchForm />
       </div>
     </div>
   </div>
@@ -102,7 +106,7 @@ const SearchFilter: FC = () => {
           },
         }}
       >
-        <SearchForm inSidebar />
+        <DynamicSearchForm inSidebar />
       </Drawer>
       <SliderToggle
         id="sliderToggle"
