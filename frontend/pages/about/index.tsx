@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Container from "@material-ui/core/Container";
 import axios from "axios";
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 import { FlatPageProps } from "../[path]";
 
@@ -40,5 +40,12 @@ export const getStaticProps: GetStaticProps = async () => {
     },
     notFound,
     revalidate: 10,
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: "blocking",
   };
 };
