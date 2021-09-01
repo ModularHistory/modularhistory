@@ -234,13 +234,8 @@ class HTMLField(TextField):
             else:  # if paragraphed is False
                 # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
-                    paragraph: 'Tag'
-                    html = ' '.join(
-                        [
-                            paragraph.decode_contents()
-                            for paragraph in soupify(html).find_all('p')
-                        ]
-                    )
+                    paragraphs: list['Tag'] = list(soupify(html).find_all('p'))
+                    html = ' '.join([p.decode_contents() for p in paragraphs])
             html = self.make_replacements(html)
         return html
 
