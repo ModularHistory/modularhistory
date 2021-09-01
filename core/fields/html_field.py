@@ -15,6 +15,7 @@ from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
+    from bs4.element import Tag
     from django.forms import Field
 
     from core.models.model import ExtendedModel
@@ -233,6 +234,7 @@ class HTMLField(TextField):
             else:  # if paragraphed is False
                 # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
+                    paragraph: 'Tag'
                     html = ' '.join(
                         [
                             paragraph.decode_contents()
