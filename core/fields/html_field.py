@@ -195,7 +195,7 @@ class HTMLField(TextField):
 
     def make_deletions(self, html: str) -> str:
         """Delete unwanted elements from the HTML."""
-        # Use html.parser to avoid adding <html> and <body> tags
+        # Use html.parser to avoid automatically adding <html> and <body> tags.
         soup = soupify(html, features='html.parser')
         for deletion in DELETIONS:
             tag: Optional[Union[Tag, NavigableString]] = soup.find(*deletion)
