@@ -208,11 +208,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # Memory profiler
-    # 'core.middleware.PymplerMiddleware',  # TODO
 ]
 
 ROOT_URLCONF = 'core.urls'

@@ -305,6 +305,10 @@ class Proposition(  # noqa: WPS215
             )
         return summary_link
 
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.summary
+
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the proposition's HTML based on a placeholder in the admin."""

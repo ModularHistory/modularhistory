@@ -1,8 +1,8 @@
 from django.urls import path
 
-from apps.staticpages.api import views
+from apps.flatpages.api import views
 
-app_name = 'staticpages'
+app_name = 'flatpages'
 
 urlpatterns = [
     path('', views.FlatPageAPIView.as_view()),
