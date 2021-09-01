@@ -122,7 +122,6 @@ urlpatterns = [
     # Miscellaneous third-party apps
     # ---------------------------------
     path('select2/', include('django_select2.urls')),
-    path('tinymce/', include('tinymce.urls')),
     path('trumbowyg/', include('trumbowyg.urls'))
 ]
 # fmt: on
