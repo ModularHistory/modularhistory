@@ -1,7 +1,8 @@
 import logging
 import re
-from typing import TYPE_CHECKING, Match, Optional
+from typing import TYPE_CHECKING, Match, Optional, Union
 
+from bs4.element import NavigableString, Tag
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars_html
@@ -262,11 +263,12 @@ class Proposition(  # noqa: WPS215
         """Return the occurrence's elaboration, truncated."""
         if not self.elaboration:
             return None
-        elaboration = soupify(self.elaboration)
-        if elaboration.find('img'):
-            elaboration.find('img').decompose()
+        elaboration_soup = soupify(self.elaboration)
+        img_tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find('img')
+        if isinstance(img_tag, Tag):
+            img_tag.decompose()
         truncated_elaboration = (
-            truncatechars_html(elaboration.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            truncatechars_html(elaboration_soup.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
             .replace('<p>', '')
             .replace('</p>', '')
         )
@@ -304,6 +306,10 @@ class Proposition(  # noqa: WPS215
                 '</a>'
             )
         return summary_link
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.summary
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:

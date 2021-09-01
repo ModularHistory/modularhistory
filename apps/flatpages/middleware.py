@@ -2,14 +2,14 @@ from django.conf import settings
 from django.contrib.flatpages.middleware import FlatpageFallbackMiddleware
 from django.http import Http404
 
-from apps.staticpages.views import staticpage
+from apps.flatpages.views import flatpage
 
 HTTP404_RESPONSE_CODE = 404
 
 
-class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
+class FlatPageFallbackMiddleware(FlatpageFallbackMiddleware):
     """
-    Override FlatpageFallbackMiddleware to use our staticpage view.
+    Override FlatpageFallbackMiddleware to use our flatpage view.
 
     This middleware tries to serve a static page matching the request URL,
     if no code-defined URL patterns matched the request.
@@ -20,7 +20,7 @@ class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
         if response.status_code != HTTP404_RESPONSE_CODE:
             return response
         try:
-            return staticpage(request, request.path_info)
+            return flatpage(request, request.path_info)
         # Return the original response if any errors happened. Because this
         # is a middleware, we can't assume the errors will be caught elsewhere.
         except Http404:

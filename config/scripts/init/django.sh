@@ -14,18 +14,23 @@ done
 
 # python manage.py cleanup_django_defender  # TODO
 
-[[ "$ENVIRONMENT" = prod ]] && {
-    invoke db.backup || {
-        echo "Failed to create db backup."
-        exit 1
+# Create a db backup, if there are any migrations to apply.
+python manage.py migrate --check || {
+    [[ "$ENVIRONMENT" = prod ]] && {
+        invoke db.backup || {
+            echo "Failed to create db backup."
+            exit 1
+        }
     }
 }
 
+# Apply migrations.
 python manage.py migrate || {
     echo "Failed to run db migrations."
     exit 1
 }
 
+# Collect static files.
 python manage.py collectstatic --no-input || {
     echo "Failed to collect static files."
     exit 1

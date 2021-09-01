@@ -89,7 +89,6 @@ INSTALLED_APPS = [
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'rangefilter',  # https://github.com/silentsokolov/django-admin-rangefilter
-    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'trumbowyg',  # https://github.com/sandino/django-trumbowyg
     # ---------------------------------
     # Django core apps
@@ -208,13 +207,10 @@ MIDDLEWARE = [
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
+    # 'apps.flatpages.middleware.FlatPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # Memory profiler
-    # 'core.middleware.PymplerMiddleware',  # TODO
 ]
 
 ROOT_URLCONF = 'core.urls'

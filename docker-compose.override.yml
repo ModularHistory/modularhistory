@@ -15,6 +15,7 @@ services:
     hostname: modularhistory.dev.net
     image: webserver:latest
     volumes:
+      - ./config/nginx:/modularhistory/config/nginx
       - ./config/nginx/dev:/etc/nginx/conf.d
 
   celery:

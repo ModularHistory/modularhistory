@@ -1,8 +1,9 @@
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type, Union
 
 import regex as re
 from aenum import Constant
+from bs4.element import NavigableString, Tag
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import TextField
 from django.forms.renderers import BaseRenderer
@@ -194,13 +195,12 @@ class HTMLField(TextField):
 
     def make_deletions(self, html: str) -> str:
         """Delete unwanted elements from the HTML."""
-        # Use html.parser to avoid adding <html> and <body> tags
+        # Use html.parser to avoid automatically adding <html> and <body> tags.
         soup = soupify(html, features='html.parser')
         for deletion in DELETIONS:
-            try:
-                soup.find(deletion).decompose()
-            except AttributeError:  # no match
-                pass
+            tag: Optional[Union[Tag, NavigableString]] = soup.find(*deletion)
+            if isinstance(tag, Tag):
+                tag.decompose()
         return str(soup)
 
     def make_replacements(self, html: str) -> str:
@@ -226,19 +226,21 @@ class HTMLField(TextField):
                 pass
             elif self.paragraphed:
                 # TODO: move this to a util method?
-                if html.startswith('<p') and html.endswith('</p>'):
+                if html.startswith('<p') or html.endswith('</p>'):
                     pass
                 else:
                     html = f'<p>{html}</p>'
             else:  # if paragraphed is False
                 # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
-                    html = ' '.join(
-                        [
-                            paragraph.decode_contents()
-                            for paragraph in soupify(html).find_all('p')
-                        ]
-                    )
+                    paragraph_strings: list[str] = [
+                        p.decode_contents()
+                        for p in soupify(html).find_all('p')
+                        if isinstance(p, Tag)
+                    ]
+                    if not paragraph_strings:
+                        raise Exception(f'Failed to parse paragraphs in HTML: {html}')
+                    html = ' '.join(paragraph_strings)
             html = self.make_replacements(html)
         return html
 

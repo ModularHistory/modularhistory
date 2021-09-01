@@ -20,7 +20,7 @@ APPS_TO_INCLUDE = (
     'places',
     'sources',
     'users',
-    'staticpages',
+    'flatpages',
     'moderation',
 )
 
