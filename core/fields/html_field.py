@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type
 
 import regex as re
 from aenum import Constant
+from bs4.element import Tag
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import TextField
 from django.forms.renderers import BaseRenderer
@@ -15,7 +16,6 @@ from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
-    from bs4.element import Tag
     from django.forms import Field
 
     from core.models.model import ExtendedModel
@@ -234,7 +234,11 @@ class HTMLField(TextField):
             else:  # if paragraphed is False
                 # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
-                    paragraphs: list['Tag'] = list(soupify(html).find_all('p'))
+                    paragraphs: list['Tag'] = [
+                        p for p in soupify(html).find_all('p') if isinstance(p, Tag)
+                    ]
+                    if not paragraphs:
+                        raise Exception(f'Failed to parse paragraphs in HTML: {html}')
                     html = ' '.join([p.decode_contents() for p in paragraphs])
             html = self.make_replacements(html)
         return html
