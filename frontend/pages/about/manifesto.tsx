@@ -1,20 +1,21 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
+import { FlatPage } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import axios from "axios";
 import { GetStaticProps } from "next";
 import { FC } from "react";
 
 interface FlatPageProps {
-  content: string;
+  page: FlatPage;
 }
 
-const Manifesto: FC<FlatPageProps> = ({ content }: FlatPageProps) => {
+const Manifesto: FC<FlatPageProps> = ({ page }: FlatPageProps) => {
   return (
     <Layout title={"Manifesto"}>
       <Container>
         <PageHeader>Manifesto</PageHeader>
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div dangerouslySetInnerHTML={{ __html: page.content }} />
       </Container>
     </Layout>
   );
@@ -23,12 +24,12 @@ const Manifesto: FC<FlatPageProps> = ({ content }: FlatPageProps) => {
 export default Manifesto;
 
 export const getStaticProps: GetStaticProps = async () => {
-  let content;
+  let page;
   let notFound = false;
   await axios
     .get(`http://django:8000/api/flatpages//manifesto/`)
     .then((response) => {
-      content = response.data.content;
+      page = response.data;
     })
     .catch((error) => {
       if (error.response?.status === 404) {
@@ -39,7 +40,7 @@ export const getStaticProps: GetStaticProps = async () => {
     });
   return {
     props: {
-      content,
+      page,
     },
     notFound,
     revalidate: 10,
