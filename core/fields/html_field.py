@@ -226,7 +226,7 @@ class HTMLField(TextField):
                 pass
             elif self.paragraphed:
                 # TODO: move this to a util method?
-                if html.startswith('<p') and html.endswith('</p>'):
+                if html.startswith('<p') or html.endswith('</p>'):
                     pass
                 else:
                     html = f'<p>{html}</p>'

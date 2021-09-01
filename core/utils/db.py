@@ -58,6 +58,7 @@ def backup(
         raise ValueError(f'{filename} does not have a .sql extension.')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
+    print('Changing backup file extension from psql to sql ...')
     backup_files = glob(BACKUP_FILES_PATTERN)
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filepath = temp_file.replace('.psql', '.sql')
@@ -100,6 +101,7 @@ def backup(
         backup_filepath = zipped_backup_file
     logging.info(f'Finished creating backup file: {backup_filepath}')
     if push:
+        print('Pushing the backup to cloud storage ...')
         latest_backup_dir = join(settings.BACKUPS_DIR, 'latest')
         context.run(f'mkdir -p {latest_backup_dir}')
         context.run(
