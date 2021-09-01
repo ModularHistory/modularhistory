@@ -70,7 +70,7 @@ export interface Source extends SearchableModule {
 }
 
 export interface Entity extends BaseModule, SearchableModule, ModuleWithImages {
-  model: "entities.entity" | "entities.organization" | "entities.person";
+  model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
 }
