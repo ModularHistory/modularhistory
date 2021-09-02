@@ -96,7 +96,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.flatpages',
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.redirects',
@@ -156,6 +155,7 @@ INSTALLED_APPS = [
     # ---------------------------------
     # In-project apps
     # ---------------------------------
+    # 'apps.flatpages.apps.FlatPagesConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
@@ -172,7 +172,6 @@ INSTALLED_APPS = [
     'apps.quotes.apps.QuotesConfig',
     'apps.search.apps.SearchConfig',
     'apps.sources.apps.SourcesConfig',
-    'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
     'apps.trees.apps.TreesConfig',
