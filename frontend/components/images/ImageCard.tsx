@@ -1,4 +1,5 @@
 import { Image } from "@/types/modules";
+import { styled } from "@material-ui/core/styles";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "../cards/ModuleCard";
@@ -8,9 +9,8 @@ interface ImageCardProps {
 }
 
 const ImageCard: FC<ImageCardProps> = ({ image, ...childProps }: ImageCardProps) => {
-  const style = { width: `${image.width}px`, maxWidth: `100%` };
   return (
-    <ModuleCard module={image} className={"image-card"} style={style} {...childProps}>
+    <ModuleCard module={image} className={"image-card"} {...childProps}>
       {image.captionHtml && (
         <>
           <HTMLEllipsis unsafeHTML={image.captionHtml} maxLine="3" basedOn="words" />
@@ -25,4 +25,4 @@ const ImageCard: FC<ImageCardProps> = ({ image, ...childProps }: ImageCardProps)
   );
 };
 
-export default ImageCard;
+export default styled(ImageCard)(({ image }) => ({ width: `${image.width}px`, maxWidth: `100%` }));

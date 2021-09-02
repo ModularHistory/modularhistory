@@ -11,7 +11,6 @@ import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/styles";
 import { AxiosResponse } from "axios";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
@@ -19,15 +18,6 @@ import { csrfToken, getSession, providers, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
 import { ChangeEvent, FC, ReactNode, useState } from "react";
 import Image from "react-bootstrap/Image";
-
-const useStyles = makeStyles({
-  root: {
-    paddingTop: "2rem",
-  },
-  tabs: {
-    flexGrow: 1,
-  },
-});
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -68,8 +58,6 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   providers,
   socialAccounts,
 }: UserSettingsPageProps) => {
-  console.log({ providers });
-  const classes = useStyles();
   const theme = useTheme();
   const [session, _loading] = useSession();
   const [value, setValue] = useState(0);
@@ -79,7 +67,11 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   if (session) {
     return (
       <Layout title={String(user.name || user.handle)}>
-        <Container className={classes.root}>
+        <Container
+          sx={{
+            paddingTop: "2rem",
+          }}
+        >
           <Grid container spacing={3} alignContent="center">
             <Grid item sm={4}>
               <div className="profile-img">
@@ -93,7 +85,11 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
               </div>
             </Grid>
             <Grid container item sm={8}>
-              <Paper className={classes.tabs}>
+              <Paper
+                sx={{
+                  flexGrow: 1,
+                }}
+              >
                 <Tabs
                   value={value}
                   onChange={handleChange}

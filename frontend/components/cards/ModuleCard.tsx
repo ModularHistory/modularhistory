@@ -146,7 +146,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
     bgImage = module.cachedImages?.[0];
   }
   return (
-    <StyledCard className={`m-2 ${className || ""}`} style={style} data-type={module.model}>
+    <StyledCard className={`m-2 ${className || ""}`} sx={style} data-type={module.model}>
       {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
