@@ -86,7 +86,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       proposition = response.data;
     })
     .catch((error) => {
-      if (error.response.status === 404) {
+      if (error.response?.status === 404) {
         notFound = true;
       } else {
         throw error;

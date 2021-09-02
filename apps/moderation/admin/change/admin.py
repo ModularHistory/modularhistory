@@ -53,6 +53,7 @@ class ChangeAdmin(admin.ModelAdmin):
         'n_remaining_approvals_required',
         'moderation_status',
         ContributorFilter,
+        'merged_date',
     )
     ordering = [
         'moderation_status',

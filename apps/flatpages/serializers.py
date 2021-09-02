@@ -1,8 +1,8 @@
-"""Serializers for the StaticPages app."""
+"""Serializers for the FlatPages app."""
 import serpy
 
 
-class StaticPageSerializer(serpy.Serializer):
+class FlatPageSerializer(serpy.Serializer):
     """Serializer for static pages."""
 
     title = serpy.Field()
