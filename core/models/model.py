@@ -225,14 +225,16 @@ class ModelSerializer(serpy.Serializer):
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
 
-class ModelSerializerDrf(Serializer):
+class ModelSerializerDrf(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
-    id = serializers.IntegerField()
     model = serializers.SerializerMethodField()
-    absolute_url = serializers.CharField()
+    absolute_url = serializers.CharField(required=False)
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
         model_cls: Type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+    class Meta:
+        fields = ['id', 'absolute_url']

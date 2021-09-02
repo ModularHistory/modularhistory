@@ -6,7 +6,8 @@ from rest_framework.response import Response
 
 from apps.search.documents.entity import EntityDocument
 
-from apps.entities.api.serializers import EntitySerializer, EntitySerializerDrf
+from apps.entities.serializers import EntitySerializer
+from apps.entities.api.serializers_drf import EntitySerializerDrf
 from apps.entities.models.entity import Entity
 
 
@@ -23,6 +24,7 @@ class EntityListAPIView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = EntitySerializer
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
+
 
 class EntityInstantSearchAPIView(APIView):
     """API view used by search-as-you-type fields retrieving entity names and IDs."""

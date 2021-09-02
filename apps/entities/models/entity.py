@@ -12,7 +12,7 @@ from typedmodels.models import TypedModel
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
-from apps.entities.api.serializers import EntitySerializer
+from apps.entities.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import (
     AbstractEntityRelation,
     ModelWithRelatedEntities,

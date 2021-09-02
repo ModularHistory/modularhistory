@@ -33,13 +33,13 @@ class SearchableModelSerializer(ModelSerializer):
 class SearchableModelSerializerDrf(ModelSerializerDrf):
     """Base serializer for searchable models."""
 
-    absolute_url = serializers.CharField()
-    admin_url = serializers.CharField()
-    slug = serializers.CharField()
-    cached_tags = serializers.CharField()
-    title = serializers.CharField()
-    verified = serializers.BooleanField()
-    meta = serializers.SerializerMethodField()
+    absolute_url = serializers.CharField(required=False)
+    admin_url = serializers.CharField(required=False)
+    slug = serializers.CharField(required=False)
+    cached_tags = serializers.CharField(required=False)
+    title = serializers.CharField(required=False)
+    verified = serializers.BooleanField(required=False)
+    meta = serializers.SerializerMethodField(required=False)
 
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
