@@ -77,7 +77,7 @@ def backup(
                     (line == '\n' and re.match(r'(\n|--\n)', previous_line)) or
                     re.match(r'(.*DROP\ |--\n?$)', line) or
                     (redact and not line.startswith(r'\.') and re.match(
-                        r'COPY public\.(silk_)', previous_line
+                        r'COPY public\.(silk_|users_socialaccount)', previous_line
                     ))
                     # fmt: on
                 )
