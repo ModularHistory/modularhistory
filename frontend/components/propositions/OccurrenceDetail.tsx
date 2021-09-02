@@ -7,6 +7,10 @@ interface OccurrenceDetailProps {
   occurrence: Occurrence;
 }
 
+function firstLetterCap(letter: string) {
+  return letter.charAt(0).toUpperCase() + letter.slice(1);
+}
+
 const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceDetailProps) => {
   return (
     <>
@@ -36,7 +40,10 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
           )
       )}
 
-      <h2 className="text-center my-3" dangerouslySetInnerHTML={{ __html: occurrence.title }} />
+      <h2
+        className="text-center my-3"
+        dangerouslySetInnerHTML={{ __html: firstLetterCap(occurrence.title) }}
+      />
       {occurrence.summary != occurrence.title && <p className="lead">{occurrence.summary}</p>}
       <div dangerouslySetInnerHTML={{ __html: occurrence.elaboration }} />
       {occurrence.postscript && <p dangerouslySetInnerHTML={{ __html: occurrence.postscript }} />}
