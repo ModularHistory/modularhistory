@@ -76,7 +76,8 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/_static && \
   chmod g+w -R /modularhistory/.backups && \
   chmod g+w -R /modularhistory/.init && \
-  chmod +x /usr/local/bin/wait-for-it.sh
+  chmod +x /usr/local/bin/wait-for-it.sh && \
+  chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
 # Expose port 8000
 EXPOSE 8000
