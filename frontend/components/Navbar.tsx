@@ -24,6 +24,7 @@ const globalMenuItems: GlobalMenuItem[] = [
     path: "/about",
     submenuItems: [
       { title: "About Us", path: "/about", reactive: true },
+      { title: "Mission", path: "/mission", reactive: true },
       { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
