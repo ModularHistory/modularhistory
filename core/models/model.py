@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
+from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
@@ -217,6 +218,19 @@ class ModelSerializer(serpy.Serializer):
     id = serpy.IntField()
     model = serpy.MethodField()
     absolute_url = serpy.StrField()
+
+    def get_model(self, instance: ExtendedModel) -> str:
+        """Return the model name of the instance."""
+        model_cls: Type['ExtendedModel'] = instance.__class__
+        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+
+class ModelSerializerDrf(Serializer):
+    """Base serializer for ModularHistory's models."""
+
+    id = serializers.IntegerField()
+    model = serializers.SerializerMethodField()
+    absolute_url = serializers.CharField()
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
