@@ -57,10 +57,10 @@ RUN mkdir -p -- \
   /modularhistory/.backups \
   /modularhistory/.init \
   /opt/atlas \
-  /var/www/nltk_data
+  /var/www/nltk_data/corpora
 
 # Download required files.
-RUN python -c "import nltk; nltk.download('punkt')"
+RUN python -c "import nltk; nltk.download('punkt')" && python -m textblob.download_corpora
 
 # Add source code.
 COPY . /modularhistory/
