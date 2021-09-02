@@ -87,7 +87,7 @@ class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     def get_exclude(self, request: HttpRequest, obj: Optional['Model'] = None) -> list[str]:
         """Return the fields to exclude from admin forms."""
         always_excluded_fields = ('cache',)
-        excluded_fields = list(super().get_exclude(request, obj=obj))
+        excluded_fields = list(super().get_exclude(request, obj=obj) or [])
         if obj:
             for excluded_field in always_excluded_fields:
                 if hasattr(obj, excluded_field):  # noqa: WPS421
