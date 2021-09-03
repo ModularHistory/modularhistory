@@ -21,10 +21,6 @@ env/
 venv/
 .venv/
 
-# Artifacts
-.artifacts/
-artifacts/
-
 # Python
 *.py[cod]
 *$py.class
@@ -85,6 +81,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Cypress
+cypress/
 
 # GitHub
 .github/
