@@ -5,6 +5,8 @@
 
 pwd && ls config/scripts/init
 
+[ -z "$SHA" ] && echo "SHA is not set." && exit 1
+
 echo "" && echo "Updating PyInvoke config..."
 cp config/invoke.yaml "$HOME/.invoke.yaml"
 
@@ -13,12 +15,18 @@ echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
     echo "GHCR login failed."; exit 1
 }
 
-echo "" && docker-compose ps
+echo "" && echo "Extant containers:" && docker-compose ps
 
+image_names=("django" "next" "webserver")
 echo "" && echo "Pulling images for version $SHA ..."
-docker-compose pull --include-deps -q django next webserver || {
+docker-compose pull --include-deps -q "${image_names[@]}" || {
     echo "Failed to pull required images."; exit 1
 }
+for image_name in "${image_names[@]}"; do
+    docker image inspect "${image_name}:${SHA}" >/dev/null 2>&1 || {
+        echo "${image_name}:${SHA} is not present."; exit 1
+    }
+done
 
 reload_nginx() {
   docker-compose exec webserver /usr/sbin/nginx -s reload
