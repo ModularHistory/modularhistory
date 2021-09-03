@@ -3,7 +3,7 @@
 # Note: Environment variables are set in production environment 
 # before this script is run.
 
-pwd && ls
+pwd && ls config/scripts/init
 
 echo "" && echo "Updating PyInvoke config..."
 cp config/invoke.yaml "$HOME/.invoke.yaml"
@@ -13,7 +13,9 @@ echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
     echo "GHCR login failed."; exit 1
 }
 
-echo "Pulling images..."
+echo "" && docker-compose ps
+
+echo "" && echo "Pulling images for version $SHA ..."
 docker-compose pull --include-deps -q django next webserver || {
     echo "Failed to pull required images."; exit 1
 }
@@ -26,10 +28,6 @@ green="_1"; blue="_2"
 new=$blue; old="$green"
 docker-compose ps | grep --quiet "$blue" && {
     new=$green; old=$blue
-}
-
-[[ -f config/scripts/init/django.sh ]] || {
-    pwd; ls; exit 1
 }
 
 containers=("django" "celery" "celery_beat" "next")
