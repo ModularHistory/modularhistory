@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import NoReverseMatch, reverse
 
@@ -27,12 +27,12 @@ class ContributorFilter(ManyToManyAutocompleteFilter):
     _parameter_name = 'contributors__pk__exact'
     m2m_cls = 'users.User'
 
-    def get_autocomplete_url(self, request: 'HttpRequest', model_admin) -> str:
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin: ModelAdmin) -> str:
         """Return the URL used for topic autocompletion."""
         return reverse('admin:user_search')
 
 
-class ChangeAdmin(admin.ModelAdmin):
+class ChangeAdmin(ModelAdmin):
     """
     Admin for changes proposed to moderated model instances.
 
