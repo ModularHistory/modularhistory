@@ -25,6 +25,7 @@ services:
       - ./_static:/modularhistory/_static
     networks:
       default:
+      gateway:
         ipv4_address: 172.27.0.5
 
   next:
@@ -266,6 +267,8 @@ services:
 
 networks:
   default:
+    driver: bridge
+  gateway:
     driver: bridge
     ipam:
       config:
