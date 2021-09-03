@@ -4,16 +4,16 @@ from apps.entities.models.entity import Entity
 from apps.search.api.serializers import SearchableModelSerializerDrf
 
 
-class CategorySerializerDrf(serializers.Serializer):
+class CategorySerializer(serializers.Serializer):
     """Serializer for Entity Categories."""
 
-    name = serializers.Field()
+    name = serializers.ReadOnlyField()
 
 
-class CategorizationSerializerDrf(serializers.Serializer):
+class CategorizationSerializer(serializers.Serializer):
     """Serializer for Entity-Category relationship."""
 
-    category = CategorySerializerDrf()
+    category = CategorySerializer()
     start_date = serializers.SerializerMethodField('get_serialized_start_date')
     end_date = serializers.SerializerMethodField('get_serialized_end_date')
 
@@ -26,17 +26,15 @@ class CategorizationSerializerDrf(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntitySerializerDrf(SearchableModelSerializerDrf):
+class EntityModelSerializer(SearchableModelSerializerDrf):
     """Serializer for entities."""
     description = serializers.CharField(required=False)
-    birthdate = serializers.DateField(write_only=True)
-    deathdate = serializers.DateField(write_only=True)
-    birth_date = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
-    death_date = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
+    categorizations = CategorizationSerializer(many=True, required=False, source='categorizations.all')
 
-    # categorizations = CategorizationSerializerDrf(
-    #     many=True, attr='categorizations.all', call=True
-    # )
+    birth_date = serializers.DateField(write_only=True, required=False)
+    death_date = serializers.DateField(write_only=True, required=False)
+    birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
+    deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -46,8 +44,8 @@ class EntitySerializerDrf(SearchableModelSerializerDrf):
         """Return the entity's death date, serialized."""
         return instance.death_date.serialize() if instance.death_date else None
 
-    class Meta:
+    class Meta(SearchableModelSerializerDrf.Meta):
         model = Entity
-        fields = ['type', 'name', 'unabbreviated_name', 'aliases', 'description', 'truncated_description',
-                  'birthdate', 'deathdate', 'birth_date', 'death_date']
+        fields = SearchableModelSerializerDrf.Meta.fields + ['name', 'unabbreviated_name', 'aliases', 'description', 'truncated_description',
+                                                             'categorizations', 'birth_date', 'death_date', 'birthDate', 'deathDate']
         read_only_fields = ['truncated_description']

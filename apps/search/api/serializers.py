@@ -50,3 +50,6 @@ class SearchableModelSerializerDrf(ModelSerializerDrf):
             if key in meta:
                 del meta[key]
         return model.meta.to_dict()
+
+    class Meta(ModelSerializerDrf.Meta):
+        fields = ModelSerializerDrf.Meta.fields + ['absolute_url', 'admin_url', 'slug', 'cached_tags', 'title', 'verified', 'meta']
