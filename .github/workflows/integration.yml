@@ -478,6 +478,120 @@ jobs:
         docker-compose -f docker-compose.yml -f docker-compose.test.yml run cypress
         --browser ${{ matrix.browser }} --group "${{ matrix.browser }}"
         --parallel --ci-build-id $GITHUB_TOKEN --record --key $CYPRESS_RECORD_KEY
+  test-deploy:
+    name: Test deploy
+    needs: changed-files
+    if: ${{ contains(needs.changed-files.outputs.modified-files, 'deploy.sh') }}
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 1
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install PyInvoke config
+      run: |
+        sudo cp config/invoke.yaml /etc/invoke.yaml
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.8
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment (A)
+      id: venv-test
+      continue-on-error: true
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: |
+        poetry --version
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
+    - name: Create .env file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=test
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Create writable volume directories
+      run: |
+        writable_dirs=( ".backups" ".init" "_static" "_media" )
+        for writable_dir in "${writable_dirs[@]}"; do
+          mkdir -p "$writable_dir"; {
+            sudo chown -R www-data:www-data "$writable_dir" && 
+            sudo chmod a+w -R "$writable_dir"
+          } || exit 1
+        done
+    - uses: actions/cache@v2
+      id: data-cache
+      with:
+        path: .init
+        key: data
+    - name: Fetch data
+      if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
+      run: |
+        test -w .init || {
+          echo "Cannot write in .init directory."; exit 1
+        }
+        rclone --help &>/dev/null || {
+          curl https://rclone.org/install.sh | sudo bash 
+        } || exit 1
+        poetry run invoke db.seed --remote
+    - name: Start up containers
+      shell: bash
+      run: |
+        shopt -s expand_aliases
+        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
+        echo "Starting containers with version $SHA ..."
+        compose up -d webserver; compose logs; echo ""; compose ps
+        [[ ! "$(compose ps)" =~ webserver ]] && exit 1
+        healthy=false; timeout=300; interval=20; waited=0
+        while [[ "$healthy" = false ]]; do
+          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          if [[ "$healthy" = false ]]; then 
+            compose logs --tail 20; echo ""; compose ps; echo ""
+            echo "Waiting for containers (${waited}s) ..."; echo ""
+            sleep $interval; waited=$((waited + interval))
+            if [[ $waited -gt $timeout ]]; then 
+              echo "Timed out."; compose logs; exit 1
+            fi
+          fi
+        done; compose ps
+    - run: bash config/scripts/deploy.sh
   check-types:
     name: Check types
     needs: changed-files

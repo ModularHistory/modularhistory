@@ -28,8 +28,7 @@ done
 
 echo "" && echo "Starting new containers..."
 # Bring new containers online, with nginx continuing to route only to the old containers. 
-docker-compose up -d --no-deps --scale $service_name=2 --no-recreate $service_name
-docker-compose up -d --scale django=2 celery=2 celery_beat=2 next=2 --no-recreate "${containers[@]}"
+docker-compose up -d --no-deps --scale "${containers[@]/%/=2}" --no-recreate "${containers[@]}"
 echo "" && docker-compose ps && echo "" && docker-compose logs
 healthy=false; timeout=300; interval=20; waited=0
 while [[ "$healthy" = false ]]; do
