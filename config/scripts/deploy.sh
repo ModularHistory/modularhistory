@@ -23,7 +23,7 @@ docker-compose pull --include-deps -q "${image_names[@]}" || {
     echo "Failed to pull required images."; exit 1
 }
 for image_name in "${image_names[@]}"; do
-    docker image inspect "${image_name}:${SHA}" >/dev/null 2>&1 || {
+    docker image inspect "ghcr.io/modularhistory/${image_name}:${SHA}" >/dev/null 2>&1 || {
         echo "${image_name}:${SHA} is not present."; exit 1
     }
 done
