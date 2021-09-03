@@ -199,7 +199,7 @@ jobs:
 
   test-deploy:
     name: Test deploy
-    needs: changed-files
+    needs: [changed-files, build-image]
     if: ${{ contains(needs.changed-files.outputs.modified-files, 'deploy.sh') }}
     runs-on: ubuntu-latest
     environment: test
