@@ -37,7 +37,7 @@ for container in "${containers[@]}"; do
     docker-compose up -d --no-deps --scale ${container}=2 --no-recreate "$container"
     # new_container_id=$(docker ps -f name=$service_name -q | head -n1)
     # new_container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $new_container_id)
-    docker-compose ps
+    docker-compose ps | grep $new | grep "Exit 127" && exit 1
     healthy=false; timeout=300; interval=20; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
