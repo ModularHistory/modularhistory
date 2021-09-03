@@ -20,6 +20,12 @@ reload_nginx() {
   docker exec webserver /usr/sbin/nginx -s reload
 }
 
+green="_1"; blue="_2"
+new=$blue; old="$green"
+docker-compose ps | grep --quiet "$blue" && {
+    new=$green; old=$blue
+}
+
 containers=("django" "celery" "celery_beat" "next")
 declare -A old_container_ids
 for container in "${containers[@]}"; do
@@ -28,6 +34,19 @@ for container in "${containers[@]}"; do
     new_container_id=$(docker ps -f name=$service_name -q | head -n1)
     new_container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $new_container_id)
     docker-compose ps
+    healthy=false; timeout=300; interval=20; waited=0
+    while [[ "$healthy" = false ]]; do
+        healthy=true
+        [[ "$(docker-compose ps | grep $new)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        if [[ "$healthy" = false ]]; then 
+            docker-compose logs --tail 20; echo ""; docker-compose ps | grep $new; echo ""
+            echo "Waiting for containers (${waited}s) ..."; echo ""
+            sleep $interval; waited=$((waited + interval))
+            if [[ $waited -gt $timeout ]]; then 
+                echo "Timed out."; docker-compose logs; exit 1
+            fi
+        fi
+    done
 done
 
 # echo "" && echo "Starting new containers..."
