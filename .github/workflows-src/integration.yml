@@ -105,6 +105,7 @@ jobs:
 
   build:
     name: Build image
+    needs: changed-files
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
