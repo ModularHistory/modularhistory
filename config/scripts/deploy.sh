@@ -3,6 +3,8 @@
 # Note: Environment variables are set in production environment 
 # before this script is run.
 
+pwd && ls
+
 echo "" && echo "Updating PyInvoke config..."
 cp config/invoke.yaml "$HOME/.invoke.yaml"
 
@@ -17,7 +19,7 @@ docker-compose pull --include-deps -q django next webserver || {
 }
 
 reload_nginx() {
-  docker exec webserver /usr/sbin/nginx -s reload
+  docker-compose exec webserver /usr/sbin/nginx -s reload
 }
 
 green="_1"; blue="_2"
