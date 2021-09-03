@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [django, react, webserver]
+        image: [django, next, webserver]
     services:
       postgres:
         image: postgres:12

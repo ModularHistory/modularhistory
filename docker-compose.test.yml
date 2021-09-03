@@ -6,7 +6,7 @@ services:
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
 
-  react:
+  next:
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
   

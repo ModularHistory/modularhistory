@@ -90,6 +90,9 @@
 				<p class="deletelink-box">
 					<input type="submit" value="{% trans 'Reject' %}" name="reject" />
 				</p>
+				{% if request.user.is_superuser %}
+				<input type="submit" value="{% trans 'Force' %}" name="force" />
+				{% endif %}
 				<input type="submit" value="{% trans 'Approve' %}" name="approve" />
 			</div>
 		</div>

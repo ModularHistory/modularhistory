@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Optional
 import django
 from decouple import config
 
-from core.constants.environments import Environments
 from commands.command import command
+from core.constants.environments import Environments
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -53,7 +53,7 @@ def build(  # noqa: S107
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
     )
-    for image_name in ('django', 'react', 'webserver'):
+    for image_name in ('django', 'next', 'webserver'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
         context.run(f'docker pull {image}:latest', warn=True)

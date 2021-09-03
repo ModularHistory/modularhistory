@@ -1,0 +1,59 @@
+# When composite actions support `uses` (https://github.com/actions/runner/issues/646),
+# this can be converted to a composite action. In the meantime, we are using
+# https://github.com/mithro/actions-includes to allow `uses`.
+
+name: 'Start application'
+description: 'Run the application containers'
+runs:
+  using: "includes"
+  steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Create writable volume directories
+      run: |
+        writable_dirs=( ".backups" ".init" "_static" "_media" )
+        for writable_dir in "${writable_dirs[@]}"; do
+          mkdir -p "$writable_dir"; {
+            sudo chown -R www-data:www-data "$writable_dir" && 
+            sudo chmod a+w -R "$writable_dir"
+          } || exit 1
+        done
+    - uses: actions/cache@v2
+      id: data-cache
+      with:
+        path: .init
+        key: data
+    - name: Fetch data
+      if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
+      run: |
+        test -w .init || {
+          echo "Cannot write in .init directory."; exit 1
+        }
+        rclone --help &>/dev/null || {
+          curl https://rclone.org/install.sh | sudo bash 
+        } || exit 1
+        poetry run invoke db.seed --remote
+    - name: Start up containers
+      shell: bash
+      run: |
+        shopt -s expand_aliases
+        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
+        echo "Starting containers with version $SHA ..."
+        compose up -d webserver; compose logs; echo ""; compose ps
+        [[ ! "$(compose ps)" =~ webserver ]] && exit 1
+        healthy=false; timeout=300; interval=20; waited=0
+        while [[ "$healthy" = false ]]; do
+          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          if [[ "$healthy" = false ]]; then 
+            compose logs --tail 20; echo ""; compose ps; echo ""
+            echo "Waiting for containers (${waited}s) ..."; echo ""
+            sleep $interval; waited=$((waited + interval))
+            if [[ $waited -gt $timeout ]]; then 
+              echo "Timed out."; compose logs; exit 1
+            fi
+          fi
+        done; compose ps
