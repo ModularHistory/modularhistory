@@ -5,8 +5,8 @@ import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Container, Drawer, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Box, Container, Drawer, useMediaQuery } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -21,30 +21,10 @@ import {
   useState,
 } from "react";
 
-const useStyles = makeStyles({
-  drawer: {
-    maxWidth: "0px",
-    transition: "max-width .15s",
-    zIndex: 2,
-    "&.open": { maxWidth: "230px" },
-  },
-  drawerButton: {
-    border: "2px solid black",
-    transition: "transform .15s",
-    "&.open": { transform: "translateX(229px)" },
-  },
-  paper: {
-    backgroundColor: "whitesmoke",
-    boxShadow: "4px 0 10px -5px #888",
-    position: "sticky",
-    maxHeight: "100vh",
-  },
-  cards: {
-    "& .selected": {
-      border: "3px solid black",
-      borderRight: "none",
-    },
-  },
+const SliderToggle = styled("button")({
+  border: "2px solid black !important",
+  transition: "transform .15s !important",
+  "&.open": { transform: "translateX(229px) !important" },
 });
 
 interface SearchProps {
@@ -98,7 +78,6 @@ const EmptySearchResults: FC = () => (
 
 const SearchFilter: FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-  const classes = useStyles();
 
   return (
     <>
@@ -107,18 +86,31 @@ const SearchFilter: FC = () => {
         anchor={"left"}
         variant={"persistent"}
         onClose={() => setSearchOpen(false)}
-        className={`${classes.drawer} ${searchOpen ? "open" : ""}`}
-        PaperProps={{ className: classes.paper }}
+        className={searchOpen ? "open" : ""}
+        sx={{
+          maxWidth: "0px",
+          transition: "max-width .15s",
+          zIndex: 2,
+          "&.open": { maxWidth: "230px" },
+        }}
+        PaperProps={{
+          sx: {
+            backgroundColor: "whitesmoke",
+            boxShadow: "4px 0 10px -5px #888",
+            position: "sticky",
+            maxHeight: "100vh",
+          },
+        }}
       >
         <SearchForm inSidebar />
       </Drawer>
-      <button
+      <SliderToggle
         id="sliderToggle"
-        className={`btn ${classes.drawerButton} ${searchOpen ? "open" : ""}`}
+        className={`btn ${searchOpen ? "open" : ""}`}
         onClick={() => setSearchOpen(!searchOpen)}
       >
         <i className="fas fa-filter" />
-      </button>
+      </SliderToggle>
     </>
   );
 };
@@ -202,15 +194,21 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   setModuleIndexFromEvent,
   setModalOpen,
 }) => {
-  const classes = useStyles();
-
   const selectModule: MouseEventHandler = (event) => {
     setModuleIndexFromEvent(event);
     setModalOpen(true);
   };
 
   return (
-    <div className={`results result-cards ${classes.cards}`}>
+    <Box
+      className={"results result-cards"}
+      sx={{
+        "& .selected": {
+          border: "3px solid black",
+          borderRight: "none",
+        },
+      }}
+    >
       {modules.map((module, index) => (
         <a
           href={module.absoluteUrl}
@@ -224,7 +222,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           <ModuleUnionCard module={module} selected={index === moduleIndex} />
         </a>
       ))}
-    </div>
+    </Box>
   );
 };
 

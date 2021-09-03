@@ -54,7 +54,6 @@ SDK
 select2
 Select2Widget
 sorl
-StaticPageFallbackMiddleware
 strikethrough
 subdirectory
 textareas

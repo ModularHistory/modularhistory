@@ -7,12 +7,12 @@ from django.template import loader
 from django.utils.html import format_html
 from django.views.decorators.csrf import csrf_protect
 
-from apps.staticpages.models import StaticPage
+from apps.flatpages.models import FlatPage
 from core.constants.strings import SLASH
 
-DEFAULT_TEMPLATE = 'staticpages/default.html'
+DEFAULT_TEMPLATE = 'flatpages/default.html'
 
-# This view is called from StaticPageFallbackMiddleware.process_response
+# This view is called from FlatPageFallbackMiddleware.process_response
 # when a 404 is raised, which often means CsrfViewMiddleware.process_view
 # has not been called even if CsrfViewMiddleware is installed. So we need
 # to use @csrf_protect, in case the template needs {% csrf_token %}.
@@ -22,35 +22,35 @@ DEFAULT_TEMPLATE = 'staticpages/default.html'
 # CSRF protect the internal implementation.
 
 
-def staticpage(request, url):
+def flatpage(request, url):
     """
-    Public interface to the staticpage view.
+    Public interface to the flatpage view.
 
     Templates:
         Uses the template defined by the ``template_name`` field,
-        or :template:`staticpages/default.html` if template_name is not defined.
+        or :template:`flatpages/default.html` if template_name is not defined.
     Context:
-        staticpage
-            `staticpages.staticpages` obj
+        flatpage
+            `flatpages.flatpages` obj
     """
     if not url.startswith(SLASH):
         url = f'/{url}'
     site = get_current_site(request)
     site_id = site.id if isinstance(site, Site) else 1
     try:
-        flatpage = get_object_or_404(StaticPage, url=url, sites=site_id)
+        flatpage = get_object_or_404(FlatPage, url=url, sites=site_id)
     except Http404:
         if not url.endswith(SLASH) and settings.APPEND_SLASH:
             url = f'{url}/'
-            flatpage = get_object_or_404(StaticPage, url=url, sites=site_id)
+            flatpage = get_object_or_404(FlatPage, url=url, sites=site_id)
             return HttpResponsePermanentRedirect(f'{request.path}/')
         raise
-    return render_staticpage(request, flatpage)
+    return render_flatpage(request, flatpage)
 
 
 @csrf_protect
-def render_staticpage(request, static_page: StaticPage):
-    """Render the staticpage view."""
+def render_flatpage(request, static_page: FlatPage):
+    """Render the flatpage view."""
     # If registration is required for accessing this page, and the user isn't
     # logged in, redirect to the login page.
     if static_page.registration_required and not request.user.is_authenticated:

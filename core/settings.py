@@ -89,7 +89,6 @@ INSTALLED_APPS = [
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'rangefilter',  # https://github.com/silentsokolov/django-admin-rangefilter
-    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'trumbowyg',  # https://github.com/sandino/django-trumbowyg
     # ---------------------------------
     # Django core apps
@@ -97,7 +96,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.flatpages',
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.redirects',
@@ -157,6 +155,7 @@ INSTALLED_APPS = [
     # ---------------------------------
     # In-project apps
     # ---------------------------------
+    'apps.flatpages.apps.FlatPagesConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
@@ -173,7 +172,6 @@ INSTALLED_APPS = [
     'apps.quotes.apps.QuotesConfig',
     'apps.search.apps.SearchConfig',
     'apps.sources.apps.SourcesConfig',
-    'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
     'apps.trees.apps.TreesConfig',
@@ -208,13 +206,10 @@ MIDDLEWARE = [
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
+    # 'apps.flatpages.middleware.FlatPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # Memory profiler
-    # 'core.middleware.PymplerMiddleware',  # TODO
 ]
 
 ROOT_URLCONF = 'core.urls'

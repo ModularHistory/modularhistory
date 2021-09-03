@@ -1,6 +1,5 @@
 import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/styles";
 import axios, { AxiosRequestConfig } from "axios";
 import React, {
   FC,
@@ -13,25 +12,6 @@ import React, {
 } from "react";
 import { throttle } from "throttle-debounce";
 import { SearchFormContext } from "./SearchForm";
-
-const useStyles = makeStyles({
-  root: {
-    "& .MuiChip-root": {
-      margin: 1,
-      fontSize: "11px",
-      height: "20px",
-      "& .MuiChip-label": {
-        paddingLeft: "6px",
-        paddingRight: "8px",
-      },
-      "& .MuiChip-deleteIcon": {
-        height: "18px",
-        width: "18px",
-        marginRight: "2px",
-      },
-    },
-  },
-});
 
 type Option = Record<string, string | number>;
 
@@ -69,7 +49,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
   minimumSearchLength = 1,
   throttleDelay = 250,
 }: InstantSearchProps) => {
-  const classes = useStyles();
   const { formState, setFormState, disabled } = useContext(SearchFormContext);
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
@@ -141,9 +120,24 @@ const InstantSearch: FC<InstantSearchProps> = ({
       inputValue={inputValue}
       onInputChange={handleInputChange}
       ChipProps={{ size: "small" }}
-      className={classes.root}
       disabled={disabled}
       renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
+      sx={{
+        "& .MuiChip-root": {
+          margin: 1,
+          fontSize: "11px",
+          height: "20px",
+          "& .MuiChip-label": {
+            paddingLeft: "6px",
+            paddingRight: "8px",
+          },
+          "& .MuiChip-deleteIcon": {
+            height: "18px",
+            width: "18px",
+            marginRight: "2px",
+          },
+        },
+      }}
     />
   );
 };

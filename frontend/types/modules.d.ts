@@ -70,7 +70,7 @@ export interface Source extends SearchableModule {
 }
 
 export interface Entity extends BaseModule, SearchableModule, ModuleWithImages {
-  model: "entities.entity" | "entities.organization" | "entities.person";
+  model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
 }
@@ -101,7 +101,7 @@ export interface Topic extends BaseModule {
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
 
-export interface StaticPage {
+export interface FlatPage {
   title: string;
   content: string;
 }

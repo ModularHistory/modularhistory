@@ -46,9 +46,8 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
             model_cls = self.get_model_cls(obj)
             if model_cls:
                 excluded_fields = list(
-                    set(*model_cls.Moderation.excluded_fields, *excluded_fields)
+                    {*model_cls.Moderation.excluded_fields, *excluded_fields}
                 )
-            print(excluded_fields)
         return excluded_fields
 
     def get_form(
