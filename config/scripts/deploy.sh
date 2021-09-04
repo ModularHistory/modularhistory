@@ -48,7 +48,7 @@ for container in "${containers_to_deploy[@]}"; do
         if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
             echo ""; docker-compose ps; echo ""
-            echo "Waiting for $container to be healthy (total: ${waited}s) ..."; echo ""
+            echo "Waiting for $container to be healthy (total waited: ${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
                 docker-compose logs; echo "Timed out."; exit 1
