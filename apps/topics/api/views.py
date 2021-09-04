@@ -1,9 +1,9 @@
 from rest_framework import permissions
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
+from apps.topics.api.serializers import TopicModelSerializer
 from apps.topics.models.topic import Topic
-from apps.topics.serializers import TopicSerializer
 from core.pagination import VariableSizePagination
 
 
@@ -11,16 +11,9 @@ class TopicViewSet(ModelViewSet):
     """API endpoint for viewing and editing topics."""
 
     queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
-
-
-class TopicListAPIView(ListAPIView):
-    """API view for listing topics."""
-
-    permission_classes = [permissions.AllowAny]
+    serializer_class = TopicModelSerializer
     pagination_class = VariableSizePagination
-    queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class TopicAPIView(RetrieveAPIView):
@@ -28,4 +21,4 @@ class TopicAPIView(RetrieveAPIView):
 
     queryset = Topic.objects.all()
     lookup_field = 'slug'
-    serializer_class = TopicSerializer
+    serializer_class = TopicModelSerializer
