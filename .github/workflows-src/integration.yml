@@ -96,7 +96,7 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ runner.os }}
+        os: ${{ matrix.os }}
         python-version: ${{ matrix.python-version }}
         environment: dev
     - name: Run setup script
@@ -115,11 +115,9 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ runner.os }}
         environment: test
     - includes: ./.github/actions/build
       with:
-        os: ${{ runner.os }}
         image: ${{ matrix.image }}
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
         push: true
@@ -184,7 +182,6 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ runner.os }}
         environment: test
     - includes: ./.github/actions/run
     - name: Run Cypress
@@ -207,7 +204,6 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ runner.os }}
         environment: test
     - includes: ./.github/actions/run
     - run: bash config/scripts/deploy.sh
@@ -228,7 +224,6 @@ jobs:
     - 
       includes: ./.github/actions/setup
       with:
-        os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
         environment: test
     - 

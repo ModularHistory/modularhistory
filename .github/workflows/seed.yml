@@ -102,7 +102,7 @@ jobs:
       id: venv-cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Test poetry environment (A)
       id: venv-test
       continue-on-error: true
@@ -112,7 +112,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
-        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}

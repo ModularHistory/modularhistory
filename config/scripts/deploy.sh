@@ -62,29 +62,6 @@ for container in "${containers[@]}"; do
     done
 done
 
-# echo "" && echo "Starting new containers..."
-# # Bring new containers online, with nginx continuing to route only to the old containers.
-# echo "> docker-compose up -d --no-deps --scale ${containers[@]/%/=2} --no-recreate ${containers[@]}"
-# docker-compose up -d --no-deps --scale "${containers[@]/%/=2}" --no-recreate "${containers[@]}"
-
-# echo "" && docker-compose ps && echo "" && docker-compose logs
-# healthy=false; timeout=300; interval=20; waited=0
-# while [[ "$healthy" = false ]]; do
-#     healthy=true
-#     [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
-#     [[ ! "$(docker-compose ps)" =~ webserver ]] && healthy=false && docker-compose up -d webserver
-#     if [[ "$healthy" = false ]]; then 
-#         docker-compose logs --tail 20; echo ""; docker-compose ps; echo ""
-#         echo "Waiting for containers (${waited}s) ..."; echo ""
-#         sleep $interval; waited=$((waited + interval))
-#         if [[ $waited -gt $timeout ]]; then 
-#             echo "Timed out."; docker-compose logs; exit 1
-#         fi
-#     fi
-# done
-# docker-compose ps
-# [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
-
 echo "" && echo "Taking old containers offline..."
 for old_container_id in "${old_container_ids[@]}"; do
     docker stop "$old_container_id"
@@ -94,6 +71,9 @@ done
 for container in "${containers[@]}"; do
     docker-compose up -d --no-deps --scale ${container}=1 --no-recreate "$container"
 done
+
+echo "" && docker-compose ps
+# [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
 
 # echo "" && echo "Reloading nginx..."
 # reload_nginx
