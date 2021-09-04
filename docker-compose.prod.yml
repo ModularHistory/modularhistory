@@ -3,6 +3,5 @@ version: "3.8"
 services:
   webserver:
     volumes:
-      - ./config/nginx/prod:/etc/nginx/conf.d
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot

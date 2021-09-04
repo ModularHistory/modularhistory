@@ -23,6 +23,11 @@ services:
     volumes:
       - ./_media:/modularhistory/_media
       - ./_static:/modularhistory/_static
+      # Keep the nginx config in a volume to allow for zero-downtime deploys via
+      # `docker-compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
+      # container would always have to be stopped (so its static IP address becomes 
+      # available) before starting a replacement container with an updated nginx config.
+      - ./config/nginx/prod:/etc/nginx/conf.d
     networks:
       default:
       gateway:
