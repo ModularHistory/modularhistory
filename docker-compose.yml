@@ -7,60 +7,49 @@ x-common-env-vars: &common-env-vars
   POSTGRES_HOST: "postgres"
 
 services:
-  celery:
-    command: bash config/scripts/init/celery.sh
+  webserver:
+    image: "ghcr.io/modularhistory/webserver:$SHA"
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      django:
-        condition: service_healthy
+      - next
     deploy:
       restart_policy:
         condition: on-failure
     env_file: .env
     environment:
-      <<: *common-env-vars
-      IS_CELERY: "True"
-    healthcheck:
-      test: celery -A core inspect ping -d celery@$$HOSTNAME
-      timeout: 30s
-      interval: 30s
-      retries: 3
-      start_period: 20s
-    image: "ghcr.io/modularhistory/django:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.11
-    user: www-data
+      DOMAINS: "modularhistory.com,www.modularhistory.com"
+    ports:
+      - "80:8080"
+      - "443:8443"
     volumes:
-      - ./.backups:/modularhistory/.backups
-      - ./.init:/modularhistory/.init
-      - ./_static:/modularhistory/_static
       - ./_media:/modularhistory/_media
+      - ./_static:/modularhistory/_static
+      # Keep the nginx config in a volume to allow for zero-downtime deploys via
+      # `docker-compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
+      # container would always have to be stopped (so its static IP address becomes 
+      # available) before starting a replacement container with an updated nginx config.
+      - ./config/nginx/prod:/etc/nginx/conf.d
 
-  celery_beat:
-    command: bash config/scripts/init/celery_beat.sh
+  next:
+    image: "ghcr.io/modularhistory/next:$SHA"
+    command: npm run start
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      celery:
-        condition: service_healthy
+      - django
+      - celery
+      - celery_beat
     deploy:
       restart_policy:
         condition: on-failure
     env_file: .env
     environment:
-      <<: *common-env-vars
-    image: "ghcr.io/modularhistory/django:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.12
+      NEXTAUTH_URL: "https://www.modularhistory.com"
+      NEXTAUTH_URL_INTERNAL: "http://next:3000"
+    expose:
+      - "3000"
+    volumes:
+      - ./_static:/modularhistory/_static
 
   django:
+    image: "ghcr.io/modularhistory/django:$SHA"
     command: bash config/scripts/init/django.sh
     depends_on:
       postgres:
@@ -86,12 +75,8 @@ services:
       interval: 30s
       retries: 3
       start_period: 75s
-    image: "ghcr.io/modularhistory/django:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.8
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     user: www-data
     volumes:
       # NOTE: www-data must be granted permission to write to these directories
@@ -103,6 +88,53 @@ services:
       - ./.init:/modularhistory/.init
       - ./_static:/modularhistory/_static
       - ./_media:/modularhistory/_media
+
+  celery:
+    image: "ghcr.io/modularhistory/django:$SHA"
+    command: bash config/scripts/init/celery.sh
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      django:
+        condition: service_healthy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file: .env
+    environment:
+      <<: *common-env-vars
+      IS_CELERY: "True"
+    healthcheck:
+      test: celery -A core inspect ping -d celery@$$HOSTNAME
+      timeout: 30s
+      interval: 30s
+      retries: 3
+      start_period: 20s
+    user: www-data
+    volumes:
+      - ./.backups:/modularhistory/.backups
+      - ./.init:/modularhistory/.init
+      - ./_static:/modularhistory/_static
+      - ./_media:/modularhistory/_media
+
+  celery_beat:
+    image: "ghcr.io/modularhistory/django:$SHA"
+    command: bash config/scripts/init/celery_beat.sh
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_healthy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file: .env
+    environment:
+      <<: *common-env-vars
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
@@ -117,6 +149,8 @@ services:
       - bootstrap.memory_lock=true
       - xpack.ml.enabled=false
       - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+    expose:
+      - "9200"
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s
@@ -129,24 +163,16 @@ services:
         hard: -1
     volumes:
       - search_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-    networks:
-      default:
-        ipv4_address: 172.27.0.15
 
   kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.1
     depends_on:
       - elasticsearch
-    image: docker.elastic.co/kibana/kibana:7.8.1
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    networks:
-      default:
-        ipv4_address: 172.27.0.16
+    expose:
+      - "5601"
 
   # mongo:
   #   deploy:
@@ -161,118 +187,71 @@ services:
   #     retries: 3
   #     start_period: 20s
   #   image: mongo
-  #   ports:
-  #     - "27017:27017"
+  #   expose:
+  #     - "27017"
   #   volumes:
   #     - data:/data
 
   postgres:
+    image: postgres
     deploy:
       restart_policy:
         condition: any
     env_file: .env
+    expose:
+      - "5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-    image: postgres
-    networks:
-      default:
-        ipv4_address: 172.27.0.6
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./.init:/docker-entrypoint-initdb.d
 
-  react:
-    command: npm run start
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      NEXTAUTH_URL_INTERNAL: "http://react:3000"
-    image: "ghcr.io/modularhistory/react:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.9
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./_static:/modularhistory/_static
-
   redis:
+    image: redis
     deploy:
       restart_policy:
         condition: on-failure
+    expose:
+      - "6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 20s
       timeout: 10s
       retries: 3
-    image: redis
-    networks:
-      default:
-        ipv4_address: 172.27.0.7
-    ports:
-      - "6379:6379"
+      start_period: 20s
     volumes:
       - "data:/data"
 
-  # redisinsight:
-  #   depends_on:
-  #     - redis
-  #   deploy:
-  #     restart_policy:
-  #       condition: on-failure
-  #       max_attempts: 3
-  #   env_file: .env
-  #   environment:
-  #     REDIS_HOSTS: "local:redis:6379"
-  #   healthcheck:
-  #     test:
-  #       [
-  #         "CMD-SHELL",
-  #         "curl --fail http://localhost:8001/healthcheck/ || exit 1",
-  #       ]
-  #     timeout: 7s
-  #     interval: 15s
-  #     retries: 2
-  #     start_period: 10s
-  #   networks:
-  #     default:
-  #       ipv4_address: 172.27.0.14
-  #   image: redislabs/redisinsight:latest
-  #   ports:
-  #     - "8001:8001"
-  #   volumes:
-  #     - "redisinsight:/db"
-
-  webserver:
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    profiles: ["debug"]
     depends_on:
-      - django
-      - celery
-      - celery_beat
-      - react
+      - redis
     deploy:
       restart_policy:
         condition: on-failure
+        max_attempts: 3
     env_file: .env
     environment:
-      DOMAINS: "modularhistory.com,www.modularhistory.com"
-    image: "ghcr.io/modularhistory/webserver:$SHA"
+      REDIS_HOSTS: "local:redis:6379"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:8002/healthcheck/ || exit 1",
+        ]
+      timeout: 7s
+      interval: 15s
+      retries: 2
+      start_period: 10s
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "8002:8002"
     volumes:
-      - ./_media:/modularhistory/_media
-      - ./_static:/modularhistory/_static
-    networks:
-      default:
-        ipv4_address: 172.27.0.5
+      - "redisinsight:/db"
   
   cypress:
     # https://github.com/cypress-io/cypress-docker-images
@@ -286,13 +265,6 @@ services:
     volumes:
       - ./frontend/cypress:/e2e/cypress
       - ./frontend/cypress.json:/e2e/cypress.json
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.27.0.0/24
 
 volumes:
   # `data` is used by both redis and mongodb

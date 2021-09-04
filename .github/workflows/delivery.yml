@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [django, react, webserver]
+        image: [django, next, webserver]
     services:
       postgres:
         image: postgres:12
@@ -103,11 +103,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.prod.yml ]]; then
+          echo "Using docker-compose.prod.yml for default overrides..."
+          cp docker-compose.prod.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -122,7 +135,7 @@ jobs:
       id: venv-cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Test poetry environment (A)
       id: venv-test
       continue-on-error: true
@@ -132,7 +145,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
-        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
@@ -204,11 +217,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.prod.yml ]]; then
+          echo "Using docker-compose.prod.yml for default overrides..."
+          cp docker-compose.prod.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -223,7 +249,7 @@ jobs:
       id: venv-cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Test poetry environment (A)
       id: venv-test
       continue-on-error: true
@@ -233,7 +259,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
-        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
@@ -251,7 +277,8 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r ./.env ./docker-compose.yml ./docker-compose.prod.yml ./config modularhistory@$SERVER:~/
+        files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./config")
+        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r "${files_to_transport[@]}" modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} modularhistory@$SERVER << 'ENDSSH'
           echo "" && echo "Renaming docker-compose.prod.yml to docker-compose.override.yml ..."

@@ -33,7 +33,7 @@ Support
 
 Reach out to ModularHistory:
 
--  By email: modularhistory@gmail.com
+-  By email: support@modularhistory.com
 -  On Facebook: https://www.facebook.com/modularhistory
 -  On Twitter: https://twitter.com/ModularHistory
 
