@@ -3,8 +3,6 @@
 # Note: Environment variables are set in production environment 
 # before this script is run.
 
-pwd && ls config/scripts/init
-
 [ -z "$SHA" ] && echo "SHA is not set." && exit 1
 
 echo "" && echo "Updating PyInvoke config..."
@@ -28,15 +26,8 @@ for image_name in "${image_names[@]}"; do
     }
 done
 
-reload_nginx() {
-  docker-compose exec webserver /usr/sbin/nginx -s reload
-}
-
 green="_1"; blue="_2"
-new=$blue; old="$green"
-docker-compose ps | grep --quiet "$blue" && {
-    new=$green; old=$blue
-}
+new=$blue; docker-compose ps | grep --quiet "$blue" && new=$green
 
 containers=("django" "celery" "celery_beat" "next")
 declare -A old_container_ids
@@ -73,10 +64,12 @@ for container in "${containers[@]}"; do
 done
 
 echo "" && docker-compose ps
-# [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
 
-# echo "" && echo "Reloading nginx..."
-# reload_nginx
+# Reload the nginx configuration file without downtime.
+# https://nginx.org/en/docs/beginners_guide.html#control 
+docker-compose exec webserver nginx -s reload || {
+    echo "Failed to reload nginx config file."; exit 1
+}
 
 echo "" && echo "Pruning (https://docs.docker.com/config/pruning/) ..."
 docker image prune -a -f

@@ -206,7 +206,8 @@ jobs:
       with:
         environment: test
     - includes: ./.github/actions/run
-    - run: bash config/scripts/deploy.sh
+    - name: Run deploy script
+      run: bash config/scripts/deploy.sh
 
   check-types:
     name: Check types
