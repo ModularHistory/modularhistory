@@ -30,8 +30,7 @@ services:
       - ./config/nginx/prod:/etc/nginx/conf.d
     networks:
       default:
-      gateway:
-        ipv4_address: 172.27.0.5
+        ipv4_address: 172.27.0.254
 
   next:
     image: "ghcr.io/modularhistory/next:$SHA"
@@ -272,11 +271,6 @@ services:
 
 networks:
   default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.17.0.0/24
-  gateway:
     driver: bridge
     ipam:
       config:
