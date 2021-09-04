@@ -1,10 +1,10 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.entities.api import views
 
 router = routers.DefaultRouter()
-router.register(r'', views.EntityViewSet)
+router.register('', views.EntityViewSet)
 
 app_name = 'entities'
 
