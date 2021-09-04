@@ -46,13 +46,14 @@ for container in "${containers[@]}"; do
     # new_container_id=$(docker ps -f name=$service_name -q | head -n1)
     # new_container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $new_container_id)
     docker-compose ps | grep $new | grep "Exit 127" && exit 1
-    healthy=false; timeout=300; interval=20; waited=0
+    healthy=false; timeout=300; interval=30; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
         [[ "$(docker-compose ps | grep $new)" =~ (Exit|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then 
-            docker-compose logs --tail 20; echo ""; docker-compose ps | grep $new; echo ""
-            echo "Waiting for containers (${waited}s) ..."; echo ""
+            docker-compose logs --tail 20 "$container"
+            echo ""; docker-compose ps | grep $new; echo ""
+            echo "Waiting for $container to be healthy (${waited}s) ..."; echo ""
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
                 echo "Timed out."; docker-compose logs; exit 1
@@ -86,8 +87,8 @@ done
 
 echo "" && echo "Taking old containers offline..."
 for old_container_id in "${old_container_ids[@]}"; do
-    docker stop $old_container_id
-    docker rm $old_container_id
+    docker stop "$old_container_id"
+    docker rm "$old_container_id"
 done
 
 for container in "${containers[@]}"; do
