@@ -178,6 +178,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
+            {/* #ContentTypesHardCoded */}
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
               {{ label: "Occurrences", key: "occurrences" }}
               {{ label: "Quotes", key: "quotes" }}
