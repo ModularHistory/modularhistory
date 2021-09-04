@@ -33,8 +33,8 @@ for image_name in "${images_to_pull[@]}"; do
 done
 
 # Deploy new containers.
-green="_1"; blue="_2"
-new=$blue; docker-compose ps | grep --quiet "$blue" && new=$green
+green="_1"; blue="_2" && new=$blue
+docker-compose ps | grep --quiet "$blue" && new=$green
 declare -A old_container_ids
 for container in "${containers_to_deploy[@]}"; do
     old_container_ids[$container]=$(docker ps -f name=$container -q | tail -n1)
@@ -72,7 +72,7 @@ echo "" && docker-compose ps
 
 # Reload the nginx configuration file without downtime.
 # https://nginx.org/en/docs/beginners_guide.html#control
-COMPOSE_INTERACTIVE_NO_CLI=1 docker-compose exec webserver nginx -s reload || {
+docker-compose exec -T webserver nginx -s reload || {
     echo "Failed to reload nginx config file."; exit 1
 }
 
