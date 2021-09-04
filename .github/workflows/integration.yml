@@ -653,7 +653,8 @@ jobs:
             fi
           fi
         done; docker-compose ps
-    - run: bash config/scripts/deploy.sh
+    - name: Run deploy script
+      run: bash config/scripts/deploy.sh
   check-types:
     name: Check types
     needs: changed-files
