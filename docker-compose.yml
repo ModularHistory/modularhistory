@@ -273,6 +273,9 @@ services:
 networks:
   default:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.17.0.0/24
   gateway:
     driver: bridge
     ipam:
