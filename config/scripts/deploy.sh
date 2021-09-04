@@ -37,8 +37,11 @@ green="green"; blue="blue" && new=$blue
 docker-compose ps | grep --quiet "$blue" && new=$green
 declare -A old_container_ids
 for container in "${containers_to_deploy[@]}"; do
-    old_container_ids[$container]=$(docker ps -f name=$container -q | tail -n1)
-    docker-compose up -d --no-deps --scale ${container}=2 --no-recreate "$container"
+    old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
+    docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
+    container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
+    new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
+    docker rename "$container_name" "$new_container_name"
     docker-compose ps | grep $new | grep "Exit 127" && exit 1
     healthy=false; timeout=300; interval=15; waited=0
     while [[ "$healthy" = false ]]; do
@@ -65,7 +68,7 @@ for old_container_id in "${old_container_ids[@]}"; do
     docker rm "$old_container_id"
 done
 for container in "${containers_to_deploy[@]}"; do
-    docker-compose up -d --no-deps --scale ${container}=1 --no-recreate "$container"
+    docker-compose up -d --no-deps --scale "${container}=1" --no-recreate "$container"
 done
 echo "" && echo "Finished removing old containers."
 echo "" && docker-compose ps
