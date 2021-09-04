@@ -266,13 +266,6 @@ services:
       - ./frontend/cypress:/e2e/cypress
       - ./frontend/cypress.json:/e2e/cypress.json
 
-# networks:
-#   default:
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 172.27.0.0/24
-
 volumes:
   # `data` is used by both redis and mongodb
   data:
