@@ -40,7 +40,7 @@ for container in "${containers_to_deploy[@]}"; do
     old_container_ids[$container]=$(docker ps -f name=$container -q | tail -n1)
     docker-compose up -d --no-deps --scale ${container}=2 --no-recreate "$container"
     docker-compose ps | grep $new | grep "Exit 127" && exit 1
-    healthy=false; timeout=300; interval=30; waited=0
+    healthy=false; timeout=300; interval=20; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
         [[ "$(docker-compose ps | grep $new)" =~ (Exit|unhealthy|starting) ]] && healthy=false
@@ -71,8 +71,8 @@ done
 echo "" && docker-compose ps
 
 # Reload the nginx configuration file without downtime.
-# https://nginx.org/en/docs/beginners_guide.html#control 
-docker-compose exec webserver nginx -s reload || {
+# https://nginx.org/en/docs/beginners_guide.html#control
+COMPOSE_INTERACTIVE_NO_CLI=1 docker-compose exec webserver nginx -s reload || {
     echo "Failed to reload nginx config file."; exit 1
 }
 
