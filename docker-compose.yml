@@ -28,9 +28,6 @@ services:
       # container would always have to be stopped (so its static IP address becomes 
       # available) before starting a replacement container with an updated nginx config.
       - ./config/nginx/prod:/etc/nginx/conf.d
-    networks:
-      default:
-        ipv4_address: 172.27.0.254
 
   next:
     image: "ghcr.io/modularhistory/next:$SHA"
@@ -268,13 +265,6 @@ services:
     volumes:
       - ./frontend/cypress:/e2e/cypress
       - ./frontend/cypress.json:/e2e/cypress.json
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.27.0.0/24
 
 volumes:
   # `data` is used by both redis and mongodb
