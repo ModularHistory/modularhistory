@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
+from core.models.module import ModuleSerializerDrf
 from apps.entities.models.entity import Entity
-from apps.search.api.serializers import SearchableModelSerializerDrf
 
 
 class CategorySerializer(serializers.Serializer):
@@ -26,7 +26,7 @@ class CategorizationSerializer(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntityModelSerializer(SearchableModelSerializerDrf):
+class EntityModelSerializer(ModuleSerializerDrf):
     """Serializer for entities."""
     description = serializers.CharField(required=False)
     categorizations = CategorizationSerializer(many=True, required=False, source='categorizations.all')
@@ -44,8 +44,8 @@ class EntityModelSerializer(SearchableModelSerializerDrf):
         """Return the entity's death date, serialized."""
         return instance.death_date.serialize() if instance.death_date else None
 
-    class Meta(SearchableModelSerializerDrf.Meta):
+    class Meta(ModuleSerializerDrf.Meta):
         model = Entity
-        fields = SearchableModelSerializerDrf.Meta.fields + ['name', 'unabbreviated_name', 'aliases', 'description', 'truncated_description',
+        fields = ModuleSerializerDrf.Meta.fields + ['name', 'unabbreviated_name', 'aliases', 'description', 'truncated_description',
                                                              'categorizations', 'birth_date', 'death_date', 'birthDate', 'deathDate']
         read_only_fields = ['truncated_description']

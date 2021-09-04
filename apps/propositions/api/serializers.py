@@ -1,9 +1,9 @@
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class _PropositionSerializer(SearchableModelSerializer):
+class _PropositionSerializer(ModuleSerializer):
     """Serializer for propositions."""
 
     summary = serpy.StrField()

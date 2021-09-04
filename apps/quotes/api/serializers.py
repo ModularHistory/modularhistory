@@ -5,10 +5,10 @@ from django.template.defaultfilters import truncatechars_html
 
 from apps.quotes.models.quote import Quote
 
-from apps.search.api.serializers import SearchableModelSerializerDrf
+from core.models.module import ModuleSerializerDrf
 
 
-class QuoteModelSerializer(SearchableModelSerializerDrf):
+class QuoteModelSerializer(ModuleSerializerDrf):
     """Serializer for quotes."""
 
     bite = serializers.SerializerMethodField()
@@ -22,8 +22,8 @@ class QuoteModelSerializer(SearchableModelSerializerDrf):
         # Set `bite` to truncated text if it does not exist.
         return instance.bite if instance.bite else truncatechars_html(instance.text, 150)
 
-    class Meta(SearchableModelSerializerDrf.Meta):
+    class Meta(ModuleSerializerDrf.Meta):
         model = Quote
-        fields = SearchableModelSerializerDrf.Meta.fields + ['bite', 'html', 'attributee_html', 'attributee_string', 'date_string',
+        fields = ModuleSerializerDrf.Meta.fields + ['bite', 'html', 'attributee_html', 'attributee_string', 'date_string',
                                                              'cached_images', 'primary_image', 'cached_citations']
 

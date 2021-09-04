@@ -11,12 +11,7 @@ ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    title = serpy.StrField()
-    slug = serpy.StrField()
-    admin_url = serpy.StrField()
-    verified = serpy.BoolField()
     meta = serpy.MethodField()
-    cached_tags = serpy.Field()
 
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
@@ -32,12 +27,7 @@ class SearchableModelSerializer(ModelSerializer):
 class SearchableModelSerializerDrf(ModelSerializerDrf):
     """Base serializer for searchable models."""
 
-    title = serializers.CharField(required=False)
-    slug = serializers.CharField(required=False)
-    admin_url = serializers.CharField(required=False)
-    verified = serializers.BooleanField(required=False)
     meta = serializers.SerializerMethodField(required=False)
-    cached_tags = serializers.JSONField(required=False)
 
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
@@ -50,4 +40,4 @@ class SearchableModelSerializerDrf(ModelSerializerDrf):
         return model.meta.to_dict()
 
     class Meta(ModelSerializerDrf.Meta):
-        fields = ModelSerializerDrf.Meta.fields + ['title', 'slug', 'admin_url', 'verified', 'meta', 'cached_tags']
+        fields = ModelSerializerDrf.Meta.fields + ['meta',]

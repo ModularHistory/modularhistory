@@ -2,14 +2,14 @@ from typing import TYPE_CHECKING
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 if TYPE_CHECKING:
     from apps.occurrences.models.occurrence import Occurrence
     from apps.propositions.models.proposition import Proposition
 
 
-class OccurrenceSerializer(SearchableModelSerializer):
+class OccurrenceSerializer(ModuleSerializer):
     """Serializer for occurrences."""
 
     proposition = serpy.MethodField()
