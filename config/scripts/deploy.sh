@@ -55,19 +55,19 @@ for container in "${containers_to_deploy[@]}"; do
         fi
     done
 done
+echo "" && echo "Finished deploying new containers."
+echo "" && docker-compose ps
 
-# Stop the old containers.
+# Stop and remove the old containers.
 echo "" && echo "Taking old containers offline..."
 for old_container_id in "${old_container_ids[@]}"; do
     docker stop "$old_container_id"
     docker rm "$old_container_id"
 done
-echo "" && docker-compose ps
-
-# Remove the old containers.
 for container in "${containers_to_deploy[@]}"; do
     docker-compose up -d --no-deps --scale ${container}=1 --no-recreate "$container"
 done
+echo "" && echo "Finished removing old containers."
 echo "" && docker-compose ps
 
 # Reload the nginx configuration file without downtime.

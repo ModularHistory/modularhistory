@@ -43,15 +43,17 @@ runs:
         echo "Starting containers with version $SHA ..."
         docker-compose up -d webserver; echo ""; docker-compose ps
         [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
-        healthy=false; timeout=300; interval=20; waited=0
+        healthy=false; timeout=300; interval=15; waited=0
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
-          if [[ "$healthy" = false ]]; then 
-            docker-compose logs --tail 20; echo ""; docker-compose ps; echo ""
-            echo "Waiting for containers (${waited}s) ..."; echo ""
+          if [[ "$healthy" = false ]]; then
+            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 15
+            echo "" && docker-compose ps
+            echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
-              echo "Timed out."; docker-compose logs; exit 1
+              echo "" && echo "Timed out."
+              docker-compose logs; exit 1
             fi
           fi
         done; docker-compose ps
