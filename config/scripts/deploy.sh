@@ -34,8 +34,6 @@ declare -A old_container_ids
 for container in "${containers[@]}"; do
     old_container_ids[$container]=$(docker ps -f name=$container -q | tail -n1)
     docker-compose up -d --no-deps --scale ${container}=2 --no-recreate "$container"
-    # new_container_id=$(docker ps -f name=$service_name -q | head -n1)
-    # new_container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $new_container_id)
     docker-compose ps | grep $new | grep "Exit 127" && exit 1
     healthy=false; timeout=300; interval=30; waited=0
     while [[ "$healthy" = false ]]; do
@@ -44,10 +42,10 @@ for container in "${containers[@]}"; do
         if [[ "$healthy" = false ]]; then 
             docker-compose logs --tail 20 "$container"
             echo ""; docker-compose ps | grep $new; echo ""
-            echo "Waiting for $container to be healthy (${waited}s) ..."; echo ""
+            echo "Waiting for $container to be healthy (total: ${waited}s) ..."; echo ""
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
-                echo "Timed out."; docker-compose logs; exit 1
+                docker-compose logs; echo "Timed out."; exit 1
             fi
         fi
     done
@@ -72,7 +70,6 @@ docker-compose exec webserver nginx -s reload || {
 }
 
 echo "" && echo "Pruning (https://docs.docker.com/config/pruning/) ..."
-docker image prune -a -f
-docker system prune -f
+docker image prune -a -f; docker system prune -f
 
 echo "" && echo "Done."
