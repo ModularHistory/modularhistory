@@ -70,11 +70,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.dev.yml ]]; then
+          echo "Using docker-compose.dev.yml for default overrides..."
+          cp docker-compose.dev.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -89,7 +102,7 @@ jobs:
       id: venv-cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Test poetry environment (A)
       id: venv-test
       continue-on-error: true
@@ -99,7 +112,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
-        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}

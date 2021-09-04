@@ -64,7 +64,7 @@ RUN python -c "import nltk; nltk.download('punkt')" && python -m textblob.downlo
 
 # Add source code.
 COPY . /modularhistory/
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY config/invoke.yaml /etc/invoke.yaml
 
 # Collect static files.

@@ -266,8 +266,13 @@ class Change(AbstractChange):
             reason=reason,
         )
         if force:
-            self.moderation_status = verdict
-            self.save()
+            if moderator and moderator.is_superuser:
+                self.moderation_status = verdict
+                self.save()
+            else:
+                logging.error(
+                    f'Cannot process force-approval by non-superuser moderator {moderator}.'
+                )
         return moderation
 
     def reject(
