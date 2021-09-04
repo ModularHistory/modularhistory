@@ -39,12 +39,26 @@ runs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Configure docker-compose.
+    - name: Configure Docker Compose
+      shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.${{ inputs.environment }}.yml ]]; then
+          echo "Using docker-compose.${{ inputs.environment }}.yml for default overrides..."
+          cp docker-compose.${{ inputs.environment }}.yml docker-compose.override.yml
+        fi
+        echo "Done."
     # Modify hosts file.
     - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     # Install PyInvoke config.
     - name: Install PyInvoke config
       run: |

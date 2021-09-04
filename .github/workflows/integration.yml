@@ -120,11 +120,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.dev.yml ]]; then
+          echo "Using docker-compose.dev.yml for default overrides..."
+          cp docker-compose.dev.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -189,11 +202,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -307,11 +333,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -383,11 +422,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -454,23 +506,21 @@ jobs:
     - name: Start up containers
       shell: bash
       run: |
-        shopt -s expand_aliases
-        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
         echo "Starting containers with version $SHA ..."
-        compose up -d webserver; compose logs; echo ""; compose ps
-        [[ ! "$(compose ps)" =~ webserver ]] && exit 1
+        docker-compose up -d webserver; echo ""; docker-compose ps
+        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
         healthy=false; timeout=300; interval=20; waited=0
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then 
-            compose logs --tail 20; echo ""; compose ps; echo ""
+            docker-compose logs --tail 20; echo ""; docker-compose ps; echo ""
             echo "Waiting for containers (${waited}s) ..."; echo ""
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
-              echo "Timed out."; compose logs; exit 1
+              echo "Timed out."; docker-compose logs; exit 1
             fi
           fi
-        done; compose ps
+        done; docker-compose ps
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -504,11 +554,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
@@ -575,23 +638,21 @@ jobs:
     - name: Start up containers
       shell: bash
       run: |
-        shopt -s expand_aliases
-        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
         echo "Starting containers with version $SHA ..."
-        compose up -d webserver; compose logs; echo ""; compose ps
-        [[ ! "$(compose ps)" =~ webserver ]] && exit 1
+        docker-compose up -d webserver; echo ""; docker-compose ps
+        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
         healthy=false; timeout=300; interval=20; waited=0
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then 
-            compose logs --tail 20; echo ""; compose ps; echo ""
+            docker-compose logs --tail 20; echo ""; docker-compose ps; echo ""
             echo "Waiting for containers (${waited}s) ..."; echo ""
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
-              echo "Timed out."; compose logs; exit 1
+              echo "Timed out."; docker-compose logs; exit 1
             fi
           fi
-        done; compose ps
+        done; docker-compose ps
     - run: bash config/scripts/deploy.sh
   check-types:
     name: Check types
@@ -624,11 +685,24 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml

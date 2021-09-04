@@ -40,20 +40,18 @@ runs:
     - name: Start up containers
       shell: bash
       run: |
-        shopt -s expand_aliases
-        alias compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
         echo "Starting containers with version $SHA ..."
-        compose up -d webserver; echo ""; compose ps
-        [[ ! "$(compose ps)" =~ webserver ]] && exit 1
+        docker-compose up -d webserver; echo ""; docker-compose ps
+        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
         healthy=false; timeout=300; interval=20; waited=0
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then 
-            compose logs --tail 20; echo ""; compose ps; echo ""
+            docker-compose logs --tail 20; echo ""; docker-compose ps; echo ""
             echo "Waiting for containers (${waited}s) ..."; echo ""
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
-              echo "Timed out."; compose logs; exit 1
+              echo "Timed out."; docker-compose logs; exit 1
             fi
           fi
-        done; compose ps
+        done; docker-compose ps
