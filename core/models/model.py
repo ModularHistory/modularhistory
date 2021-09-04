@@ -229,7 +229,6 @@ class ModelSerializerDrf(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     model = serializers.SerializerMethodField()
-    absolute_url = serializers.CharField(required=False)
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
@@ -237,4 +236,4 @@ class ModelSerializerDrf(serializers.ModelSerializer):
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
     class Meta:
-        fields = ['id', 'absolute_url']
+        fields = ['id', 'model', 'absolute_url']

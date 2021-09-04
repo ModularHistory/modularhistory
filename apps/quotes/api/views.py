@@ -1,22 +1,17 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import RetrieveAPIView
 
 from apps.quotes.models.quote import Quote
-from apps.quotes.serializers import QuoteSerializer
+from apps.quotes.api.serializers import QuoteModelSerializer
 
 
 class QuoteViewSet(ModelViewSet):
     """API endpoint for viewing and editing quotes."""
 
     queryset = Quote.objects.all()
-    serializer_class = QuoteSerializer
-
-
-class QuoteListAPIView(ListAPIView):
-    """API view for listing quotes."""
-
-    queryset = Quote.objects.all()
-    serializer_class = QuoteSerializer
+    serializer_class = QuoteModelSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class QuoteAPIView(RetrieveAPIView):
@@ -24,4 +19,4 @@ class QuoteAPIView(RetrieveAPIView):
 
     queryset = Quote.objects.all()
     lookup_field = 'slug'
-    serializer_class = QuoteSerializer
+    serializer_class = QuoteModelSerializer
