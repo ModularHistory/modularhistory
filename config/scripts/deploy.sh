@@ -44,7 +44,7 @@ for container in "${containers_to_deploy[@]}"; do
     while [[ "$healthy" = false ]]; do
         healthy=true
         [[ "$(docker-compose ps | grep $new)" =~ (Exit|unhealthy|starting) ]] && healthy=false
-        if [[ "$healthy" = false ]]; then 
+        if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
             echo ""; docker-compose ps | grep $new; echo ""
             echo "Waiting for $container to be healthy (total: ${waited}s) ..."; echo ""
