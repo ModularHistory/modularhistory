@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.quotes.api import views
@@ -10,5 +10,4 @@ app_name = 'quotes'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('<slug:slug>/', views.QuoteAPIView.as_view()),
 ]

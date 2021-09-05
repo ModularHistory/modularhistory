@@ -11,21 +11,14 @@ class PropositionViewSet(ModelViewSet):
     """API endpoint for viewing and editing propositions."""
 
     queryset = Proposition.objects.filter(type='propositions.conclusion', verified=True)
+    lookup_field = 'slug'
     serializer_class = PropositionModelSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-class PropositionAPIView(RetrieveAPIView):
-    """API view for retrieving a proposition."""
-
-    queryset = Proposition.objects.all()
-    serializer_class = PropositionModelSerializer
-    lookup_field = 'slug'
 
 
 class PropositionModerationAPIView(RetrieveAPIView):
     """API view for retrieving a proposition for moderation."""
 
     queryset = Proposition.objects.all()
-    serializer_class = get_moderated_model_serializer(Proposition)
+    serializer_class = get_moderated_model_serializer(PropositionModelSerializer)
     lookup_field = 'slug'

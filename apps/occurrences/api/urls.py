@@ -9,6 +9,5 @@ router.register('', views.OccurrenceViewSet)
 app_name = 'occurrences'
 
 urlpatterns = [
-    path('<slug:slug>/', views.OccurrenceAPIView.as_view()),
     path('', include(router.urls)),
 ]

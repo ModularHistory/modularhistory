@@ -10,5 +10,4 @@ app_name = 'topics'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('<slug>', views.TopicAPIView.as_view()),
 ]
