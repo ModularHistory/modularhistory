@@ -1,5 +1,7 @@
+import logging
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -9,6 +11,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.translation import gettext_lazy as _
 
 from apps.moderation.models.moderated_model import ModeratedModel
+from apps.redirects.models import Redirect
 from core.fields.html_field import HTMLField
 
 if TYPE_CHECKING:
@@ -18,8 +21,8 @@ if TYPE_CHECKING:
 class FlatPage(ModeratedModel):
     """A page of "flat" HTML content."""
 
-    url = models.CharField(
-        verbose_name=_('URL'),
+    path = models.CharField(
+        verbose_name=_('URL path'),
         max_length=100,
         db_index=True,
         validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/$')],
@@ -43,8 +46,24 @@ class FlatPage(ModeratedModel):
         ordering = ['url']
         unique_together = ['url']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_path = self.path
+
     def __str__(self):
         return f'{self.url} -- {self.title}'
+
+    def save(self, **kwargs):
+        if self.path != self._original_path:
+            try:
+                Redirect.objects.create(
+                    old_path=self._original_path,
+                    new_path=self.path,
+                    site=settings.SITE_ID,
+                )
+            except Exception as err:
+                logging.error(err)
+        return super().save(**kwargs)
 
     def clean(self):
         url = self.url

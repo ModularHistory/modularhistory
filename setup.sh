@@ -239,7 +239,14 @@ fi
 brew_install watchman
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$VOLUMES_DIR/db/backups" "$VOLUMES_DIR/db/init" "$VOLUMES_DIR/media" "$VOLUMES_DIR/static" "$PROJECT_DIR/frontend/.next" )
+declare -a writable_dirs=(
+  "$VOLUMES_DIR/db/backups"
+  "$VOLUMES_DIR/db/init"
+  "$VOLUMES_DIR/media"
+  "$VOLUMES_DIR/static"
+  "$VOLUMES_DIR/redirects"
+  "$PROJECT_DIR/frontend/.next"
+)
 
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null

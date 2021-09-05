@@ -481,7 +481,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - name: Create writable volume directories
       run: |
-        dir_names=( "db/backups" "db/init" "static" "media" )
+        dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
         for dir_name in "${dir_names[@]}"; do
           dir_path="_volumes/${dir_name}"
           mkdir -p "$dir_path"; {
@@ -616,7 +616,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - name: Create writable volume directories
       run: |
-        dir_names=( "db/backups" "db/init" "static" "media" )
+        dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
         for dir_name in "${dir_names[@]}"; do
           dir_path="_volumes/${dir_name}"
           mkdir -p "$dir_path"; {
