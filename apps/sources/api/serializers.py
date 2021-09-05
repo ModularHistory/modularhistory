@@ -1,6 +1,6 @@
 """Serializers for the entities app."""
 
-from apps.sources.models import AbstractCitation, Source
+from apps.sources.models import AbstractCitation, Source, SourceContainment
 from core.models.model import ModelSerializerDrf
 from core.models.module import ModuleSerializerDrf
 
@@ -27,7 +27,7 @@ class ContainmentModelSerializer(ModelSerializerDrf):
         return 'sources.sourcecontainment'
 
     class Meta(ModelSerializerDrf.Meta):
-        model = Source
+        model = SourceContainment
         fields = ModelSerializerDrf.Meta.fields + [
             'phrase',
             'page_number',
