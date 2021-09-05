@@ -43,6 +43,8 @@ services:
         condition: none
     image: django:latest
     user: root
+    ports:
+      - "8000:8000"
     volumes:
       - .:/modularhistory
       - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
@@ -83,6 +85,8 @@ services:
       REACT_EDITOR: "code"
     image: next:latest
     user: root # avoid permissions issues with writing in build dir
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
@@ -92,3 +96,19 @@ services:
   cypress:
     environment:
       - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
+
+  elasticsearch:
+    ports:
+      - "9200:9200"
+
+  kibana:
+    ports:
+      - "5601:5601"
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
