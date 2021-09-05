@@ -17,8 +17,8 @@ from apps.moderation.models.searchable import (
     SearchableModeratedModel,
 )
 from apps.search.api.serializers import (
+    DrfSearchableModelSerializer,
     SearchableModelSerializer,
-    SearchableModelSerializerDrf,
 )
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
@@ -43,7 +43,7 @@ class ModuleSerializer(SearchableModelSerializer):
     cached_tags = serpy.Field(required=False)
 
 
-class ModuleSerializerDrf(SearchableModelSerializerDrf):
+class DrfModuleSerializer(DrfSearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
     title = serializers.CharField(required=False)
@@ -52,8 +52,8 @@ class ModuleSerializerDrf(SearchableModelSerializerDrf):
     admin_url = serializers.CharField(required=False)
     cached_tags = serializers.JSONField(required=False)
 
-    class Meta(SearchableModelSerializerDrf.Meta):
-        fields = SearchableModelSerializerDrf.Meta.fields + [
+    class Meta(DrfSearchableModelSerializer.Meta):
+        fields = DrfSearchableModelSerializer.Meta.fields + [
             'title',
             'slug',
             'absolute_url',
@@ -62,13 +62,13 @@ class ModuleSerializerDrf(SearchableModelSerializerDrf):
         ]
 
 
-class TypedModuleSerializerDrf(ModuleSerializerDrf):
+class DrfTypedModuleSerializer(DrfModuleSerializer):
     """Base serializer for ModularHistory's typed modules."""
 
     type = serializers.CharField(write_only=True, required=True)
 
-    class Meta(ModuleSerializerDrf.Meta):
-        fields = ModuleSerializerDrf.Meta.fields + ['type']
+    class Meta(DrfModuleSerializer.Meta):
+        fields = DrfModuleSerializer.Meta.fields + ['type']
 
 
 class Views(Constant):

@@ -1,23 +1,23 @@
 """Serializers for the entities app."""
 
 from apps.sources.models import AbstractCitation, Source, SourceContainment
-from core.models.model import ModelSerializerDrf
-from core.models.module import ModuleSerializerDrf
+from core.models.model import DrfModelSerializer
+from core.models.module import DrfModuleSerializer
 
 
-class SourceModelSerializer(ModuleSerializerDrf):
+class SourceModelSerializer(DrfModuleSerializer):
     """Serializer for sources."""
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'sources.source'
 
-    class Meta(ModuleSerializerDrf.Meta):
+    class Meta(DrfModuleSerializer.Meta):
         model = Source
-        fields = ModuleSerializerDrf.Meta.fields + ['citation_html']
+        fields = DrfModuleSerializer.Meta.fields + ['citation_html']
 
 
-class ContainmentModelSerializer(ModelSerializerDrf):
+class ContainmentModelSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
     container = SourceModelSerializer()
@@ -26,9 +26,9 @@ class ContainmentModelSerializer(ModelSerializerDrf):
         """Return the model name of the instance."""
         return 'sources.sourcecontainment'
 
-    class Meta(ModelSerializerDrf.Meta):
+    class Meta(DrfModelSerializer.Meta):
         model = SourceContainment
-        fields = ModelSerializerDrf.Meta.fields + [
+        fields = DrfModelSerializer.Meta.fields + [
             'phrase',
             'page_number',
             'end_page_number',
@@ -36,9 +36,9 @@ class ContainmentModelSerializer(ModelSerializerDrf):
         ]
 
 
-class CitationModelSerializer(ModelSerializerDrf):
+class CitationModelSerializer(DrfModelSerializer):
     """Serializer for citations."""
 
-    class Meta(ModelSerializerDrf.Meta):
+    class Meta(DrfModelSerializer.Meta):
         model = AbstractCitation
-        fields = ModelSerializerDrf.Meta.fields + ['html']
+        fields = DrfModelSerializer.Meta.fields + ['html']

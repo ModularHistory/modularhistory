@@ -1,9 +1,9 @@
 from typing import Optional
 
 import serpy
-
 from rest_framework import serializers
-from core.models.model import ModelSerializer, ModelSerializerDrf
+
+from core.models.model import DrfModelSerializer, ModelSerializer
 
 ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 
@@ -24,7 +24,7 @@ class SearchableModelSerializer(ModelSerializer):
         return model.meta.to_dict()
 
 
-class SearchableModelSerializerDrf(ModelSerializerDrf):
+class DrfSearchableModelSerializer(DrfModelSerializer):
     """Base serializer for searchable models."""
 
     meta = serializers.SerializerMethodField(required=False)
@@ -39,5 +39,7 @@ class SearchableModelSerializerDrf(ModelSerializerDrf):
                 del meta[key]
         return model.meta.to_dict()
 
-    class Meta(ModelSerializerDrf.Meta):
-        fields = ModelSerializerDrf.Meta.fields + ['meta',]
+    class Meta(DrfModelSerializer.Meta):
+        fields = DrfModelSerializer.Meta.fields + [
+            'meta',
+        ]

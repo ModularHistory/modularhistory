@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.entities.models.entity import Entity
-from core.models.module import TypedModuleSerializerDrf
+from core.models.module import DrfTypedModuleSerializer
 
 
 class CategorySerializer(serializers.Serializer):
@@ -26,7 +26,7 @@ class CategorizationSerializer(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntityModelSerializer(TypedModuleSerializerDrf):
+class EntityModelSerializer(DrfTypedModuleSerializer):
     """Serializer for entities."""
 
     description = serializers.CharField(required=False)
@@ -47,9 +47,9 @@ class EntityModelSerializer(TypedModuleSerializerDrf):
         """Return the entity's death date, serialized."""
         return instance.death_date.serialize() if instance.death_date else None
 
-    class Meta(TypedModuleSerializerDrf.Meta):
+    class Meta(DrfTypedModuleSerializer.Meta):
         model = Entity
-        fields = TypedModuleSerializerDrf.Meta.fields + [
+        fields = DrfTypedModuleSerializer.Meta.fields + [
             'name',
             'unabbreviated_name',
             'aliases',

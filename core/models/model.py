@@ -225,7 +225,7 @@ class ModelSerializer(serpy.Serializer):
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
 
-class ModelSerializerDrf(serializers.ModelSerializer):
+class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     model = serializers.SerializerMethodField()
@@ -239,10 +239,10 @@ class ModelSerializerDrf(serializers.ModelSerializer):
         fields = ['id', 'model']
 
 
-class TypedModelSerializerDrf(ModelSerializerDrf):
+class DrfTypedModelSerializer(DrfModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
     type = serializers.CharField(write_only=True, required=True)
 
-    class Meta(ModelSerializerDrf.Meta):
-        fields = ModelSerializerDrf.Meta.fields + ['type']
+    class Meta(DrfModelSerializer.Meta):
+        fields = DrfModelSerializer.Meta.fields + ['type']

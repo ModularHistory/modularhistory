@@ -1,18 +1,18 @@
 from apps.propositions.models import Argument, Occurrence, Proposition
-from core.models.model import ModelSerializerDrf
-from core.models.module import ModuleSerializerDrf
+from core.models.model import DrfModelSerializer
+from core.models.module import DrfModuleSerializer
 
 
-class _PropositionModelSerializer(ModuleSerializerDrf):
+class _PropositionModelSerializer(DrfModuleSerializer):
     """Serializer for propositions."""
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
         return 'propositions.proposition'
 
-    class Meta(ModuleSerializerDrf.Meta):
+    class Meta(DrfModuleSerializer.Meta):
         model = Proposition
-        fields = ModuleSerializerDrf.Meta.fields + [
+        fields = DrfModuleSerializer.Meta.fields + [
             'summary',
             'elaboration',
             'certainty',
@@ -25,14 +25,14 @@ class _PropositionModelSerializer(ModuleSerializerDrf):
         extra_kwargs = {'certainty': {'required': False}}
 
 
-class ArgumentModelSerializer(ModelSerializerDrf):
+class ArgumentModelSerializer(DrfModelSerializer):
     """Serializer for arguments."""
 
     premises = _PropositionModelSerializer(many=True, source='premises.all')
 
-    class Meta(ModelSerializerDrf.Meta):
+    class Meta(DrfModelSerializer.Meta):
         model = Argument
-        fields = ModelSerializerDrf.Meta.fields + ['explanation', 'premises']
+        fields = DrfModelSerializer.Meta.fields + ['explanation', 'premises']
 
 
 class PropositionModelSerializer(_PropositionModelSerializer):

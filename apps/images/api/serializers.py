@@ -1,19 +1,19 @@
 """Serializers for the entities app."""
 
 from apps.images.models import Image
-from core.models.module import ModuleSerializerDrf
+from core.models.module import DrfModuleSerializer
 
 
-class ImageModelSerializer(ModuleSerializerDrf):
+class ImageModelSerializer(DrfModuleSerializer):
     """Serializer for images."""
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
         return 'images.image'
 
-    class Meta(ModuleSerializerDrf.Meta):
+    class Meta(DrfModuleSerializer.Meta):
         model = Image
-        fields = ModuleSerializerDrf.Meta.fields + [
+        fields = DrfModuleSerializer.Meta.fields + [
             'src_url',
             'width',
             'height',

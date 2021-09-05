@@ -1,19 +1,19 @@
 """Serializers for the entities app."""
 
 from apps.topics.models import Topic
-from core.models.module import ModuleSerializerDrf
+from core.models.module import DrfModuleSerializer
 
 
-class TopicModelSerializer(ModuleSerializerDrf):
+class TopicModelSerializer(DrfModuleSerializer):
     """Serializer for topics."""
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""
         return 'topics.topic'
 
-    class Meta(ModuleSerializerDrf.Meta):
+    class Meta(DrfModuleSerializer.Meta):
         model = Topic
-        fields = ModuleSerializerDrf.Meta.fields + [
+        fields = DrfModuleSerializer.Meta.fields + [
             'name',
             'aliases',
             'description',
