@@ -72,10 +72,7 @@ RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/_volumes/media && \
-  chmod g+w -R /modularhistory/_volumes/static && \
-  chmod g+w -R /modularhistory/_volumes/db/backups && \
-  chmod g+w -R /modularhistory/_volumes/db/init && \
+  chmod g+w -R /modularhistory/_volumes && \
   chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
