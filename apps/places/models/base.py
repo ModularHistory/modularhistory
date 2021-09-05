@@ -53,7 +53,7 @@ class Place(TypedModel, Module):
         """Return the location's string representation."""
         return self.string
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """Save the place to the database."""
         if self.type == 'places.place' or not self.type:
             raise ValidationError('Place must have a type.')
