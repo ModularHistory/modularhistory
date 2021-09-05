@@ -89,7 +89,6 @@ def date_sorter(model_instance: Union[SearchableDatedModel, dict]) -> datetime:
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1
         date = date.replace(microsecond=microsecond)
-    print(f'>>> {date}: {model_instance}')
     return date
 
 

@@ -69,6 +69,7 @@ urlpatterns = [
     # App URLs
     # ---------------------------------
     path('chat/', include('apps.chat.urls', namespace='chat')),
+    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),
@@ -78,7 +79,6 @@ urlpatterns = [
     path('api/quotes/', include(_api('quotes'), namespace='quotes_api')),
     path('api/search/', include(_api('search'), namespace='search_api')),
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
-    path('api/staticpages/', include(_api('staticpages'), namespace='staticpages_api')),
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('api/users/', include(_api('users'), namespace='users_api')),
     path('users/', include('apps.users.urls', namespace='users')),
@@ -122,7 +122,6 @@ urlpatterns = [
     # Miscellaneous third-party apps
     # ---------------------------------
     path('select2/', include('django_select2.urls')),
-    path('tinymce/', include('tinymce.urls')),
     path('trumbowyg/', include('trumbowyg.urls'))
 ]
 # fmt: on

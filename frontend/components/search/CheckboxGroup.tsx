@@ -6,7 +6,7 @@ import {
   FormGroup,
   FormLabel,
 } from "@material-ui/core";
-import { ChangeEventHandler, FC, useContext } from "react";
+import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 
 interface CheckboxGroupProps {

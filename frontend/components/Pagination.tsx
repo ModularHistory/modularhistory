@@ -1,20 +1,18 @@
-import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
+import { Breakpoint, useMediaQuery, useTheme } from "@material-ui/core";
 import MuiPagination, { PaginationProps as MuiPaginationProps } from "@material-ui/core/Pagination";
-import { makeStyles } from "@material-ui/styles";
+import { styled } from "@material-ui/core/styles";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    // override bootstrap css
-    "& button:focus": { outline: "none" },
-    // center the pagination
-    "& > *": {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      justifyContent: "center",
-      display: "flex",
-    },
+const StyledPagination = styled(MuiPagination)(({ theme }) => ({
+  // override bootstrap css
+  "& button:focus": { outline: "none" },
+  // center the pagination
+  "& > *": {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    justifyContent: "center",
+    display: "flex",
   },
 }));
 
@@ -49,7 +47,6 @@ interface PaginationProps {
 
 const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
   const theme = useTheme();
-  const classes = useStyles(theme);
 
   // increase pagination size based on viewport size
   const breakpoints: ReadonlyArray<Breakpoint> = ["sm", "md"];
@@ -62,7 +59,7 @@ const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
 
   // https://material-ui.com/api/pagination/
   return (
-    <MuiPagination
+    <StyledPagination
       count={count}
       page={pageNum}
       siblingCount={sibCount}
@@ -71,7 +68,6 @@ const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
       variant="outlined"
       shape="rounded"
       size={sibCount > 2 ? "large" : undefined}
-      className={classes.root}
     />
   );
 };

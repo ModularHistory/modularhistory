@@ -8,7 +8,6 @@ from apps.admin.widgets.historic_date_widget import (
     _datetime_from_datadict_values as historicdate_from_year,
 )
 from apps.dates.structures import HistoricDateTime
-from apps.search.documents.config import get_index_name_for_ct
 
 QUERY_PARAM = 'query'
 START_YEAR_PARAM = 'start_year'
@@ -37,7 +36,9 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         indexes = '*'
         content_types = request.query_params.getlist('content_types') or None
         if content_types:
-            indexes = ','.join(map(lambda c: get_index_name_for_ct(c), content_types))
+            # #ContentTypesHardCoded
+            allowed_content_types = {'occurrences', 'quotes', 'images', 'sources', 'entities'}
+            indexes = ','.join(ct for ct in content_types if ct in allowed_content_types)
         # Temporarily exclude images.  TODO: Figure out what to do with images.
         # Note: The search filter form starts with the images content type unselected.
         else:

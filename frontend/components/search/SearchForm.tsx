@@ -1,7 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
-import { Container, Grid, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import InstantSearch from "@/components/search/InstantSearch";
+import { Container, Grid } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
@@ -21,7 +22,6 @@ import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
-import InstantSearch from "@/components/search/InstantSearch";
 
 interface SearchFormState {
   formState: Record<string, string | number | (string | number)[] | undefined>;
@@ -70,24 +70,22 @@ interface SearchFormProps {
   inSidebar?: boolean;
 }
 
-const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
-  root: {
-    paddingTop: "20px",
-    maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
-    "& input": {
-      backgroundColor: "white",
-    },
-    "& .MuiTextField-root": {
-      backgroundColor: "white",
-    },
-    "& .MuiRadio-root, & .MuiCheckbox-root": {
-      marginBottom: "-9px",
-      marginTop: "-9px",
-    },
-    // to prevent hidden search button when navbar is visible
-    "&:last-child": { marginBottom: "50px" },
+const StyledContainer = styled(Container)({
+  paddingTop: "20px",
+  // maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
+  "& input": {
+    backgroundColor: "white",
   },
-}));
+  "& .MuiTextField-root": {
+    backgroundColor: "white",
+  },
+  "& .MuiRadio-root, & .MuiCheckbox-root": {
+    marginBottom: "-9px",
+    marginTop: "-9px",
+  },
+  // to prevent hidden search button when navbar is visible
+  "&:last-child": { marginBottom: "50px" },
+});
 
 /**
  * A component for an advanced/full search form.
@@ -96,7 +94,6 @@ const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
  *    If false, the inputs may be rendered side-by-side.
  */
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
-  const classes = useStyles({ inSidebar });
   const router = useRouter();
   const formContext = useSearchFormState();
 
@@ -113,7 +110,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
   return (
     <SearchFormContext.Provider value={formContext}>
-      <Container className={classes.root}>
+      <StyledContainer>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={sm}>
             <TextField
@@ -181,12 +178,13 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
+            {/* #ContentTypesHardCoded */}
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {{ label: "Occurrences", key: "propositions.occurrence" }}
-              {{ label: "Quotes", key: "quotes.quote" }}
-              {{ label: "Images", key: "images.image", defaultChecked: false }}
-              {{ label: "Sources", key: "sources.source" }}
-              {{ label: "Entities", key: "entities.entity" }}
+              {{ label: "Occurrences", key: "occurrences" }}
+              {{ label: "Quotes", key: "quotes" }}
+              {{ label: "Images", key: "images", defaultChecked: false }}
+              {{ label: "Sources", key: "sources" }}
+              {{ label: "Entities", key: "entities" }}
             </CheckboxGroup>
           </Grid>
 
@@ -194,7 +192,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <SearchButton onClick={submitForm} />
           </Grid>
         </Grid>
-      </Container>
+      </StyledContainer>
     </SearchFormContext.Provider>
   );
 };

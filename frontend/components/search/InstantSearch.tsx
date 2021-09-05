@@ -1,37 +1,17 @@
-import Autocomplete, { AutocompleteProps } from "@material-ui/core/Autocomplete";
+import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/styles";
+import axios, { AxiosRequestConfig } from "axios";
 import React, {
   FC,
-  useContext,
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
   SyntheticEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import { SearchFormContext } from "./SearchForm";
-import axios, { AxiosRequestConfig, CancelToken } from "axios";
 import { throttle } from "throttle-debounce";
-
-const useStyles = makeStyles({
-  root: {
-    "& .MuiChip-root": {
-      margin: 1,
-      fontSize: "11px",
-      height: "20px",
-      "& .MuiChip-label": {
-        paddingLeft: "6px",
-        paddingRight: "8px",
-      },
-      "& .MuiChip-deleteIcon": {
-        height: "18px",
-        width: "18px",
-        marginRight: "2px",
-      },
-    },
-  },
-});
+import { SearchFormContext } from "./SearchForm";
 
 type Option = Record<string, string | number>;
 
@@ -69,7 +49,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
   minimumSearchLength = 1,
   throttleDelay = 250,
 }: InstantSearchProps) => {
-  const classes = useStyles();
   const { formState, setFormState, disabled } = useContext(SearchFormContext);
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
@@ -126,7 +105,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
   };
 
   // https://next.material-ui.com/components/autocomplete/
-  console.log("autocomplete render");
   return (
     <Autocomplete
       multiple
@@ -142,9 +120,24 @@ const InstantSearch: FC<InstantSearchProps> = ({
       inputValue={inputValue}
       onInputChange={handleInputChange}
       ChipProps={{ size: "small" }}
-      className={classes.root}
       disabled={disabled}
       renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
+      sx={{
+        "& .MuiChip-root": {
+          margin: 1,
+          fontSize: "11px",
+          height: "20px",
+          "& .MuiChip-label": {
+            paddingLeft: "6px",
+            paddingRight: "8px",
+          },
+          "& .MuiChip-deleteIcon": {
+            height: "18px",
+            width: "18px",
+            marginRight: "2px",
+          },
+        },
+      }}
     />
   );
 };

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 # https://docs.djangoproject.com/en/dev/ref/settings#s-internal-ips
-INTERNAL_IPS = ['127.0.0.1', '172.27.0.5']
+INTERNAL_IPS = ['127.0.0.1']
 
 # https://github.com/jazzband/django-silk
 SILKY_PYTHON_PROFILER = True

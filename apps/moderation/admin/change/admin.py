@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Optional
 
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import NoReverseMatch, reverse
 
 from apps.admin.admin_site import admin_site
+from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.type_filter import ContentTypeFilter
 from apps.moderation.diff import get_field_changes
 from apps.moderation.models import Change
@@ -18,7 +19,20 @@ if TYPE_CHECKING:
     from apps.moderation.models.change.queryset import ChangeQuerySet
 
 
-class ChangeAdmin(admin.ModelAdmin):
+class ContributorFilter(ManyToManyAutocompleteFilter):
+    """Filter for changes to which a specific contributor has contributed."""
+
+    title = 'contributor'
+    field_name = 'contributors'
+    _parameter_name = 'contributors__pk__exact'
+    m2m_cls = 'users.User'
+
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin: ModelAdmin) -> str:
+        """Return the URL used for topic autocompletion."""
+        return reverse('admin:user_search')
+
+
+class ChangeAdmin(ModelAdmin):
     """
     Admin for changes proposed to moderated model instances.
 
@@ -29,11 +43,24 @@ class ChangeAdmin(admin.ModelAdmin):
     list_display = (
         'content_object',
         'content_type',
+        'updated_date',
         'created_date',
         'moderation_status',
         'n_remaining_approvals_required',
     )
-    list_filter = (ContentTypeFilter, 'moderation_status', 'contributors')
+    list_filter = (
+        ContentTypeFilter,
+        'n_remaining_approvals_required',
+        'moderation_status',
+        ContributorFilter,
+        'merged_date',
+    )
+    ordering = [
+        'moderation_status',
+        'n_remaining_approvals_required',
+        'updated_date',
+        'created_date',
+    ]
     search_fields = ['changed_object']
     change_form_template = 'moderation/changes/moderate_change.html'
     change_list_template = 'moderation/changes/changes_list.html'
@@ -79,6 +106,8 @@ class ChangeAdmin(admin.ModelAdmin):
             admin_form = self.get_form(request, change)(request.POST)
             if admin_form.is_valid():
                 reason = admin_form.cleaned_data.get('reason')
+                if 'force' in request.POST:
+                    change.approve(moderator=request.user, reason=reason, force=True)
                 if 'approve' in request.POST:
                     change.approve(moderator=request.user, reason=reason)
                 elif 'reject' in request.POST:

@@ -87,6 +87,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.person":
     case "entities.organization":
     case "entities.entity":
+    case "entities.group":
       content = <div dangerouslySetInnerHTML={{ __html: module.name }} />;
       break;
     default:

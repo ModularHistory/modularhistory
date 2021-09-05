@@ -13,7 +13,6 @@ from apps.moderation.models.changeset.model import ChangeSet
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
     from django.forms import ModelForm
     from django.forms.formsets import BaseFormSet as FormSet
     from django.http import HttpRequest
@@ -30,20 +29,37 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     # and save changes directly to model instances.
     admin_integration_enabled = True
 
+    def get_model_cls(
+        self, obj: Optional['ModeratedModel'] = None
+    ) -> Optional[Type['ModeratedModel']]:
+        """Return the class of the moderated model."""
+        if obj is None:
+            return getattr(self, 'model', None)
+        return obj.__class__  # type: ignore
+
+    def get_exclude(
+        self, request: 'HttpRequest', obj: Optional['ModeratedModel']
+    ) -> list[str]:
+        """Return the fields to be excluded from the admin form."""
+        excluded_fields = super().get_exclude(request, obj=obj)
+        if self.admin_integration_enabled:
+            model_cls = self.get_model_cls(obj)
+            if model_cls:
+                excluded_fields = list(
+                    {*model_cls.Moderation.excluded_fields, *excluded_fields}
+                )
+        return excluded_fields
+
     def get_form(
         self,
         request: 'HttpRequest',
         obj: Optional[ModeratedModel] = None,
         **kwargs,
     ) -> 'ModelForm':
-        """Return the form to be used in the admin to make changes to a model instance."""
-        model_cls: Optional[Type[ModeratedModel]] = getattr(self, 'model', None) or getattr(
-            obj, '__class__', None
-        )
+        """Return the form to be used to make changes to a model instance."""
+        model_cls = self.get_model_cls(obj)
         if model_cls and self.admin_integration_enabled:
-            excluded_fields = set(
-                [*model_cls.Moderation.excluded_fields, *(self.exclude or [])]
-            )
+            excluded_fields = self.get_exclude(request=request, obj=obj)
 
             class _Form(SoftModificationForm):
                 class Meta:
@@ -89,7 +105,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         # or create a new `Change` instance.
         if self.admin_integration_enabled:
             formset.save(commit=False)
-            relations_queryset: 'QuerySet' = formset.queryset
+            # relations_queryset: 'QuerySet' = formset.queryset
             parent_change: Change = (
                 instance.change_in_progress
                 if instance.has_change_in_progress

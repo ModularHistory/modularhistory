@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
-import DropIn, { IDropInProps } from "braintree-web-drop-in-react";
+import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { FC, MouseEventHandler, useEffect, useState } from "react";

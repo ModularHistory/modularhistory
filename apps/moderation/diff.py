@@ -1,7 +1,9 @@
 import difflib
+import logging
 import re
 from typing import TYPE_CHECKING, Optional
 
+from django.core.exceptions import FieldError
 from django.db.models import ImageField, fields
 from django.db.models.fields.related import ForeignObject, ManyToManyField, OneToOneField
 from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel, OneToOneRel
@@ -107,24 +109,28 @@ def get_field_change(
                 field.remote_field.through.objects.filter(**relation_kwargs)
             )
             relation_changes = Change.objects.filter(parent=change)
-            changed_relation_ids = relation_changes.values_list('object_id', flat=True)
-            modified_relations = relations.filter(id__in=changed_relation_ids)
-            added_relations = modified_relations.filter(deleted__isnull=True)
-            # TODO: changed_relations
-            deleted_relations = field.remote_field.through.objects.filter(
-                id__in=[
-                    change.object_id
-                    for change in relation_changes.all()
-                    if change.changed_object.deleted
-                ]
-            )
-            added_relations = modified_relations.filter(deleted__isnull=True).difference(
-                deleted_relations
-            )
-            relations_before = relations.difference(added_relations)
-            relations_after = relations.difference(deleted_relations)
-            value_before = [str(related_object) for related_object in relations_before]
-            value_after = [str(related_object) for related_object in relations_after]
+            try:
+                changed_relation_ids = relation_changes.values_list('object_id', flat=True)
+                modified_relations = relations.filter(id__in=changed_relation_ids)
+                added_relations = modified_relations.filter(deleted__isnull=True)
+                # TODO: changed_relations
+                deleted_relations = field.remote_field.through.objects.filter(
+                    id__in=[
+                        change.object_id
+                        for change in relation_changes.all()
+                        if change.changed_object.deleted
+                    ]
+                )
+                added_relations = modified_relations.filter(deleted__isnull=True).difference(
+                    deleted_relations
+                )
+                relations_before = relations.difference(added_relations)
+                relations_after = relations.difference(deleted_relations)
+                value_before = [str(related_object) for related_object in relations_before]
+                value_after = [str(related_object) for related_object in relations_after]
+            except FieldError as err:
+                logging.error(err)
+                value_before = value_after = ''
             return RelationsChange(
                 field.verbose_name,
                 field=field,

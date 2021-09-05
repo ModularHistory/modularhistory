@@ -1,13 +1,13 @@
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
+import { Box } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useRouter } from "next/router";
-import { EventHandler, KeyboardEventHandler, MouseEventHandler, useState } from "react";
-import { Box } from "@material-ui/core";
+import { MouseEventHandler, useState } from "react";
 
 function useQueryState(initialState: string) {
   const [query, setQuery] = useState(initialState);

@@ -1,15 +1,7 @@
 import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/styles";
-import React, {
-  ChangeEventHandler,
-  EventHandler,
-  FC,
-  SyntheticEvent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { FC, SyntheticEvent, useContext, useEffect, useState } from "react";
 import { SearchFormContext } from "./SearchForm";
 
 const useStyles = makeStyles({

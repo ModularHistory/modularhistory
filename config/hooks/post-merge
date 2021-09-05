@@ -76,7 +76,7 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 
     "
   }
-  [[ "$dev_up" = true ]] && docker-compose up -d dev
+  [[ "$dev_up" = true ]] && docker-compose up -d webserver
 }
 
 # Prompt to update hooks if necessary.

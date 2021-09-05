@@ -36,10 +36,8 @@ RUN pip install "poetry>=1.0.5"
 # Install rclone (for media backup/sync).
 RUN curl https://rclone.org/install.sh | bash
 
-# Create required directories.
+# Create and enter the working directory.
 RUN mkdir -p /modularhistory
-
-# Set the working directory.
 WORKDIR /modularhistory
 
 # Install project dependencies.
@@ -58,11 +56,15 @@ RUN mkdir -p -- \
   /modularhistory/_media \
   /modularhistory/.backups \
   /modularhistory/.init \
-  /opt/atlas
+  /opt/atlas \
+  /var/www/nltk_data/corpora
+
+# Download required files.
+RUN python -c "import nltk; nltk.download('punkt')" && python -m textblob.download_corpora
 
 # Add source code.
 COPY . /modularhistory/
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY config/invoke.yaml /etc/invoke.yaml
 
 # Collect static files.
@@ -74,7 +76,8 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/_static && \
   chmod g+w -R /modularhistory/.backups && \
   chmod g+w -R /modularhistory/.init && \
-  chmod +x /usr/local/bin/wait-for-it.sh
+  chmod +x /usr/local/bin/wait-for-it.sh && \
+  chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
 # Expose port 8000
 EXPOSE 8000
