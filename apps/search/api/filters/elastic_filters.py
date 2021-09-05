@@ -36,7 +36,9 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         indexes = '*'
         content_types = request.query_params.getlist('content_types') or None
         if content_types:
-            indexes = ','.join(content_types)
+            # #ContentTypesHardCoded
+            allowed_content_types = {'occurrences', 'quotes', 'images', 'sources', 'entities'}
+            indexes = ','.join(ct for ct in content_types if ct in allowed_content_types)
         # Temporarily exclude images.  TODO: Figure out what to do with images.
         # Note: The search filter form starts with the images content type unselected.
         else:
