@@ -6,6 +6,8 @@ from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.redirects.admin import RedirectAdmin
+from django.contrib.redirects.models import Redirect
 from django.contrib.sites.models import Site
 from django.db.models import Model
 from django.db.models.fields import Field
@@ -168,6 +170,8 @@ class SiteAdmin(ExtendedModelAdmin):
 
 
 admin_site.register(Site, SiteAdmin)
+
+admin_site.register(Redirect, RedirectAdmin)
 
 admin_site.register(IntervalSchedule)
 admin_site.register(CrontabSchedule)
