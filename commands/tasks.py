@@ -112,5 +112,5 @@ def generate_artifacts(context: 'Context'):
         normalize_plurals=False,
         regexp=r'\w[\w\' ]+',
     ).generate(text)
-    word_cloud.to_file(join(settings.BASE_DIR, '_static', '_topic_cloud.png'))
+    word_cloud.to_file(join(settings.STATIC_ROOT, '_topic_cloud.png'))
     print('Done.')
