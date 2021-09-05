@@ -1,10 +1,9 @@
 """Serializers for the entities app."""
 
-from rest_framework import serializers
 from django.template.defaultfilters import truncatechars_html
+from rest_framework import serializers
 
 from apps.quotes.models.quote import Quote
-
 from core.models.module import ModuleSerializerDrf
 
 
@@ -24,6 +23,13 @@ class QuoteModelSerializer(ModuleSerializerDrf):
 
     class Meta(ModuleSerializerDrf.Meta):
         model = Quote
-        fields = ModuleSerializerDrf.Meta.fields + ['bite', 'html', 'attributee_html', 'attributee_string', 'date_string',
-                                                             'cached_images', 'primary_image', 'cached_citations']
-
+        fields = ModuleSerializerDrf.Meta.fields + [
+            'bite',
+            'html',
+            'attributee_html',
+            'attributee_string',
+            'date_string',
+            'cached_images',
+            'primary_image',
+            'cached_citations',
+        ]

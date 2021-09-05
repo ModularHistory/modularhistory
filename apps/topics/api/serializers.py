@@ -1,7 +1,5 @@
 """Serializers for the entities app."""
 
-import serpy
-
 from apps.topics.models import Topic
 from core.models.module import ModuleSerializerDrf
 

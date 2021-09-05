@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from core.models.module import ModuleSerializerDrf
 from apps.entities.models.entity import Entity
+from core.models.module import ModuleSerializerDrf
 
 
 class CategorySerializer(serializers.Serializer):
@@ -28,8 +28,11 @@ class CategorizationSerializer(serializers.Serializer):
 
 class EntityModelSerializer(ModuleSerializerDrf):
     """Serializer for entities."""
+
     description = serializers.CharField(required=False)
-    categorizations = CategorizationSerializer(many=True, required=False, source='categorizations.all')
+    categorizations = CategorizationSerializer(
+        many=True, required=False, source='categorizations.all'
+    )
 
     birth_date = serializers.DateField(write_only=True, required=False)
     death_date = serializers.DateField(write_only=True, required=False)
@@ -46,6 +49,16 @@ class EntityModelSerializer(ModuleSerializerDrf):
 
     class Meta(ModuleSerializerDrf.Meta):
         model = Entity
-        fields = ModuleSerializerDrf.Meta.fields + ['name', 'unabbreviated_name', 'aliases', 'description', 'truncated_description',
-                                                             'categorizations', 'birth_date', 'death_date', 'birthDate', 'deathDate']
+        fields = ModuleSerializerDrf.Meta.fields + [
+            'name',
+            'unabbreviated_name',
+            'aliases',
+            'description',
+            'truncated_description',
+            'categorizations',
+            'birth_date',
+            'death_date',
+            'birthDate',
+            'deathDate',
+        ]
         read_only_fields = ['truncated_description']
