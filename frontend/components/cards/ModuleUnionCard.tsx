@@ -8,6 +8,46 @@ interface ModuleUnionCardProps {
   selected?: boolean;
 }
 
+function titleCase(word: string) {
+  let i, j;
+  word = word.replace(/([^\W_]+[^\s-]*) */g, function (text: string) {
+    if (!/[a-z]/.test(text) && /[A-Z]/.test(text)) {
+      return text;
+    } else {
+      return text.charAt(0).toUpperCase() + text.substr(1);
+    }
+  });
+  const lowerCase: string[] = [
+    "A",
+    "An",
+    "And",
+    "As",
+    "At",
+    "But",
+    "By",
+    "For",
+    "From",
+    "In",
+    "Into",
+    "Near",
+    "Nor",
+    "Of",
+    "On",
+    "Onto",
+    "Or",
+    "The",
+    "To",
+    "With",
+  ];
+
+  for (i = 0, j = lowerCase.length; i < j; i++)
+    word = word.replace(new RegExp("\\s" + lowerCase[i] + "\\s", "g"), function (text: string) {
+      return text.toLowerCase();
+    });
+
+  return word;
+}
+
 const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   module,
   selected,
@@ -22,7 +62,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: titleCase(module.title) }} />;
       break;
     case "propositions.proposition":
       content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
