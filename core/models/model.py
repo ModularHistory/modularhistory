@@ -237,3 +237,12 @@ class ModelSerializerDrf(serializers.ModelSerializer):
 
     class Meta:
         fields = ['id', 'model']
+
+
+class TypedModelSerializerDrf(ModelSerializerDrf):
+    """Base serializer for ModularHistory's typed models."""
+
+    type = serializers.CharField(write_only=True, required=True)
+
+    class Meta(ModelSerializerDrf.Meta):
+        fields = ModelSerializerDrf.Meta.fields + ['type']

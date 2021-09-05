@@ -62,6 +62,15 @@ class ModuleSerializerDrf(SearchableModelSerializerDrf):
         ]
 
 
+class TypedModuleSerializerDrf(ModuleSerializerDrf):
+    """Base serializer for ModularHistory's typed modules."""
+
+    type = serializers.CharField(write_only=True, required=True)
+
+    class Meta(ModuleSerializerDrf.Meta):
+        fields = ModuleSerializerDrf.Meta.fields + ['type']
+
+
 class Views(Constant):
     """Labels of views for which model instances can generate HTML."""
 

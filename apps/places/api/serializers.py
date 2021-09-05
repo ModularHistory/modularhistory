@@ -2,16 +2,16 @@
 
 
 from apps.places.models import Place
-from core.models.model import ModelSerializerDrf
+from core.models.model import TypedModelSerializerDrf
 
 
-class PlaceModelSerializer(ModelSerializerDrf):
+class PlaceModelSerializer(TypedModelSerializerDrf):
     """Serializer for places."""
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
         return 'places.place'
 
-    class Meta(ModelSerializerDrf.Meta):
+    class Meta(TypedModelSerializerDrf.Meta):
         model = Place
-        fields = ModelSerializerDrf.Meta.fields + ['string']
+        fields = TypedModelSerializerDrf.Meta.fields + ['string']
