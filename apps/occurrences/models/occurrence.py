@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from django.db import models
 
 from apps.dates.models import DatedModel
-from apps.propositions.api.serializers import OccurrenceSerializer
+from apps.propositions.serializers import OccurrenceSerializer
 from core.models.module import Module, ModuleManager
 
 if TYPE_CHECKING:

@@ -10,10 +10,11 @@ def get_moderated_model_serializer(model_cls: Type[ModeratedModel]) -> Type[Mode
     """Return the serializer to be used for moderation of a moderated model."""
 
     class ModeratedModelSerializer(ModelSerializer):
+        object = serializers.ReadOnlyField(source='serialize')
         fields = serializers.ReadOnlyField(source='get_moderated_fields')
 
         class Meta:
             model = model_cls
-            include = model_cls.get_moderated_fields()
+            fields = ['object', 'fields']
 
     return ModeratedModelSerializer

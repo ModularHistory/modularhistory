@@ -236,4 +236,4 @@ class ModelSerializerDrf(serializers.ModelSerializer):
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
     class Meta:
-        fields = ['id', 'model', 'absolute_url']
+        fields = ['id', 'model']

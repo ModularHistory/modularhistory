@@ -12,11 +12,13 @@ from django.urls import reverse
 from django.utils.safestring import SafeString
 from rest_framework import serializers
 
-from apps.search.api.serializers import SearchableModelSerializer, SearchableModelSerializerDrf
-
 from apps.moderation.models.searchable import (
     SearchableModeratedManager,
     SearchableModeratedModel,
+)
+from apps.search.api.serializers import (
+    SearchableModelSerializer,
+    SearchableModelSerializerDrf,
 )
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
@@ -46,11 +48,18 @@ class ModuleSerializerDrf(SearchableModelSerializerDrf):
 
     title = serializers.CharField(required=False)
     slug = serializers.CharField(required=False)
+    absolute_url = serializers.CharField(required=False)
     admin_url = serializers.CharField(required=False)
     cached_tags = serializers.JSONField(required=False)
 
     class Meta(SearchableModelSerializerDrf.Meta):
-        fields = SearchableModelSerializerDrf.Meta.fields + ['title', 'slug', 'admin_url', 'cached_tags']
+        fields = SearchableModelSerializerDrf.Meta.fields + [
+            'title',
+            'slug',
+            'absolute_url',
+            'admin_url',
+            'cached_tags',
+        ]
 
 
 class Views(Constant):
