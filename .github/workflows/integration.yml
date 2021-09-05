@@ -483,7 +483,7 @@ jobs:
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" )
         for dir_name in "${dir_names[@]}"; do
-          dir_path="_volumes/${writable_dir}"
+          dir_path="_volumes/${dir_name}"
           mkdir -p "$dir_path"; {
             sudo chown -R www-data:www-data "$dir_path" && 
             sudo chmod a+w -R "$dir_path"
@@ -618,7 +618,7 @@ jobs:
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" )
         for dir_name in "${dir_names[@]}"; do
-          dir_path="_volumes/${writable_dir}"
+          dir_path="_volumes/${dir_name}"
           mkdir -p "$dir_path"; {
             sudo chown -R www-data:www-data "$dir_path" && 
             sudo chmod a+w -R "$dir_path"
