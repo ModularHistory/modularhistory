@@ -5,7 +5,7 @@ from apps.places.models import Place
 from core.models.model import DrfTypedModelSerializer
 
 
-class PlaceModelSerializer(DrfTypedModelSerializer):
+class PlaceDrfSerializer(DrfTypedModelSerializer):
     """Serializer for places."""
 
     def get_model(self, instance) -> str:  # noqa

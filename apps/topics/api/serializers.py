@@ -4,7 +4,7 @@ from apps.topics.models import Topic
 from core.models.module import DrfModuleSerializer
 
 
-class TopicModelSerializer(DrfModuleSerializer):
+class TopicDrfSerializer(DrfModuleSerializer):
     """Serializer for topics."""
 
     def get_model(self, instance) -> str:  # noqa

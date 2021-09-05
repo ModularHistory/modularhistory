@@ -5,7 +5,7 @@ from core.models.model import DrfModelSerializer
 from core.models.module import DrfModuleSerializer
 
 
-class SourceModelSerializer(DrfModuleSerializer):
+class SourceDrfSerializer(DrfModuleSerializer):
     """Serializer for sources."""
 
     def get_model(self, instance) -> str:
@@ -17,10 +17,10 @@ class SourceModelSerializer(DrfModuleSerializer):
         fields = DrfModuleSerializer.Meta.fields + ['citation_html']
 
 
-class ContainmentModelSerializer(DrfModelSerializer):
+class ContainmentDrfSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
-    container = SourceModelSerializer()
+    container = SourceDrfSerializer()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
@@ -36,7 +36,7 @@ class ContainmentModelSerializer(DrfModelSerializer):
         ]
 
 
-class CitationModelSerializer(DrfModelSerializer):
+class CitationDrfSerializer(DrfModelSerializer):
     """Serializer for citations."""
 
     class Meta(DrfModelSerializer.Meta):

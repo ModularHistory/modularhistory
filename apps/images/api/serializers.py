@@ -4,7 +4,7 @@ from apps.images.models import Image
 from core.models.module import DrfModuleSerializer
 
 
-class ImageModelSerializer(DrfModuleSerializer):
+class ImageDrfSerializer(DrfModuleSerializer):
     """Serializer for images."""
 
     def get_model(self, instance) -> str:  # noqa

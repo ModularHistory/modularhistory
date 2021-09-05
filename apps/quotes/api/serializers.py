@@ -7,7 +7,7 @@ from apps.quotes.models.quote import Quote
 from core.models.module import DrfModuleSerializer
 
 
-class QuoteModelSerializer(DrfModuleSerializer):
+class QuoteDrfSerializer(DrfModuleSerializer):
     """Serializer for quotes."""
 
     bite = serializers.SerializerMethodField()

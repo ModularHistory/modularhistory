@@ -3,7 +3,7 @@ from core.models.model import DrfModelSerializer
 from core.models.module import DrfModuleSerializer
 
 
-class _PropositionModelSerializer(DrfModuleSerializer):
+class _PropositionDrfSerializer(DrfModuleSerializer):
     """Serializer for propositions."""
 
     def get_model(self, instance) -> str:
@@ -25,33 +25,33 @@ class _PropositionModelSerializer(DrfModuleSerializer):
         extra_kwargs = {'certainty': {'required': False}}
 
 
-class ArgumentModelSerializer(DrfModelSerializer):
+class ArgumentDrfSerializer(DrfModelSerializer):
     """Serializer for arguments."""
 
-    premises = _PropositionModelSerializer(many=True, source='premises.all')
+    premises = _PropositionDrfSerializer(many=True, source='premises.all')
 
     class Meta(DrfModelSerializer.Meta):
         model = Argument
         fields = DrfModelSerializer.Meta.fields + ['explanation', 'premises']
 
 
-class PropositionModelSerializer(_PropositionModelSerializer):
+class PropositionDrfSerializer(_PropositionDrfSerializer):
     """Serializer for propositions."""
 
-    arguments = ArgumentModelSerializer(many=True, source='arguments.all')
+    arguments = ArgumentDrfSerializer(many=True, source='arguments.all')
 
-    class Meta(_PropositionModelSerializer.Meta):
+    class Meta(_PropositionDrfSerializer.Meta):
         model = Proposition
-        fields = _PropositionModelSerializer.Meta.fields + ['arguments']
+        fields = _PropositionDrfSerializer.Meta.fields + ['arguments']
 
 
-class OccurrenceModelSerializer(PropositionModelSerializer):
+class OccurrenceDrfSerializer(PropositionDrfSerializer):
     """Serializer for occurrences."""
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'propositions.occurrence'
 
-    class Meta(PropositionModelSerializer.Meta):
+    class Meta(PropositionDrfSerializer.Meta):
         model = Occurrence
-        fields = PropositionModelSerializer.Meta.fields + ['postscript']
+        fields = PropositionDrfSerializer.Meta.fields + ['postscript']

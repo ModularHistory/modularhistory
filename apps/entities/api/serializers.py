@@ -26,7 +26,7 @@ class CategorizationSerializer(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntityModelSerializer(DrfTypedModuleSerializer):
+class EntityDrfSerializer(DrfTypedModuleSerializer):
     """Serializer for entities."""
 
     description = serializers.CharField(required=False)

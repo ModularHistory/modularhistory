@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.entities.api.serializers import EntityModelSerializer
+from apps.entities.api.serializers import EntityDrfSerializer
 from apps.entities.models.entity import Entity
 from apps.search.documents.entity import EntityDocument
 
@@ -12,7 +12,7 @@ class EntityViewSet(ModelViewSet):
     """API endpoint for viewing and editing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
-    serializer_class = EntityModelSerializer
+    serializer_class = EntityDrfSerializer
     permission_classes = [permissions.AllowAny]
 
 
