@@ -75,7 +75,7 @@ services:
       timeout: 7s
       interval: 30s
       retries: 3
-      start_period: 75s
+      start_period: 90s
     expose:
       - "8000"
     user: www-data
