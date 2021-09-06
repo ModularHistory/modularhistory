@@ -16,12 +16,11 @@ class SearchableModelSerializer(ModelSerializer):
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
             return None
-        meta = model.meta.to_dict()
+        meta = model.meta.to_dict().copy()
         for key in ELASTICSEARCH_META_FIELDS_TO_CLEAN:
-            # TODO: find out why in some cases it's already cleaned
             if key in meta:
                 del meta[key]
-        return model.meta.to_dict()
+        return meta
 
 
 class DrfSearchableModelSerializer(DrfModelSerializer):
@@ -32,12 +31,11 @@ class DrfSearchableModelSerializer(DrfModelSerializer):
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
             return None
-        meta = model.meta.to_dict()
+        meta = model.meta.to_dict().copy()
         for key in ELASTICSEARCH_META_FIELDS_TO_CLEAN:
-            # TODO: find out why in some cases it's already cleaned
             if key in meta:
                 del meta[key]
-        return model.meta.to_dict()
+        return meta
 
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + [
