@@ -53,7 +53,6 @@ runs:
           [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
             [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
-            [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
@@ -63,4 +62,3 @@ runs:
             fi
           fi
         done; docker-compose ps
-        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1

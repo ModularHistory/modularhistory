@@ -518,7 +518,6 @@ jobs:
           [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
             [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
-            [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
@@ -528,7 +527,6 @@ jobs:
             fi
           fi
         done; docker-compose ps
-        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -659,7 +657,6 @@ jobs:
           [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
             [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
-            [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
@@ -669,7 +666,6 @@ jobs:
             fi
           fi
         done; docker-compose ps
-        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
     - name: Run deploy script
       run: bash config/scripts/deploy.sh
     - name: Run deploy script x2
