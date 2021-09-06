@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('flatpages', '0003_auto_20210902_0823'),
     ]
@@ -15,18 +14,13 @@ class Migration(migrations.Migration):
             name='flatpage',
             options={'ordering': ['path'], 'verbose_name': 'flat page', 'verbose_name_plural': 'flat pages'},
         ),
-        migrations.AddField(
+        migrations.RenameField(
             model_name='flatpage',
-            name='path',
-            field=models.CharField(db_index=True, default='', help_text='Example: “/about/contact/”. Requires leading and trailing slashes.', max_length=100, validators=[django.core.validators.RegexValidator(regex='^\\/[-\\w/\\.\\/]+\\/$')], verbose_name='URL path'),
-            preserve_default=False,
+            old_name='url',
+            new_name='path'
         ),
         migrations.AlterUniqueTogether(
             name='flatpage',
             unique_together={('path',)},
-        ),
-        migrations.RemoveField(
-            model_name='flatpage',
-            name='url',
         ),
     ]
