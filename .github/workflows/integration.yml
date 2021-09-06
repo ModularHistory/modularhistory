@@ -509,7 +509,7 @@ jobs:
       run: |
         echo "Pulling images ..."
         docker-compose pull -q
-        echo "" && "Starting containers with version $SHA ..."
+        echo "" && echo "Starting containers with version $SHA ..."
         docker-compose up -d webserver
         echo "" && docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
@@ -648,7 +648,7 @@ jobs:
       run: |
         echo "Pulling images ..."
         docker-compose pull -q
-        echo "" && "Starting containers with version $SHA ..."
+        echo "" && echo "Starting containers with version $SHA ..."
         docker-compose up -d webserver
         echo "" && docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
