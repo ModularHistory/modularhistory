@@ -512,10 +512,12 @@ jobs:
         docker-compose up -d webserver
         echo "" && docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
+        log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true
+          [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
+            [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
             [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
@@ -651,10 +653,12 @@ jobs:
         docker-compose up -d webserver
         echo "" && docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
+        log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true
+          [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
+            [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
             [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
