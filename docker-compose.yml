@@ -29,6 +29,7 @@ services:
       # container would always have to be stopped (so its static IP address becomes 
       # available) before starting a replacement container with an updated nginx config.
       - ./config/nginx/prod:/etc/nginx/conf.d
+      - ./config/nginx:/modularhistory/config/nginx
 
   next:
     image: "ghcr.io/modularhistory/next:$SHA"
