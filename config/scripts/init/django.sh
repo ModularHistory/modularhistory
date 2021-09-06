@@ -42,9 +42,6 @@ python manage.py search_index --rebuild -f || {
     exit 1
 }
 
-# Download textblob corpora.
-python -m textblob.download_corpora
-
 if [ "$ENVIRONMENT" = prod ]; then
     gunicorn core.asgi:application \
       --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \

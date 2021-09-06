@@ -41,6 +41,8 @@ runs:
     - name: Start up containers
       shell: bash
       run: |
+        echo "Pulling images ..."
+        docker-compose pull -q
         echo "Starting containers with version $SHA ..."
         docker-compose up -d webserver || {
           docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && {
@@ -59,7 +61,7 @@ runs:
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
-            if [[ $waited -gt $timeout ]]; then 
+            if [[ $waited -gt $timeout ]]; then
               echo "" && echo "Timed out."
               docker-compose logs; exit 1
             fi

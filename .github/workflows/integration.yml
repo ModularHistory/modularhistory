@@ -508,6 +508,7 @@ jobs:
       shell: bash
       run: |
         echo "Starting containers with version $SHA ..."
+        
         docker-compose up -d webserver || {
           docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && {
             unhealthy_container=$(docker ps --format '{{.Names}}' | grep -E 'Exit|unhealthy|starting' | tail -n1)
