@@ -5,9 +5,3 @@ services:
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
-
-  elasticsearch:
-    environment:
-      # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
-      xpack.security.enabled: 'true'
-      ELASTIC_PASSWORD: testing

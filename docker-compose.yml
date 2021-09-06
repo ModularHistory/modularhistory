@@ -140,7 +140,9 @@ services:
       <<: *common-env-vars
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    depends_on:
+      - create_es_certs
     deploy:
       restart_policy:
         condition: on-failure
@@ -151,8 +153,14 @@ services:
       - cluster.name=es-docker-cluster
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - xpack.ml.enabled=false
       - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+      # TODO: reenable xpack.ml after switching to newer-hardware server
+      - xpack.ml.enabled=false
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/certificates/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/certificates/elastic-certificates.p12
     expose:
       - "9200"
     healthcheck:
@@ -166,15 +174,33 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - search_data:/usr/share/elasticsearch/data
+      - es_data:/usr/share/elasticsearch/data
+      - es_certs:/usr/share/elasticsearch/config/certificates
+
+  create_es_certs:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    command: >
+      bash -c '
+        if [[ ! -f ./config/certificates/elastic-certificates.p12 ]]; then
+          bin/elasticsearch-certutil cert -out config/certificates/elastic-certificates.p12 -pass ""
+        fi;
+        chown -R 1000:0 /usr/share/elasticsearch/config/certificates
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes: ['es_certs:/usr/share/elasticsearch/config/certificates']
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.1
     depends_on:
       - elasticsearch
+    env_file: .env
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
+
     expose:
       - "5601"
 
@@ -276,5 +302,6 @@ volumes:
   letsencrypt:
   certbot:
   postgres_data:
-  search_data:
+  es_data:
+  es_certs:
   redisinsight:
