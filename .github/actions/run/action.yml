@@ -50,10 +50,12 @@ runs:
         log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
           healthy=true
-          [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ ! $((waited%log_interval)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
-            echo "" && docker-compose ps
+            [[ ! $((waited%log_interval)) -eq 0 ]] && {
+              echo "" && docker-compose logs --tail 15
+              echo "" && docker-compose ps
+            }
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then
