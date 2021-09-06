@@ -528,6 +528,7 @@ jobs:
             sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
+        echo "" && echo "Finished starting up containers."
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -668,6 +669,7 @@ jobs:
             sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
+        echo "" && echo "Finished starting up containers."
     - name: Run deploy script
       run: bash config/scripts/deploy.sh
     - name: Run deploy script x2

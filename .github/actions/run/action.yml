@@ -63,3 +63,4 @@ runs:
             sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
+        echo "" && echo "Finished starting up containers."
