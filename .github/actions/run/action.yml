@@ -42,13 +42,20 @@ runs:
       shell: bash
       run: |
         echo "Starting containers with version $SHA ..."
-        docker-compose up -d webserver; echo ""; docker-compose ps
-        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
+        docker-compose up -d webserver || {
+          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && {
+            unhealthy_container=$(docker ps --format '{{.Names}}' | grep -E 'Exit|unhealthy|starting' | tail -n1)
+            echo "$unhealthy_container is unhealthy."
+          }
+          docker-compose logs --tail 20
+        }
+        echo ""; docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 15
+            [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
@@ -58,3 +65,4 @@ runs:
             fi
           fi
         done; docker-compose ps
+        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
