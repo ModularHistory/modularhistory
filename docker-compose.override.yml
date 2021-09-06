@@ -101,7 +101,6 @@ services:
       - "9200:9200"
     environment:
       - ELASTIC_PASSWORD=test
-      # - xpack.security.audit.enabled=true
 
   kibana:
     ports:
