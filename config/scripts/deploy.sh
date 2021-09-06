@@ -40,11 +40,11 @@ for container in "${containers_to_deploy[@]}"; do
     container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
     new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
     docker rename "$container_name" "$new_container_name"
-    docker-compose ps | grep "Exit 127" && exit 1
+    docker-compose ps | grep "Exit 1" && exit 1
     healthy=false; timeout=300; interval=15; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
-        [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        [[ "$(docker-compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
             echo ""; docker-compose ps; echo ""
