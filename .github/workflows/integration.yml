@@ -517,16 +517,15 @@ jobs:
           healthy=true
           docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
-            if [[ ! $((waited%log_interval)) -eq 0 ]]; then
+            if [[ $waited -gt $timeout ]]; then
+              echo "" && echo "Timed out."
+              docker-compose logs; exit 1
+            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
               echo "" && docker-compose logs --tail 15
               echo "" && docker-compose ps
             fi
             echo "" && echo "Waiting for containers (${waited}s) ..."
-            sleep $interval; waited=$((waited + interval))
-            if [[ $waited -gt $timeout ]]; then
-              echo "" && echo "Timed out."
-              docker-compose logs; exit 1
-            fi
+            sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
     - name: Run Cypress
@@ -658,16 +657,15 @@ jobs:
           healthy=true
           docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
-            if [[ ! $((waited%log_interval)) -eq 0 ]]; then
+            if [[ $waited -gt $timeout ]]; then
+              echo "" && echo "Timed out."
+              docker-compose logs; exit 1
+            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
               echo "" && docker-compose logs --tail 15
               echo "" && docker-compose ps
             fi
             echo "" && echo "Waiting for containers (${waited}s) ..."
-            sleep $interval; waited=$((waited + interval))
-            if [[ $waited -gt $timeout ]]; then
-              echo "" && echo "Timed out."
-              docker-compose logs; exit 1
-            fi
+            sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
     - name: Run deploy script
