@@ -143,7 +143,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -225,7 +225,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -356,7 +356,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -444,7 +444,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -585,7 +585,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -728,7 +728,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
