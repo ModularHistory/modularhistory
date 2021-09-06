@@ -34,6 +34,7 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
         many=True, required=False, source='categorizations.all'
     )
 
+    # write only fields are not rendered to output
     birth_date = serializers.DateField(write_only=True, required=False)
     death_date = serializers.DateField(write_only=True, required=False)
     birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
