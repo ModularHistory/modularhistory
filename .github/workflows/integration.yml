@@ -402,7 +402,6 @@ jobs:
       matrix:
         browser: [chrome]
         container: [1, 2, 3]
-    continue-on-error: true
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -516,7 +515,7 @@ jobs:
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 15
+            [[ $((waited%2)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
             [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
@@ -655,7 +654,7 @@ jobs:
         while [[ "$healthy" = false ]]; do
           healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 15
+            [[ $((waited%2)) -eq 0 ]] && echo "" && docker-compose logs --tail 15
             [[ ! "$(docker-compose ps)" =~ webserver ]] && docker-compose up -d webserver
             echo "" && docker-compose ps
             echo "" && echo "Waiting for containers (${waited}s) ..."
