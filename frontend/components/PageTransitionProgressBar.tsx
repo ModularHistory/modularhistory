@@ -48,11 +48,7 @@ const PageTransitionProgressBar: FC = () => {
   return (
     <Box position={"fixed"} width={"100%"} top={-1} left={0} zIndex={10}>
       <Fade in={![0, 100].includes(loadingProgress)} timeout={{ exit: 1e3 }}>
-        <LinearProgress
-          variant={"determinate"}
-          value={loadingProgress}
-          key={Number(loadingProgress === 0)}
-        />
+        <LinearProgress variant={"determinate"} value={loadingProgress} />
       </Fade>
     </Box>
   );
