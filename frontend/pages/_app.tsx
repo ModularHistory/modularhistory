@@ -6,15 +6,18 @@ import { initializeSentry } from "@/sentry";
 import "@/styles/globals.css";
 import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
-import { Box, Fade, LinearProgress } from "@material-ui/core";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect, useRef, useState } from "react";
+import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
+
+const DynamicPageTransitionProgressBar = dynamic(
+  () => import("@/components/PageTransitionProgressBar")
+);
 
 initializeSentry();
 
@@ -87,7 +90,7 @@ const App: NextPage<ExtendedAppProps> = ({
         <SessionKiller>
           <PageTransitionContextProvider>
             <ThemeProvider theme={theme}>
-              <PageTransitionProgressBar />
+              <DynamicPageTransitionProgressBar />
               <Component {...pageProps} err={err} />
             </ThemeProvider>
           </PageTransitionContextProvider>
@@ -98,59 +101,3 @@ const App: NextPage<ExtendedAppProps> = ({
 };
 
 export default App;
-
-const PageTransitionProgressBar: FC = () => {
-  const { events } = useRouter();
-  const [loadingProgress, setLoadingProgress] = useState(0);
-
-  // We use this ref to track the last active interval/timeout
-  // so we can cancel it when a transition is interrupted.
-  const timerIDRef = useRef<number>();
-
-  useEffect(() => {
-    const clearProgressInterval = () => {
-      if (timerIDRef.current) clearInterval(timerIDRef.current);
-    };
-
-    const handleRouteChangeStart = () => {
-      clearProgressInterval();
-      setLoadingProgress(20);
-
-      // every 500ms, increase progress by 5, until we reach 80.
-      timerIDRef.current = window.setInterval(() => {
-        setLoadingProgress((currentProgress) => {
-          if (currentProgress === 75) {
-            clearProgressInterval();
-          }
-          return currentProgress + 5;
-        });
-      }, 500);
-    };
-
-    const handleRouteChangeComplete = () => {
-      clearProgressInterval();
-      setLoadingProgress(100);
-      timerIDRef.current = window.setTimeout(() => setLoadingProgress(0), 1e3);
-    };
-
-    events.on("routeChangeStart", handleRouteChangeStart);
-    events.on("routeChangeComplete", handleRouteChangeComplete);
-
-    return () => {
-      events.off("routeChangeStart", handleRouteChangeStart);
-      events.off("routeChangeComplete", handleRouteChangeComplete);
-    };
-  }, [events]);
-
-  return (
-    <Box position={"fixed"} width={"100%"} top={-1} left={0} zIndex={10}>
-      <Fade in={![0, 100].includes(loadingProgress)} timeout={{ exit: 1e3 }}>
-        <LinearProgress
-          variant={"determinate"}
-          value={loadingProgress}
-          key={Number(loadingProgress === 0)}
-        />
-      </Fade>
-    </Box>
-  );
-};
