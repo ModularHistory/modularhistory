@@ -99,6 +99,9 @@ services:
   elasticsearch:
     ports:
       - "9200:9200"
+    environment:
+      xpack.security.enabled: 'true'
+      ELASTIC_PASSWORD: testing
 
   kibana:
     ports:

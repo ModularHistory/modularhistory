@@ -144,6 +144,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    env_file: .env
     environment:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
       - node.name=modularhistory-es
