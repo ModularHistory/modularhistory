@@ -52,15 +52,17 @@ RUN \
 
 # Create required directories.
 RUN mkdir -p -- \
-  /modularhistory/_static \
-  /modularhistory/_media \
-  /modularhistory/.backups \
-  /modularhistory/.init \
+  /modularhistory/_volumes/static \
+  /modularhistory/_volumes/media \
+  /modularhistory/_volumes/db/backups \
+  /modularhistory/_volumes/db/init \
   /opt/atlas \
   /var/www/nltk_data/corpora
 
 # Download required files.
-RUN python -c "import nltk; nltk.download('punkt')" && python -m textblob.download_corpora
+RUN python -c "import nltk; nltk.download('punkt')" && \
+  NLTK_DATA=var/www/nltk_data python -m textblob.download_corpora
+# cp -avr nltk_data/ /var/www/
 
 # Add source code.
 COPY . /modularhistory/
@@ -72,10 +74,7 @@ RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/_media && \
-  chmod g+w -R /modularhistory/_static && \
-  chmod g+w -R /modularhistory/.backups && \
-  chmod g+w -R /modularhistory/.init && \
+  chmod g+w -R /modularhistory/_volumes && \
   chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 

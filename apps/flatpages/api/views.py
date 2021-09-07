@@ -9,4 +9,4 @@ class FlatPageAPIView(RetrieveAPIView):
 
     queryset = FlatPage.objects.all()
     serializer_class = FlatPageSerializer
-    lookup_field = 'url'
+    lookup_field = 'path'
