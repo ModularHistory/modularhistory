@@ -90,6 +90,7 @@ services:
       - ./_volumes/static:/modularhistory/_volumes/static
       - ./_volumes/media:/modularhistory/_volumes/media
       - ./_volumes/redirects:/modularhistory/_volumes/redirects
+      - es_certs:$ELASTIC_CERTS_DIR
 
   celery:
     image: "ghcr.io/modularhistory/django:$SHA"
@@ -159,18 +160,20 @@ services:
       - xpack.ml.enabled=false
       - xpack.security.enabled=true
       # TODO
-      - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.verification_mode=certificate
-      - xpack.security.transport.ssl.keystore.path=${ELASTIC_CERTS_DIR}/elastic-certificates.p12
-      - xpack.security.transport.ssl.truststore.path=${ELASTIC_CERTS_DIR}/elastic-certificates.p12
       - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.keystore.path=${ELASTIC_CERTS_DIR}/elastic-certificates.p12
-      - xpack.security.http.ssl.truststore.path=${ELASTIC_CERTS_DIR}/elastic-certificates.p12
+      - xpack.security.http.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
+      - xpack.security.http.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
+      - xpack.security.http.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
+      - xpack.security.transport.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
       - xpack.security.http.ssl.client_authentication=optional
     expose:
       - "9200"
     healthcheck:
-      test: curl --cacert ${ELASTIC_CERTS_DIR}/client-ca.cer -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
       timeout: 10s
       retries: 5
@@ -184,19 +187,21 @@ services:
 
   create_es_certs:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    environment:
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
     command: >
       bash -c '
-        if [ ! -f "${ELASTIC_CERTS_DIR}/elastic-certificates.p12" ]; then
-          bin/elasticsearch-certutil cert -out "${ELASTIC_CERTS_DIR}/elastic-certificates.p12" -pass ""
-          openssl pkcs12 -in "${ELASTIC_CERTS_DIR}/elastic-certificates.p12" -nocerts -nodes > "${ELASTIC_CERTS_DIR}/client.key"
-          openssl pkcs12 -in "${ELASTIC_CERTS_DIR}/elastic-certificates.p12" -clcerts -nokeys > "${ELASTIC_CERTS_DIR}/client.cer"
-          openssl pkcs12 -in "${ELASTIC_CERTS_DIR}/elastic-certificates.p12" -cacerts -nokeys -chain > "${ELASTIC_CERTS_DIR}/client-ca.cer"
+        if [[ ! -f /certs/bundle.zip ]]; then
+          bin/elasticsearch-certutil cert --silent --pem --in "${ELASTIC_CERTS_DIR}/instances.yml" -out /certs/bundle.zip;
+          unzip /certs/bundle.zip -d /certs; 
         fi;
-        chown -R 1000:0 "$ELASTIC_CERTS_DIR"
+        chown -R 1000:0 /certs
       '
     user: "0"
     working_dir: /usr/share/elasticsearch
-    volumes: ['es_certs:$ELASTIC_CERTS_DIR']
+    volumes:
+      - es_certs:/certs
+      - ./config/elasticsearch:$ELASTIC_CERTS_DIR
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.1
