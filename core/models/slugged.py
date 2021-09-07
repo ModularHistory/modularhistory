@@ -6,6 +6,7 @@ from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from apps.redirects.models import Redirect
 from core.models.titled import TitledModel
 from core.utils.html import soupify
 
@@ -25,15 +26,31 @@ class SluggedModel(TitledModel):
     class Meta:
         abstract = True
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_absolute_url = self.absolute_url if self.pk else ''
+
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
-        if not self.slug:
+        if self.slug:
+            # If the slug has changed, create a redirect.
+            if self._state.adding:
+                pass
+            elif self.absolute_url != self._original_absolute_url:
+                Redirect.objects.create(
+                    old_path=self._original_absolute_url,
+                    new_path=self.absolute_url,
+                )
+        else:
+            # Set a slug automatically.
             self.slug = self.get_slug()
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
+        if self._state.adding and not slug:
+            return ''
         return f'/{self._meta.app_label}/{slug or self.pk}'
 
     @property

@@ -2,9 +2,9 @@ version: "3.8"
 
 services:
   webserver:
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
+    depends_on:
+      - certbot
+      - next
 
   next:
     depends_on:

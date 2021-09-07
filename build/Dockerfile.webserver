@@ -6,7 +6,7 @@ ARG ENVIRONMENT=dev
 ENV ENVIRONMENT=$ENVIRONMENT
 
 RUN apt-get update && \
-  apt-get install -y bash curl wget cron gettext certbot python-certbot-nginx perl libjson-pp-perl && \
+  apt-get install -y bash curl wget cron gettext perl libjson-pp-perl && \
   DDCLIENT_VERSION=$(curl -sX GET "https://api.github.com/repos/ddclient/ddclient/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]') && \
   mkdir -p /tmp/ddclient && \
   curl -o /tmp/ddclient.tar.gz -L "https://github.com/ddclient/ddclient/archive/${DDCLIENT_VERSION}.tar.gz" && \
@@ -29,10 +29,7 @@ COPY config/scripts/init/webserver.sh /modularhistory/config/scripts/init/webser
 COPY config/nginx /modularhistory/config/nginx
 COPY config/ddclient.conf /etc/ddclient/ddclient.conf
 
-RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
-  && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
-  && crontab /etc/cron.d/certbot-renew \
-  && chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
+RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/cache/nginx \
   && chown -R www-data:www-data /var/log/nginx \
   && chown -R www-data:www-data /etc/nginx/conf.d \
