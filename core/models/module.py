@@ -46,13 +46,12 @@ class ModuleSerializer(SearchableModelSerializer):
 class DrfModuleSerializer(DrfSearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
-    title = serializers.CharField(required=False)
-    slug = serializers.CharField(required=False)
     absolute_url = serializers.CharField(required=False)
     admin_url = serializers.CharField(required=False)
     cached_tags = serializers.JSONField(required=False)
 
     class Meta(DrfSearchableModelSerializer.Meta):
+        model: Type['Module']
         fields = DrfSearchableModelSerializer.Meta.fields + [
             'title',
             'slug',

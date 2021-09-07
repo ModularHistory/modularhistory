@@ -90,10 +90,7 @@ class TaggableModel(models.Model):
     @property
     def cached_tags(self: Union['TaggableModel', 'ModelWithCache']) -> list:
         """Return the model instance's cached tags."""
-        cache: Optional[dict] = getattr(self, 'cache', None)
-        if cache is None:
-            logging.error(f'{self.__class__.__name__} object has no cache.')
-            return [tag.serialize() for tag in self.tags.all()]
+        cache: Optional[dict] = getattr(self, 'cache', {})
         tags = cache.get('tags', [])
         if tags or not self.tags.exists():
             return tags
