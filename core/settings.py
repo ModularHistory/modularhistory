@@ -155,6 +155,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.flatpages.apps.FlatPagesConfig',
+    'apps.redirects.apps.RedirectsConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',

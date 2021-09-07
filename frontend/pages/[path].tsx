@@ -28,6 +28,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   let page = null;
   let notFound = false;
   const { path } = params || {};
+  console.log(`http://django:8000/api/flatpages//${path}/`);
 
   await axios
     // the "extra" slashes around `path` are currently needed to

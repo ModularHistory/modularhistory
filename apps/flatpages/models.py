@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -9,8 +10,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.translation import gettext_lazy as _
 
 from apps.moderation.models.moderated_model import ModeratedModel
-
-# from apps.redirects.models import Redirect
+from apps.redirects.models import Redirect
 from core.fields.html_field import HTMLField
 
 if TYPE_CHECKING:
@@ -54,18 +54,16 @@ class FlatPage(ModeratedModel):
 
     def save(self, **kwargs):
         """Save the flat page to the db."""
-        # if self.path != self._original_path:
-        #     try:
-        #         Redirect.objects.create(
-        #             old_path=self._original_path,
-        #             new_path=self.path,
-        #             site=settings.SITE_ID,
-        #         )
-        #     except Exception as err:
-        #         logging.error(err)
+        if self.path != self._original_path:
+            Redirect.objects.create(
+                old_path=self._original_path,
+                new_path=self.path,
+                site_id=settings.SITE_ID,
+            )
         return super().save(**kwargs)
 
     def clean(self):
+        """Prepare the flat page to be saved."""
         path = self.path
         pages_with_same_path = self.__class__.objects.filter(path=path)
         if self.pk:
@@ -75,7 +73,9 @@ class FlatPage(ModeratedModel):
                 for site in sites:
                     if pages_with_same_path.filter(sites=site).exists():
                         raise ValidationError(
-                            _('Flat page with path %(path)s already exists for site %(site)s'),
+                            _(
+                                'Flat page with path %(path)s already exists for site %(site)s'
+                            ),
                             code='duplicate_path',
                             params={'path': path, 'site': site},
                         )
