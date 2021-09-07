@@ -10,7 +10,7 @@ from apps.propositions.models import Proposition
 class PropositionViewSet(ModelViewSet):
     """API endpoint for viewing and editing propositions."""
 
-    queryset = Proposition.objects.filter(type='propositions.conclusion', verified=True)
+    queryset = Proposition.objects.filter(type='propositions.conclusion')
     lookup_field = 'slug'
     serializer_class = PropositionDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
