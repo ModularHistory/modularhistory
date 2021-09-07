@@ -1,6 +1,7 @@
 from typing import Optional
 
 from autoslug import AutoSlugField
+from django.conf import settings
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
@@ -32,19 +33,23 @@ class SluggedModel(TitledModel):
 
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
+        # If the slug has changed, create a redirect.
         if self.slug:
-            # If the slug has changed, create a redirect.
             if self._state.adding:
                 pass
             elif self.absolute_url != self._original_absolute_url:
-                Redirect.objects.create(
+                Redirect.objects.update_or_create(
+                    site_id=settings.SITE_ID,
                     old_path=self._original_absolute_url,
-                    new_path=self.absolute_url,
+                    defaults={'new_path': self.absolute_url},
                 )
         else:
             # Set a slug automatically.
             self.slug = self.get_slug()
+        # Save the model instance to the db.
         super().save(*args, **kwargs)
+        # Delete any redirects that would hijack this model instance's new URL.
+        Redirect.objects.filter(site_id=settings.SITE_ID, old_path=self.absolute_url).delete()
 
     def get_absolute_url(self) -> str:
         """Return the URL for the model instance detail page."""

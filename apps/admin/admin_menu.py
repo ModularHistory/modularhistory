@@ -21,6 +21,7 @@ APPS_TO_INCLUDE = (
     'sources',
     'users',
     'flatpages',
+    'redirects',
     'moderation',
 )
 
