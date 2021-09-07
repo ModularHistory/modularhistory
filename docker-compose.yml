@@ -36,8 +36,6 @@ services:
     command: npm run start
     depends_on:
       - django
-      - celery
-      - celery_beat
     deploy:
       restart_policy:
         condition: on-failure
@@ -165,7 +163,6 @@ services:
       # TODO: reenable xpack.ml after switching to newer-hardware server
       - xpack.ml.enabled=false
       - xpack.security.enabled=true
-      # TODO
       - xpack.security.http.ssl.enabled=true
       - xpack.security.http.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
       - xpack.security.http.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt

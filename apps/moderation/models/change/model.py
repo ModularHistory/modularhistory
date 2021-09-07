@@ -13,6 +13,7 @@ from apps.moderation.fields import SerializedObjectField
 from apps.moderation.models.changeset.model import AbstractChange
 from apps.moderation.models.moderation import Moderation
 from apps.moderation.tasks import handle_approval
+from core.utils.sync import delay
 
 from .manager import ChangeManager
 
@@ -246,7 +247,7 @@ class Change(AbstractChange):
             force=force,
         )
         self.constituent_changes.all().approve(moderator=moderator, reason=reason)
-        handle_approval.delay(approval.pk)
+        delay(handle_approval, approval.pk)
         return approval
 
     def moderate(
