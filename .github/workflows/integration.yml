@@ -170,7 +170,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Run setup script
       run: bash setup.sh
@@ -252,7 +252,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Set up Docker Buildx
       id: buildx
@@ -383,7 +383,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Make sure pytest is working
       run: |
@@ -471,7 +471,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
@@ -612,7 +612,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
@@ -755,7 +755,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Cache type stubs
       id: cache-stubs
