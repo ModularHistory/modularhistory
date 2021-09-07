@@ -23,7 +23,7 @@ class SearchableModelAdmin(ModeratedModelAdmin):
     model: Type['SearchableModel']
 
     exclude = ['cache', 'tags']
-    readonly_fields = ['slug']
+    readonly_fields = []
 
     def get_fields(
         self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
