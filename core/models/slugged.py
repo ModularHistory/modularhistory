@@ -27,28 +27,23 @@ class SluggedModel(TitledModel):
     class Meta:
         abstract = True
 
-    def __init__(self, *args, **kwargs):
-        """Construct the model instance."""
-        super().__init__(*args, **kwargs)
-        self._original_absolute_url = self.absolute_url if self.pk else ''
-
-    def save(self, *args, **kwargs):
-        """Save the model instance to the database."""
-        # If the slug has changed, create a redirect.
-        if self.slug:
-            if self._state.adding:
-                pass
-            elif self.absolute_url != self._original_absolute_url:
-                Redirect.objects.update_or_create(
-                    site_id=settings.SITE_ID,
-                    old_path=self._original_absolute_url,
-                    defaults={'new_path': self.absolute_url},
-                )
-        else:
+    def clean(self):
+        super().clean()
+        if not self.slug:
             # Set a slug automatically.
             self.slug = self.get_slug()
-        # Save the model instance to the db.
-        super().save(*args, **kwargs)
+
+    def pre_save(self):
+        super().pre_save()
+        # If the slug has changed, create a redirect.
+        if self.slug and self.field_has_changed('slug'):
+            Redirect.objects.update_or_create(
+                site_id=settings.SITE_ID,
+                old_path=self._original_absolute_url,
+                defaults={'new_path': self.absolute_url},
+            )
+
+    def post_save(self):
         # Delete any redirects that would hijack this model instance's new URL.
         Redirect.objects.filter(site_id=settings.SITE_ID, old_path=self.absolute_url).delete()
 

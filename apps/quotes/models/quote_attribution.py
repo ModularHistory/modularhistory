@@ -32,11 +32,6 @@ class QuoteAttribution(ModeratedPositionedRelation):
         """Return the string representation of the quote attribution."""
         return str(self.attributee)
 
-    def save(self, *args, **kwargs):
-        """Save the quote attribution to the database."""
-        self.clean()
-        super().save(*args, **kwargs)
-
     def clean(self):
         """Prepare the quote attribution to be saved."""
         super().clean()

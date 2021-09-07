@@ -52,15 +52,14 @@ class FlatPage(ModeratedModel):
     def __str__(self):
         return f'{self.path} -- {self.title}'
 
-    def save(self, **kwargs):
-        """Save the flat page to the db."""
+    def pre_save(self):
+        super().pre_save()
         if self.path != self._original_path:
             Redirect.objects.create(
                 old_path=self._original_path,
                 new_path=self.path,
                 site_id=settings.SITE_ID,
             )
-        return super().save(**kwargs)
 
     def clean(self):
         """Prepare the flat page to be saved."""
@@ -73,9 +72,7 @@ class FlatPage(ModeratedModel):
                 for site in sites:
                     if pages_with_same_path.filter(sites=site).exists():
                         raise ValidationError(
-                            _(
-                                'Flat page with path %(path)s already exists for site %(site)s'
-                            ),
+                            _('Page with path %(path)s already exists for site %(site)s'),
                             code='duplicate_path',
                             params={'path': path, 'site': site},
                         )

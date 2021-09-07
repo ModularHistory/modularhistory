@@ -102,6 +102,30 @@ class ExtendedModel(Model):
         """Return the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
 
+    def save(self, *args, **kwargs):
+        self.pre_save()
+        super().save(*args, **kwargs)
+        self.post_save()
+
+    def pre_save(self):
+        """Run any logic required before the instance is saved to the db."""
+        self.clean()
+
+    def post_save(self):
+        """Run any logic required after the instance is saved to the db."""
+
+    def field_has_changed(self, field: str) -> bool:
+        """Return a bool reflecting whether the specified field's value has changed."""
+        if self._state.adding:
+            return False
+        elif hasattr(self, field):
+            value = getattr(self, field)
+            value_in_db = self.__class__.objects.filter(pk=self.pk).values_list(
+                field, flat=True
+            )[0]
+            return value != value_in_db
+        raise ValueError(f'{self.__class__.__name__} has no `{field}` field.')
+
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
         model_name = (

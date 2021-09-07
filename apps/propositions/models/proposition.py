@@ -242,9 +242,8 @@ class Proposition(  # noqa: WPS215
             raise ValidationError('Proposition needs a degree of certainty.')
         super().clean()
 
-    def save(self, *args, **kwargs):
-        """Save the occurrence to the database."""
-        super().save(*args, **kwargs)
+    def post_save(self):
+        super().post_save()
         if not self.images.exists():
             image: Optional['Image'] = None
             if self.related_entities.exists():

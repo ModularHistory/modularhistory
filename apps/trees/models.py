@@ -46,30 +46,31 @@ class TreeModel(ExtendedModel):
         abstract = True
         ordering = ('path',)
 
-    def save(self, *args, **kwargs):
-        """Save the model instance to the database."""
-        self.key = self.get_key()
-        self.validate_parent(raises=IntegrityError)
-        old_path, new_path = self.path, self.get_path()
-        path_changed = new_path != old_path and not self._state.adding
-        self.path = new_path
-        super().save(*args, **kwargs)
-        if path_changed:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_path = self.path if self.pk else ''
+
+    def post_save(self):
+        super().post_save()
+        old_path = self._original_path
+        if old_path and self.path != old_path:
             # Update descendants' paths.
             with connection.cursor() as cursor:
                 table = f'{self._meta.app_label}_{self._meta.model_name}'
                 # https://www.postgresql.org/docs/13/ltree.html
                 cursor.execute(
                     f'UPDATE {table} '
-                    f"SET path = '{new_path}'::ltree || "
+                    f"SET path = '{self.path}'::ltree || "
                     f"subpath({table}.path, nlevel('{old_path}'::ltree)) "
                     f"WHERE {table}.path <@ '{old_path}'::ltree AND id != {self.id}"
                 )
 
     def clean(self):
         """Prepare the model instance to be saved to the database."""
+        super().clean()
+        self.key = self.get_key()
         self.validate_parent(raises=ValidationError)
-        return super().clean()
+        self.path = self.get_path()
 
     @property
     def ancestors(self) -> QuerySet['TreeModel']:
