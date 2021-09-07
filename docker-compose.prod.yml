@@ -5,3 +5,9 @@ services:
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
+
+  next:
+    depends_on:
+      - django
+      - celery
+      - celery_beat

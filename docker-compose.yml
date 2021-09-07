@@ -35,8 +35,6 @@ services:
     command: npm run start
     depends_on:
       - django
-      - celery
-      - celery_beat
     deploy:
       restart_policy:
         condition: on-failure
