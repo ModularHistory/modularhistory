@@ -1,3 +1,4 @@
+import TagList from "@/components/topics/TagList";
 import { Proposition } from "@/types/modules";
 import Slider from "@material-ui/core/Slider";
 import { useSession } from "next-auth/client";
@@ -67,6 +68,25 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
         style={{ margin: "1.5rem 0" }}
       />
       {!!proposition.arguments?.length && <ArgumentSet argumentSet={proposition.arguments} />}
+      {proposition.postscript && <p dangerouslySetInnerHTML={{ __html: proposition.postscript }} />}
+
+      {!!proposition.cachedTags?.length && <TagList topics={proposition.cachedTags} />}
+
+      <footer className="footer sources-footer">
+        <ol className="citations">
+          {proposition.cachedCitations.map((citation) => {
+            const id = `citation-${citation.id}`;
+            return (
+              <li
+                className="source"
+                id={id}
+                key={id}
+                dangerouslySetInnerHTML={{ __html: citation.html }}
+              />
+            );
+          })}
+        </ol>
+      </footer>
     </>
   );
 };

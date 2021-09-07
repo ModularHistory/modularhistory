@@ -6,6 +6,7 @@ export interface BaseModule {
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
+  title: string;
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
@@ -14,7 +15,6 @@ export interface BaseModule {
 }
 
 export interface SearchableModule extends BaseModule {
-  title: string;
   cachedTags: Topic[];
   verified: boolean;
 }
@@ -42,7 +42,6 @@ export interface ModuleWithImages {
 
 export interface Quote extends SearchableModule, ModuleWithImages {
   model: "quotes.quote";
-  title: string;
   attributeeHtml: string;
   attributeeString: string;
   bite: string;
@@ -51,50 +50,44 @@ export interface Quote extends SearchableModule, ModuleWithImages {
   cachedCitations: Citation[];
 }
 
-export interface Occurrence extends SearchableModule, ModuleWithImages {
+export interface Occurrence extends Proposition, SearchableModule, ModuleWithImages {
   model: "propositions.occurrence";
-  title: string;
-  dateString: string;
-  elaboration: string;
-  postscript: string;
-  cachedCitations: Citation[];
-  summary: string;
 }
 
 export interface Source extends SearchableModule {
   model: "sources.source";
-  title: string;
   citationHtml: string;
   citationString: string;
   description: string;
 }
 
-export interface Entity extends BaseModule, SearchableModule, ModuleWithImages {
+export interface Entity extends SearchableModule, ModuleWithImages {
   model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
 }
 
-export interface Argument extends BaseModule {
+export interface Argument {
   type: string;
   explanation: string;
   premises: Proposition[];
 }
 
-export interface Proposition extends BaseModule {
+export interface Proposition extends SearchableModule {
   model: "propositions.proposition";
-  title: string;
   summary: string;
   elaboration: string;
   certainty: number;
   arguments: Argument[];
   conflictingPropositions: Proposition[];
+  dateString: string;
+  postscript: string;
+  cachedCitations: Citation[];
 }
 
 export interface Topic extends BaseModule {
   model: "topics.topic";
   name: string;
-  title: string;
   description: string;
   propositions: Proposition[];
 }
