@@ -409,7 +409,7 @@ rclone version &>/dev/null || {
 mkdir -p "$HOME/config/rclone"
 
 # Install dotenv linter.
-curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin
 
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then

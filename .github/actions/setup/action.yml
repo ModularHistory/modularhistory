@@ -99,5 +99,5 @@ runs:
     # Write a .env file.
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }}
