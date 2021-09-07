@@ -1,12 +1,9 @@
 <div class="img-wrapper">
   {% if left_image %}
   <img src="{{ left_image.url }}" />
-  {% else %}
-  None
   {% endif %}
-  {% if right_image %}
+  {% if right_image != left_image %}
+  -->
   <img src="{{ right_image.url }}" />
-  {% else %}
-  None
   {% endif %}
 </div>

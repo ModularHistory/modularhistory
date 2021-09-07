@@ -1,8 +1,10 @@
 #!/bin/bash
 
-required_py_version="3.9.5"
+PYTHON_VERSION="3.9.5"
 
 PROJECT_DIR=$(dirname "$0")
+VOLUMES_DIR="$PROJECT_DIR/_volumes"
+
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 BOLD=$(tput bold)
@@ -237,7 +239,14 @@ fi
 brew_install watchman
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
+declare -a writable_dirs=(
+  "$VOLUMES_DIR/db/backups"
+  "$VOLUMES_DIR/db/init"
+  "$VOLUMES_DIR/media"
+  "$VOLUMES_DIR/static"
+  "$VOLUMES_DIR/redirects"
+  "$PROJECT_DIR/frontend/.next"
+)
 
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
@@ -292,8 +301,8 @@ pyenv --help &>/dev/null || _error "Failed to install pyenv."
 
 # Install the required Python version.
 # shellcheck disable=SC2076
-if [[ ! "$(pyenv versions)" =~ "$required_py_version" ]]; then
-  pyenv install "$required_py_version"
+if [[ ! "$(pyenv versions)" =~ "$PYTHON_VERSION" ]]; then
+  pyenv install "$PYTHON_VERSION"
 fi
 
 # Install and configure Poetry.
@@ -322,18 +331,18 @@ function activate_venv() {
 
 # Initialize .venv with the correct Python version.
 if [[ -d .venv ]]; then
-  echo "Verifying the active Python version is $required_py_version..."
-  if [[ ! "$(.venv/bin/python --version)" =~ .*"$required_py_version".* ]]; then
+  echo "Verifying the active Python version is $PYTHON_VERSION..."
+  if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
     echo "Destroying the existing .venv ..."
     [[ -d .venv ]] && rm -r .venv
   fi
 fi
 [[ -d .venv ]] || {
-  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python" &>/dev/null
+  poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
 activate_venv
-if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
-  _error "Failed to activate Python $required_py_version."
+if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
+  _error "Failed to activate Python $PYTHON_VERSION."
 fi
 
 # Install project dependencies.
@@ -361,10 +370,9 @@ poetry install --no-root || {
     rm requirements.txt
     echo "Installed dependencies with pip after failing to install with Poetry."
   } || {
+    rm requirements.txt
     _print_red "Failed to install dependencies with pip."
   }
-  rm requirements.txt
-  _error "Failed to install dependencies with Poetry."
 }
 
 # Set up Node Version Manager (NVM).
@@ -377,9 +385,10 @@ nvm --version &>/dev/null || {
   # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
+
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
-npm i -g prettier eslint
+npm i -g prettier eslint cypress
 
 # Update ctags
 ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" &>/dev/null
@@ -398,6 +407,9 @@ rclone version &>/dev/null || {
   rm -r .tmp
 }
 mkdir -p "$HOME/config/rclone"
+
+# Install dotenv linter.
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin
 
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
@@ -468,17 +480,19 @@ poetry run invoke seed --no-db
 
 # Build Docker images.
 # Note: This requires a .env file.
-docker-compose build django || _error "Failed to build django image."
-docker-compose build react || _error "Failed to build react image."
+image_names=( "django" "next" "webserver" )
+for image_name in "${image_names[@]}"; do
+  docker-compose build "$image_name" || _error "Failed to build $image_name image."
+done
 
 prompt="Seed db [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed --no-env-file && echo "Finished seeding." || {
+  poetry run invoke seed --no-dotenv-file && echo "Finished seeding." || {
     _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "
@@ -508,14 +522,14 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up -d dev && echo 'Finished.' || {
+docker-compose up -d webserver && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. 
     Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker-compose up -d dev
+      ${BOLD}cd ~/modularhistory && docker-compose up -d webserver
 
   "
 }

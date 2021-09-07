@@ -1,7 +1,7 @@
 import PropositionDetail from "@/components/propositions/PropositionDetail";
-import { Entity, Image, Occurrence, Proposition, Quote, Source, Topic } from "@/interfaces";
+import { ModuleUnion } from "@/types/modules";
 import { useSession } from "next-auth/client";
-import { createRef, FC, useLayoutEffect } from "react";
+import { FC } from "react";
 import EntityDetail from "../entities/EntityDetail";
 import ImageDetail from "../images/ImageDetail";
 import OccurrenceDetail from "../propositions/OccurrenceDetail";
@@ -10,56 +10,48 @@ import SourceDetail from "../sources/SourceDetail";
 import TopicDetail from "../topics/TopicDetail";
 
 interface ModuleDetailProps {
-  module: Occurrence | Quote | Entity | Topic | Proposition | Image | Source;
+  module: ModuleUnion;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
-  const ref = createRef<HTMLDivElement>();
   const [session, loading] = useSession();
-  useLayoutEffect(() => {
-    // After the DOM has rendered, check for lazy images
-    // and set their `src` to the correct value.
-    // This is not an optimal solution, and will likely change
-    // after redesigning how backend HTML is served.
-    const images = ref.current.getElementsByTagName("img");
-
-    for (const img of images) {
-      if (img.dataset["src"]) img.src = img.dataset["src"];
-    }
-  }, [ref]);
-
   let details;
+
   switch (module.model) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
+    case "entities.entity":
     case "entities.person":
     case "entities.organization":
-      details = <EntityDetail entity={module as Entity} />;
+    case "entities.group":
+      details = <EntityDetail entity={module} />;
       break;
     case "images.image":
-      details = <ImageDetail image={module as Image} />;
+      details = <ImageDetail image={module} />;
       break;
     case "propositions.occurrence":
-      details = <OccurrenceDetail occurrence={module as Occurrence} />;
+      details = <OccurrenceDetail occurrence={module} />;
       break;
     case "propositions.proposition":
-      details = <PropositionDetail proposition={module as Proposition} />;
+      details = <PropositionDetail proposition={module} />;
       break;
     case "quotes.quote":
-      details = <QuoteDetail quote={module as Quote} />;
+      details = <QuoteDetail quote={module} />;
       break;
     case "sources.source":
-      details = <SourceDetail source={module as Source} />;
+      details = <SourceDetail source={module} />;
       break;
     case "topics.topic":
-      details = <TopicDetail topic={module as Topic} />;
+      details = <TopicDetail topic={module} />;
       break;
     default:
-      throw new Error(`Unknown module type encountered: ${module.model}`);
+      ((module: never) => {
+        throw new Error(`Unexpected module type encountered: ${(module as any).model}`);
+      })(module);
   }
 
   return (
-    <div className="detail" ref={ref}>
+    <div className="detail">
       {!loading && session?.user?.["isSuperuser"] && (
         <a
           href={module.adminUrl}

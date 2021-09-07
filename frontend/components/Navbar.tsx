@@ -2,7 +2,7 @@ import { Divider } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -24,6 +24,7 @@ const globalMenuItems: GlobalMenuItem[] = [
     path: "/about",
     submenuItems: [
       { title: "About Us", path: "/about", reactive: true },
+      { title: "Mission", path: "/mission", reactive: true },
       { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
@@ -69,7 +70,7 @@ const WrappedNavLink: FC<GlobalMenuItemWithoutSubmenuItems> = ({
   }
 };
 
-type WrappedNavDropdownProps = Pick<GlobalMenuItem, "title" | "submenuItems">;
+type WrappedNavDropdownProps = Required<Pick<GlobalMenuItem, "title" | "submenuItems">>;
 
 const WrappedNavDropdown: FC<WrappedNavDropdownProps> = ({
   title,
@@ -95,12 +96,12 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
   // TODO: Create session type and remove this cast to `any`.
   const [session, loading] = useSession() as any;
 
-  const login = (e) => {
+  const login: MouseEventHandler = (e) => {
     e.preventDefault();
     handleLogin(router);
   };
 
-  const logout = (e) => {
+  const logout: MouseEventHandler = (e) => {
     e.preventDefault();
     handleLogout(session);
   };
@@ -120,7 +121,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
         <Image
           src={session.user.avatar}
           className="rounded-circle z-depth-0"
-          alt={session.user.name || session.user.username}
+          alt={session.user.name || session.user.handle}
           width="35"
           height="35"
         />
@@ -128,8 +129,8 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
     }
     accountControls = (
       <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-        <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
-        <NavDropdown.Item href={`/users/${session.user.username}/settings`}>
+        <NavDropdown.Item href={`/users/${session.user.handle}`}>Profile</NavDropdown.Item>
+        <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings
         </NavDropdown.Item>
         {(session.user.isSuperuser && (

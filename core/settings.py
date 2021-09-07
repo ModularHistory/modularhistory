@@ -89,7 +89,6 @@ INSTALLED_APPS = [
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'rangefilter',  # https://github.com/silentsokolov/django-admin-rangefilter
-    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'trumbowyg',  # https://github.com/sandino/django-trumbowyg
     # ---------------------------------
     # Django core apps
@@ -97,10 +96,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.flatpages',
     'django.contrib.messages',
     'django.contrib.postgres',
-    'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.sitemaps',
     'django.contrib.sites',
@@ -157,6 +154,8 @@ INSTALLED_APPS = [
     # ---------------------------------
     # In-project apps
     # ---------------------------------
+    'apps.flatpages.apps.FlatPagesConfig',
+    'apps.redirects.apps.RedirectsConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
@@ -173,12 +172,10 @@ INSTALLED_APPS = [
     'apps.quotes.apps.QuotesConfig',
     'apps.search.apps.SearchConfig',
     'apps.sources.apps.SourcesConfig',
-    'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
     'apps.trees.apps.TreesConfig',
     'apps.users.apps.UsersConfig',
-    'apps.verifications.apps.VerificationsConfig',
 ]
 
 MIDDLEWARE = [
@@ -209,13 +206,6 @@ MIDDLEWARE = [
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Staticpage middleware (based on Django's Flatpage middleware):
-    # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
-    # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # Memory profiler
-    # 'core.middleware.PymplerMiddleware',  # TODO
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -325,29 +315,28 @@ USE_TZ = True
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
+# Root for volume directories
+VOLUMES_DIR = os.path.join(BASE_DIR, '_volumes')
+
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'core/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
-STATIC_ROOT = os.path.join(BASE_DIR, '_static')
+STATIC_ROOT = os.path.join(VOLUMES_DIR, 'static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/dev/topics/files/
-MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
+MEDIA_ROOT = os.path.join(VOLUMES_DIR, 'media')
 MEDIA_URL = '/media/'
 
-ARTIFACTS_URL = '/artifacts/'
-ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
-ARTIFACTS_STORAGE = 'core.storage.LocalArtifactsStorage'
-
 # https://django-dbbackup.readthedocs.io/en/master/
-BACKUPS_DIR = os.path.join(BASE_DIR, '.backups')
+BACKUPS_DIR = os.path.join(VOLUMES_DIR, 'db/backups')
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 
-DB_INIT_DIR = os.path.join(BASE_DIR, '.init')
+DB_INIT_DIR = os.path.join(VOLUMES_DIR, 'db/init')
 DB_INIT_FILENAME = 'init.sql'
 DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
 

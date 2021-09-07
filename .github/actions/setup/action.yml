@@ -7,24 +7,26 @@ description: 'Set up Python and install dependencies'
 inputs:
   os:
     description: 'Operating system'
-    required: true
+    required: false
+    default: ubuntu-latest
   python-version:
     description: 'Python version'
-    required: true
+    required: false
+    default: 3.9
   fetch-depth:
     description: 'Fetch depth'
     required: false
-    default: 1
+    default: 0
   environment:
-    description: 'Environment (e.g., "dev" or "prod")'
+    description: 'Environment ("prod", "test", or "dev")'
     required: false
-    default: ""
+    default: 'prod'
 
 runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
   steps:
-    # Check out.
+    # Check out source code.
     - name: Check out main branch
       uses: actions/checkout@v2.3.4
       with:
@@ -38,12 +40,26 @@ runs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Configure docker-compose.
+    - name: Configure Docker Compose
+      shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.${{ inputs.environment }}.yml ]]; then
+          echo "Using docker-compose.${{ inputs.environment }}.yml for default overrides..."
+          cp docker-compose.${{ inputs.environment }}.yml docker-compose.override.yml
+        fi
+        echo "Done."
     # Modify hosts file.
     - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     # Install PyInvoke config.
     - name: Install PyInvoke config
       run: |
@@ -51,7 +67,8 @@ runs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      # https://github.com/snok/install-poetry
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -79,19 +96,8 @@ runs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    # Load cached node_modules dir, if it exists.
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ inputs.os }}-${{ hashFiles('**/package-lock.json') }}
-    # Install node modules if necessary.
-    - name: Install JavaScript dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
-      run: |
-        cd frontend
-        npm ci
-        cd ..
+    # Write a .env file.
     - name: Create .env file
-      run: echo "${{ inputs.environment }}" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }}

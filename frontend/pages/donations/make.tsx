@@ -6,7 +6,7 @@ import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC, MouseEventHandler, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 
 const useStyles = makeStyles({
@@ -26,7 +26,7 @@ interface DonateProps {
 const Donate: FC<DonateProps> = (props: DonateProps) => {
   const classes = useStyles();
   const [clientToken, setClientToken] = useState(props.clientToken);
-  const [instance, setInstance] = useState(null);
+  const [instance, setInstance] = useState<any>();
   const router = useRouter();
   useEffect(() => {
     async function getClientToken() {
@@ -47,38 +47,7 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
     getClientToken();
   });
 
-  function SuccessMessage() {
-    return (
-      <div>
-        <div className="pt-5">
-          <p className="h1 mt-5">Donated Successfully.</p>
-          <div className="mt-3 pt-5 h4">
-            Thank you for your donation! Your patronage makes ModularHistory possible.
-          </div>
-          <div>
-            <Link href={"/home"}>
-              <Button variant="contained" color="primary">
-                Return Home
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function ErrorMessage() {
-    return (
-      <div className={classes.root}>
-        <div className="pt-5">
-          <p className="h1 mt-5">Oops, something went wrong.</p>
-          <div className="mt-3 pt-5 h4">Sorry, there were some issues with your donation.</div>
-        </div>
-      </div>
-    );
-  }
-
-  const makeDonation = (e) => {
+  const makeDonation: MouseEventHandler = (e) => {
     e.preventDefault();
     async function getNonce() {
       const { nonce } = await instance.requestPaymentMethod();
@@ -141,6 +110,10 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
                 Make donation
               </Button>
             </div>
+            <DropIn options={{ authorization: clientToken }} onInstance={setInstance} />
+            <button onClick={makeDonation} disabled={!instance}>
+              Make donation
+            </button>
           </div>
         )}
       </Container>

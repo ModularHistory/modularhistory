@@ -12,26 +12,32 @@ from typedmodels.models import TypedModel
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
-from apps.entities.api.serializers import EntitySerializer
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.serializers import EntitySerializer
+
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.constants.strings import EMPTY_STRING
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
 from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import store
 from core.models.manager import TypedModelManager
+from core.models.model_with_cache import store
+from core.models.module import Module
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -49,36 +55,52 @@ PARTS_OF_SPEECH = (
 )
 
 
+def get_entity_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing an entity."""
+    return ManyToManyForeignKey(
+        to='entities.Entity',
+        related_name=related_name,
+        verbose_name='entity',
+    )
+
+
 class CollectionInclusion(AbstractCollectionInclusion):
     """An inclusion of an entity in a collection."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='collection_inclusions', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='collection_inclusions')
 
 
 class ImageRelation(AbstractImageRelation):
     """A relation of an image to an entity."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='image_relations', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
     """A relation of a quote to an entity."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='quote_relations', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='quote_relations')
+
+
+class TopicRelation(AbstractTopicRelation):
+    """A relation of a topic to an entity."""
+
+    content_object = get_entity_fk(related_name='topic_relations')
+
+
+class EntityRelation(AbstractEntityRelation):
+    """A relation of an entity to an entity."""
+
+    content_object = get_entity_fk(related_name='entity_relations')
 
 
 class Entity(
     TypedModel,
-    SearchableModeratedModel,
+    Module,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
+    TaggableModel,
 ):
     """An entity."""
 
@@ -127,6 +149,8 @@ class Entity(
     )
     reference_urls = JSONField(blank=True, default=dict)
     related_quotes = RelatedQuotesField(through=QuoteRelation)
+    related_entities = RelatedEntitiesField(through=EntityRelation)
+    tags = TagsField(through=TopicRelation)
 
     class Meta:
         """Meta options for the Entity model."""
@@ -162,6 +186,10 @@ class Entity(
                 raise ValidationError(f'{key} reference URL is unsupported.')
             validate_url(value)  # raises a ValidationError
         super().clean()
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.unabbreviated_name
 
     @property
     def has_quotes(self) -> bool:

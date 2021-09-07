@@ -4,10 +4,10 @@ import re
 from typing import TYPE_CHECKING, Type, Union
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
+from django.apps import apps
 from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
 from core.models.model import ExtendedModel
@@ -33,7 +33,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
         super().__init__(request, query_params, model, model_admin)
         m2m_cls: Type['ExtendedModel']
         if isinstance(self.m2m_cls, str):
-            m2m_cls = import_string(self.m2m_cls)
+            m2m_cls = apps.get_model(*(self.m2m_cls.split('.')))
         else:
             m2m_cls = self.m2m_cls
         if self.value():

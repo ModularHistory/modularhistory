@@ -1,4 +1,4 @@
-import { Proposition } from "@/interfaces";
+import { Proposition } from "@/types/modules";
 import Link from "next/link";
 import { FC } from "react";
 

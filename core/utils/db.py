@@ -7,6 +7,7 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
+import scrubadub
 from celery import shared_task
 from celery_singleton import Singleton
 from django.conf import settings
@@ -20,7 +21,9 @@ from core.constants.misc import (
     RcloneStorageProviders,
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
+from core.environment import IS_DEV
 from core.utils import files
+from core.utils.sync import delay
 
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
@@ -56,6 +59,7 @@ def backup(
         raise ValueError(f'{filename} does not have a .sql extension.')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
+    print('Changing backup file extension from psql to sql ...')
     backup_files = glob(BACKUP_FILES_PATTERN)
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filepath = temp_file.replace('.psql', '.sql')
@@ -69,17 +73,24 @@ def backup(
         with open(backup_filepath, 'w') as processed_backup:
             previous_line = ''  # falsy and compatible with `startswith`
             for line in unprocessed_backup:
-                discard_conditions = [
-                    line == '\n' and re.match(r'(\n|--\n)', previous_line),
-                    re.match(r'(.*DROP\ |--\n?$)', line),
+                discard = (
                     # fmt: off
-                    redact and not line.startswith(r'\.') and re.match(
-                        r'COPY public\.(users_user|.+user_id|silk_)', previous_line
-                    )
+                    (line == '\n' and re.match(r'(\n|--\n)', previous_line)) or
+                    re.match(r'(.*DROP\ |--\n?$)', line) or
+                    (redact and not line.startswith(r'\.') and re.match(
+                        r'COPY public\.(silk_|users_socialaccount)', previous_line
+                    ))
                     # fmt: on
-                ]
-                if any(discard_conditions):
+                )
+                if discard:
                     continue
+                scrub = (
+                    redact
+                    and not line.startswith(r'\.')
+                    and re.match(r'COPY public\.(users_user)', previous_line)
+                )
+                if scrub:
+                    line = scrubadub.clean(line, replace_with='identifier')
                 processed_backup.write(line)
                 previous_line = line
     context.run(f'rm {temp_file}')
@@ -91,6 +102,7 @@ def backup(
         backup_filepath = zipped_backup_file
     logging.info(f'Finished creating backup file: {backup_filepath}')
     if push:
+        print('Pushing the backup to cloud storage ...')
         latest_backup_dir = join(settings.BACKUPS_DIR, 'latest')
         context.run(f'mkdir -p {latest_backup_dir}')
         context.run(
@@ -106,7 +118,7 @@ def backup(
         )
         logging.info(f'Finished uploading {backup_filepath}.')
     # Asynchronously remove duplicate and/or old backup files.
-    groom_backup_files.delay()
+    delay(groom_backup_files)
 
 
 def clear_migration_history(context: Context = CONTEXT, app: str = ''):
@@ -275,16 +287,17 @@ def seed(
     sleep(15)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
-    email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-    context.run(
-        "docker-compose run django_helper bash -c '"
-        'python manage.py createsuperuser --no-input '
-        f'--username={email} --email={email} &>/dev/null'
-        "'",
-        pty=True,
-    )
+    if IS_DEV:
+        email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+        context.run(
+            "docker-compose run django_helper bash -c '"
+            'python manage.py createsuperuser --no-input '
+            f'--username={email} --email={email} &>/dev/null'
+            "'",
+            pty=True,
+        )
     if up:
-        context.run('docker-compose up -d dev')
+        context.run('docker-compose up -d webserver')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):

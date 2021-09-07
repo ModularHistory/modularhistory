@@ -18,7 +18,7 @@ env:
   ENVIRONMENT: dev
   SHA: latest
 jobs:
-  env_file:
+  dotenv_file:
     runs-on: ubuntu-latest
     environment: dev
     env:
@@ -28,6 +28,7 @@ jobs:
       BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
       BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
       DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
+      ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -38,8 +39,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
       SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
       SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
@@ -72,17 +71,30 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+    - name: Configure Docker Compose
       shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.dev.yml ]]; then
+          echo "Using docker-compose.dev.yml for default overrides..."
+          cp docker-compose.dev.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
     - name: Install PyInvoke config
       run: |
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -91,7 +103,7 @@ jobs:
       id: venv-cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Test poetry environment (A)
       id: venv-test
       continue-on-error: true
@@ -101,28 +113,18 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
-        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
-      run: echo "dev" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
-        name: env-file
+        name: dotenv-file
         path: .env
         retention-days: 1

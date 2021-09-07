@@ -1,7 +1,7 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Occurrence } from "@/interfaces";
+import { Occurrence } from "@/types/modules";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
@@ -26,28 +26,27 @@ export default OccurrenceDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let occurrence = {};
-  const { slug } = params;
+  let notFound = false;
+  const { slug } = params || {};
 
   await axios
     .get(`http://django:8000/api/occurrences/${slug}/`)
     .then((response) => {
       occurrence = response.data;
     })
-    .catch(() => {
-      occurrence = null;
+    .catch((error) => {
+      if (error.response?.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
-
-  if (!occurrence) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
       occurrence,
     },
+    notFound,
     revalidate: 10,
   };
 };

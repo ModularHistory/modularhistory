@@ -15,4 +15,4 @@ class PropositionSitemap(Sitemap):
 
     def items(self) -> 'QuerySet[Proposition]':
         """Return the queryset of model instances to be included."""
-        return Proposition.objects.filter(verified=True, hidden=False)
+        return Proposition.objects.filter(verified=True)

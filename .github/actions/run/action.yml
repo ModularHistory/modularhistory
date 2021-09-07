@@ -1,0 +1,66 @@
+# When composite actions support `uses` (https://github.com/actions/runner/issues/646),
+# this can be converted to a composite action. In the meantime, we are using
+# https://github.com/mithro/actions-includes to allow `uses`.
+
+name: 'Start application'
+description: 'Run the application containers'
+runs:
+  using: "includes"
+  steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Create writable volume directories
+      run: |
+        dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
+        for dir_name in "${dir_names[@]}"; do
+          dir_path="_volumes/${dir_name}"
+          mkdir -p "$dir_path"; {
+            sudo chown -R www-data:www-data "$dir_path" && 
+            sudo chmod a+w -R "$dir_path"
+          } || exit 1
+        done
+    - uses: actions/cache@v2
+      id: data-cache
+      with:
+        path: _volumes/db/init
+        key: data
+    - name: Fetch data
+      if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
+      run: |
+        test -w _volumes/db/init || {
+          echo "Cannot write in db init directory."; exit 1
+        }
+        rclone --help &>/dev/null || {
+          curl https://rclone.org/install.sh | sudo bash 
+        } || exit 1
+        poetry run invoke db.seed --remote
+    - name: Start up containers
+      shell: bash
+      run: |
+        echo "Pulling images ..."
+        docker-compose pull -q
+        echo "" && echo "Starting containers with version $SHA ..."
+        docker-compose up -d webserver
+        echo "" && docker-compose ps
+        healthy=false; timeout=300; interval=15; waited=0
+        log_interval=$((interval*2))
+        while [[ "$healthy" = false ]]; do
+          healthy=true
+          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
+          if [[ "$healthy" = false ]]; then
+            if [[ $waited -gt $timeout ]]; then
+              echo "" && echo "Timed out."
+              docker-compose logs; exit 1
+            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
+              echo "" && docker-compose logs --tail 15
+              echo "" && docker-compose ps
+            fi
+            echo "" && echo "Waiting for containers (${waited}s) ..."
+            sleep $interval && waited=$((waited + interval))
+          fi
+        done; docker-compose ps
+        echo "" && echo "Finished starting up containers."

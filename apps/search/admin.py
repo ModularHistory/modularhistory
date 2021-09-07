@@ -8,6 +8,7 @@ from apps.entities.views import EntityCategorySearchView, EntitySearchView
 from apps.moderation.admin.moderated_model import ModeratedModelAdmin
 from apps.search import models
 from apps.topics.views import TagSearchView
+from apps.users.views import UserSearchView
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -22,13 +23,13 @@ class SearchableModelAdmin(ModeratedModelAdmin):
     model: Type['SearchableModel']
 
     exclude = ['cache', 'tags']
-    readonly_fields = ['slug', 'pretty_cache']
+    readonly_fields = ['slug']
 
     def get_fields(
         self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
     ) -> list[str]:
         """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
+        fields = list(super().get_fields(request, model_instance))
         ordered_field_names = reversed(
             [
                 'notes',
@@ -53,7 +54,10 @@ class SearchableModelAdmin(ModeratedModelAdmin):
         fields, fieldsets = list(self.get_fields(request, model_instance)), []
         meta_fields = [
             fields.pop(fields.index(field))
-            for field in ('notes', 'verified', 'hidden')
+            for field in (
+                'notes',
+                'verified',
+            )
             if field in fields
         ]
         if meta_fields:
@@ -100,6 +104,11 @@ class SearchableModelAdmin(ModeratedModelAdmin):
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='tag_search',
+            ),
+            path(
+                'user_search/',
+                self.admin_site.admin_view(UserSearchView.as_view(model_admin=self)),
+                name='user_search',
             ),
             path(
                 'collection_search/',

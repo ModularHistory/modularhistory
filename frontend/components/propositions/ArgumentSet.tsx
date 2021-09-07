@@ -1,11 +1,11 @@
-import { Argument } from "@/interfaces";
+import { Argument } from "@/types/modules";
 import { alpha, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
 import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { TreeItem, TreeView } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
-import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
+import { createStyles, withStyles } from "@material-ui/styles";
 import { animated, useSpring } from "@react-spring/web";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";
@@ -65,38 +65,24 @@ const StyledTreeItem = withStyles((theme: Theme) =>
   })
 )((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    heading: {
-      fontSize: theme.typography.pxToRem(15),
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-    tree: {
-      flexGrow: 1,
-    },
-  })
-);
-
 interface ArgumentSetProps {
   argumentSet: Argument[];
 }
 
 const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) => {
-  const classes = useStyles();
   const filteredArguments = argumentSet.filter(
     (argument) => argument.explanation && !!argument.premises?.length
   );
   return (
     <TreeView
-      className={classes.tree}
       defaultExpanded={filteredArguments.map((argument) => `${argument.id}`)}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<CloseSquare />}
-      style={{ marginBottom: "1.5rem" }}
+      sx={{
+        marginBottom: "1.5rem",
+        flexGrow: 1,
+      }}
     >
       {filteredArguments.map((argument, index) => (
         <StyledTreeItem

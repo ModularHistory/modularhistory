@@ -44,7 +44,6 @@ class AbstractChange(models.Model):
         REJECTED = ModerationStatus.REJECTED, _('Rejected')
         PENDING = ModerationStatus.PENDING, _('Pending')
         APPROVED = ModerationStatus.APPROVED, _('Approved')
-        MERGED = ModerationStatus.MERGED, _('Merged')
 
     initiator = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
@@ -73,6 +72,12 @@ class AbstractChange(models.Model):
     moderation_status = models.PositiveSmallIntegerField(
         choices=_ModerationStatus.choices,
         default=_ModerationStatus.PENDING.value,  # type: ignore
+        editable=False,
+    )
+    n_remaining_approvals_required = models.PositiveSmallIntegerField(
+        verbose_name=_('number of remaining approvals required'),
+        blank=True,
+        default=n_required_approvals,
         editable=False,
     )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)

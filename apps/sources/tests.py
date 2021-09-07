@@ -16,6 +16,6 @@ class TestSources:
     # @pytest.mark.parametrize('param_name', ['param_value'])
     def test_api_view(self, api_client: APIClient):
         """Test the sources API."""
-        url = reverse('sources_api:index')
+        url = reverse('sources_api:source-list')
         response = api_client.get(url)
         assert response.status_code == 200

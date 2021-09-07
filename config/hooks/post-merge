@@ -11,9 +11,9 @@ setup_sha_file=".venv/.setup.sha"
 poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
-docker-compose ps | grep "dev" | grep --quiet "Up" && dev_up=true || dev_up=false
+docker-compose ps | grep "webserver" | grep --quiet "Up" && up=true || up=false
 
-# Check if the setup script hasn't yet been run.
+# Determine whether to prompt to (re)run the setup script.
 if [[ ! -f $setup_sha_file ]]; then
   prompt_to_run_setup_script=true
 # Otherwise, if on the main branch...
@@ -41,6 +41,10 @@ if [[ -d config/hooks ]]; then
     }
   done
 fi
+
+# If docker-compose.yml files have been updated, stop all running containers so that
+# containers will have to be recreated with the updated configuration.
+echo "$changed_files" | grep --quiet 'docker-compose' && docker-compose down --remove-orphans
 
 # Update django dependencies if necessary.
 echo "$changed_files" | grep --quiet 'poetry.lock' && {
@@ -76,7 +80,7 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 
     "
   }
-  [[ "$dev_up" = true ]] && docker-compose up -d dev
+  [[ "$up" = true ]] && docker-compose up -d webserver
 }
 
 # Prompt to update hooks if necessary.

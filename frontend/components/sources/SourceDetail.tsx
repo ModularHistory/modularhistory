@@ -1,4 +1,4 @@
-import { Source } from "@/interfaces";
+import { Source } from "@/types/modules";
 import { FC } from "react";
 import TagList from "../topics/TagList";
 

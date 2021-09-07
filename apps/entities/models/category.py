@@ -6,8 +6,9 @@ from django.db.models.functions import Lower
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.moderation.models.moderated_model.model import ModeratedModel
 from core.fields.array_field import ArrayField
-from core.models.model import ExtendedModel
+from core.models.relations.moderated import ModeratedRelation
 
 NAME_MAX_LENGTH: int = 100
 
@@ -18,7 +19,7 @@ PARTS_OF_SPEECH: tuple[tuple[str, str], ...] = (
 )
 
 
-class Category(ExtendedModel):
+class Category(ModeratedModel):
     """An entity category."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -56,7 +57,7 @@ class Category(ExtendedModel):
         return self.name
 
 
-class Categorization(ExtendedModel):
+class Categorization(ModeratedRelation):
     """A categorization of an entity."""
 
     entity = models.ForeignKey(

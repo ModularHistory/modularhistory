@@ -84,17 +84,15 @@ class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
             'scripts/admin.js',
         )
 
-    def get_readonly_fields(
-        self, request: HttpRequest, model_instance: Optional['Model'] = None
-    ) -> list[str]:
-        """Add additional readonly fields."""
-        default_readonly_fields = ('cache',)
-        readonly_fields = list(super().get_readonly_fields(request, model_instance))
-        if model_instance:
-            for additional_readonly_field in default_readonly_fields:
-                if hasattr(model_instance, additional_readonly_field):  # noqa: WPS421
-                    readonly_fields.append(additional_readonly_field)
-        return list(set(readonly_fields))
+    def get_exclude(self, request: HttpRequest, obj: Optional['Model'] = None) -> list[str]:
+        """Return the fields to exclude from admin forms."""
+        always_excluded_fields = ('cache',)
+        excluded_fields = list(super().get_exclude(request, obj=obj) or [])
+        if obj:
+            for excluded_field in always_excluded_fields:
+                if hasattr(obj, excluded_field):  # noqa: WPS421
+                    excluded_fields.append(excluded_field)
+        return list(set(excluded_fields))
 
     def get_search_results(
         self,

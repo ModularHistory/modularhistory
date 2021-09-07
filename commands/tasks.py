@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Optional
 import django
 from decouple import config
 
-from core.constants.environments import Environments
 from commands.command import command
+from core.constants.environments import Environments
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -53,7 +53,7 @@ def build(  # noqa: S107
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
     )
-    for image_name in ('django', 'react', 'webserver'):
+    for image_name in ('django', 'next', 'webserver'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
         context.run(f'docker pull {image}:latest', warn=True)
@@ -112,5 +112,5 @@ def generate_artifacts(context: 'Context'):
         normalize_plurals=False,
         regexp=r'\w[\w\' ]+',
     ).generate(text)
-    word_cloud.to_file(join(settings.BASE_DIR, '_static', '_topic_cloud.png'))
+    word_cloud.to_file(join(settings.STATIC_ROOT, '_topic_cloud.png'))
     print('Done.')

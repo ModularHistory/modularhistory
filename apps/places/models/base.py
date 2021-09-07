@@ -4,7 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
 from core.models.manager import TypedModelManager
-from core.models.model_with_cache import ModelWithCache, store
+from core.models.model_with_cache import store
+from core.models.module import Module
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
@@ -24,7 +25,7 @@ class PlaceTypes:
 NAME_MAX_LENGTH: int = 40
 
 
-class Place(TypedModel, ModelWithCache):
+class Place(TypedModel, Module):
     """Where something has happened."""
 
     name = models.CharField(
@@ -52,7 +53,7 @@ class Place(TypedModel, ModelWithCache):
         """Return the location's string representation."""
         return self.string
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """Save the place to the database."""
         if self.type == 'places.place' or not self.type:
             raise ValidationError('Place must have a type.')
@@ -60,6 +61,10 @@ class Place(TypedModel, ModelWithCache):
             # Prevent a RuntimeError when saving a new place
             self.recast(self.type)
         super().save()
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.name
 
     @property  # type: ignore
     @store(attribute_name='string')

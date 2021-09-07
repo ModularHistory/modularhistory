@@ -8,27 +8,23 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.positioned_relation import PositionedRelation
-from core.utils.html import soupify
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
-TYPE_CHOICES = (
-    (None, '-------'),
-    (1, 'deductive'),
-    (2, 'inductive'),
-)
 
-
-class PremiseGroupInclusion(PositionedRelation):
+class PremiseGroupInclusion(ModeratedPositionedRelation):
     """A relation of a premise and a premise group."""
 
     premise_group = ManyToManyForeignKey(to='propositions.PremiseGroup')
     premise = ManyToManyForeignKey(to='propositions.Proposition')
 
+    def __str__(self) -> str:
+        return f'{self.premise}'
 
-class PremiseGroup(PositionedRelation):
+
+class PremiseGroup(ModeratedPositionedRelation):
     """A group of premises that, combined, support an argument."""
 
     type = models.CharField(
@@ -53,13 +49,23 @@ class PremiseGroup(PositionedRelation):
         return f'{self.type}: \n{newline.join([str(premise) for premise in self.premises.all()])}'
 
 
-class Argument(PositionedRelation):
+class Argument(ModeratedPositionedRelation):
     """An argument for a proposition."""
 
+    class Type(models.IntegerChoices):
+        __empty__ = '-------'
+        DEDUCTIVE = 1, 'deductive'
+        INDUCTIVE = 2, 'inductive'
+        ABDUCTIVE = 3, 'abductive'
+
     type = models.PositiveSmallIntegerField(
-        choices=TYPE_CHOICES,
+        choices=Type.choices,
         db_index=True,
         null=True,
+        help_text=(
+            'The type of reasoning (see '
+            'https://www.merriam-webster.com/words-at-play/deduction-vs-induction-vs-abduction).'
+        ),
     )
     premise_groups: 'RelatedManager[PremiseGroup]'
     premises = models.ManyToManyField(
@@ -69,6 +75,7 @@ class Argument(PositionedRelation):
         related_name='supported_arguments',
         symmetrical=False,
         verbose_name=_('premises'),
+        help_text='The premises on which the argument depends.',
     )
     conclusion = models.ForeignKey(
         to='propositions.Proposition',

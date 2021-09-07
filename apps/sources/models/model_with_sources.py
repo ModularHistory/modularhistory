@@ -3,17 +3,18 @@
 import logging
 from typing import Optional, Type, Union
 
-from core.celery import app
 from django.apps import apps
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.citation import AbstractCitation
+from core.celery import app
 from core.constants.strings import EMPTY_STRING
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.html_field import HTMLField
 from core.models.model import ExtendedModel
+from core.utils.sync import delay
 
 
 class SourcesField(CustomManyToManyField):
@@ -52,7 +53,8 @@ class ModelWithSources(ExtendedModel):
         if citations or not self.sources.exists():
             return citations
         citations = [citation.serialize() for citation in self.citations.all()]
-        cache_citations.delay(
+        delay(
+            cache_citations,
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             citations,
@@ -127,6 +129,9 @@ def cache_citations(model: str, instance_id: int, citations: list):
     if not citations:
         return
     Model = apps.get_model(model)  # noqa: N806
+    if not hasattr(Model, 'cache'):
+        logging.error(f'{Model} has no cache.')
+        return
     model_instance: ModelWithSources = Model.objects.get(pk=instance_id)
     model_instance.cache['citations'] = citations
     model_instance.save(wipe_cache=False)

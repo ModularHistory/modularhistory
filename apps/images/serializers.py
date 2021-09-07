@@ -2,18 +2,18 @@
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class ImageSerializer(SearchableModelSerializer):
+class ImageSerializer(ModuleSerializer):
     """Serializer for images."""
 
-    srcUrl = serpy.StrField(attr='src_url')
+    src_url = serpy.StrField()
     width = serpy.IntField()
     height = serpy.IntField()
-    captionHtml = serpy.Field(attr='caption_html')
-    providerString = serpy.Field(attr='provider_string')
-    bgImgPosition = serpy.Field(attr='bg_img_position')
+    caption_html = serpy.StrField()
+    provider_string = serpy.StrField()
+    bg_img_position = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

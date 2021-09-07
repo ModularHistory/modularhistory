@@ -1,0 +1,35 @@
+{% if user.first_name %}
+<p>
+Dear {{ user.first_name }},
+</p>
+{% endif %}
+
+<p>
+{% if moderation.change.initiator == user %}
+The change you initiated 
+{% elif contributed %}
+The change you contributed to 
+{% elif moderated %}
+The change you moderated 
+{% endif %}
+for "{% firstof content_object.title content_object %}" was 
+{% if moderation.is_rejection %}rejected{% elif moderation.is_approval %}accepted{% else %}reviewed{% endif %}{% if moderation.moderator %} by <a href="{{ protocol }}://{{ site.domain }}/users/{{ moderator.handle }}/">@{{ moderator.handle }}</a>{% endif %}.
+</p>
+
+{% if moderation.reason %}
+<p>
+Reason: {{ moderation.reason }}
+</p>
+{% endif %}
+
+{% if moderation.is_approval and change.n_remaining_approvals_required %}
+<p>
+The change requires <b>{{ change.n_remaining_approvals_required }}</b> additional approvals.
+</p>
+{% endif %}
+
+{% if moderation.absolute_url %}
+<p>
+You can view the current status of the change here: {{ moderation.absolute_url }}
+</p>
+{% endif %}

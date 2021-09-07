@@ -12,9 +12,11 @@ from image_cropping import ImageRatioField
 
 from apps.images.models.media_model import MediaModel
 from apps.images.serializers import ImageSerializer
+from apps.topics.models.taggable import AbstractTopicRelation, TagsField
 from core.fields.file_field import upload_to
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.fields.json_field import JSONField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.string import components_to_string
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
@@ -34,13 +36,27 @@ IMAGE_TYPES = (
 
 TYPE_NAME_MAX_LENGTH = 14
 
-IMAGE_FIELD_NAME = 'image'
-IMAGE_KEY = IMAGE_FIELD_NAME
+IMAGE_KEY = IMAGE_FIELD_NAME = 'image'
 
 image_placeholder_regex: str = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'  # noqa: WPS360
 )
 logging.debug(f'Image placeholder pattern: {image_placeholder_regex}')
+
+
+def get_image_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing a proposition."""
+    return ManyToManyForeignKey(
+        to='images.Image',
+        related_name=related_name,
+        verbose_name='image',
+    )
+
+
+class TopicRelation(AbstractTopicRelation):
+    """A relationship between a proposition and a topic."""
+
+    content_object = get_image_fk(related_name='topic_relations')
 
 
 class Image(MediaModel):
@@ -60,18 +76,18 @@ class Image(MediaModel):
         default=IMAGE_TYPES[0][0],
     )
     urls = JSONField(default=dict, blank=True)
-    width = models.PositiveSmallIntegerField(
-        verbose_name=_('width'), null=True, blank=True  # TODO: remove null
-    )
-    height = models.PositiveSmallIntegerField(verbose_name=_('height'), null=True, blank=True)
+    width = models.PositiveSmallIntegerField(verbose_name=_('width'), blank=True)
+    height = models.PositiveSmallIntegerField(verbose_name=_('height'), blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField(
-        IMAGE_FIELD_NAME,
+        image_field=IMAGE_FIELD_NAME,
         free_crop=True,
         allow_fullsize=True,
         verbose_name=_('cropping'),
         help_text='Not yet fully implemented.',
     )
+
+    tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
@@ -88,13 +104,11 @@ class Image(MediaModel):
 
     def __str__(self) -> str:
         """Return the string representation of the image."""
-        return self.caption if self.caption else self.image.name
+        return self.caption or self.image.name
 
     def clean(self):
         """Prepare the image to be saved."""
         super().clean()
-        if not self.caption:
-            raise ValidationError('Image needs a caption.')
         image_is_duplicated = (
             self.caption
             and Image.objects.filter(image=self.image, caption=self.caption)
@@ -128,7 +142,7 @@ class Image(MediaModel):
     @property
     def caption_html(self) -> str:
         """Return the user-facing caption HTML."""
-        return self.caption or ''
+        return self.caption
 
     @property
     def cropped_image_url(self) -> Optional[str]:

@@ -1,14 +1,13 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.topics.api import views
 
 router = routers.DefaultRouter()
-router.register(r'topics', views.TopicViewSet)
+router.register('', views.TopicViewSet)
 
 app_name = 'topics'
 
 urlpatterns = [
-    path('', views.TopicListAPIView.as_view()),
-    path('<slug>', views.TopicAPIView.as_view()),
+    path('', include(router.urls)),
 ]

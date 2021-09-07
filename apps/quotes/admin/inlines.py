@@ -12,10 +12,3 @@ class AttributeesInline(TabularInline):
     autocomplete_fields = ['attributee']
 
     sortable_field_name = 'position'
-
-
-class BitesInline(TabularInline):
-    """Inline admin for a quote's bites."""
-
-    model = models.QuoteBite
-    extra = 0

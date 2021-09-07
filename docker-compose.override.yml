@@ -6,42 +6,30 @@ x-common-env-vars: &common-env-vars
   POSTGRES_HOST: "postgres"
 
 services:
-  dev:
+  webserver:
     build:
       context: .
       dockerfile: ./build/Dockerfile.webserver
       args:
         ENVIRONMENT: dev
-    depends_on:
-      - django
-      - celery_beat
-      - react
-    deploy:
-      restart_policy:
-        condition: on-failure
     hostname: modularhistory.dev.net
-    image: webserver
-    ports:
-      - "80:8080"
+    image: webserver:latest
     volumes:
+      # Override docker-compose.yml's `./config/nginx/prod:/etc/nginx/conf.d`
       - ./config/nginx/dev:/etc/nginx/conf.d
-      - .:/modularhistory
-    networks:
-      default:
-        ipv4_address: 172.27.0.5
 
   celery:
     image: django:latest
     user: root
     volumes:
       - .:/modularhistory
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
     image: django:latest
     volumes:
       - .:/modularhistory
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   django:
     build:
@@ -54,9 +42,11 @@ services:
         condition: none
     image: django:latest
     user: root
+    ports:
+      - "8000:8000"
     volumes:
       - .:/modularhistory
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   # You can `docker-compose run django_helper {command}` to avoid
   # an IP address conflict with the already-running django container.
@@ -82,37 +72,45 @@ services:
       - .:/github/workspace
       - ./.git:/github/workspace/.git
 
-  react:
+  next:
     build:
       context: .
-      dockerfile: ./build/Dockerfile.react
+      dockerfile: ./build/Dockerfile.next
       args:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
-      NEXTAUTH_URL_INTERNAL: "http://react:3000"
       REACT_EDITOR: "code"
-    image: react:latest
+    image: next:latest
     user: root # avoid permissions issues with writing in build dir
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
       - ./core/static/:/modularhistory/core/static
-
-  # run Cypress tests and exit with command
-  #   docker-compose up --exit-code-from cypress
+  
   cypress:
-    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
-    image: "cypress/included:7.1.0"
-    depends_on:
-      - dev
     environment:
-      # pass base url to test pointing at the web application
-      - CYPRESS_baseUrl=http://modularhistory.dev.net
-    # share the current folder as volume to avoid copying
-    working_dir: /e2e
-    volumes:
-      - ./frontend/cypress:/e2e/cypress
-      - ./frontend/cypress.json:/e2e/cypress.json
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
+
+  elasticsearch:
+    ports:
+      - "9200:9200"
+    environment:
+      - ELASTIC_PASSWORD=test
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+  kibana:
+    ports:
+      - "5601:5601"
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

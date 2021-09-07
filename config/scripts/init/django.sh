@@ -1,43 +1,33 @@
 #!/bin/bash
 
-sleep 3 && wait-for-it.sh postgres:5432 --
-sleep 3 && wait-for-it.sh elasticsearch:9200 --
-
-writable_dirs=( ".backups" ".init" "_static" "_media" )
-for writable_dir in "${writable_dirs[@]}"; do
-    # Must be run by a www-data user:
-    test -w "/modularhistory/$writable_dir" || {
-        echo "Django lacks permission to write in ${writable_dir}."
-        [[ "$ENVIRONMENT" = dev ]] && exit 1
-    }
-done
+wait-for-it.sh postgres:5432 -- wait-for-it.sh elasticsearch:9200 --
 
 # python manage.py cleanup_django_defender  # TODO
 
-[[ "$ENVIRONMENT" = prod ]] && {
-    invoke db.backup || {
-        echo "Failed to create db backup."
-        exit 1
+# Create a db backup, if there are any migrations to apply.
+python manage.py migrate --check || {
+    [[ "$ENVIRONMENT" = prod ]] && {
+        invoke db.backup || {
+            echo "Failed to create db backup."
+            exit 1
+        }
     }
 }
 
+# Apply migrations.
 python manage.py migrate || {
     echo "Failed to run db migrations."
     exit 1
 }
 
+# Collect static files.
 python manage.py collectstatic --no-input || {
     echo "Failed to collect static files."
     exit 1
 }
 
 # Rebuild indexes.
-if [[ "$USE_PARALLEL_INDEX_BUILDING" = 1 ]]; then
-    parallel="--parallel"
-else
-    parallel=""
-fi
-python manage.py search_index -f --rebuild "$parallel" || {
+python manage.py search_index --rebuild -f || {
     echo "Failed to rebuild elasticsearch indexes."
     exit 1
 }

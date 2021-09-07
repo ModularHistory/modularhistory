@@ -2,7 +2,6 @@ import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# from core.settings import mega  # TODO
 from apps.images.models.media_model import MediaModel
 
 TITLE_MAX_LENGTH: int = 200
@@ -17,11 +16,8 @@ class Video(MediaModel):
     embed_code = models.CharField(max_length=EMBED_CODE_MAX_LENGTH)
     duration = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for Video."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         unique_together = ['title', 'url']
 
     def clean(self):

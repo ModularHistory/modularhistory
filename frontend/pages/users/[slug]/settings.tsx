@@ -11,7 +11,6 @@ import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/styles";
 import { AxiosResponse } from "axios";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
@@ -19,15 +18,6 @@ import { csrfToken, getSession, providers, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
 import { ChangeEvent, FC, ReactNode, useState } from "react";
 import Image from "react-bootstrap/Image";
-
-const useStyles = makeStyles({
-  root: {
-    paddingTop: "2rem",
-  },
-  tabs: {
-    flexGrow: 1,
-  },
-});
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -56,9 +46,9 @@ function TabPanel(props: TabPanelProps) {
 }
 
 interface UserSettingsPageProps {
-  user?: User;
+  user: User;
   csrfToken: string;
-  providers: Provider[];
+  providers: Record<string, Provider>;
   socialAccounts: any;
 }
 
@@ -68,7 +58,6 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   providers,
   socialAccounts,
 }: UserSettingsPageProps) => {
-  const classes = useStyles();
   const theme = useTheme();
   const [session, _loading] = useSession();
   const [value, setValue] = useState(0);
@@ -77,22 +66,30 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   };
   if (session) {
     return (
-      <Layout title={String(user.name || user.username)}>
-        <Container className={classes.root}>
+      <Layout title={String(user.name || user.handle)}>
+        <Container
+          sx={{
+            paddingTop: "2rem",
+          }}
+        >
           <Grid container spacing={3} alignContent="center">
             <Grid item sm={4}>
               <div className="profile-img">
                 <Image
                   src={String(user.avatar || "/static/profile_pic_placeholder.png")}
                   className="rounded-circle z-depth-0"
-                  alt={`profile image for ${user.name || user.username}`}
+                  alt={`profile image for ${user.name || user.handle}`}
                   width="200"
                   height="200"
                 />
               </div>
             </Grid>
             <Grid container item sm={8}>
-              <Paper className={classes.tabs}>
+              <Paper
+                sx={{
+                  flexGrow: 1,
+                }}
+              >
                 <Tabs
                   value={value}
                   onChange={handleChange}

@@ -16,4 +16,5 @@ WATCHMAN_AUTH_DECORATOR = 'django.contrib.admin.views.decorators.staff_member_re
 
 WATCHMAN_CHECKS = watchman_constants.DEFAULT_CHECKS + (
     'core.config._watchman.check_health_checks',
+    'core.config._watchman.check_file_permissions',
 )

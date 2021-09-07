@@ -5,19 +5,22 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.models.changeset.model import AbstractChange
 from apps.moderation.models.moderation import Moderation
 from apps.moderation.tasks import handle_approval
+from core.utils.sync import delay
 
 from .manager import ChangeManager
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
-    from apps.moderation.models.change import Change
+    from apps.moderation.models.change.queryset import ChangeQuerySet
     from apps.moderation.models.moderated_model import ModeratedModel
     from apps.users.models import User
 
@@ -42,6 +45,17 @@ class Change(AbstractChange):
         null=True,
         blank=True,
     )
+
+    # Changes to m2m relationships require their own `Change` instances but can be
+    # explicitly connected to their originating change through the `parent` field.
+    parent = models.ForeignKey(
+        to='self',
+        on_delete=models.CASCADE,
+        related_name='constituent_changes',
+        null=True,
+        blank=True,
+    )
+    constituent_changes: 'ChangeQuerySet'  # from parent's `related_name`
 
     # Django's content types framework is used to store references to moderated model
     # instances, which can belong to various models.
@@ -83,6 +97,13 @@ class Change(AbstractChange):
         blank=True,
     )
 
+    # Boolean reflecting whether the change needs to be rebased on a preceding change.
+    requires_rebase = models.BooleanField(
+        verbose_name=_('requires rebase'),
+        editable=False,
+        default=False,
+    )
+
     # `merged_date` must be set automatically when change is applied to the moderated
     # model instance and the moderation status is updated from "approved" to "merged".
     merged_date = models.DateTimeField(null=True, blank=True, editable=False)
@@ -90,11 +111,11 @@ class Change(AbstractChange):
     objects = ChangeManager()
 
     def __str__(self) -> str:
-        return f'Change #{self.pk}, affecting {self.content_object}'
+        return f'Change affecting {self.content_object}'
 
     @property
     def is_approved(self) -> bool:
-        """Return a boolean reflecting whether the change is approved."""
+        """Return a boolean reflecting whether the change has been approved."""
         return self.moderation_status == ModerationStatus.APPROVED
 
     @property
@@ -102,23 +123,74 @@ class Change(AbstractChange):
         """
         Return the object prior to application of the change.
 
-        If the change has not yet been saved to the moderated model instance,
-        then the `unchanged_object` is simply the moderated model instance.
-
-        If the change has already been applied, regardless of whether additional
-        changes have been applied since the time this change was applied, the
-        value of `unchanged_object` is the `changed_object` value of the
-        change that immediately preceded this one.
+        If the change has already been applied, the value of `unchanged_object` is the
+        `changed_object` value of the change that was applied immediately before this one.
         """
         if self.merged_date:
-            prior_change: Change = Change.objects.filter(
-                content_type=self.content_type,
-                object_id=self.object_id,
-                moderation_status=ModerationStatus.MERGED,
-                merged_date__lt=self.merged_date,
-            ).order_by('-merged_date')[0]
-            return prior_change.changed_object
+            previously_merged_change: Optional['Change'] = self.get_previously_merged_change()
+            if previously_merged_change:
+                return previously_merged_change.changed_object
         return self.content_object
+
+    def get_initial_object_of_change(self) -> 'ModeratedModel':
+        """
+        Return the object against which this change was initially proposed.
+
+        This can be used for rebasing the change (Change A) on another change (Change B)
+        that was applied to the referenced model instance after Change A was initiated.
+
+        Change A's initial object of change can be compared against the `changed_object`
+        value of Change B. Note: Change B is probably the return value of
+        `change_a.get_previously_merged_change()`.
+        """
+        prior_changes = self.__class__.objects.filter(merged_date__lt=self.created_date)
+        if prior_changes.exists():
+            prior_change: 'Change' = prior_changes.order_by('-merged_date')[0]
+            return prior_change.changed_object
+        # If there were no changes merged before this change was initiated, we will
+        # assume that the initial object of change is the current content object.
+        return self.content_object
+
+    def get_n_remaining_approvals_required(self) -> int:
+        """Return the number of remaining approvals required before the change is applied."""
+        if self.is_approved:
+            return 0
+        n_required_approvals = self.n_required_approvals
+        latest_moderations = self.moderations.order_by('-date')[:n_required_approvals]
+        for moderation in latest_moderations:
+            if moderation.verdict == ModerationStatus.APPROVED:
+                n_required_approvals -= 1
+            else:
+                break
+        return n_required_approvals
+
+    def get_previously_merged_change(self) -> Optional['Change']:
+        """
+        Return the latest-merged change preceding this one, or None.
+
+        If this change has not been merged:
+            Return the most recently merged change.
+
+        If this change has been merged:
+            Return the change that was merged immediately before this one.
+
+        If no changes, excluding this one, have been merged, return None.
+        """
+        previously_merged_change_kwargs = {
+            'content_type': self.content_type,
+            'object_id': self.object_id,
+        }
+        if self.merged_date:
+            previously_merged_change_kwargs['merged_date__lt'] = self.merged_date
+        else:
+            previously_merged_change_kwargs['merged_date__isnull'] = False
+        previously_merged_changes = Change.objects.filter(**previously_merged_change_kwargs)
+        if previously_merged_changes.exists():
+            previously_merged_change: Change = previously_merged_changes.order_by(
+                '-merged_date'
+            )[0]
+            return previously_merged_change
+        return None
 
     def apply(self) -> bool:
         """
@@ -126,32 +198,56 @@ class Change(AbstractChange):
 
         Return a boolean reflecting whether the change was applied successfully.
         """
-        if self.is_approved:
+        parent: Optional['Change'] = self.parent
+        if self.requires_rebase:
+            raise Exception(f'{self} cannot be applied; it requires rebasing.')
+        elif parent and parent.requires_rebase:
+            raise Exception(f'{self} cannot be applied; its parent change requires rebasing.')
+        elif self.is_approved:
             # Draft state should already be set to "ready".
             self.draft_state = DraftState.READY
             try:
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
                     model_instance.save()
+                    self.merged_date = timezone.now()
+                    self.save()
             except Exception as err:
                 logging.error(err)
                 return False
+            # Update other changes that require rebasing on this one.
+            self.__class__.objects.filter(
+                content_type=self.content_type,
+                object_id=self.object_id,
+                merged_date__isnull=True,
+            ).exclude(pk=self.pk).update(requires_rebase=True)
             return True
-        logging.info(f'Ignored request to apply unapproved change: {self}')
+        logging.error(f'Ignored request to apply unapproved change: {self}')
         return False
 
     def approve(
         self,
         moderator: Optional['User'] = None,
         reason: Optional[str] = None,
+        force: bool = False,
     ) -> Moderation:
-        """Add an approval."""
+        """
+        Add an approval to the change.
+
+        By default, this does not change the moderation status of the change
+        until the total number of approvals reaches the required number of
+        approvals (`n_required_approvals`). However, if the moderator is a
+        superuser and `force=True` is specified, the moderation status is
+        immediately updated to APPROVED, and the change is applied.
+        """
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
             moderator=moderator,
             reason=reason,
+            force=force,
         )
-        handle_approval.delay(approval.pk)
+        self.constituent_changes.all().approve(moderator=moderator, reason=reason)
+        delay(handle_approval, approval.pk)
         return approval
 
     def moderate(
@@ -159,6 +255,7 @@ class Change(AbstractChange):
         verdict: int,
         moderator: Optional['User'] = None,
         reason: Optional[str] = None,
+        force: bool = False,
     ) -> Moderation:
         """Moderate the change."""
         if verdict not in self._ModerationStatus.values:
@@ -169,6 +266,14 @@ class Change(AbstractChange):
             verdict=verdict,
             reason=reason,
         )
+        if force:
+            if moderator and moderator.is_superuser:
+                self.moderation_status = verdict
+                self.save()
+            else:
+                logging.error(
+                    f'Cannot process force-approval by non-superuser moderator {moderator}.'
+                )
         return moderation
 
     def reject(

@@ -4,7 +4,6 @@ from django_elasticsearch_dsl import fields
 
 class Document(ESDocument):
 
-    hidden = fields.BooleanField()
     verified = fields.BooleanField()
     date = fields.DateField()
 

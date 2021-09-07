@@ -1,7 +1,8 @@
 import logging
 import re
-from typing import TYPE_CHECKING, Match, Optional
+from typing import TYPE_CHECKING, Match, Optional, Union
 
+from bs4.element import NavigableString, Tag
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars_html
@@ -12,19 +13,22 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.models import DatedModel
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
     ModelWithLocations,
 )
-from apps.propositions.api.serializers import PropositionSerializer
+from apps.propositions.serializers import PropositionSerializer
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -32,6 +36,7 @@ from apps.quotes.models.model_with_related_quotes import (
 )
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
@@ -40,6 +45,7 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
+from core.models.module import Module
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -85,27 +91,39 @@ class CollectionInclusion(AbstractCollectionInclusion):
 
 
 class Citation(AbstractCitation):
-    """A relationship between a proposition and a source."""
+    """A relation of a source to a proposition."""
 
     content_object = get_proposition_fk(related_name='citations')
 
 
 class Location(AbstractLocationRelation):
-    """A relationship between a proposition and a place."""
+    """A relation of a location to a proposition."""
 
     content_object = get_proposition_fk(related_name='location_relations')
 
 
 class ImageRelation(AbstractImageRelation):
-    """A relationship between a proposition and an image."""
+    """A relation of an image to a proposition."""
 
     content_object = get_proposition_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    """A relationship between a proposition and a quote."""
+    """A relation of a quote to a proposition."""
 
     content_object = get_proposition_fk(related_name='quote_relations')
+
+
+class EntityRelation(AbstractEntityRelation):
+    """A relation of an entity to a proposition."""
+
+    content_object = get_proposition_fk(related_name='entity_relations')
+
+
+class TopicRelation(AbstractTopicRelation):
+    """A relation of a topic to a proposition."""
+
+    content_object = get_proposition_fk(related_name='topic_relations')
 
 
 TYPE_CHOICES = (
@@ -131,7 +149,8 @@ class OccurrenceType(models.TextChoices):
 
 
 class Proposition(  # noqa: WPS215
-    SearchableModeratedModel,
+    Module,
+    TaggableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
     ModelWithRelatedEntities,
@@ -189,6 +208,8 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
+    related_entities = RelatedEntitiesField(through=EntityRelation)
+    tags = TagsField(through=TopicRelation)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),
@@ -242,11 +263,12 @@ class Proposition(  # noqa: WPS215
         """Return the occurrence's elaboration, truncated."""
         if not self.elaboration:
             return None
-        elaboration = soupify(self.elaboration)
-        if elaboration.find('img'):
-            elaboration.find('img').decompose()
+        elaboration_soup = soupify(self.elaboration)
+        img_tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find('img')
+        if isinstance(img_tag, Tag):
+            img_tag.decompose()
         truncated_elaboration = (
-            truncatechars_html(elaboration.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            truncatechars_html(elaboration_soup.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
             .replace('<p>', '')
             .replace('</p>', '')
         )
@@ -284,6 +306,10 @@ class Proposition(  # noqa: WPS215
                 '</a>'
             )
         return summary_link
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.summary
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:

@@ -10,13 +10,13 @@ from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
 
 
-class AbstractLocationRelation(PositionedRelation):
+class AbstractLocationRelation(ModeratedPositionedRelation):
     """
     Abstract base model for locations relations.
 
@@ -30,9 +30,10 @@ class AbstractLocationRelation(PositionedRelation):
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for AbstractLocationRelation."""
-
         abstract = True
+
+    def __str__(self) -> str:
+        return f'{self.location}'
 
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the location."""

@@ -1,7 +1,7 @@
 import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/styles";
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, SyntheticEvent, useContext, useEffect, useState } from "react";
 import { SearchFormContext } from "./SearchForm";
 
 const useStyles = makeStyles({
@@ -23,18 +23,14 @@ const useStyles = makeStyles({
   },
 });
 
+type Options = Record<string | number, string>;
+
 interface MultiSelectProps {
   label: string;
   name: string;
   keyName: string;
   valueName: string;
-  children: () => Promise<
-    Array<{
-      label: string;
-      key: string;
-      defaultChecked?: boolean;
-    }>
-  >;
+  children: () => Promise<any[]>;
 }
 
 const MultiSelect: FC<MultiSelectProps> = ({
@@ -62,10 +58,10 @@ const MultiSelect: FC<MultiSelectProps> = ({
   //  The options retain the ordering of the initial API response.
 
   const classes = useStyles();
-  const { state, setState, disabled } = useContext(SearchFormContext);
+  const { formState, setFormState, disabled } = useContext(SearchFormContext);
 
-  // `value` is currently selected options, defaulting to none
-  let value = state[name] || [];
+  // `value` is currently selected option keys, defaulting to none
+  let value = formState[name] || [];
   // when the state is initially set to a single option, we
   // must convert it to an array
   if (!Array.isArray(value)) value = [value];
@@ -74,13 +70,13 @@ const MultiSelect: FC<MultiSelectProps> = ({
   // to option values/labels. If the initial promise data
   // was [{id: 1, name: "a"}, {id: 2, name: "b"}], it will
   // be converted to {1: "a", 2: "b"}.
-  const [options, setOptions] = useState({});
+  const [options, setOptions] = useState<Options>({});
   // Because the options are converted to a single object,
   // their ordering is lost. We retain the ordering by creating
   // an array of keys. `orderedKeys` is what the MultiSelect
   // uses for it's list of options, and reads `options` with
   // each key to obtain the displayed value.
-  const [orderedKeys, setOrderedKeys] = useState([]);
+  const [orderedKeys, setOrderedKeys] = useState<Array<number | string>>([]);
 
   // The relative complication of this design is necessary to
   // allow loading search form state from URL parameters, which
@@ -97,11 +93,11 @@ const MultiSelect: FC<MultiSelectProps> = ({
       })
       // TODO: add more resilient error handling
       .catch(console.error);
-  }, [children, keyName, valueName]);
+  }, []); // eslint-disable-line
 
   // user input event handler
-  const handleChange = (event, value) => {
-    setState((prevState) => ({ ...prevState, [name]: value }));
+  const handleChange = (event: SyntheticEvent, value: Array<string | number>) => {
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
   };
 
   // https://material-ui.com/components/autocomplete/
@@ -111,6 +107,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
       limitTags={5}
       options={orderedKeys}
       getOptionLabel={(optionKey) => options[optionKey]}
+      // we want non-strict equality checks here for string/number comparisons
+      isOptionEqualToValue={(option, value) => option == value}
       value={value}
       ChipProps={{ size: "small" }}
       onChange={handleChange}

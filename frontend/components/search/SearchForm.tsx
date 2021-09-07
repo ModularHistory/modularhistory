@@ -1,13 +1,15 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
-import { Container, Grid, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import InstantSearch from "@/components/search/InstantSearch";
+import { Container, Grid } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
   createContext,
   Dispatch,
   FC,
+  KeyboardEventHandler,
   SetStateAction,
   useCallback,
   useContext,
@@ -21,14 +23,14 @@ import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
 
-interface SearchFormStateType {
-  state?: { [key: string]: any };
-  setState?: Dispatch<SetStateAction<any>>;
-  setStateFromEvent?: ChangeEventHandler;
-  disabled?: boolean;
+interface SearchFormState {
+  formState: Record<string, string | number | (string | number)[] | undefined>;
+  setFormState: Dispatch<SetStateAction<SearchFormState["formState"]>>;
+  setFormStateFromEvent: ChangeEventHandler;
+  disabled: boolean;
 }
 
-export const SearchFormContext = createContext<SearchFormStateType>({});
+export const SearchFormContext = createContext<SearchFormState>({} as SearchFormState);
 
 /**
  * This hook is used to centralize the state of all search form inputs.
@@ -38,15 +40,15 @@ export const SearchFormContext = createContext<SearchFormStateType>({});
  *   `setStateFromEvent`: function that accepts an event and extracts
  *                        the new state from the event.
  */
-function useSearchFormState(): SearchFormStateType {
+function useSearchFormState(): SearchFormState {
   const router = useRouter();
 
   // load the initial state from url query params
-  const [state, setState] = useState(router.query);
+  const [formState, setFormState] = useState<SearchFormState["formState"]>(router.query);
 
   // event handler used by several inputs to set their state
-  const setStateFromEvent = useCallback(
-    ({ target }) => setState((prevState) => ({ ...prevState, [target.name]: target.value })),
+  const setFormStateFromEvent = useCallback(
+    ({ target }) => setFormState((prevState) => ({ ...prevState, [target.name]: target.value })),
     []
   );
 
@@ -55,37 +57,35 @@ function useSearchFormState(): SearchFormStateType {
     // and update form state when browser history is navigated.
     // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
     const { page, ...query } = router.query;
-    setState(query);
+    setFormState(query || {});
   }, [router.query]);
 
   // Disable the entire form when page transition are occurring
   const isLoading = useContext(PageTransitionContext);
 
-  return { state, setState, setStateFromEvent, disabled: isLoading };
+  return { formState, setFormState, setFormStateFromEvent, disabled: isLoading };
 }
 
 interface SearchFormProps {
   inSidebar?: boolean;
 }
 
-const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
-  root: {
-    paddingTop: "20px",
-    maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
-    "& input": {
-      backgroundColor: "white",
-    },
-    "& .MuiTextField-root": {
-      backgroundColor: "white",
-    },
-    "& .MuiRadio-root, & .MuiCheckbox-root": {
-      marginBottom: "-9px",
-      marginTop: "-9px",
-    },
-    // to prevent hidden search button when navbar is visible
-    "&:last-child": { marginBottom: "50px" },
+const StyledContainer = styled(Container)({
+  paddingTop: "20px",
+  // maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
+  "& input": {
+    backgroundColor: "white",
   },
-}));
+  "& .MuiTextField-root": {
+    backgroundColor: "white",
+  },
+  "& .MuiRadio-root, & .MuiCheckbox-root": {
+    marginBottom: "-9px",
+    marginTop: "-9px",
+  },
+  // to prevent hidden search button when navbar is visible
+  "&:last-child": { marginBottom: "50px" },
+});
 
 /**
  * A component for an advanced/full search form.
@@ -94,32 +94,31 @@ const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
  *    If false, the inputs may be rendered side-by-side.
  */
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
-  const classes = useStyles({ inSidebar });
   const router = useRouter();
-  const formState = useSearchFormState();
+  const formContext = useSearchFormState();
 
   // When `sm` is 6, inputs may be rendered side-by-side.
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
   const sm = inSidebar ? 12 : 6;
 
-  const submitForm = () => router.push({ query: formState.state });
-  const handleKeyUp = (event) => {
+  const submitForm = () => router.push({ query: formContext.formState as any });
+  const handleKeyUp: KeyboardEventHandler = (event) => {
     if (event.key === "Enter") {
       submitForm();
     }
   };
 
   return (
-    <SearchFormContext.Provider value={formState}>
-      <Container className={classes.root}>
+    <SearchFormContext.Provider value={formContext}>
+      <StyledContainer>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={sm}>
             <TextField
               label="Query"
               name="query"
-              value={formState.state["query"] || ""}
-              disabled={formState.disabled}
-              onChange={formState.setStateFromEvent}
+              defaultValue={formContext.formState["query"] || ""}
+              disabled={formContext.disabled}
+              onChange={formContext.setFormStateFromEvent}
               onKeyUp={handleKeyUp}
             />
           </Grid>
@@ -138,20 +137,35 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>
-              {() =>
+            <InstantSearch
+              label={"Entities"}
+              name={"entities"}
+              labelKey={"name"}
+              getDataForInput={(input, config) =>
                 axiosWithoutAuth
-                  .get("/graphql/?query={entities{id%20name}}", {})
-                  .then((response) => response.data["data"]["entities"])
+                  .get("/api/entities/instant_search/", {
+                    params: { query: input },
+                    ...config,
+                  })
+                  .then(({ data }) => data)
               }
-            </MultiSelect>
+              getInitialValue={(ids) =>
+                axiosWithoutAuth
+                  .get("/graphql/", {
+                    params: { query: `{ entities(ids: [${ids}]) { id name } }` },
+                  })
+                  .then(({ data: { data } }) => data.entities)
+              }
+            />
           </Grid>
 
           <Grid item xs={12} sm={sm}>
             <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/graphql/?query={topics{id%20name}}", {})
+                  .get("/graphql/", {
+                    params: { query: "{ topics { id name } }" },
+                  })
                   .then((response) => response.data["data"]["topics"])
               }
             </MultiSelect>
@@ -164,12 +178,13 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
+            {/* #ContentTypesHardCoded */}
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {{ label: "Occurrences", key: "propositions.occurrence" }}
-              {{ label: "Quotes", key: "quotes.quote" }}
-              {{ label: "Images", key: "images.image", defaultChecked: false }}
-              {{ label: "Sources", key: "sources.source" }}
-              {{ label: "Entities", key: "entities.entity" }}
+              {{ label: "Occurrences", key: "occurrences" }}
+              {{ label: "Quotes", key: "quotes" }}
+              {{ label: "Images", key: "images", defaultChecked: false }}
+              {{ label: "Sources", key: "sources" }}
+              {{ label: "Entities", key: "entities" }}
             </CheckboxGroup>
           </Grid>
 
@@ -177,7 +192,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <SearchButton onClick={submitForm} />
           </Grid>
         </Grid>
-      </Container>
+      </StyledContainer>
     </SearchFormContext.Provider>
   );
 };

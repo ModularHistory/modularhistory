@@ -3,7 +3,7 @@ import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Occurrence } from "@/interfaces";
+import { Occurrence } from "@/types/modules";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -13,6 +13,7 @@ import { FC } from "react";
 interface OccurrencesProps {
   occurrencesData: {
     results: Occurrence[];
+    totalPages: number;
   };
 }
 

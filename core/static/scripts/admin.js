@@ -55,9 +55,6 @@ window.addEventListener("load", function() {
                 plugins: {},
                 tagsToRemove: ['script', 'link']
             });
-            $("textarea").find('img[data-src]').each(function () {
-                $(this).attr('src', this.dataset.src);
-            });
         }
     })(django.jQuery);
 });

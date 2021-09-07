@@ -22,17 +22,17 @@ const RadioGroup: FC<RadioGroupProps> = ({ label, name, children }: RadioGroupPr
   //    The value of the option to be used in API requests is
   //    assumed to be the lowercase of each option.
 
-  const { state, setStateFromEvent, disabled } = useContext(SearchFormContext);
+  const { formState, setFormStateFromEvent, disabled } = useContext(SearchFormContext);
 
   // if state is not specified, default to the first option
-  const value = state[name] || children[0].toLowerCase();
+  const value = formState[name] || children[0].toLowerCase();
 
   // See the demo at
   // https://material-ui.com/components/radio-buttons/#radiogroup
   return (
     <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
-      <MuiRadioGroup name={name} value={value} onChange={setStateFromEvent}>
+      <MuiRadioGroup name={name} value={value} onChange={setFormStateFromEvent}>
         {children.map((opt) => (
           <FormControlLabel
             label={opt}

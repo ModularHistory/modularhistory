@@ -2,15 +2,15 @@
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class StorySerializer(SearchableModelSerializer):
+class StorySerializer(ModuleSerializer):
     """Serializer for occurrences."""
 
     handle = serpy.Field()
     description = serpy.StrField()
-    cachedCitations = serpy.Field(attr='cached_citations')
+    cached_citations = serpy.Field()
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""

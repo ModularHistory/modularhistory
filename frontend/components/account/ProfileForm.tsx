@@ -2,9 +2,8 @@ import axios from "@/axiosWithAuth";
 import TextField from "@/components/forms/StyledTextField";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { AxiosResponse } from "axios";
 import { User } from "next-auth";
-import { FC, useState } from "react";
+import { FC, FormEventHandler, useState } from "react";
 
 interface ProfileFormProps {
   user: User;
@@ -13,26 +12,20 @@ interface ProfileFormProps {
 
 const ProfileForm: FC<ProfileFormProps> = ({ user, csrfToken }: ProfileFormProps) => {
   const [name, setName] = useState(user.name || "");
-  const [username, setUsername] = useState(user.username || "");
+  const [handle, setHandle] = useState(user.handle || "");
   const [error, setError] = useState("");
-  const handleProfileChange = async (event) => {
+  const handleProfileChange: FormEventHandler = async (event) => {
     event.preventDefault();
-    if (!username) {
-      setError("Enter a username.");
+    if (!handle) {
+      setError("Enter a handle.");
     } else {
       await axios
-        .patch(`/api/users/${user.username}/`, {
+        .patch(`/api/users/${user.handle}/`, {
           name,
-          username,
+          handle,
         })
-        .then(function (response: AxiosResponse) {
-          if (response["error"]) {
-            setError("Invalid.");
-          }
-        })
-        .catch(function (error) {
+        .catch((error) => {
           setError(String(error));
-          return Promise.resolve(null);
         });
     }
   };
@@ -52,11 +45,11 @@ const ProfileForm: FC<ProfileFormProps> = ({ user, csrfToken }: ProfileFormProps
         </Grid>
         <Grid item sm={12} md={6}>
           <TextField
-            id="username"
-            name="username"
-            value={username}
+            id="handle"
+            name="handle"
+            value={handle}
             label={"Username"}
-            onChange={(event) => setUsername(event.target.value)}
+            onChange={(event) => setHandle(event.target.value)}
           />
         </Grid>
         <Grid item md={12}>

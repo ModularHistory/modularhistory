@@ -9,9 +9,12 @@ from apps.search.api.search import SEARCHABLE_DOCUMENTS
 from apps.search.models import SearchableDatedModel
 
 if TYPE_CHECKING:
+    from django.http import HttpRequest
+
     from apps.search.documents.base import Document
     from core.models.model import ExtendedModel
 
+QUERY_PARAM = 'query'
 SORT_BY_PARAM = 'ordering'
 
 
@@ -27,7 +30,7 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
         """Construct the filter backend."""
         self.view = None
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(self, request: 'HttpRequest', queryset, view) -> list:
         """Return the filtered queryset."""
         self.view = view
         return list(map(self.apply_meta, queryset))
@@ -53,18 +56,18 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
 class SortByFilterBackend(filters.BaseFilterBackend):
     """Filter that sorts queryset by SORT_BY_PARAM."""
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(self, request: 'HttpRequest', queryset, view):
         """Return the filtered queryset."""
+        query = request.query_params.get(QUERY_PARAM)
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
-        score_sortable = (view.search._response.hits.max_score or 0) > 0
-
+        default_score = 1.0  # The max score is 1.0 when there is no query.
+        highest_score = view.search._response.hits.max_score or 0
+        score_sortable = query and highest_score > default_score
         sort_by = score_sorter
         reverse = True
-
         if sort_by_date or not score_sortable:
             sort_by = date_sorter
             reverse = False
-
         return sorted(queryset, key=sort_by, reverse=reverse)
 
 
@@ -81,7 +84,7 @@ def date_sorter(model_instance: Union[SearchableDatedModel, dict]) -> datetime:
         logging.error(
             f'{model_instance} has no date attribute but is included in search results.'
         )
-        date = HistoricDateTime(1, 1, 1, 0, 0, 0)
+        date = HistoricDateTime(1, 1, 1, 0, 0, 0, microsecond=0)
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1

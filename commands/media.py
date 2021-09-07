@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import django
 
-from core.utils import media
 from commands.command import command
+from core.utils import media
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -42,7 +42,7 @@ def sync(context: 'Context', push: bool = False):
         'This could take a while. Leave this shell running until you '
         'see a "Finished" message. In the meantime, feel free to open '
         'a new shell and start up the app with the following command: \n\n'
-        '    docker-compose up -d dev\n\n'
+        '    docker-compose up -d webserver\n\n'
         '..........................'
     )
     media.sync(context, push=push)

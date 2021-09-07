@@ -2,9 +2,15 @@
 
 echo 'Initializing webserver...'
 
+REDIRECTS_MAP_PATH=/modularhistory/_volumes/redirects/redirects.map
 
+if [[ ! -f "$REDIRECTS_MAP_PATH" ]]; then
+    touch "$REDIRECTS_MAP_PATH" || {
+        echo "Failed to create $REDIRECTS_MAP_PATH"; exit 1
+    }
+fi
 
-if [ ! "$ENVIRONMENT" = dev ]; then 
+if [ "$ENVIRONMENT" = prod ]; then 
     echo 'Starting ddclient...' && 
     envsubst < /etc/ddclient/ddclient.conf > /etc/ddclient/ddclient.conf.tmp && 
     mv /etc/ddclient.conf.tmp /etc/ddclient/ddclient.conf && 

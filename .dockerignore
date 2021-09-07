@@ -2,12 +2,12 @@
 .git
 .gitignore
 
-# Media files
-/_media/
-
 # Docker
 Dockerfile.*
 docker-compose.*
+
+# Volumes (media, static files, etc.)
+_volumes/
 
 # Django
 *.log
@@ -20,10 +20,6 @@ db.sqlite3
 env/
 venv/
 .venv/
-
-# Artifacts
-.artifacts/
-artifacts/
 
 # Python
 *.py[cod]
@@ -39,9 +35,6 @@ artifacts/
 *.bak
 .backups/
 backups/
-
-# Init files
-.init/
 
 # Testing / linting / coverage reports
 .cache/
@@ -85,6 +78,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Cypress
+cypress/
 
 # GitHub
 .github/

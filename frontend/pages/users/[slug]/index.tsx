@@ -12,9 +12,10 @@ interface UserProps {
 }
 
 const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
-  const [_session, _loading] = useSession();
+  const [_session, loading] = useSession();
+  if (!user || loading) return null;
   return (
-    <Layout title={String(user.name || user.username)}>
+    <Layout title={String(user.name || user.handle)}>
       <Container style={{ paddingTop: "2rem" }}>
         <Grid container spacing={3} alignContent="center">
           <Grid item sm={4}>
@@ -22,7 +23,7 @@ const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
               <Image
                 src={String(user.avatar || "/static/profile_pic_placeholder.png")}
                 className="rounded-circle z-depth-0"
-                alt={`profile image for ${user.name || user.username}`}
+                alt={`profile image for ${user.name || user.handle}`}
                 width="200"
                 height="200"
               />
@@ -36,9 +37,9 @@ const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
             </Grid>
             <Grid item xs={12}>
               <div>
-                <label>Username</label>
+                <label>Handle</label>
               </div>
-              <p>{user.username}</p>
+              <p>{user.handle}</p>
             </Grid>
             {user.name && (
               <Grid item xs={12}>
@@ -71,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   return {
     props: {
-      user: session.user,
+      user: session?.user ?? null,
     },
   };
 };

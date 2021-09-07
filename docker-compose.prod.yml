@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  webserver:
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
+
+  next:
+    depends_on:
+      - django
+      - celery
+      - celery_beat

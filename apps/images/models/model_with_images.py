@@ -11,13 +11,14 @@ from core.celery import app
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
+from core.utils.sync import delay
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
 
-class AbstractImageRelation(PositionedRelation):
+class AbstractImageRelation(ModeratedPositionedRelation):
     """
     Abstract base model for image relations.
 
@@ -32,6 +33,9 @@ class AbstractImageRelation(PositionedRelation):
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         abstract = True
+
+    def __str__(self) -> str:
+        return f'{self.image}'
 
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the image."""
@@ -102,9 +106,10 @@ class ModelWithImages(ExtendedModel):
         images = self.cache.get('images', [])
         if images or not self.images.exists():
             return images
-        images = [image.serialize() for image in self.images.all()]
-        cache_images.delay(
-            f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
+        images = [relation.image.serialize() for relation in self.image_relations.all()]
+        delay(
+            cache_images,
+            '{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             images,
         )
@@ -126,6 +131,9 @@ def cache_images(model: str, instance_id: int, images: list):
     if not images:
         return
     Model = apps.get_model(model)  # noqa: N806
+    if not hasattr(Model, 'cache'):
+        logging.error(f'{Model} has no cache.')
+        return
     model_instance: ModelWithImages = Model.objects.get(pk=instance_id)
     model_instance.cache['images'] = images
     model_instance.save(wipe_cache=False)

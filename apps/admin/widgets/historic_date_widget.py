@@ -56,7 +56,6 @@ def get_year(year: int, year_system: str = CE) -> tuple[int, int, int]:
         inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
         year = 1
-        # TODO
     return year, second, microsecond
 
 
@@ -110,16 +109,20 @@ class HistoricDateWidget(MultiWidget):
         """Construct the widget."""
         default_attrs = {'style': 'margin-right: 0.5rem; min-width: 4rem;'}
         attrs = {**attrs, **default_attrs} if attrs else default_attrs
-        placeholder, min, max = 'placeholder', 'min', 'max'
+        placeholder_key, min_key, max_key = 'placeholder', 'min', 'max'
         today = date.today()
         widgets = [
             forms.NumberInput(
-                attrs={**attrs, **{placeholder: 'Year', min: 1, max: today.year}}
+                attrs={**attrs, **{placeholder_key: 'Year', min_key: 1, max_key: today.year}}
             ),
             forms.Select(attrs=attrs, choices=year_systems),
             forms.Select(attrs=attrs, choices=SEASONS),
-            forms.NumberInput(attrs={**attrs, **{placeholder: 'Month', min: 1, max: 12}}),
-            forms.NumberInput(attrs={**attrs, **{placeholder: 'Day', min: 1, max: 31}}),
+            forms.NumberInput(
+                attrs={**attrs, **{placeholder_key: 'Month', min_key: 1, max_key: 12}}
+            ),
+            forms.NumberInput(
+                attrs={**attrs, **{placeholder_key: 'Day', min_key: 1, max_key: 31}}
+            ),
             forms.HiddenInput(attrs={**attrs}),
         ]
         super().__init__(widgets, attrs)
@@ -226,7 +229,7 @@ class HistoricDateWidget(MultiWidget):
 
 
 def _datetime_from_datadict_values(
-    year, year_system, season=None, month=None, day=None
+    year: int, year_system, season=None, month=None, day=None
 ) -> HistoricDateTime:
     # Figure out year
     year, second, microsecond = get_year(year, year_system)

@@ -36,10 +36,8 @@ RUN pip install "poetry>=1.0.5"
 # Install rclone (for media backup/sync).
 RUN curl https://rclone.org/install.sh | bash
 
-# Create required directories.
+# Create and enter the working directory.
 RUN mkdir -p /modularhistory
-
-# Set the working directory.
 WORKDIR /modularhistory
 
 # Install project dependencies.
@@ -54,15 +52,21 @@ RUN \
 
 # Create required directories.
 RUN mkdir -p -- \
-  /modularhistory/_static \
-  /modularhistory/_media \
-  /modularhistory/.backups \
-  /modularhistory/.init \
-  /opt/atlas
+  /modularhistory/_volumes/static \
+  /modularhistory/_volumes/media \
+  /modularhistory/_volumes/db/backups \
+  /modularhistory/_volumes/db/init \
+  /opt/atlas \
+  /var/www/nltk_data/corpora
+
+# Download required files.
+RUN python -c "import nltk; nltk.download('punkt')" && \
+  NLTK_DATA=var/www/nltk_data python -m textblob.download_corpora
+# cp -avr nltk_data/ /var/www/
 
 # Add source code.
 COPY . /modularhistory/
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY config/invoke.yaml /etc/invoke.yaml
 
 # Collect static files.
@@ -70,14 +74,15 @@ RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/_media && \
-  chmod g+w -R /modularhistory/_static && \
-  chmod g+w -R /modularhistory/.backups && \
-  chmod g+w -R /modularhistory/.init && \
-  chmod +x /usr/local/bin/wait-for-it.sh
+  chmod g+w -R /modularhistory/_volumes && \
+  chmod +x /usr/local/bin/wait-for-it.sh && \
+  chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
 # Expose port 8000
 EXPOSE 8000
 
 # Switch from root to non-root user.
 USER www-data
+
+# Specify the default command to run when the container is started.
+CMD /bin/bash /modularhistory/config/scripts/init/django.sh

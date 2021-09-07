@@ -1,13 +1,15 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.mail import send_mass_mail
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
+from core.environment import IS_PROD
+from core.utils.email import send_mass_html_mail
+from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -53,36 +55,54 @@ class Moderation(models.Model):
     def __str__(self) -> str:
         return f'Verdict: {self.verdict} (moderation of {self.change} by {self.moderator})'
 
+    @property
+    def is_approval(self) -> bool:
+        return self.verdict == ModerationStatus.APPROVED
+
+    @property
+    def is_rejection(self) -> bool:
+        return self.verdict == ModerationStatus.REJECTED
+
     def notify_users(self):
         """Notify users of the moderation."""
         # TODO: ensure the notification is only sent once per moderation
         change: 'Change' = self.change
+        moderator: Optional['User'] = self.moderator
         contributors: 'QuerySet[User]' = change.contributors.all()
         moderators: 'QuerySet[User]' = change.moderators.all()
         # https://docs.djangoproject.com/en/dev/ref/models/querysets/#union
         users = contributors.union(moderators)
         site = Site.objects.get_current()
+        protocol = 'https' if IS_PROD else 'http'
         ctx = {
             'moderation': self,
+            'moderator': moderator,
+            'change': change,
             'content_object': change.content_object,
-            'site': site,
             'content_type': change.content_type,
+            'site': site,
+            'protocol': protocol,
         }
-        # https://docs.djangoproject.com/en/dev/topics/email/#send-mass-mail
-        send_mass_mail(
+        passive_verb = (
+            self.ModerationOutcome(self.verdict).label.lower()
+            if self.verdict != ModerationStatus.PENDING
+            else 'reviewed'
+        )
+        subject = f'Change was {passive_verb}'
+        if moderator:
+            subject = f'{subject} by {moderator.handle}'
+        message_body_html = render_to_string(
+            'moderation/moderation_notification_body.html', ctx
+        )
+        message_body_text = soupify(message_body_html).get_text()
+        send_mass_html_mail(
             tuple(
-                # (subject, message, from_email, recipient_list)
                 (
-                    render_to_string(
-                        'moderation_notification_subject.txt',
-                        ctx.update({'user': change.changed_by}),
-                    ),
-                    render_to_string(
-                        'moderation_notification_body.txt',
-                        ctx.update({'user': change.changed_by}),
-                    ),
-                    f'do.not.reply@{site.domain}',
-                    [user.email],
+                    subject,
+                    message_body_text,
+                    message_body_html,
+                    f'do.not.reply@{site.domain}',  # from email
+                    [user.email],  # recipient list
                 )
                 for user in users
             ),
@@ -100,6 +120,8 @@ class ApprovalManager(ModerationManager):
 
 
 class Approval(Moderation):
+    """Proxy model for moderations with a verdict of APPROVED."""
+
     objects = ApprovalManager()
 
     class Meta:
@@ -112,6 +134,8 @@ class RejectionManager(ModerationManager):
 
 
 class Rejection(Moderation):
+    """Proxy model for moderations with a verdict of REJECTED."""
+
     objects = RejectionManager()
 
     class Meta:

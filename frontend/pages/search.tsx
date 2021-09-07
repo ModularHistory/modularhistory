@@ -4,45 +4,33 @@ import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
-import { ModuleUnion } from "@/interfaces";
-import { Container, Drawer, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { ModuleUnion, Topic } from "@/types/modules";
+import { Box, Container, Drawer, useMediaQuery } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import qs from "qs";
-import { Dispatch, FC, SetStateAction, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  MouseEventHandler,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
-const useStyles = makeStyles({
-  drawer: {
-    maxWidth: "0px",
-    transition: "max-width .15s",
-    zIndex: 2,
-    "&.open": { maxWidth: "230px" },
-  },
-  drawerButton: {
-    border: "2px solid black",
-    transition: "transform .15s",
-    "&.open": { transform: "translateX(229px)" },
-  },
-  paper: {
-    backgroundColor: "whitesmoke",
-    boxShadow: "4px 0 10px -5px #888",
-    position: "sticky",
-    maxHeight: "100vh",
-  },
-  cards: {
-    "& .selected": {
-      border: "3px solid black",
-      borderRight: "none",
-    },
-  },
+const SliderToggle = styled("button")({
+  border: "2px solid black !important",
+  transition: "transform .15s !important",
+  "&.open": { transform: "translateX(229px) !important" },
 });
 
 interface SearchProps {
   count: number;
   totalPages: number;
-  results: ModuleUnion[];
+  results: Exclude<ModuleUnion, Topic>[];
 }
 
 const Search: FC<SearchProps> = (props: SearchProps) => {
@@ -90,7 +78,6 @@ const EmptySearchResults: FC = () => (
 
 const SearchFilter: FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-  const classes = useStyles();
 
   return (
     <>
@@ -99,18 +86,31 @@ const SearchFilter: FC = () => {
         anchor={"left"}
         variant={"persistent"}
         onClose={() => setSearchOpen(false)}
-        className={`${classes.drawer} ${searchOpen ? "open" : ""}`}
-        PaperProps={{ className: classes.paper }}
+        className={searchOpen ? "open" : ""}
+        sx={{
+          maxWidth: "0px",
+          transition: "max-width .15s",
+          zIndex: 2,
+          "&.open": { maxWidth: "230px" },
+        }}
+        PaperProps={{
+          sx: {
+            backgroundColor: "whitesmoke",
+            boxShadow: "4px 0 10px -5px #888",
+            position: "sticky",
+            maxHeight: "100vh",
+          },
+        }}
       >
         <SearchForm inSidebar />
       </Drawer>
-      <button
+      <SliderToggle
         id="sliderToggle"
-        className={`btn ${classes.drawerButton} ${searchOpen ? "open" : ""}`}
+        className={`btn ${searchOpen ? "open" : ""}`}
         onClick={() => setSearchOpen(!searchOpen)}
       >
         <i className="fas fa-filter" />
-      </button>
+      </SliderToggle>
     </>
   );
 };
@@ -135,7 +135,7 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
 interface TwoPaneState {
   moduleIndex: number;
   setModuleIndex: Dispatch<SetStateAction<number>>;
-  setModuleIndexFromEvent: (event: MouseEvent) => void;
+  setModuleIndexFromEvent: MouseEventHandler;
 }
 
 function useTwoPaneState(): TwoPaneState {
@@ -194,15 +194,21 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   setModuleIndexFromEvent,
   setModalOpen,
 }) => {
-  const classes = useStyles();
-
-  const selectModule = (event) => {
+  const selectModule: MouseEventHandler = (event) => {
     setModuleIndexFromEvent(event);
     setModalOpen(true);
   };
 
   return (
-    <div className={`results result-cards ${classes.cards}`}>
+    <Box
+      className={"results result-cards"}
+      sx={{
+        "& .selected": {
+          border: "3px solid black",
+          borderRight: "none",
+        },
+      }}
+    >
       {modules.map((module, index) => (
         <a
           href={module.absoluteUrl}
@@ -216,7 +222,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           <ModuleUnionCard module={module} selected={index === moduleIndex} />
         </a>
       ))}
-    </div>
+    </Box>
   );
 };
 
@@ -244,7 +250,11 @@ const SearchResultsRightPane: FC<PaneProps> = ({
 export default Search;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let searchResults = {};
+  let searchResults: SearchProps = {
+    count: 0,
+    totalPages: 0,
+    results: [],
+  };
 
   await axios
     .get("http://django:8000/api/search/", {

@@ -1,0 +1,15 @@
+<div class="relations-wrapper">
+    {% if diff_items %}
+        <table class="table table-bordered" style="border: 1px solid lightgray">
+            <tbody>
+                {% for diff_item in diff_items %}
+                    <tr style="background: {% if diff_item.0 == '+' %}#bbffbb{% elif diff_item.0 == '-' %}#ffcccc{% else %}none{% endif %}; style: border: 1px solid lightgray;">
+                        <td>
+                            {{diff_item}}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

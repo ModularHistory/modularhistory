@@ -1,7 +1,7 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Quote } from "@/interfaces";
+import { Quote } from "@/types/modules";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
@@ -26,26 +26,25 @@ export default QuoteDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let quote = {};
-  const { slug } = params;
+  let notFound = false;
+  const { slug } = params || {};
 
   await axios
     .get(`http://django:8000/api/quotes/${slug}/`)
     .then((response) => {
       quote = response.data;
     })
-    .catch(() => {
-      quote = null;
+    .catch((error) => {
+      if (error.response?.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
-
-  if (!quote) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: { quote },
+    notFound,
     revalidate: 10,
   };
 };

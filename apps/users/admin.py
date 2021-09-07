@@ -199,6 +199,7 @@ class UserAdmin(BaseUserAdmin):
         FIRST_NAME_FIELD,
         LAST_NAME_FIELD,
         USERNAME_FIELD,
+        'handle',
         EMAIL_FIELD,
         'last_login',
     ]

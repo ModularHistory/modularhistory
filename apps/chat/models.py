@@ -5,7 +5,7 @@ from core.models.model import ExtendedModel
 from core.utils.string import truncate
 
 
-class Chat(ExtendedModel):
+class Chat(models.Model):
     """A chat between volunteers/contributors/staff."""
 
     content = models.TextField(verbose_name=_('chat'))

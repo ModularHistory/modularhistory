@@ -1,7 +1,7 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PropositionDetail from "@/components/propositions/PropositionDetail";
-import { Proposition } from "@/interfaces";
+import { Proposition } from "@/types/modules";
 import { Button, Grid } from "@material-ui/core";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
@@ -78,27 +78,26 @@ export default PropositionDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let proposition = {};
-  const { slug } = params;
+  let notFound = false;
+  const { slug } = params || {};
   await axiosWithoutAuth
     .get(`http://django:8000/api/propositions/${slug}/`)
     .then((response) => {
       proposition = response.data;
     })
-    .catch(() => {
-      proposition = null;
+    .catch((error) => {
+      if (error.response?.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
     });
-
-  if (!proposition) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
       proposition,
     },
+    notFound,
     revalidate: 10,
   };
 };
