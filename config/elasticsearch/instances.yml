@@ -1,0 +1,8 @@
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.14/configuring-tls-docker.html
+instances:
+  - name: modularhistory-es
+    dns:
+      - elasticsearch 
+      - localhost
+    ip:
+      - 127.0.0.1

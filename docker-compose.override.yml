@@ -15,7 +15,6 @@ services:
     hostname: modularhistory.dev.net
     image: webserver:latest
     volumes:
-      - ./config/nginx:/modularhistory/config/nginx
       # Override docker-compose.yml's `./config/nginx/prod:/etc/nginx/conf.d`
       - ./config/nginx/dev:/etc/nginx/conf.d
 
@@ -100,6 +99,8 @@ services:
   elasticsearch:
     ports:
       - "9200:9200"
+    environment:
+      - ELASTIC_PASSWORD=test
 
   kibana:
     ports:

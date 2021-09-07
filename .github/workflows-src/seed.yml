@@ -24,6 +24,7 @@ jobs:
       BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
       BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
       DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
+      ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
