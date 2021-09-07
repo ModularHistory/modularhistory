@@ -483,6 +483,7 @@ poetry run invoke seed --no-db
 # Note: This requires a .env file.
 docker-compose build django || _error "Failed to build django image."
 docker-compose build next || _error "Failed to build next.js image."
+docker-compose build webserver || _error "Failed to build webserver image."
 
 prompt="Seed db [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
