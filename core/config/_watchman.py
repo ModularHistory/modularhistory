@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from io import StringIO
@@ -20,7 +21,11 @@ def check_file_permissions():
     statuses = {}
     for dir_name in volume_dirs:
         dir_path = os.path.join(settings.VOLUMES_DIR, dir_name)
-        statuses[dir_path] = {HEALTHY: os.access(dir_path, os.W_OK)}
+        try:
+            statuses[dir_path] = {HEALTHY: os.access(dir_path, os.W_OK)}
+        except Exception as err:
+            logging.error(err)
+            statuses[dir_path] = {HEALTHY: False}
     return statuses
 
 
