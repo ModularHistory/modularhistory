@@ -43,7 +43,7 @@ ARG ENVIRONMENT
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
   /modularhistory/frontend \
-  /modularhistory/_static
+  /modularhistory/_volumes/static
 
 WORKDIR /modularhistory/frontend
 
@@ -63,7 +63,7 @@ COPY core/static /modularhistory/core/static
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w /usr/local/bin/wait-for-it.sh && \
-  chmod g+w -R /modularhistory/_static
+  chmod g+w -R /modularhistory/_volumes/static
 
 # Make .next directory writable in dev environment.
 RUN if [ "$ENVIRONMENT" = "dev" ]; then chmod g+w -R /modularhistory/frontend/.next/; fi

@@ -22,7 +22,7 @@ DEFAULT_TEMPLATE = 'flatpages/default.html'
 # CSRF protect the internal implementation.
 
 
-def flatpage(request, url):
+def flatpage(request, path):
     """
     Public interface to the flatpage view.
 
@@ -33,16 +33,16 @@ def flatpage(request, url):
         flatpage
             `flatpages.flatpages` obj
     """
-    if not url.startswith(SLASH):
-        url = f'/{url}'
+    if not path.startswith(SLASH):
+        path = f'/{path}'
     site = get_current_site(request)
     site_id = site.id if isinstance(site, Site) else 1
     try:
-        flatpage = get_object_or_404(FlatPage, url=url, sites=site_id)
+        flatpage = get_object_or_404(FlatPage, path=path, sites=site_id)
     except Http404:
-        if not url.endswith(SLASH) and settings.APPEND_SLASH:
-            url = f'{url}/'
-            flatpage = get_object_or_404(FlatPage, url=url, sites=site_id)
+        if not path.endswith(SLASH) and settings.APPEND_SLASH:
+            path = f'{path}/'
+            flatpage = get_object_or_404(FlatPage, path=path, sites=site_id)
             return HttpResponsePermanentRedirect(f'{request.path}/')
         raise
     return render_flatpage(request, flatpage)
