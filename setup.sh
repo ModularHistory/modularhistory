@@ -370,6 +370,7 @@ poetry install --no-root || {
     rm requirements.txt
     echo "Installed dependencies with pip after failing to install with Poetry."
   } || {
+    rm requirements.txt
     _print_red "Failed to install dependencies with pip."
   }
 }
