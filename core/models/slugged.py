@@ -28,6 +28,7 @@ class SluggedModel(TitledModel):
         abstract = True
 
     def __init__(self, *args, **kwargs):
+        """Construct the model instance."""
         super().__init__(*args, **kwargs)
         self._original_absolute_url = self.absolute_url if self.pk else ''
 
