@@ -64,13 +64,4 @@ module.exports = {
     }
     return config;
   },
-  webpackDevMiddleware: (config) => {
-    // Solve compiling problem within Docker
-    config.watchOptions = {
-      poll: 2000,
-      aggregateTimeout: 200,
-      ignored: [".next/", "node_modules/"],
-    };
-    return config;
-  },
 };
