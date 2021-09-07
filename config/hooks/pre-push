@@ -6,10 +6,17 @@ normal=$(tput sgr0)
 docker-compose ps | grep "django" | grep --quiet "Up" && django_up=true || django_up=false
 
 function run_in_django() {
+    fail_message="docker-compose failed, is your docker service running?"
     if [[ "$django_up" = true ]]; then
-        echo "$@" | docker-compose exec django || exit 1
+        echo "$@" | docker-compose exec django || {
+          echo "$fail_message"
+          exit 1
+        }
     else
-        echo "$@" | docker-compose run django_helper || exit 1
+        echo "$@" | docker-compose run django_helper || {
+          echo "$fail_message"
+          exit 1
+        }
     fi
     exit 0
 }
