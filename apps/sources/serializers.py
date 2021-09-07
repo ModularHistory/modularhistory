@@ -2,11 +2,11 @@
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
 from core.models.model import ModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class SourceSerializer(SearchableModelSerializer):
+class SourceSerializer(ModuleSerializer):
     """Serializer for sources."""
 
     citation_html = serpy.StrField()
