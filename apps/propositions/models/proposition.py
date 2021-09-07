@@ -28,7 +28,7 @@ from apps.places.models.model_with_locations import (
     LocationsField,
     ModelWithLocations,
 )
-from apps.propositions.api.serializers import PropositionSerializer
+from apps.propositions.serializers import PropositionSerializer
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,

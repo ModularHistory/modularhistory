@@ -17,6 +17,6 @@ class TestOccurrences:
 
     def test_api_view(self, api_client: APIClient):
         """Test the occurrences API."""
-        url = reverse('occurrences_api:index')
+        url = reverse('occurrences_api:occurrence-list')
         response = api_client.get(url)
         assert response.status_code == 200

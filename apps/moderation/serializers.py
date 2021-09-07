@@ -3,17 +3,18 @@ from typing import Type
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from apps.moderation.models.moderated_model import ModeratedModel
 
+def get_moderated_model_serializer(
+    model_serializer: Type[ModelSerializer],
+) -> Type[ModelSerializer]:
+    """Return the serializer to be used for moderation of a moderated model.
+    Adds 'fields' field to given model_serializer.
+    """
 
-def get_moderated_model_serializer(model_cls: Type[ModeratedModel]) -> Type[ModelSerializer]:
-    """Return the serializer to be used for moderation of a moderated model."""
-
-    class ModeratedModelSerializer(ModelSerializer):
+    class ModeratedModelSerializer(model_serializer):
         fields = serializers.ReadOnlyField(source='get_moderated_fields')
 
-        class Meta:
-            model = model_cls
-            include = model_cls.get_moderated_fields()
+        class Meta(model_serializer.Meta):
+            fields = model_serializer.Meta.fields + ['fields']
 
     return ModeratedModelSerializer

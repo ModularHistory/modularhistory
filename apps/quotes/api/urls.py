@@ -1,14 +1,13 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.quotes.api import views
 
 router = routers.DefaultRouter()
-router.register(r'quotes', views.QuoteViewSet)
+router.register('', views.QuoteViewSet)
 
 app_name = 'quotes'
 
 urlpatterns = [
-    path('', views.QuoteListAPIView.as_view(), name='index'),
-    path('<slug:slug>/', views.QuoteAPIView.as_view()),
+    path('', include(router.urls)),
 ]

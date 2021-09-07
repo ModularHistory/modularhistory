@@ -17,6 +17,6 @@ class TestQuotes:
 
     def test_api_view(self, api_client: APIClient):
         """Test the quotes API."""
-        url = reverse('quotes_api:index')
+        url = reverse('quotes_api:quote-list')
         response = api_client.get(url)
         assert response.status_code == 200
