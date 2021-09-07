@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django_currentuser.middleware import get_current_authenticated_user
 
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.models.change.model import Change
@@ -47,6 +48,9 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
             'date_string',
         ]
 
+    def save(self, *args, **kwargs):
+        self.save_change(contributor=get_current_authenticated_user())
+
     def save_change(
         self,
         contributor: Optional['User'] = None,
@@ -58,7 +62,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         self.clean()
         if object_is_new:
             self.verified = False
-            self.save()
+            super().save()
         change_in_progress = self.change_in_progress if not object_is_new else None
         if change_in_progress:
             # Save the changes to the existing in-progress `Change` instance.

@@ -200,6 +200,9 @@ MIDDLEWARE = [
     # Add the `user` attribute to the request:
     # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Access the `user` from anywhere:
+    # https://pypi.org/project/django-currentuser
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     # 'defender.middleware.FailedLoginMiddleware',  # TODO

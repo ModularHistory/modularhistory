@@ -179,6 +179,7 @@ Twisted = [
 ]
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
+django-currentuser = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
