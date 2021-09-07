@@ -49,7 +49,12 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         ]
 
     def save(self, *args, **kwargs):
-        self.save_change(contributor=get_current_authenticated_user())
+        moderate = kwargs.pop('moderate', True)
+        contributor = kwargs.pop('contributor', get_current_authenticated_user())
+        if moderate:
+            self.save_change(contributor=contributor)
+        else:
+            super().save(*args, **kwargs)
 
     def save_change(
         self,
@@ -80,6 +85,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         else:
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
+                initiator=contributor,
                 content_type=ContentType.objects.get_for_model(self.__class__),
                 object_id=self.pk,
                 moderation_status=ModerationStatus.PENDING,

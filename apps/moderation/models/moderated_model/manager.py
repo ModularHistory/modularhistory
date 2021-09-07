@@ -31,7 +31,6 @@ class ModeratedManager(SoftDeletableManager):
         """Create and return a model instance."""
         kwargs['verified'] = kwargs.get('verified', False)
         object: 'ModeratedModel' = super().create(*args, **kwargs)
-        object.save_change()
         return object
 
     def get_or_create(self, **kwargs) -> tuple['ModeratedModel', bool]:
