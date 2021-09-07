@@ -10,9 +10,14 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
+
+const DynamicPageTransitionProgressBar = dynamic(
+  () => import("@/components/PageTransitionProgressBar")
+);
 
 initializeSentry();
 
@@ -85,6 +90,7 @@ const App: NextPage<ExtendedAppProps> = ({
         <SessionKiller>
           <PageTransitionContextProvider>
             <ThemeProvider theme={theme}>
+              <DynamicPageTransitionProgressBar />
               <Component {...pageProps} err={err} />
             </ThemeProvider>
           </PageTransitionContextProvider>
