@@ -76,8 +76,8 @@ class TaggableModel(models.Model):
     def topic_relations(self) -> 'QuerySet[AbstractTopicRelation]':
         """
         Require the intermediate model to specify `related_name='topic_relations'`.
-        For example:
 
+        For example:
         ``
         class TopicRelation(AbstractTopicRelation):
             content_object = ManyToManyForeignKey(
