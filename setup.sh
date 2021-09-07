@@ -370,10 +370,9 @@ poetry install --no-root || {
     rm requirements.txt
     echo "Installed dependencies with pip after failing to install with Poetry."
   } || {
+    rm requirements.txt
     _print_red "Failed to install dependencies with pip."
   }
-  rm requirements.txt
-  _error "Failed to install dependencies with Poetry."
 }
 
 # Set up Node Version Manager (NVM).
@@ -481,8 +480,10 @@ poetry run invoke seed --no-db
 
 # Build Docker images.
 # Note: This requires a .env file.
-docker-compose build django || _error "Failed to build django image."
-docker-compose build next || _error "Failed to build next.js image."
+image_names=( "django" "next" "webserver" )
+for image_name in "${image_names[@]}"; do
+  docker-compose build "$image_name" || _error "Failed to build $image_name image."
+done
 
 prompt="Seed db [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then

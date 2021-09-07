@@ -1,7 +1,9 @@
+import os
 import re
 from io import StringIO
 
 import stringcase
+from django.conf import settings
 from django.core import management
 from watchman.decorators import check
 
@@ -9,6 +11,17 @@ from watchman.decorators import check
 HEALTH_CHECK_COMMAND = 'health_check'
 
 HEALTHY = 'ok'
+
+
+@check
+def check_file_permissions():
+    """Check file permissions."""
+    volume_dirs = ('db/backups', 'db/init', 'static', 'media', 'redirects')
+    statuses = {}
+    for dir_name in volume_dirs:
+        dir_path = os.path.join(settings.VOLUMES_DIR, dir_name)
+        statuses[dir_path] = {HEALTHY: os.access(dir_path, os.W_OK)}
+    return statuses
 
 
 @check
