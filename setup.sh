@@ -372,8 +372,6 @@ poetry install --no-root || {
   } || {
     _print_red "Failed to install dependencies with pip."
   }
-  rm requirements.txt
-  _error "Failed to install dependencies with Poetry."
 }
 
 # Set up Node Version Manager (NVM).
