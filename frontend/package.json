@@ -46,6 +46,7 @@
     "react-swipeable-views": "^0.14.0",
     "sass": "^1.39.0",
     "throttle-debounce": "^3.0.1",
+    "title-case": "^3.0.3",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
