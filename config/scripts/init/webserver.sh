@@ -5,7 +5,9 @@ echo 'Initializing webserver...'
 REDIRECTS_MAP_PATH=/modularhistory/_volumes/redirects/redirects.map
 
 if [[ ! -f "$REDIRECTS_MAP_PATH" ]]; then
-    touch "$REDIRECTS_MAP_PATH"
+    touch "$REDIRECTS_MAP_PATH" || {
+        echo "Failed to create $REDIRECTS_MAP_PATH"; exit 1
+    }
 fi
 
 if [ "$ENVIRONMENT" = prod ]; then 
