@@ -1,4 +1,8 @@
+from decouple import config
+
 from core.config.redis import REDIS_BASE_URL
+
+USE_CELERY: bool = config('USE_CELERY', cast=bool, default=True)
 
 # https://docs.celeryproject.org/en/stable/django/
 CELERY_ACCEPT_CONTENT = ['application/json']

@@ -14,6 +14,7 @@ from core.constants.strings import EMPTY_STRING
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.html_field import HTMLField
 from core.models.model import ExtendedModel
+from core.utils.sync import delay
 
 
 class SourcesField(CustomManyToManyField):
@@ -52,7 +53,8 @@ class ModelWithSources(ExtendedModel):
         if citations or not self.sources.exists():
             return citations
         citations = [citation.serialize() for citation in self.citations.all()]
-        cache_citations.delay(
+        delay(
+            cache_citations,
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             citations,

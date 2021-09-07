@@ -9,6 +9,7 @@ from core.celery import app
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.relations.moderated import ModeratedRelation
+from core.utils.sync import delay
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -98,7 +99,8 @@ class TaggableModel(models.Model):
         if tags or not self.tags.exists():
             return tags
         tags = [relation.topic.serialize() for relation in self.topic_relations.all()]
-        cache_tags.delay(
+        delay(
+            cache_tags,
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             tags,

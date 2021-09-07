@@ -23,6 +23,7 @@ from core.constants.misc import (
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.environment import IS_DEV
 from core.utils import files
+from core.utils.sync import delay
 
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
@@ -117,7 +118,7 @@ def backup(
         )
         logging.info(f'Finished uploading {backup_filepath}.')
     # Asynchronously remove duplicate and/or old backup files.
-    groom_backup_files.delay()
+    delay(groom_backup_files)
 
 
 def clear_migration_history(context: Context = CONTEXT, app: str = ''):
