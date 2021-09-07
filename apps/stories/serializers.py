@@ -2,10 +2,10 @@
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class StorySerializer(SearchableModelSerializer):
+class StorySerializer(ModuleSerializer):
     """Serializer for occurrences."""
 
     handle = serpy.Field()
