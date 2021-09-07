@@ -187,6 +187,7 @@ services:
 
   create_es_certs:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    profiles: ["setup"]
     environment:
       ELASTIC_PASSWORD: $ELASTIC_PASSWORD
     command: >
