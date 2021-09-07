@@ -178,7 +178,6 @@ jobs:
       matrix:
         browser: [ chrome ]
         container: [ 1, 2, 3 ]
-    continue-on-error: true
     steps:
     - includes: ./.github/actions/setup
       with:
@@ -207,6 +206,8 @@ jobs:
         environment: test
     - includes: ./.github/actions/run
     - name: Run deploy script
+      run: bash config/scripts/deploy.sh
+    - name: Run deploy script x2
       run: bash config/scripts/deploy.sh
 
   check-types:

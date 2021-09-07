@@ -1,8 +1,10 @@
 #!/bin/bash
 
-required_py_version="3.9.5"
+PYTHON_VERSION="3.9.5"
 
 PROJECT_DIR=$(dirname "$0")
+VOLUMES_DIR="$PROJECT_DIR/_volumes"
+
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 BOLD=$(tput bold)
@@ -237,7 +239,14 @@ fi
 brew_install watchman
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
+declare -a writable_dirs=(
+  "$VOLUMES_DIR/db/backups"
+  "$VOLUMES_DIR/db/init"
+  "$VOLUMES_DIR/media"
+  "$VOLUMES_DIR/static"
+  "$VOLUMES_DIR/redirects"
+  "$PROJECT_DIR/frontend/.next"
+)
 
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
@@ -292,8 +301,8 @@ pyenv --help &>/dev/null || _error "Failed to install pyenv."
 
 # Install the required Python version.
 # shellcheck disable=SC2076
-if [[ ! "$(pyenv versions)" =~ "$required_py_version" ]]; then
-  pyenv install "$required_py_version"
+if [[ ! "$(pyenv versions)" =~ "$PYTHON_VERSION" ]]; then
+  pyenv install "$PYTHON_VERSION"
 fi
 
 # Install and configure Poetry.
@@ -322,18 +331,18 @@ function activate_venv() {
 
 # Initialize .venv with the correct Python version.
 if [[ -d .venv ]]; then
-  echo "Verifying the active Python version is $required_py_version..."
-  if [[ ! "$(.venv/bin/python --version)" =~ .*"$required_py_version".* ]]; then
+  echo "Verifying the active Python version is $PYTHON_VERSION..."
+  if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
     echo "Destroying the existing .venv ..."
     [[ -d .venv ]] && rm -r .venv
   fi
 fi
 [[ -d .venv ]] || {
-  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python" &>/dev/null
+  poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
 activate_venv
-if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
-  _error "Failed to activate Python $required_py_version."
+if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
+  _error "Failed to activate Python $PYTHON_VERSION."
 fi
 
 # Install project dependencies.
@@ -476,7 +485,7 @@ docker-compose build django || _error "Failed to build django image."
 docker-compose build next || _error "Failed to build next.js image."
 
 prompt="Seed db [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT

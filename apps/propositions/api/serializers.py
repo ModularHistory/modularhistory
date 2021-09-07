@@ -1,55 +1,57 @@
-import serpy
+from apps.propositions.models import Argument, Occurrence, Proposition
+from core.models.model import DrfModelSerializer
+from core.models.module import DrfModuleSerializer
 
-from apps.search.api.serializers import SearchableModelSerializer
 
-
-class _PropositionSerializer(SearchableModelSerializer):
+class _PropositionDrfSerializer(DrfModuleSerializer):
     """Serializer for propositions."""
-
-    summary = serpy.StrField()
-    elaboration = serpy.StrField()
-    certainty = serpy.IntField(required=False)
-    date_string = serpy.StrField()
-    cached_images = serpy.Field()
-    primary_image = serpy.Field()
-    cached_citations = serpy.Field()
-    tags_html = serpy.StrField()
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
         return 'propositions.proposition'
 
+    class Meta(DrfModuleSerializer.Meta):
+        model = Proposition
+        fields = DrfModuleSerializer.Meta.fields + [
+            'summary',
+            'elaboration',
+            'certainty',
+            'date_string',
+            'tags_html',
+            'cached_citations',
+            'primary_image',
+            'cached_images',
+        ]
+        extra_kwargs = {'certainty': {'required': False}}
 
-class ArgumentSerializer(serpy.Serializer):
+
+class ArgumentDrfSerializer(DrfModelSerializer):
     """Serializer for arguments."""
 
-    explanation = serpy.StrField()
-    premises = _PropositionSerializer(many=True, attr='premises.all', call=True)
+    premises = _PropositionDrfSerializer(many=True, source='premises.all')
+
+    class Meta(DrfModelSerializer.Meta):
+        model = Argument
+        fields = DrfModelSerializer.Meta.fields + ['explanation', 'premises']
 
 
-class PropositionSerializer(_PropositionSerializer):
+class PropositionDrfSerializer(_PropositionDrfSerializer):
     """Serializer for propositions."""
 
-    summary = serpy.StrField()
-    elaboration = serpy.StrField()
-    certainty = serpy.IntField(required=False)
-    date_string = serpy.StrField()
-    cached_images = serpy.Field()
-    primary_image = serpy.Field()
-    cached_citations = serpy.Field()
-    tags_html = serpy.StrField()
-    arguments = ArgumentSerializer(many=True, attr='arguments.all', call=True)
+    arguments = ArgumentDrfSerializer(many=True, source='arguments.all')
 
-    def get_model(self, instance) -> str:
-        """Return the model name of serialized propositions."""
-        return 'propositions.proposition'
+    class Meta(_PropositionDrfSerializer.Meta):
+        model = Proposition
+        fields = _PropositionDrfSerializer.Meta.fields + ['arguments']
 
 
-class OccurrenceSerializer(PropositionSerializer):
+class OccurrenceDrfSerializer(PropositionDrfSerializer):
     """Serializer for occurrences."""
-
-    postscript = serpy.StrField()
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'propositions.occurrence'
+
+    class Meta(PropositionDrfSerializer.Meta):
+        model = Occurrence
+        fields = PropositionDrfSerializer.Meta.fields + ['postscript']

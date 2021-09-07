@@ -33,21 +33,22 @@ for image_name in "${images_to_pull[@]}"; do
 done
 
 # Deploy new containers.
-green="green"; blue="blue" && new=$blue
-docker-compose ps | grep --quiet "$blue" && new=$green
 declare -A old_container_ids
 for container in "${containers_to_deploy[@]}"; do
-    old_container_ids[$container]=$(docker ps -f name=$container -q | tail -n1)
-    docker-compose up -d --no-deps --scale ${container}=2 --no-recreate "$container"
-    docker-compose ps | grep $new | grep "Exit 127" && exit 1
+    old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
+    docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
+    container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
+    new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
+    docker rename "$container_name" "$new_container_name"
+    docker-compose ps | grep "Exit 127" && exit 1
     healthy=false; timeout=300; interval=15; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
-        [[ "$(docker-compose ps | grep $new)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
-            echo ""; docker-compose ps | grep $new; echo ""
-            echo "Waiting for $container to be healthy (total: ${waited}s) ..."; echo ""
+            echo ""; docker-compose ps; echo ""
+            echo "Waiting for $container to be healthy (total waited: ${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
             if [[ $waited -gt $timeout ]]; then 
                 docker-compose logs; echo "Timed out."; exit 1
@@ -65,7 +66,7 @@ for old_container_id in "${old_container_ids[@]}"; do
     docker rm "$old_container_id"
 done
 for container in "${containers_to_deploy[@]}"; do
-    docker-compose up -d --no-deps --scale ${container}=1 --no-recreate "$container"
+    docker-compose up -d --no-deps --scale "${container}=1" --no-recreate "$container"
 done
 echo "" && echo "Finished removing old containers."
 echo "" && docker-compose ps
@@ -84,4 +85,5 @@ docker image prune -a -f; docker system prune -f
 echo "" && echo "Updating PyInvoke config..."
 cp config/invoke.yaml "$HOME/.invoke.yaml"
 
+echo "" && docker-compose ps
 echo "" && echo "Done."

@@ -9,9 +9,9 @@ class FlatPageAdmin(ModeratedModelAdmin):
     """Admin for flat pages."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
-    list_display = ('url', 'title')
+    list_display = ('path', 'title')
     list_filter = ('sites', 'registration_required')
-    search_fields = ('url', 'title')
+    search_fields = ('path', 'title')
 
 
 admin_site.register(FlatPage, FlatPageAdmin)

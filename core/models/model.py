@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
+from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
@@ -222,3 +223,26 @@ class ModelSerializer(serpy.Serializer):
         """Return the model name of the instance."""
         model_cls: Type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+
+class DrfModelSerializer(serializers.ModelSerializer):
+    """Base serializer for ModularHistory's models."""
+
+    model = serializers.SerializerMethodField()
+
+    def get_model(self, instance: ExtendedModel) -> str:
+        """Return the model name of the instance."""
+        model_cls: Type['ExtendedModel'] = instance.__class__
+        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+    class Meta:
+        fields = ['id', 'model']
+
+
+class DrfTypedModelSerializer(DrfModelSerializer):
+    """Base serializer for ModularHistory's typed models."""
+
+    type = serializers.CharField(write_only=True, required=True)
+
+    class Meta(DrfModelSerializer.Meta):
+        fields = DrfModelSerializer.Meta.fields + ['type']

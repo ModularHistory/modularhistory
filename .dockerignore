@@ -2,12 +2,12 @@
 .git
 .gitignore
 
-# Media files
-/_media/
-
 # Docker
 Dockerfile.*
 docker-compose.*
+
+# Volumes (media, static files, etc.)
+_volumes/
 
 # Django
 *.log
@@ -35,9 +35,6 @@ venv/
 *.bak
 .backups/
 backups/
-
-# Init files
-.init/
 
 # Testing / linting / coverage reports
 .cache/

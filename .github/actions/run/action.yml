@@ -15,23 +15,24 @@ runs:
         password: ${{ secrets.CR_PAT }}
     - name: Create writable volume directories
       run: |
-        writable_dirs=( ".backups" ".init" "_static" "_media" )
-        for writable_dir in "${writable_dirs[@]}"; do
-          mkdir -p "$writable_dir"; {
-            sudo chown -R www-data:www-data "$writable_dir" && 
-            sudo chmod a+w -R "$writable_dir"
+        dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
+        for dir_name in "${dir_names[@]}"; do
+          dir_path="_volumes/${dir_name}"
+          mkdir -p "$dir_path"; {
+            sudo chown -R www-data:www-data "$dir_path" && 
+            sudo chmod a+w -R "$dir_path"
           } || exit 1
         done
     - uses: actions/cache@v2
       id: data-cache
       with:
-        path: .init
+        path: _volumes/db/init
         key: data
     - name: Fetch data
       if: ${{ steps.data-cache.outputs.cache-hit != 'true' }}
       run: |
-        test -w .init || {
-          echo "Cannot write in .init directory."; exit 1
+        test -w _volumes/db/init || {
+          echo "Cannot write in db init directory."; exit 1
         }
         rclone --help &>/dev/null || {
           curl https://rclone.org/install.sh | sudo bash 
@@ -40,20 +41,26 @@ runs:
     - name: Start up containers
       shell: bash
       run: |
-        echo "Starting containers with version $SHA ..."
-        docker-compose up -d webserver; echo ""; docker-compose ps
-        [[ ! "$(docker-compose ps)" =~ webserver ]] && exit 1
+        echo "Pulling images ..."
+        docker-compose pull -q
+        echo "" && echo "Starting containers with version $SHA ..."
+        docker-compose up -d webserver
+        echo "" && docker-compose ps
         healthy=false; timeout=300; interval=15; waited=0
+        log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
-          healthy=true; [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+          healthy=true
+          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 15
-            echo "" && docker-compose ps
-            echo "" && echo "Waiting for containers (${waited}s) ..."
-            sleep $interval; waited=$((waited + interval))
-            if [[ $waited -gt $timeout ]]; then 
+            if [[ $waited -gt $timeout ]]; then
               echo "" && echo "Timed out."
               docker-compose logs; exit 1
+            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
+              echo "" && docker-compose logs --tail 15
+              echo "" && docker-compose ps
             fi
+            echo "" && echo "Waiting for containers (${waited}s) ..."
+            sleep $interval && waited=$((waited + interval))
           fi
         done; docker-compose ps
+        echo "" && echo "Finished starting up containers."
