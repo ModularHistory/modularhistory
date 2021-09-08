@@ -1,11 +1,13 @@
 from typing import Optional
 
 from autoslug import AutoSlugField
+from django.conf import settings
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from apps.redirects.models import Redirect
 from core.models.titled import TitledModel
 from core.utils.html import soupify
 
@@ -25,15 +27,33 @@ class SluggedModel(TitledModel):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
-        """Save the model instance to the database."""
+    def clean(self):
+        super().clean()
         if not self.slug:
+            # Set a slug automatically.
             self.slug = self.get_slug()
-        super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def pre_save(self):
+        super().pre_save()
+        self._original_slug = self.get_field_value_from_db('slug')
+
+    def post_save(self):
+        # If the slug has changed, create a redirect.
+        original_slug = self._original_slug
+        if original_slug and self.slug != original_slug:
+            Redirect.objects.update_or_create(
+                site_id=settings.SITE_ID,
+                old_path=self._original_absolute_url,
+                defaults={'new_path': self.absolute_url},
+            )
+        # Delete any redirects that would hijack this model instance's new URL.
+        Redirect.objects.filter(site_id=settings.SITE_ID, old_path=self.absolute_url).delete()
+
+    def get_absolute_url(self) -> str:
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
+        if self._state.adding and not slug:
+            return ''
         return f'/{self._meta.app_label}/{slug or self.pk}'
 
     @property
