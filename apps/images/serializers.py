@@ -2,10 +2,10 @@
 
 import serpy
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class ImageSerializer(SearchableModelSerializer):
+class ImageSerializer(ModuleSerializer):
     """Serializer for images."""
 
     src_url = serpy.StrField()

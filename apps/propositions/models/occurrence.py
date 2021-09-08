@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import Proposition
+from apps.propositions.serializers import OccurrenceSerializer
 from core.models.manager import SearchableManager
 
 if TYPE_CHECKING:

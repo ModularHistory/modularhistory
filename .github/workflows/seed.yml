@@ -28,6 +28,7 @@ jobs:
       BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
       BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
       DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
+      ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -93,7 +94,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -119,7 +120,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2

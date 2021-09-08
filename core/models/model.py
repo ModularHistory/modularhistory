@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
+from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
@@ -100,6 +101,38 @@ class ExtendedModel(Model):
     def ctype(self) -> ContentType:
         """Return the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
+
+    def save(self, *args, **kwargs):
+        self.pre_save()
+        super().save(*args, **kwargs)
+        self.post_save()
+
+    def clean(self):
+        """Prepare the model instance to be saved."""
+        super().clean()
+
+    def pre_save(self):
+        """Run any logic required before the instance is saved to the db."""
+        self.clean()
+
+    def post_save(self):
+        """Run any logic required after the instance is saved to the db."""
+
+    def field_has_changed(self, field: str) -> bool:
+        """Return a bool reflecting whether the specified field's value has changed."""
+        if self._state.adding:
+            return False
+        elif hasattr(self, field):
+            value = getattr(self, field)
+            value_in_db = self.get_field_value_from_db(field)
+            return value != value_in_db
+        raise ValueError(f'{self.__class__.__name__} has no `{field}` field.')
+
+    def get_field_value_from_db(self, field: str) -> Any:
+        """Return the value of the field currently in the database."""
+        if self._state.adding:
+            return None
+        return self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)[0]
 
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
@@ -222,3 +255,26 @@ class ModelSerializer(serpy.Serializer):
         """Return the model name of the instance."""
         model_cls: Type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+
+class DrfModelSerializer(serializers.ModelSerializer):
+    """Base serializer for ModularHistory's models."""
+
+    model = serializers.SerializerMethodField()
+
+    def get_model(self, instance: ExtendedModel) -> str:
+        """Return the model name of the instance."""
+        model_cls: Type['ExtendedModel'] = instance.__class__
+        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+    class Meta:
+        fields = ['id', 'model']
+
+
+class DrfTypedModelSerializer(DrfModelSerializer):
+    """Base serializer for ModularHistory's typed models."""
+
+    type = serializers.CharField(write_only=True, required=True)
+
+    class Meta(DrfModelSerializer.Meta):
+        fields = DrfModelSerializer.Meta.fields + ['type']

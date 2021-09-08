@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, Type
 
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-from django.db import IntegrityError, models
+from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -12,12 +12,12 @@ from typedmodels.models import TypedModel
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
-from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import (
     AbstractEntityRelation,
     ModelWithRelatedEntities,
     RelatedEntitiesField,
 )
+from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
@@ -168,15 +168,7 @@ class Entity(
         """Return the string representation of the entity."""
         return f'{self.name}'
 
-    def save(self, *args, **kwargs):
-        """Save the entity to the database."""
-        self.validate_type(raises=IntegrityError)
-        if not self.unabbreviated_name:
-            self.unabbreviated_name = self.name
-        super().save(*args, **kwargs)
-
     def clean(self):
-        """Prepare the entity to be saved."""
         self.validate_type(raises=ValidationError)
         validate_url = URLValidator()
         for key, value in self.reference_urls.items():
@@ -184,6 +176,8 @@ class Entity(
             if key not in ('wikipedia',):
                 raise ValidationError(f'{key} reference URL is unsupported.')
             validate_url(value)  # raises a ValidationError
+        if not self.unabbreviated_name:
+            self.unabbreviated_name = self.name
         super().clean()
 
     def get_default_title(self) -> str:

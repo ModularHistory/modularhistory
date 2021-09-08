@@ -28,7 +28,7 @@ from apps.places.models.model_with_locations import (
     LocationsField,
     ModelWithLocations,
 )
-from apps.propositions.api.serializers import PropositionSerializer
+from apps.propositions.serializers import PropositionSerializer
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -235,16 +235,14 @@ class Proposition(  # noqa: WPS215
         return self.summary
 
     def clean(self):
-        """Prepare the proposition to be saved to the database."""
         if self.type == 'propositions.occurrence' and not self.date:
             raise ValidationError('Occurrence needs a date.')
         elif self.type == 'propositions.proposition' and not self.certainty:
             raise ValidationError('Proposition needs a degree of certainty.')
         super().clean()
 
-    def save(self, *args, **kwargs):
-        """Save the occurrence to the database."""
-        super().save(*args, **kwargs)
+    def post_save(self):
+        super().post_save()
         if not self.images.exists():
             image: Optional['Image'] = None
             if self.related_entities.exists():

@@ -10,16 +10,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from rest_framework.serializers import Serializer
+from rest_framework import serializers
 
 from apps.moderation.models.searchable import (
     SearchableModeratedManager,
     SearchableModeratedModel,
 )
+from apps.search.api.serializers import (
+    DrfSearchableModelSerializer,
+    SearchableModelSerializer,
+)
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged import SluggedModel
-from core.models.titled import TitledModel
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
@@ -31,20 +34,40 @@ FieldList = list[str]
 # TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
-class ModuleSerializer(serpy.Serializer):
+class ModuleSerializer(SearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
-    id = serpy.IntField()
-    slug = serpy.StrField()
     title = serpy.StrField()
-    model = serpy.MethodField()
-    absolute_url = serpy.StrField()
+    slug = serpy.StrField()
+    admin_url = serpy.StrField()
     cached_tags = serpy.Field(required=False)
 
-    def get_model(self, instance: 'Module') -> str:
-        """Return the model name of the instance."""
-        model_cls: Type['Module'] = instance.__class__
-        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+
+class DrfModuleSerializer(DrfSearchableModelSerializer):
+    """Base serializer for ModularHistory's modules."""
+
+    absolute_url = serializers.CharField(required=False)
+    admin_url = serializers.CharField(required=False)
+    cached_tags = serializers.JSONField(required=False)
+
+    class Meta(DrfSearchableModelSerializer.Meta):
+        model: Type['Module']
+        fields = DrfSearchableModelSerializer.Meta.fields + [
+            'title',
+            'slug',
+            'absolute_url',
+            'admin_url',
+            'cached_tags',
+        ]
+
+
+class DrfTypedModuleSerializer(DrfModuleSerializer):
+    """Base serializer for ModularHistory's typed modules."""
+
+    type = serializers.CharField(write_only=True, required=True)
+
+    class Meta(DrfModuleSerializer.Meta):
+        fields = DrfModuleSerializer.Meta.fields + ['type']
 
 
 class Views(Constant):
@@ -67,15 +90,24 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     objects: 'Manager' = ModuleManager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: Type[Serializer] = ModuleSerializer
+    serializer: Type[serializers.Serializer] = ModuleSerializer
     placeholder_regex: Optional[str] = None
     slug_base_fields: Sequence[str] = ('title',)
 
     def clean(self):
-        """Prepare the model instance to be saved."""
+        super().clean()
         if not self.slug:
             self.slug = self.get_slug()
-        super().clean()
+
+    def pre_save(self):
+        super(ModelWithCache, self).pre_save()
+        super(SluggedModel, self).pre_save()
+        super(SearchableModeratedModel, self).pre_save()
+
+    def post_save(self):
+        super(ModelWithCache, self).post_save()
+        super(SluggedModel, self).post_save()
+        super(SearchableModeratedModel, self).post_save()
 
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:

@@ -3,6 +3,9 @@ clean_data.py
 clean.py
 scratch.py
 
+# Volumes (media, static files, etc.)
+_volumes/
+
 # Environment & credentials
 .env
 *credentials.json
@@ -18,23 +21,15 @@ venv/
 .venv/
 
 # Artifacts
-.postgres-data/
-.artifacts/
-artifacts/
 *.zip
 *.prior
 
 # Django
-/_media/
-/_static/
 *.log
 *.pot
 *.pyc
 __pycache__
 db.sqlite3
-
-# Node JS
-node_modules/
 
 # Python
 *.py[cod]
@@ -56,11 +51,6 @@ requirements.txt
 
 # Backup files
 *.bak
-.backups/
-backups/
-
-# Init files
-.init/
 
 # Testing / linting / coverage reports
 .cache/

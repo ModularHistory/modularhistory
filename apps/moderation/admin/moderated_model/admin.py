@@ -29,6 +29,9 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     # and save changes directly to model instances.
     admin_integration_enabled = True
 
+    class Media(ExtendedModelAdmin.Media):
+        """Include admin CSS and JS."""
+
     def get_model_cls(
         self, obj: Optional['ModeratedModel'] = None
     ) -> Optional[Type['ModeratedModel']]:

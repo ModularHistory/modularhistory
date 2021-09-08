@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -9,6 +10,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.translation import gettext_lazy as _
 
 from apps.moderation.models.moderated_model import ModeratedModel
+from apps.redirects.models import Redirect
 from core.fields.html_field import HTMLField
 
 if TYPE_CHECKING:
@@ -18,12 +20,12 @@ if TYPE_CHECKING:
 class FlatPage(ModeratedModel):
     """A page of "flat" HTML content."""
 
-    url = models.CharField(
-        verbose_name=_('URL'),
+    path = models.CharField(
+        verbose_name=_('URL path'),
         max_length=100,
         db_index=True,
-        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/$')],
-        help_text=('Example: “/about/contact/”. Requires leading and trailing slashes.'),
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/?$')],
+        help_text=('Example: “/about/contact/”. Requires a leading slash.'),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
     content = HTMLField(verbose_name=_('content'), blank=True)
@@ -40,35 +42,52 @@ class FlatPage(ModeratedModel):
     class Meta:
         verbose_name = _('flat page')
         verbose_name_plural = _('flat pages')
-        ordering = ['url']
-        unique_together = ['url']
+        ordering = ['path']
+        unique_together = ['path']
 
-    def __str__(self):
-        return f'{self.url} -- {self.title}'
+    class Moderation(ModeratedModel.Moderation):
+        excluded_fields = ModeratedModel.Moderation.excluded_fields + ['sites']
+
+    def __str__(self) -> str:
+        return f'{self.path} -- {self.title}'
 
     def clean(self):
-        url = self.url
-        pages_with_same_url = self.__class__.objects.filter(url=url)
-        if self.pk:
-            pages_with_same_url = pages_with_same_url.exclude(pk=self.pk)
-            sites: 'QuerySet[Site]' = self.sites.all()
-            if sites.exists() and pages_with_same_url.filter(sites__in=sites).exists():
-                for site in sites:
-                    if pages_with_same_url.filter(sites=site).exists():
-                        raise ValidationError(
-                            _('Flat page with url %(url)s already exists for site %(site)s'),
-                            code='duplicate_url',
-                            params={'url': url, 'site': site},
-                        )
         super().clean()
+        path: str = self.path or ''
+        if not path:
+            raise ValidationError(f'URL path is not set for flatpage "{self.title}"')
+        # Remove trailing slash.
+        path = path.rstrip('/')
+        pages_with_same_path = self.__class__.objects.filter(path=path)
+        if self.pk:
+            pages_with_same_path = pages_with_same_path.exclude(pk=self.pk)
+            sites: 'QuerySet[Site]' = self.sites.all()
+            if sites.exists() and pages_with_same_path.filter(sites__in=sites).exists():
+                for site in sites:
+                    if pages_with_same_path.filter(sites=site).exists():
+                        raise ValidationError(
+                            _('Page with path %(path)s already exists for site %(site)s'),
+                            code='duplicate_path',
+                            params={'path': path, 'site': site},
+                        )
+
+    def pre_save(self):
+        super().pre_save()
+        original_path = self.get_field_value_from_db('path')
+        if original_path and self.path != original_path:
+            Redirect.objects.create(
+                old_path=original_path,
+                new_path=self.path,
+                site_id=settings.SITE_ID,
+            )
 
     def get_absolute_url(self):
         from .views import flatpage
 
-        for url in (self.url.lstrip('/'), self.url):
+        for path in (self.path.lstrip('/'), self.path):
             try:
-                return reverse(flatpage, kwargs={'url': url})
+                return reverse(flatpage, kwargs={'path': path})
             except NoReverseMatch:
                 pass
         # Handle script prefix manually because we bypass reverse()
-        return iri_to_uri(get_script_prefix().rstrip('/') + self.url)
+        return iri_to_uri(get_script_prefix().rstrip('/') + self.path)

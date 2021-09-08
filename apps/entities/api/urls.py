@@ -1,14 +1,14 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.entities.api import views
 
 router = routers.DefaultRouter()
-router.register(r'entities', views.EntityViewSet)
+router.register('', views.EntityViewSet)
 
 app_name = 'entities'
 
 urlpatterns = [
-    path('', views.EntityListAPIView.as_view()),
     path('instant_search/', views.EntityInstantSearchAPIView.as_view()),
+    path('', include(router.urls)),
 ]

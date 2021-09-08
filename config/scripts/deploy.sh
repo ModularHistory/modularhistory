@@ -12,6 +12,14 @@ images_to_pull=("django" "next" "webserver")
 # Specify containers to deploy, in order of startup.
 containers_to_deploy=("django" "celery" "celery_beat" "next")
 
+reload_nginx () {
+    # Reload the nginx configuration file without downtime.
+    # https://nginx.org/en/docs/beginners_guide.html#control
+    docker-compose exec -T webserver nginx -s reload || {
+        echo "Failed to reload nginx config file."; exit 1
+    }
+}
+
 # List extant containers.
 echo "" && echo "Extant containers:" && docker-compose ps
 
@@ -40,11 +48,11 @@ for container in "${containers_to_deploy[@]}"; do
     container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
     new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
     docker rename "$container_name" "$new_container_name"
-    docker-compose ps | grep "Exit 127" && exit 1
+    docker-compose ps | grep "Exit 1" && exit 1
     healthy=false; timeout=300; interval=15; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
-        [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+        [[ "$(docker-compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then
             [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
             echo ""; docker-compose ps; echo ""
@@ -59,6 +67,9 @@ done
 echo "" && echo "Finished deploying new containers."
 echo "" && docker-compose ps
 
+# Reload nginx to begin sending traffic to the new containers.
+reload_nginx
+
 # Stop and remove the old containers.
 echo "" && echo "Taking old containers offline..."
 for old_container_id in "${old_container_ids[@]}"; do
@@ -71,11 +82,8 @@ done
 echo "" && echo "Finished removing old containers."
 echo "" && docker-compose ps
 
-# Reload the nginx configuration file without downtime.
-# https://nginx.org/en/docs/beginners_guide.html#control
-docker-compose exec -T webserver nginx -s reload || {
-    echo "Failed to reload nginx config file."; exit 1
-}
+# Reload nginx to stop trying to send traffic to the old containers.
+reload_nginx
 
 # Prune images.
 echo "" && echo "Pruning (https://docs.docker.com/config/pruning/) ..."

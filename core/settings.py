@@ -31,12 +31,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URL = config('BASE_URL', default='http://localhost')
 
 # --- URL MODIFICATION SETTINGS ---
-# https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
-# Do not prepend www to modularhistory.com.
-# The Nginx reverse proxy chops off the "www." from incoming requests.
+# Delegate URL modification to the Nginx reverse proxy server.
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-PREPEND_WWW
 PREPEND_WWW = False
-# When running in Docker, delegate slash appendage to the Nginx reverse proxy server.
-APPEND_SLASH = not DOCKERIZED
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-APPEND_SLASH
+APPEND_SLASH = False
 
 # --- SECURITY SETTINGS ---
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
@@ -98,7 +97,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.postgres',
-    'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.sitemaps',
     'django.contrib.sites',
@@ -156,6 +154,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.flatpages.apps.FlatPagesConfig',
+    'apps.redirects.apps.RedirectsConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
@@ -206,10 +205,6 @@ MIDDLEWARE = [
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
-    # 'apps.flatpages.middleware.FlatPageFallbackMiddleware',
-    # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -319,29 +314,28 @@ USE_TZ = True
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
+# Root for volume directories
+VOLUMES_DIR = os.path.join(BASE_DIR, '_volumes')
+
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'core/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
-STATIC_ROOT = os.path.join(BASE_DIR, '_static')
+STATIC_ROOT = os.path.join(VOLUMES_DIR, 'static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/dev/topics/files/
-MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
+MEDIA_ROOT = os.path.join(VOLUMES_DIR, 'media')
 MEDIA_URL = '/media/'
 
-ARTIFACTS_URL = '/artifacts/'
-ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
-ARTIFACTS_STORAGE = 'core.storage.LocalArtifactsStorage'
-
 # https://django-dbbackup.readthedocs.io/en/master/
-BACKUPS_DIR = os.path.join(BASE_DIR, '.backups')
+BACKUPS_DIR = os.path.join(VOLUMES_DIR, 'db/backups')
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 
-DB_INIT_DIR = os.path.join(BASE_DIR, '.init')
+DB_INIT_DIR = os.path.join(VOLUMES_DIR, 'db/init')
 DB_INIT_FILENAME = 'init.sql'
 DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
 
