@@ -30,9 +30,8 @@ class Place(TypedModel, Module):
 
     name = models.CharField(
         verbose_name=_('name'),
-        blank=True,
+        blank=False,
         max_length=NAME_MAX_LENGTH,
-        unique=True,
     )
     location = models.ForeignKey(
         to='self',

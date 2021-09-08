@@ -14,4 +14,14 @@ class PlaceDrfSerializer(DrfTypedModelSerializer):
 
     class Meta(DrfTypedModelSerializer.Meta):
         model = Place
-        fields = DrfTypedModelSerializer.Meta.fields + ['string']
+        fields = DrfTypedModelSerializer.Meta.fields + [
+            'string',
+            'name',
+            'preposition',
+            'location',
+        ]
+        extra_kwargs = {
+            'name': {'write_only': True},
+            'preposition': {'required': False, 'write_only': True},
+            'location': {'required': False, 'write_only': True},
+        }
