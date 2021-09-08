@@ -485,14 +485,15 @@ for image_name in "${image_names[@]}"; do
   docker-compose build "$image_name" || _error "Failed to build $image_name image."
 done
 
+# Seed init.sql file.
 prompt="Seed db [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
-  prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
+if [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
+  prompt="Seed new init.sql file [Y/n]? "
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed --no-dotenv-file && echo "Finished seeding." || {
+  poetry run invoke db.seed --remote --migrate || {
     _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "

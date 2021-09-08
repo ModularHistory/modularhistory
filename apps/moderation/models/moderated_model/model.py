@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from apps.users.models import User
 
 
-class ModeratedModel(SoftDeletableModel, ExtendedModel):
+class ModeratedModel(SoftDeletableModel):
     """Base class for models of which instances must be moderated."""
 
     changes = GenericRelation(to='moderation.Change')
