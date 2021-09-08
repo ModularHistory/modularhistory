@@ -47,7 +47,6 @@ class TreeModel(ExtendedModel):
         ordering = ('path',)
 
     def clean(self):
-        """Prepare the model instance to be saved to the database."""
         super().clean()
         self.key = self.get_key()
         self.validate_parent(raises=ValidationError)

@@ -55,7 +55,6 @@ class DatedModel(ExtendedModel):
         abstract = True
 
     def clean(self, *args, **kwargs):
-        """Prepare the entity to be saved to the database."""
         self.date_string = self.get_date_string()
         super().clean()
 

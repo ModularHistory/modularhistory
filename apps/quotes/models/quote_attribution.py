@@ -33,7 +33,6 @@ class QuoteAttribution(ModeratedPositionedRelation):
         return str(self.attributee)
 
     def clean(self):
-        """Prepare the quote attribution to be saved."""
         super().clean()
         if self.position > 0:
             duplications = QuoteAttribution.objects.exclude(pk=self.pk).filter(

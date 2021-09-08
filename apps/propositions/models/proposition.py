@@ -235,7 +235,6 @@ class Proposition(  # noqa: WPS215
         return self.summary
 
     def clean(self):
-        """Prepare the proposition to be saved to the database."""
         if self.type == 'propositions.occurrence' and not self.date:
             raise ValidationError('Occurrence needs a date.')
         elif self.type == 'propositions.proposition' and not self.certainty:
