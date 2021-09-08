@@ -22,7 +22,8 @@ RUN mkdir -p -- \
   /modularhistory/_volumes/media \
   /modularhistory/_volumes/redirects \
   /var/log/letsencrypt \
-  /var/lib/letsencrypt
+  /var/lib/letsencrypt \
+  /etc/letsencrypt
 
 COPY core/templates/error.htm /modularhistory/core/templates/error.htm
 COPY config/scripts/init/webserver.sh /modularhistory/config/scripts/init/webserver.sh
@@ -37,10 +38,8 @@ RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/log/letsencrypt \
   && chown -R www-data:www-data /var/lib/letsencrypt \
   && chown -R www-data:www-data /etc/letsencrypt && chmod 770 /etc/letsencrypt \
-  && chmod g+w -R /modularhistory/_volumes/redirects \
   && touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
-  && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid \
-  && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
+  && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid
 
 EXPOSE 8080/tcp 8443/tcp
 
@@ -48,7 +47,6 @@ USER www-data
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
   CMD [ -f /var/run/nginx.pid ] || exit 1; \
-  [ -f /var/run/ddclient.pid ] || ["${ENVIRONMENT}" -ne prod] || (echo "ddclient down"; exit 1); \
-  [ -f /var/run/crond.pid ] || ["${ENVIRONMENT}" -ne prod] || (echo "cron down"; exit 1)
+  [ -f /var/run/ddclient.pid ] || ["${ENVIRONMENT}" -ne prod] || (echo "ddclient down"; exit 1)
 
 CMD [ "bash", "/modularhistory/config/scripts/init/webserver.sh" ]
