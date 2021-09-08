@@ -67,7 +67,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   description: string;
 }
 
-export interface Argument {
+export interface Argument extends BaseModule {
   type: string;
   explanation: string;
   premises: Proposition[];
