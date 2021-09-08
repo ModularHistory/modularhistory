@@ -3,12 +3,8 @@ import { Button } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
-//import { useRouter } from "next/router";
 import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
-import ErrorMessage from "./ErrorMessage";
-import SuccessMessage from "./SuccessMessage";
-
 interface DonateProps {
   clientToken: string;
 }
@@ -18,7 +14,6 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
   const [instance, setInstance] = useState<any>();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
-  //const router = useRouter();
 
   const amountRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -56,12 +51,8 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
           name: nameRef.current?.value ?? "",
         });
         if (response.data == "OK") {
-          // router.push("/donations/success");
-          // // return <SuccessMessage />;
           setSuccess(true);
         } else {
-          // // return <ErrorMessage />;
-          // router.push("/donations/error");
           setError(true);
         }
       } catch (err) {
@@ -130,6 +121,46 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
     </Layout>
   );
 };
+
+const SuccessMessage: FC = () => (
+  <div className="Success">
+    <Container
+      sx={{
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "1.5rem",
+        marginBottom: "2rem",
+      }}
+    >
+      <header>
+        <p className="h3">Donated Successfully.</p>
+        <p>Thank you for your donation! Your patronage makes ModularHistory possible.</p>
+      </header>
+    </Container>
+  </div>
+);
+
+const ErrorMessage: FC = () => (
+  <div className="Error">
+    <Container
+      sx={{
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "1.5rem",
+        marginBottom: "2rem",
+      }}
+    >
+      <header>
+        <p className="h3">Oops, something went wrong.</p>
+        <p>Sorry, there were some issues with your donation.</p>
+      </header>
+    </Container>
+  </div>
+);
 
 export default Donate;
 
