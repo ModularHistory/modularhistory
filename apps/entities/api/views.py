@@ -1,14 +1,14 @@
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from core.api.views import ExtendedModelViewSet
 
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.entities.models.entity import Entity
 from apps.search.documents.entity import EntityInstantSearchDocument
 
 
-class EntityViewSet(ModelViewSet):
+class EntityViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore

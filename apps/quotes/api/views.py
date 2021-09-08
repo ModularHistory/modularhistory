@@ -1,11 +1,11 @@
 from rest_framework import permissions
-from rest_framework.viewsets import ModelViewSet
+from core.api.views import ExtendedModelViewSet
 
 from apps.quotes.api.serializers import QuoteDrfSerializer
 from apps.quotes.models.quote import Quote
 
 
-class QuoteViewSet(ModelViewSet):
+class QuoteViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing quotes."""
 
     queryset = Quote.objects.all()

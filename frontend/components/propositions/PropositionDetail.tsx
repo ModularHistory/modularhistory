@@ -1,5 +1,7 @@
+import ModuleHTML from "@/components/details/ModuleHTML";
 import TagList from "@/components/topics/TagList";
 import { Proposition } from "@/types/modules";
+import { Box } from "@material-ui/core";
 import Slider from "@material-ui/core/Slider";
 import { useSession } from "next-auth/client";
 import { FC } from "react";
@@ -63,10 +65,11 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           />
         </div>
       )}
-      <div
-        dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
-        style={{ margin: "1.5rem 0" }}
-      />
+
+      <Box m={"1.5rem 0"}>
+        <ModuleHTML html={proposition.elaboration} />
+      </Box>
+
       {!!proposition.arguments?.length && <ArgumentSet argumentSet={proposition.arguments} />}
       {proposition.postscript && <p dangerouslySetInnerHTML={{ __html: proposition.postscript }} />}
 

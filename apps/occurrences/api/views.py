@@ -1,11 +1,11 @@
 from rest_framework import permissions
-from rest_framework.viewsets import ModelViewSet
+from core.api.views import ExtendedModelViewSet
 
 from apps.propositions.api.serializers import OccurrenceDrfSerializer
 from apps.propositions.models.occurrence import Occurrence
 
 
-class OccurrenceViewSet(ModelViewSet):
+class OccurrenceViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing occurrences."""
 
     queryset = Occurrence.objects.all()
