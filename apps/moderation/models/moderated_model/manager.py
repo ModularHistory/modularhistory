@@ -37,6 +37,4 @@ class ModeratedManager(SoftDeletableManager):
         """Get or create the model instance with the specified kwargs and return it."""
         object: 'ModeratedModel'
         object, created = super().get_or_create(**kwargs)
-        if created:
-            object.save_change()
         return object, created
