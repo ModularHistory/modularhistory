@@ -46,9 +46,16 @@ class TreeModel(ExtendedModel):
         abstract = True
         ordering = ('path',)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_path = self.path if self.pk else ''
+    def clean(self):
+        """Prepare the model instance to be saved to the database."""
+        super().clean()
+        self.key = self.get_key()
+        self.validate_parent(raises=ValidationError)
+        self.path = self.get_path()
+
+    def pre_save(self):
+        super().pre_save()
+        self._original_path = self.get_field_value_from_db('path') if self.pk else ''
 
     def post_save(self):
         super().post_save()
@@ -64,13 +71,6 @@ class TreeModel(ExtendedModel):
                     f"subpath({table}.path, nlevel('{old_path}'::ltree)) "
                     f"WHERE {table}.path <@ '{old_path}'::ltree AND id != {self.id}"
                 )
-
-    def clean(self):
-        """Prepare the model instance to be saved to the database."""
-        super().clean()
-        self.key = self.get_key()
-        self.validate_parent(raises=ValidationError)
-        self.path = self.get_path()
 
     @property
     def ancestors(self) -> QuerySet['TreeModel']:

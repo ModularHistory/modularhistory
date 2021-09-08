@@ -95,10 +95,9 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
     slug_base_fields: Sequence[str] = ('title',)
 
     def clean(self):
-        """Prepare the model instance to be saved."""
+        super().clean()
         if not self.slug:
             self.slug = self.get_slug()
-        super().clean()
 
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:

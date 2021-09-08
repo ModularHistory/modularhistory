@@ -19,13 +19,12 @@ class TitledModel(ExtendedModel):
         abstract = True
 
     def clean(self):
-        """Prepare the model instance to be saved."""
+        super().clean()
         if not self.title:
             try:
                 self.title = self.get_default_title()
             except NotImplementedError:
                 raise ValidationError(f'Title must be set.')
-        super().clean()
 
     def get_default_title(self) -> str:
         raise NotImplementedError

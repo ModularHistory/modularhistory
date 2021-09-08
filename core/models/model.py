@@ -107,6 +107,10 @@ class ExtendedModel(Model):
         super().save(*args, **kwargs)
         self.post_save()
 
+    def clean(self):
+        """Prepare the model instance to be saved."""
+        super().clean()
+
     def pre_save(self):
         """Run any logic required before the instance is saved to the db."""
         self.clean()
@@ -120,11 +124,15 @@ class ExtendedModel(Model):
             return False
         elif hasattr(self, field):
             value = getattr(self, field)
-            value_in_db = self.__class__.objects.filter(pk=self.pk).values_list(
-                field, flat=True
-            )[0]
+            value_in_db = self.get_field_value_from_db(field)
             return value != value_in_db
         raise ValueError(f'{self.__class__.__name__} has no `{field}` field.')
+
+    def get_field_value_from_db(self, field: str) -> Any:
+        """Return the value of the field currently in the database."""
+        if self._state.adding:
+            return None
+        return self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)[0]
 
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
