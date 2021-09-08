@@ -1,6 +1,6 @@
 import { HTMLReactParserOptions } from "html-react-parser";
 import { Element } from "html-react-parser/node_modules/domhandler/lib/node";
-import { FC, ReactElement, useEffect, useState } from "react";
+import { FC, ForwardedRef, forwardRef, ReactElement, useEffect, useState } from "react";
 
 interface ModuleHTMLProps {
   html: string;
@@ -14,9 +14,7 @@ const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
   useEffect(() => {
     Promise.all([import("html-react-parser"), import("@/components/details/ModuleLink")]).then(
       ([{ default: parse, domToReact, attributesToProps }, { default: ModuleLink }]) => {
-        // const  = module;
         const options: HTMLReactParserOptions = {
-          // eslint-disable-next-line react/display-name
           replace: (domNode) => {
             if (domNode.type !== "tag") {
               return;
@@ -28,18 +26,18 @@ const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
                 return;
               }
 
-              return (
-                <ModuleLink
-                  Anchor={({ onClick }) => (
-                    <a {...attributesToProps(element.attribs)} onClick={onClick}>
-                      {domToReact(element.children)}
-                    </a>
-                  )}
-                  // example href: "/entities/thomas-aquinas/"
-                  model={href.split("/").filter(Boolean)[0]}
-                  id={element.attribs["data-id"]}
-                />
-              );
+              const anchorProps = attributesToProps(element.attribs);
+              const Anchor = forwardRef(function Anchor(
+                props,
+                ref: ForwardedRef<HTMLAnchorElement>
+              ) {
+                return (
+                  <a {...props} ref={ref}>
+                    {domToReact(element.children)}
+                  </a>
+                );
+              });
+              return <ModuleLink Anchor={Anchor} anchorProps={anchorProps} />;
             } else {
               return domToReact(element.children, options) as Exclude<
                 ReturnType<typeof domToReact>,
