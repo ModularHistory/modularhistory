@@ -4,15 +4,7 @@ import { styled } from "@material-ui/core/styles";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  AnchorHTMLAttributes,
-  FC,
-  ForwardRefExoticComponent,
-  MouseEventHandler,
-  RefAttributes,
-  useRef,
-  useState,
-} from "react";
+import { AnchorHTMLAttributes, FC, MouseEventHandler, ReactNode, useRef, useState } from "react";
 
 const StyledSpan = styled("span")({
   lineHeight: "16px",
@@ -37,8 +29,8 @@ const allowedModels = new Set([
 ]);
 
 interface ModuleLinkProps {
-  Anchor: ForwardRefExoticComponent<RefAttributes<HTMLAnchorElement> & AnchorHTMLAttributes<any>>;
   anchorProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
+  anchorChildren: ReactNode;
 }
 
 /**
@@ -46,12 +38,11 @@ interface ModuleLinkProps {
  * Module data is fetched when ModuleLink is hovered/clicked, and a ModuleModal is
  * opened on click.
  *
- * @param Anchor - a function component that renders the underlying anchor element,
- *                 including its props and children.
  * @param anchorProps - attributes of the underlying anchor element.
+ * @param anchorChildren - the text or react node inside the anchor element.
  * @constructor
  */
-const ModuleLink: FC<ModuleLinkProps> = ({ Anchor, anchorProps }) => {
+const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -59,26 +50,30 @@ const ModuleLink: FC<ModuleLinkProps> = ({ Anchor, anchorProps }) => {
   const requestRef = useRef<Promise<any>>();
   const [isFailure, setIsFailure] = useState(false);
 
+  // TODO: add "data-model" attribute to anchor tags in our database HTML.
   const model = anchorProps.href?.split("/").filter(Boolean)[0] || "";
   const id = anchorProps["data-id"];
 
+  // under failure conditions, revert to rendering a normal anchor element
   if (!anchorProps.href || !allowedModels.has(model) || isFailure) {
-    return <Anchor {...anchorProps} />;
+    return <a {...anchorProps}>{anchorChildren}</a>;
   }
 
   const { target, ...anchorPropsWithoutTarget } = anchorProps;
 
+  // if we are not on the search page, use Next link instead of ModuleModal
   if (router.pathname !== "/search") {
     return (
       <StyledSpan>
-        <Link href={anchorProps.href} passHref={true}>
-          <Anchor {...anchorPropsWithoutTarget} />
+        <Link href={anchorProps.href}>
+          <a {...anchorPropsWithoutTarget}>{anchorChildren}</a>
         </Link>
       </StyledSpan>
     );
   }
 
   const fetchModule = () => {
+    // only send request if we have not already sent one
     if (!module && !requestRef.current) {
       requestRef.current = axios
         .get(`/api/${model}/${id}/`)
@@ -102,9 +97,10 @@ const ModuleLink: FC<ModuleLinkProps> = ({ Anchor, anchorProps }) => {
     <>
       <ModuleModal module={module} setOpen={setModalOpen} open={modalOpen} />
       <StyledSpan onMouseEnter={fetchModule} onClick={handleClick}>
-        <Anchor onClick={(event) => event.preventDefault()} />
+        <a onClick={(event) => event.preventDefault()}>{anchorChildren}</a>
       </StyledSpan>
     </>
   );
 };
+
 export default ModuleLink;
