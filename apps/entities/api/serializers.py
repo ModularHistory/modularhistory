@@ -1,5 +1,8 @@
+import datetime
+
 from rest_framework import serializers
 
+from apps.dates.structures import HistoricDateTime
 from apps.entities.models.entity import Entity
 from core.models.module import DrfTypedModuleSerializer
 
@@ -35,18 +38,30 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
     )
 
     # write only fields are not rendered to output
-    birth_date = serializers.DateField(write_only=True, required=False)
-    death_date = serializers.DateField(write_only=True, required=False)
+    birth_date = serializers.DateTimeField(write_only=True, required=False)
+    death_date = serializers.DateTimeField(write_only=True, required=False)
     birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
     deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
-        return instance.birth_date.serialize() if instance.birth_date else None
+        birth_date = instance.birth_date
+        if isinstance(birth_date, HistoricDateTime):
+            return birth_date.serialize()
+        elif isinstance(birth_date, datetime.datetime):
+            return birth_date.isoformat()
+        else:
+            return None
 
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
-        return instance.death_date.serialize() if instance.death_date else None
+        death_date = instance.death_date
+        if isinstance(death_date, HistoricDateTime):
+            return death_date.serialize()
+        elif isinstance(death_date, datetime.datetime):
+            return death_date.isoformat()
+        else:
+            return None
 
     class Meta(DrfTypedModuleSerializer.Meta):
         model = Entity
