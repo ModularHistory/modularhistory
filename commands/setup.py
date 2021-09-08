@@ -172,13 +172,16 @@ def seed(
 ):
     """Seed a dev database, media directory, and env file."""
     dotenv_file = dotenv_file and input('Seed .env file? [Y/n] ') != NEGATIVE
-    db = db and input('Seed database? [Y/n] ') != NEGATIVE
+    db = db and (not dotenv_file or input('Seed database? [Y/n] ') != NEGATIVE)
+    if not dotenv_file and not db:
+        print('Seeded nothing.')
+        return
     if dotenv_file:
         seed_dotenv_file(context, username, pat)
     if db:
         # Pull the db init file from remote storage and seed the db.
         db_utils.seed(context, remote=True, migrate=True)
-    print('Finished.')
+    print('Finished seeding.')
 
 
 @command

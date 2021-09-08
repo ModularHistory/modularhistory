@@ -7,7 +7,6 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
-import scrubadub
 from celery import shared_task
 from celery_singleton import Singleton
 from django.conf import settings
@@ -23,6 +22,7 @@ from core.constants.misc import (
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.environment import IS_DEV
 from core.utils import files
+from core.utils.string import redact as redact_string
 from core.utils.sync import delay
 
 DAYS_TO_KEEP_BACKUP = 7
@@ -90,7 +90,7 @@ def backup(
                     and re.match(r'COPY public\.(users_user)', previous_line)
                 )
                 if scrub:
-                    line = scrubadub.clean(line, replace_with='identifier')
+                    line = redact_string(line)
                 processed_backup.write(line)
                 previous_line = line
     context.run(f'rm {temp_file}')

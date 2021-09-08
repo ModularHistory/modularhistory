@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from apps.topics.models.topic import Topic
@@ -171,7 +172,7 @@ def test_simple_recursion():
 
     # we cannot be our own parent...
     foo.parent = foo
-    with pytest.raises(IntegrityError):
+    with pytest.raises((IntegrityError, ValidationError)):
         foo.save()
 
 
@@ -183,7 +184,7 @@ def test_nested_recursion():
 
     # we cannot be the descendant of one of our parent
     foo.parent = baz
-    with pytest.raises(IntegrityError):
+    with pytest.raises((IntegrityError, ValidationError)):
         foo.save()
 
 

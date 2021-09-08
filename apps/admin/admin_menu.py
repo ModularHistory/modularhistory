@@ -21,6 +21,7 @@ APPS_TO_INCLUDE = (
     'sources',
     'users',
     'flatpages',
+    'redirects',
     'moderation',
 )
 
@@ -53,7 +54,7 @@ class AdminMenu(Menu):
         ]
 
     @property
-    def _menu_items(self):
+    def _menu_items(self) -> list[items.MenuItem]:
         menu_items = []
         for app in APPS_TO_INCLUDE:
             models = _get_models_registered_in_app(app)

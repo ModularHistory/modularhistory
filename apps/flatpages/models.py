@@ -24,8 +24,8 @@ class FlatPage(ModeratedModel):
         verbose_name=_('URL path'),
         max_length=100,
         db_index=True,
-        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/$')],
-        help_text=('Example: “/about/contact/”. Requires leading and trailing slashes.'),
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/?$')],
+        help_text=('Example: “/about/contact/”. Requires a leading slash.'),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
     content = HTMLField(verbose_name=_('content'), blank=True)
@@ -45,26 +45,19 @@ class FlatPage(ModeratedModel):
         ordering = ['path']
         unique_together = ['path']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_path = self.path
+    class Moderation(ModeratedModel.Moderation):
+        excluded_fields = ModeratedModel.Moderation.excluded_fields + ['sites']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.path} -- {self.title}'
 
-    def save(self, **kwargs):
-        """Save the flat page to the db."""
-        if self.path != self._original_path:
-            Redirect.objects.create(
-                old_path=self._original_path,
-                new_path=self.path,
-                site_id=settings.SITE_ID,
-            )
-        return super().save(**kwargs)
-
     def clean(self):
-        """Prepare the flat page to be saved."""
-        path = self.path
+        super().clean()
+        path: str = self.path or ''
+        if not path:
+            raise ValidationError(f'URL path is not set for flatpage "{self.title}"')
+        # Remove trailing slash.
+        path = path.rstrip('/')
         pages_with_same_path = self.__class__.objects.filter(path=path)
         if self.pk:
             pages_with_same_path = pages_with_same_path.exclude(pk=self.pk)
@@ -73,13 +66,20 @@ class FlatPage(ModeratedModel):
                 for site in sites:
                     if pages_with_same_path.filter(sites=site).exists():
                         raise ValidationError(
-                            _(
-                                'Flat page with path %(path)s already exists for site %(site)s'
-                            ),
+                            _('Page with path %(path)s already exists for site %(site)s'),
                             code='duplicate_path',
                             params={'path': path, 'site': site},
                         )
-        super().clean()
+
+    def pre_save(self):
+        super().pre_save()
+        original_path = self.get_field_value_from_db('path')
+        if original_path and self.path != original_path:
+            Redirect.objects.create(
+                old_path=original_path,
+                new_path=self.path,
+                site_id=settings.SITE_ID,
+            )
 
     def get_absolute_url(self):
         from .views import flatpage
