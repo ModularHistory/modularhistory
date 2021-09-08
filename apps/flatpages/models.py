@@ -48,21 +48,10 @@ class FlatPage(ModeratedModel):
     class Moderation(ModeratedModel.Moderation):
         excluded_fields = ModeratedModel.Moderation.excluded_fields + ['sites']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.path} -- {self.title}'
 
-    def pre_save(self):
-        super().pre_save()
-        original_path = self.get_field_value_from_db('path')
-        if original_path and self.path != original_path:
-            Redirect.objects.create(
-                old_path=original_path,
-                new_path=self.path,
-                site_id=settings.SITE_ID,
-            )
-
     def clean(self):
-        """Prepare the flat page to be saved."""
         super().clean()
         path: str = self.path or ''
         if not path:
@@ -81,6 +70,16 @@ class FlatPage(ModeratedModel):
                             code='duplicate_path',
                             params={'path': path, 'site': site},
                         )
+
+    def pre_save(self):
+        super().pre_save()
+        original_path = self.get_field_value_from_db('path')
+        if original_path and self.path != original_path:
+            Redirect.objects.create(
+                old_path=original_path,
+                new_path=self.path,
+                site_id=settings.SITE_ID,
+            )
 
     def get_absolute_url(self):
         from .views import flatpage

@@ -35,15 +35,17 @@ class SluggedModel(TitledModel):
 
     def pre_save(self):
         super().pre_save()
+        self._original_slug = self.get_field_value_from_db('slug')
+
+    def post_save(self):
         # If the slug has changed, create a redirect.
-        if self.slug and self.field_has_changed('slug'):
+        original_slug = self._original_slug
+        if original_slug and self.slug != original_slug:
             Redirect.objects.update_or_create(
                 site_id=settings.SITE_ID,
                 old_path=self._original_absolute_url,
                 defaults={'new_path': self.absolute_url},
             )
-
-    def post_save(self):
         # Delete any redirects that would hijack this model instance's new URL.
         Redirect.objects.filter(site_id=settings.SITE_ID, old_path=self.absolute_url).delete()
 
