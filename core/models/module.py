@@ -99,6 +99,16 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
         if not self.slug:
             self.slug = self.get_slug()
 
+    def pre_save(self):
+        super(ModelWithCache, self).pre_save()
+        super(SluggedModel, self).pre_save()
+        super(SearchableModeratedModel, self).pre_save()
+
+    def post_save(self):
+        super(ModelWithCache, self).post_save()
+        super(SluggedModel, self).post_save()
+        super(SearchableModeratedModel, self).post_save()
+
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:
         """Return a compiled Regex pattern to match a model instance placeholder."""
