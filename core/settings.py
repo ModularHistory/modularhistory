@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from os.path import join
 
 from decouple import config
@@ -253,6 +254,11 @@ TEMPLATES = [
 ]
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+if DEBUG:
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': timedelta(minutes=7 * 24 * 60),
+    }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
