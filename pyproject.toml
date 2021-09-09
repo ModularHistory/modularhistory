@@ -180,11 +180,18 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.test.dependencies]
+coverage = { extras = ["toml"], version = "^5.3" }
+factory-boy = "^3.2.0"
+hypothesis = { extras = ["datetime", "django", "pytest"], version = "^5.39" }
+pytest = "^6.1"
+pytest-django = "^4"
+pytest-xdist = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
 binaryornot = "^0.4"
 celery-types = "^0.3.0"
-coverage = { extras = ["toml"], version = "^5.3" }
 coverage-badge = "^1.0"
 darglint = "^1.5.5"
 django-stubs = "^1.8"
@@ -210,16 +217,12 @@ flake8-rst-docstrings = "^0.0.14"
 flake8-string-format = "^0.3.0"
 flake8-type-checking = "^1.0.2"
 graphene-types = "^0.15.1"
-hypothesis = { extras = ["datetime", "django", "pytest"], version = "^5.39" }
 isort = "^5.6.4"
 libsass = "^0.20.1"
 mypy = "^0.910"
 pep8-naming = "^0.11.1"
 pylint = "^2.6.0"
 pyre-check = "^0.9.3"
-pytest = "^6.1"
-pytest-django = "^4"
-pytest-xdist = "^2.1.0"
 pytype = "^2021.5.11"
 rope = "^0.18.0"
 safety = "^1.9"
@@ -235,7 +238,6 @@ virtualenv-clone = "^0.5.4"
 wemake-python-styleguide = "^0.15.2"
 Werkzeug = "^1.0.1"
 wordcloud = "^1.8.0"
-factory-boy = "^3.2.0"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
