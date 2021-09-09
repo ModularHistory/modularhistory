@@ -2,16 +2,18 @@ from django.contrib.admin.utils import NestedObjects
 from django.db import models, router
 from django.utils import timezone
 
+from core.models.model import ExtendedModel
+
 from .managers import (
     SoftDeletableAllManager,
     SoftDeletableDeletedManager,
     SoftDeletableManager,
 )
 from .signals import post_softdelete, post_undelete, pre_softdelete
-from .utils import can_hard_delete, related_objects
+from .utils import related_objects
 
 
-class SoftDeletableModel(models.Model):
+class SoftDeletableModel(ExtendedModel):
     """
     Abstract soft-deletable model.
 

@@ -2,8 +2,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from core.models.model import ExtendedModel
 
-class TitledModel(models.Model):
+
+class TitledModel(ExtendedModel):
     """Base model for models of which instances should have a title."""
 
     title = models.CharField(
@@ -16,18 +18,13 @@ class TitledModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, **kwargs):
-        if not self.title:
-            self.title = self.get_default_title()
-        super().save(**kwargs)
-
     def clean(self):
+        super().clean()
         if not self.title:
             try:
                 self.title = self.get_default_title()
             except NotImplementedError:
                 raise ValidationError(f'Title must be set.')
-        super().clean()
 
     def get_default_title(self) -> str:
         raise NotImplementedError

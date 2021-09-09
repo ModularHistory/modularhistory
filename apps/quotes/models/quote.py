@@ -171,7 +171,6 @@ class Quote(
         return string
 
     def clean(self):
-        """Prepare the quote to be saved to the database."""
         super().clean()
         no_text = not self.text
         min_text_length = 15
@@ -182,11 +181,10 @@ class Quote(
             if len(text) > BITE_MAX_LENGTH:
                 raise ValidationError('Add a quote bite.')
             self.bite = text  # type: ignore  # TODO: remove type ignore
-
-    def save(self, *args, **kwargs):
-        """Save the quote to the database."""
         self.update_calculated_fields()
-        super().save(*args, **kwargs)
+
+    def post_save(self, *args, **kwargs):
+        super().post_save()
         if not self.images.exists():
             image = None
             try:
