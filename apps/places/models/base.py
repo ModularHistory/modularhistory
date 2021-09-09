@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -7,6 +9,7 @@ from core.models.manager import TypedModelManager
 from core.models.model_with_cache import store
 from core.models.module import Module
 
+NAME_MAX_LENGTH: int = 40
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
 
@@ -22,7 +25,31 @@ class PlaceTypes:
     continent = 'places.continent'
 
 
-NAME_MAX_LENGTH: int = 40
+# Ordered list of location scopes (from specific to broad)
+LOCATION_PRECEDENCE = [
+    PlaceTypes.venue,
+    PlaceTypes.city,
+    PlaceTypes.county,
+    PlaceTypes.state,
+    PlaceTypes.country,
+    PlaceTypes.region,
+    PlaceTypes.continent,
+]
+
+
+def get_allowable_location_types(reference_location_type: str) -> list[str]:
+    """
+    Given a location type, return the allowable parent location types.
+
+    For example, if reference_location_type is "places.country", return
+    ["places.region", "places.continent"]
+    """
+    allowable_types: list[str] = []
+    for location_type in reversed(LOCATION_PRECEDENCE):
+        if location_type == reference_location_type:
+            return allowable_types
+        allowable_types.append(location_type)
+    return allowable_types
 
 
 class Place(TypedModel, Module):
@@ -60,6 +87,12 @@ class Place(TypedModel, Module):
         else:
             # Prevent a RuntimeError when saving a new place
             self.recast(self.type)
+        location: Optional['Place'] = self.location
+        if location:
+            if location.type not in get_allowable_location_types(self.type):
+                raise ValidationError(
+                    f'{self} cannot have a parent location of type {location.type}.'
+                )
         super().save()
 
     def get_default_title(self) -> str:

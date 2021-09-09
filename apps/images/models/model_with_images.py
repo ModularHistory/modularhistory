@@ -109,7 +109,7 @@ class ModelWithImages(ExtendedModel):
         images = [relation.image.serialize() for relation in self.image_relations.all()]
         delay(
             cache_images,
-            '{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
+            f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             images,
         )

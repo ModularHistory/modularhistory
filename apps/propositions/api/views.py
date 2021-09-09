@@ -1,23 +1,14 @@
 from rest_framework import permissions
-from rest_framework.generics import RetrieveAPIView
 from core.api.views import ExtendedModelViewSet
 
-from apps.moderation.serializers import get_moderated_model_serializer
-from apps.propositions.api.serializers import PropositionDrfSerializer
-from apps.propositions.models import Proposition
+from apps.propositions.api.serializers import OccurrenceDrfSerializer
+from apps.propositions.models.occurrence import Occurrence
 
 
-class PropositionViewSet(ExtendedModelViewSet):
-    """API endpoint for viewing and editing propositions."""
+class OccurrenceViewSet(ExtendedModelViewSet):
+    """API endpoint for viewing and editing occurrences."""
 
-    queryset = Proposition.objects.filter(type='propositions.conclusion')
-    serializer_class = PropositionDrfSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-class PropositionModerationAPIView(RetrieveAPIView):
-    """API view for retrieving a proposition for moderation."""
-
-    queryset = Proposition.objects.all()
-    serializer_class = get_moderated_model_serializer(PropositionDrfSerializer)
+    queryset = Occurrence.objects.all()
     lookup_field = 'slug'
+    serializer_class = OccurrenceDrfSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
