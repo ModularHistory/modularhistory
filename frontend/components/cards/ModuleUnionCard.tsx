@@ -9,6 +9,25 @@ interface ModuleUnionCardProps {
   selected?: boolean;
 }
 
+interface HighlightEllipsisProps {
+  unsafeHTML: string;
+}
+
+const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
+  <Box
+    sx={{
+      "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+      "& mark": { fontWeight: "500", color: "white" },
+    }}
+  >
+    <HTMLEllipsis
+      unsafeHTML={unsafeHTML.replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
+      maxLine="4"
+      basedOn="words"
+    />
+  </Box>
+);
+
 const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   module,
   selected,
@@ -23,67 +42,22 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = module.meta &&
-        module.meta.highlight &&
-        module.meta.highlight.text &&
-        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box
-            sx={{
-              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
-              "& mark": { fontWeight: "500", color: "white" },
-            }}
-          >
-            <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
-              maxLine="4"
-              basedOn="words"
-            />
-          </Box>
-        );
+      content = module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+      );
       break;
     case "propositions.proposition":
-      content = module.meta &&
-        module.meta.highlight &&
-        module.meta.highlight.text &&
-        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box
-            sx={{
-              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
-              "& mark": { fontWeight: "500", color: "white" },
-            }}
-          >
-            <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
-              maxLine="4"
-              basedOn="words"
-            />
-          </Box>
-        );
+      content = module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+      );
       break;
     case "quotes.quote": {
       content = (
         // <blockquote className="blockquote">
         <div>
-          {(module.meta &&
-            module.meta.highlight &&
-            module.meta.highlight.text &&
-            module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-              <Box
-                sx={{
-                  "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
-                  "& mark": { fontWeight: "500", color: "white" },
-                }}
-              >
-                <HTMLEllipsis
-                  unsafeHTML={module.meta.highlight.text[0].replace(
-                    /(<(h[1-6])>.*?<\/h[1-6]>)/gi,
-                    ""
-                  )}
-                  maxLine="4"
-                  basedOn="words"
-                />
-              </Box>
-            )) ??
+          {(module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
+            <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+          )) ??
             (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />)}
         </div>
         // </blockquote>
@@ -97,23 +71,9 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.organization":
     case "entities.entity":
     case "entities.group":
-      content = module.meta &&
-        module.meta.highlight &&
-        module.meta.highlight.text &&
-        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box
-            sx={{
-              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
-              "& mark": { fontWeight: "500", color: "white" },
-            }}
-          >
-            <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
-              maxLine="4"
-              basedOn="words"
-            />
-          </Box>
-        );
+      content = module?.meta?.highlight?.description && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={module.meta.highlight.description[0]} />
+      );
       break;
     default:
       ((module: never) => {

@@ -43,12 +43,12 @@ export interface ModuleWithImages {
 }
 
 export interface Text {
-  text?: string[]; //for quotes.quote
-  description?: string[]; //for sources.source, entities.person
+  text?: string[]; // for quotes.quote
+  description?: string[]; // for sources.source, entities.person
 }
 export interface Meta {
   score: number;
-  highlight: Text; //array of Text object
+  highlight: Text;
   sort: number[];
 }
 
@@ -56,11 +56,11 @@ export interface Quote extends SearchableModule, ModuleWithImages {
   model: "quotes.quote";
   title: string;
   attributeeHtml: string;
-  attributeeString: string; //name of person who is quoted
+  attributeeString: string;
   bite: string;
   dateString: string;
   html: string;
-  meta?: Meta; //Meta object
+  meta?: Meta;
   cachedCitations: Citation[];
 }
 
