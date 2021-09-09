@@ -16,7 +16,7 @@ from core.fields.html_field import HTMLField
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
-URL_PATH_PATTERN = r'\/[-\w/\.\/]+\/?$'
+URL_PATH_PATTERN = r'\/[-\w/\.\/]+[^\/]'
 
 
 class FlatPage(ModeratedModel):
@@ -26,7 +26,7 @@ class FlatPage(ModeratedModel):
         verbose_name=_('URL path'),
         max_length=100,
         db_index=True,
-        validators=[RegexValidator(regex=rf'^{URL_PATH_PATTERN}')],
+        validators=[RegexValidator(regex=rf'^{URL_PATH_PATTERN}$')],
         help_text=('Example: “/about/contact/”. Requires a leading slash.'),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
