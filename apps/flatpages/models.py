@@ -16,6 +16,8 @@ from core.fields.html_field import HTMLField
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
+URL_PATH_PATTERN = r'\/[-\w/\.\/]+[^\/]'
+
 
 class FlatPage(ModeratedModel):
     """A page of "flat" HTML content."""
@@ -24,8 +26,10 @@ class FlatPage(ModeratedModel):
         verbose_name=_('URL path'),
         max_length=100,
         db_index=True,
-        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/?$')],
-        help_text=('Example: “/about/contact/”. Requires a leading slash.'),
+        validators=[RegexValidator(regex=rf'^{URL_PATH_PATTERN}$')],
+        help_text=(
+            'Example: “/about/contact”. Requires a leading slash and no trailing slash.'
+        ),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
     content = HTMLField(verbose_name=_('content'), blank=True)
@@ -56,6 +60,8 @@ class FlatPage(ModeratedModel):
         path: str = self.path or ''
         if not path:
             raise ValidationError(f'URL path is not set for flatpage "{self.title}"')
+        if not self.title:
+            raise ValidationError(f'Title is not set for flatpage "{self.title}"')
         # Remove trailing slash.
         path = path.rstrip('/')
         pages_with_same_path = self.__class__.objects.filter(path=path)

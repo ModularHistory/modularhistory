@@ -27,8 +27,10 @@ export default FlatPage;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let page = null;
   let notFound = false;
-  const { path } = params || {};
-
+  let { path } = params || {};
+  if (Array.isArray(path)) {
+    path = path.join("/");
+  }
   await axios
     // the "extra" slashes around `path` are currently needed to
     // match the `url` attribute of the FlatPage model.
