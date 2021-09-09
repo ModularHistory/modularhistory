@@ -15,6 +15,9 @@ class FlatPageFactory(DjangoModelFactory):
     class Meta:
         model = models.FlatPage
 
+    path = factory.Sequence(lambda n: f'/original/path/{n}')
+    title = factory.Sequence(lambda n: f'Page {n}')
+
     @factory.post_generation
     def sites(self, create, extracted, **kwargs):
         if not create:

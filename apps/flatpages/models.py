@@ -60,6 +60,8 @@ class FlatPage(ModeratedModel):
         path: str = self.path or ''
         if not path:
             raise ValidationError(f'URL path is not set for flatpage "{self.title}"')
+        if not self.title:
+            raise ValidationError(f'Title is not set for flatpage "{self.title}"')
         # Remove trailing slash.
         path = path.rstrip('/')
         pages_with_same_path = self.__class__.objects.filter(path=path)
