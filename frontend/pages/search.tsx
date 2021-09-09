@@ -186,8 +186,7 @@ const SearchResultsPanes: FC<SearchProps> = (props: SearchProps) => {
     ...twoPaneState,
     isModalOpen,
     setModalOpen,
-    // useRef here prevents child components from
-    // re-rendering when the url anchor is updated.
+    // useRef here guarantees the initial value is retained when the hash is updated
     initialUrlAnchor: useRef(useRouter().asPath.split("#")[1]).current,
   };
 
@@ -211,8 +210,10 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
     setModalOpen(true);
   };
 
+  // on initial load, scroll to the module card designated by the url anchor
   const initialModuleRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
+    // non-delayed scrolls sometimes cause inconsistent behavior, so wait 100ms
     setTimeout(() => initialModuleRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -252,6 +253,8 @@ const SearchResultsRightPane: FC<PaneProps> = ({
   setModuleIndex,
   initialUrlAnchor,
 }) => {
+  // we are unable to obtain the url anchor during SSR,
+  // so we must update the selected module after rendering.
   useEffect(() => {
     const initialIndex = initialUrlAnchor
       ? modules.findIndex((module) => module.slug === initialUrlAnchor)
