@@ -71,7 +71,7 @@ export interface Occurrence extends SearchableModule, ModuleWithImages {
   elaboration: string;
   postscript: string;
   cachedCitations: Citation[];
-  meta?: Meta; //Meta object
+  meta?: Meta;
   summary: string;
 }
 
@@ -80,7 +80,7 @@ export interface Source extends SearchableModule {
   title: string;
   citationHtml: string;
   citationString: string;
-  meta?: Meta; //Meta object
+  meta?: Meta;
   description: string;
 }
 
@@ -88,7 +88,7 @@ export interface Entity extends BaseModule, SearchableModule, ModuleWithImages {
   model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
-  meta?: Meta; //Meta object
+  meta?: Meta;
 }
 
 export interface Argument extends BaseModule {
@@ -104,7 +104,7 @@ export interface Proposition extends BaseModule {
   elaboration: string;
   certainty: number;
   arguments: Argument[];
-  meta?: Meta; //Meta object
+  meta?: Meta;
   conflictingPropositions: Proposition[];
 }
 
