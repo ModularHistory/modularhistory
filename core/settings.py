@@ -286,6 +286,8 @@ DATABASES = {
     },
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 GRAPH_MODELS = {
     'app_labels': [
         'images',

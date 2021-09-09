@@ -1,9 +1,8 @@
 import pytest
-from django.conf import settings
-from django.contrib.sites.models import Site
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.flatpages.factories import FlatPageFactory
 from apps.flatpages.models import FlatPage
 from apps.redirects.models import Redirect
 
@@ -25,26 +24,17 @@ class TestFlatPages:
         When the flatpage's path is changed, a redirect should be created
         from the page's prior path to its new path.
         """
-        original_path = '/flatpage/'
+        flatpage = FlatPageFactory.create(verified=True)
+        original_path = flatpage.path
         original_url = reverse('flatpages_api:flatpage', kwargs={'path': original_path})
-        new_path = '/newpath/'
-        new_url = reverse('flatpages_api:flatpage', kwargs={'path': new_path})
-
-        # Create the flatpage.
-        flatpage: FlatPage = FlatPage.objects.create(
-            title='Flat Page',
-            content='<p>This is a flat page.</p>',
-            path=original_path,
-            verified=True,
-        )
-        flatpage.sites.add(Site.objects.get(pk=settings.SITE_ID))
-
         # Confirm the flatpage can be retrieved by its path.
         assert FlatPage.objects.filter(path=original_path).exists()
         response = api_client.get(original_url)
         assert response.status_code == 200
 
         # Change the flatpage's path.
+        new_path = '/new/path'
+        new_url = reverse('flatpages_api:flatpage', kwargs={'path': new_path})
         flatpage.path = new_path
         flatpage.save()
 
