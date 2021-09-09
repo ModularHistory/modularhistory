@@ -9,6 +9,8 @@ export interface BaseModule {
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
+  title?: string;
+  name?: string;
   changes?: Change[];
   issues?: Issue[];
 }
@@ -40,14 +42,25 @@ export interface ModuleWithImages {
   cachedImages: Image[];
 }
 
+export interface Text {
+  text?: string[]; //for quotes.quote
+  description?: string[]; //for sources.source, entities.person
+}
+export interface Meta {
+  score: number;
+  highlight: Text; //array of Text object
+  sort: number[];
+}
+
 export interface Quote extends SearchableModule, ModuleWithImages {
   model: "quotes.quote";
   title: string;
   attributeeHtml: string;
-  attributeeString: string;
+  attributeeString: string; //name of person who is quoted
   bite: string;
   dateString: string;
   html: string;
+  meta?: Meta; //Meta object
   cachedCitations: Citation[];
 }
 
@@ -58,6 +71,7 @@ export interface Occurrence extends SearchableModule, ModuleWithImages {
   elaboration: string;
   postscript: string;
   cachedCitations: Citation[];
+  meta?: Meta; //Meta object
   summary: string;
 }
 
@@ -66,6 +80,7 @@ export interface Source extends SearchableModule {
   title: string;
   citationHtml: string;
   citationString: string;
+  meta?: Meta; //Meta object
   description: string;
 }
 
@@ -73,6 +88,7 @@ export interface Entity extends BaseModule, SearchableModule, ModuleWithImages {
   model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
+  meta?: Meta; //Meta object
 }
 
 export interface Argument extends BaseModule {
@@ -88,6 +104,7 @@ export interface Proposition extends BaseModule {
   elaboration: string;
   certainty: number;
   arguments: Argument[];
+  meta?: Meta; //Meta object
   conflictingPropositions: Proposition[];
 }
 

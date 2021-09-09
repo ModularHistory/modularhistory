@@ -1,5 +1,6 @@
 import { ModuleUnion, Topic } from "@/types/modules";
-import { FC } from "react";
+import { Box } from "@material-ui/system";
+import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "./ModuleCard";
 
@@ -22,22 +23,52 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
+      content = module.meta &&
+        module.meta.highlight &&
+        module.meta.highlight.text &&
+        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
+          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+            <HTMLEllipsis
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              maxLine="4"
+              basedOn="words"
+            />
+          </Box>
+        );
       break;
     case "propositions.proposition":
-      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
+      content = module.meta &&
+        module.meta.highlight &&
+        module.meta.highlight.text &&
+        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
+          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+            <HTMLEllipsis
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              maxLine="4"
+              basedOn="words"
+            />
+          </Box>
+        );
       break;
     case "quotes.quote": {
       content = (
-        <blockquote className="blockquote">
-          <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />
-          {module.attributeeString && (
-            <footer
-              className="blockquote-footer"
-              dangerouslySetInnerHTML={{ __html: module.attributeeString }}
-            />
-          )}
-        </blockquote>
+        //<blockquote className="blockquote">
+        <div>
+          {(module.meta &&
+            module.meta.highlight &&
+            module.meta.highlight.text &&
+            module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
+              <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+                <HTMLEllipsis
+                  unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+                  maxLine="4"
+                  basedOn="words"
+                />
+              </Box>
+            )) ??
+            (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />)}
+        </div>
+        //</blockquote>
       );
       break;
     }
@@ -48,7 +79,18 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.organization":
     case "entities.entity":
     case "entities.group":
-      content = <div dangerouslySetInnerHTML={{ __html: module.name }} />;
+      content = module.meta &&
+        module.meta.highlight &&
+        module.meta.highlight.text &&
+        module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
+          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+            <HTMLEllipsis
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              maxLine="4"
+              basedOn="words"
+            />
+          </Box>
+        );
       break;
     default:
       ((module: never) => {
