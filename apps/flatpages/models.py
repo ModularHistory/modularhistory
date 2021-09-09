@@ -27,7 +27,9 @@ class FlatPage(ModeratedModel):
         max_length=100,
         db_index=True,
         validators=[RegexValidator(regex=rf'^{URL_PATH_PATTERN}$')],
-        help_text=('Example: “/about/contact/”. Requires a leading slash.'),
+        help_text=(
+            'Example: “/about/contact”. Requires a leading slash and no trailing slash.'
+        ),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
     content = HTMLField(verbose_name=_('content'), blank=True)
