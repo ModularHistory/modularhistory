@@ -23,7 +23,7 @@ def redact(string) -> str:
     try:
         return scrubadub.clean(string, replace_with='identifier')
     except MissingCorpusError:
-        download_corpora()
+        download_corpora.main()
         return scrubadub.clean(string, replace_with='identifier')
 
 
