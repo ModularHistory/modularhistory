@@ -24,3 +24,11 @@ class SearchableModeratedModel(ModeratedModel, SearchableModel):
 
     class Meta:
         abstract = True
+
+    def pre_save(self):
+        super(SearchableModel, self).pre_save()
+        super(ModeratedModel, self).pre_save()
+
+    def post_save(self):
+        super(SearchableModel, self).post_save()
+        super(ModeratedModel, self).post_save()
