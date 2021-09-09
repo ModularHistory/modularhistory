@@ -1,16 +1,6 @@
 #!/bin/bash
 
-sleep 3 && wait-for-it.sh postgres:5432 --
-sleep 3 && wait-for-it.sh elasticsearch:9200 --
-
-volume_dirs=( "db/backups" "db/init" "static" "media" "redirects" )
-for dir_name in "${volume_dirs[@]}"; do
-    dir_path="/modularhistory/_volumes/$dir_name"
-    test -w "$dir_path" || {
-        echo "Django lacks permission to write in ${dir_path}."
-        [[ "$ENVIRONMENT" = dev ]] && exit 1
-    }
-done
+wait-for-it.sh postgres:5432 -- wait-for-it.sh elasticsearch:9200 --
 
 # python manage.py cleanup_django_defender  # TODO
 

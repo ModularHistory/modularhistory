@@ -36,6 +36,7 @@ env:
   CONTENT_MANAGER_EMAIL: ${{ secrets.CONTENT_MANAGER_EMAIL }}
   CONTENT_MANAGER_PAT: ${{ secrets.CONTENT_MANAGER_PAT }}
   CR_PAT: ${{ secrets.CR_PAT }}
+  ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
   EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
   EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
   EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -143,7 +144,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -169,7 +170,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Run setup script
       run: bash setup.sh
@@ -225,7 +226,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -251,7 +252,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Set up Docker Buildx
       id: buildx
@@ -356,7 +357,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -382,7 +383,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Make sure pytest is working
       run: |
@@ -444,7 +445,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -470,7 +471,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
@@ -515,7 +516,7 @@ jobs:
         log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
           healthy=true
-          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
+          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
             if [[ $waited -gt $timeout ]]; then
               echo "" && echo "Timed out."
@@ -585,7 +586,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -611,7 +612,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
@@ -656,7 +657,7 @@ jobs:
         log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
           healthy=true
-          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
+          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
             if [[ $waited -gt $timeout ]]; then
               echo "" && echo "Timed out."
@@ -728,7 +729,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -754,7 +755,7 @@ jobs:
       run: poetry run invoke debug
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Cache type stubs
       id: cache-stubs

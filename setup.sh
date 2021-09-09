@@ -370,10 +370,9 @@ poetry install --no-root || {
     rm requirements.txt
     echo "Installed dependencies with pip after failing to install with Poetry."
   } || {
+    rm requirements.txt
     _print_red "Failed to install dependencies with pip."
   }
-  rm requirements.txt
-  _error "Failed to install dependencies with Poetry."
 }
 
 # Set up Node Version Manager (NVM).
@@ -410,7 +409,7 @@ rclone version &>/dev/null || {
 mkdir -p "$HOME/config/rclone"
 
 # Install dotenv linter.
-curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin
 
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
@@ -481,17 +480,20 @@ poetry run invoke seed --no-db
 
 # Build Docker images.
 # Note: This requires a .env file.
-docker-compose build django || _error "Failed to build django image."
-docker-compose build next || _error "Failed to build next.js image."
+image_names=( "django" "next" "webserver" )
+for image_name in "${image_names[@]}"; do
+  docker-compose build "$image_name" || _error "Failed to build $image_name image."
+done
 
+# Seed init.sql file.
 prompt="Seed db [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
-  prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
+if [[ -f "$VOLUMES_DIR/db/init/init.sql" ]]; then
+  prompt="Seed new init.sql file [Y/n]? "
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed --no-dotenv-file && echo "Finished seeding." || {
+  poetry run invoke db.seed --remote --migrate || {
     _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "

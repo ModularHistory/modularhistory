@@ -50,7 +50,7 @@ runs:
         log_interval=$((interval*2))
         while [[ "$healthy" = false ]]; do
           healthy=true
-          docker-compose ps | grep -E -q 'Exit|unhealthy|starting' && healthy=false
+          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
           if [[ "$healthy" = false ]]; then
             if [[ $waited -gt $timeout ]]; then
               echo "" && echo "Timed out."

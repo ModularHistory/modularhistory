@@ -1,10 +1,7 @@
-"""Base classes for models that appear in ModularHistory search results."""
+from core.models.model import ExtendedModel
 
 
-from django.db import models
-
-
-class SearchableModel(models.Model):
+class SearchableModel(ExtendedModel):
     """Abstract base model for models of which instances should be searchable."""
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options

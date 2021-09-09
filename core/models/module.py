@@ -46,13 +46,12 @@ class ModuleSerializer(SearchableModelSerializer):
 class DrfModuleSerializer(DrfSearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
-    title = serializers.CharField(required=False)
-    slug = serializers.CharField(required=False)
     absolute_url = serializers.CharField(required=False)
     admin_url = serializers.CharField(required=False)
     cached_tags = serializers.JSONField(required=False)
 
     class Meta(DrfSearchableModelSerializer.Meta):
+        model: Type['Module']
         fields = DrfSearchableModelSerializer.Meta.fields + [
             'title',
             'slug',
@@ -96,10 +95,19 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
     slug_base_fields: Sequence[str] = ('title',)
 
     def clean(self):
-        """Prepare the model instance to be saved."""
+        super().clean()
         if not self.slug:
             self.slug = self.get_slug()
-        super().clean()
+
+    def pre_save(self):
+        super(ModelWithCache, self).pre_save()
+        super(SluggedModel, self).pre_save()
+        super(SearchableModeratedModel, self).pre_save()
+
+    def post_save(self):
+        super(ModelWithCache, self).post_save()
+        super(SluggedModel, self).post_save()
+        super(SearchableModeratedModel, self).post_save()
 
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:
