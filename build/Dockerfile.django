@@ -45,8 +45,10 @@ COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false
 RUN \
   if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
-  elif [ "$ENVIRONMENT" = "test" ]; then poetry_args="--without dev"; pip_args="--dev"; \
-  else poetry_args="--without dev,test"; pip_args=""; fi; \
+  # TODO: Use this logic after it's supported in next Poetry version
+  # elif [ "$ENVIRONMENT" = "test" ]; then poetry_args="--without dev"; pip_args="--dev"; \
+  # else poetry_args="--without dev,test"; pip_args=""; fi; \
+  else poetry_args="--no-dev"; pip_args=""; fi; \
   poetry install --no-interaction --no-ansi --no-root $poetry_args || ( \
   poetry export -f requirements.txt --without-hashes $pip_args -o requirements.txt \
   && pip install --upgrade pip && pip install -r requirements.txt )

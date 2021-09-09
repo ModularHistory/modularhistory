@@ -180,15 +180,18 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
 
-[tool.poetry.group.test.dependencies]
+# TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
+# TODO: Use separate test group after it's supported in next Poetry version
+# [tool.poetry.group.test.dependencies]
 coverage = { extras = ["toml"], version = "^5.3" }
 factory-boy = "^3.2.0"
 hypothesis = { extras = ["datetime", "django", "pytest"], version = "^5.39" }
 pytest = "^6.1"
 pytest-django = "^4"
 pytest-xdist = "^2.1.0"
-
-[tool.poetry.group.dev.dependencies]
+# TODO: Use this syntax after it's supported in next Poetry version
+# [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
 binaryornot = "^0.4"
 celery-types = "^0.3.0"
