@@ -23,7 +23,7 @@ class SearchableModelAdmin(ModeratedModelAdmin):
     model: Type['SearchableModel']
 
     exclude = ['cache', 'tags']
-    readonly_fields = ['slug']
+    readonly_fields = []
 
     def get_fields(
         self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
@@ -102,29 +102,27 @@ class SearchableModelAdmin(ModeratedModelAdmin):
         custom_urls = [
             path(
                 'tag_search/',
-                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
+                self.admin_site.admin_view(TagSearchView.as_view()),
                 name='tag_search',
             ),
             path(
                 'user_search/',
-                self.admin_site.admin_view(UserSearchView.as_view(model_admin=self)),
+                self.admin_site.admin_view(UserSearchView.as_view()),
                 name='user_search',
             ),
             path(
                 'collection_search/',
-                self.admin_site.admin_view(CollectionSearchView.as_view(model_admin=self)),
+                self.admin_site.admin_view(CollectionSearchView.as_view()),
                 name='collection_search',
             ),
             path(
                 'entity_search/',
-                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
+                self.admin_site.admin_view(EntitySearchView.as_view()),
                 name='entity_search',
             ),
             path(
                 'entity_category_search/',
-                self.admin_site.admin_view(
-                    EntityCategorySearchView.as_view(model_admin=self)
-                ),
+                self.admin_site.admin_view(EntityCategorySearchView.as_view()),
                 name='entity_category_search',
             ),
         ]

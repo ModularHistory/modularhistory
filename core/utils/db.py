@@ -7,7 +7,6 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
-import scrubadub
 from celery import shared_task
 from celery_singleton import Singleton
 from django.conf import settings
@@ -23,6 +22,7 @@ from core.constants.misc import (
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.environment import IS_DEV
 from core.utils import files
+from core.utils.string import redact as redact_string
 from core.utils.sync import delay
 
 DAYS_TO_KEEP_BACKUP = 7
@@ -90,7 +90,7 @@ def backup(
                     and re.match(r'COPY public\.(users_user)', previous_line)
                 )
                 if scrub:
-                    line = scrubadub.clean(line, replace_with='identifier')
+                    line = redact_string(line)
                 processed_backup.write(line)
                 previous_line = line
     context.run(f'rm {temp_file}')
@@ -286,11 +286,11 @@ def seed(
     print('Waiting for Postgres to finish recreating the database...')
     sleep(15)  # Give postgres time to recreate the database.
     if migrate:
-        context.run('docker-compose run django_helper python manage.py migrate')
+        context.run('docker-compose run django python manage.py migrate')
     if IS_DEV:
         email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
         context.run(
-            "docker-compose run django_helper bash -c '"
+            "docker-compose run django bash -c '"
             'python manage.py createsuperuser --no-input '
             f'--username={email} --email={email} &>/dev/null'
             "'",

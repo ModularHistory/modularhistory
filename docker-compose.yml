@@ -21,15 +21,25 @@ services:
       - "80:8080"
       - "443:8443"
     volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
       - ./_volumes/media:/modularhistory/_volumes/media
       - ./_volumes/static:/modularhistory/_volumes/static
       - ./_volumes/redirects:/modularhistory/_volumes/redirects
       # Keep the nginx config in a volume to allow for zero-downtime deploys via
       # `docker-compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
       # container would always have to be stopped (so its static IP address becomes 
-      # available) before starting a replacement container with an updated nginx config.
+      # available) before starting a replacement container with an updated config.
       - ./config/nginx/prod:/etc/nginx/conf.d
       - ./config/nginx:/modularhistory/config/nginx
+
+  certbot:
+    # https://hub.docker.com/r/certbot/certbot/
+    image: "certbot/certbot"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
 
   next:
     image: "ghcr.io/modularhistory/next:$SHA"
@@ -219,23 +229,21 @@ services:
     expose:
       - "5601"
 
-  # mongo:
-  #   deploy:
-  #     restart_policy:
-  #       condition: on-failure
-  #       max_attempts: 3
-  #   env_file: .env
-  #   healthcheck:
-  #     test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 20s
-  #   image: mongo
-  #   expose:
-  #     - "27017"
-  #   volumes:
-  #     - data:/data
+  redis:
+    image: redis
+    deploy:
+      restart_policy:
+        condition: on-failure
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - "data:/data"
 
   postgres:
     image: postgres
@@ -255,21 +263,23 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./_volumes/db/init:/docker-entrypoint-initdb.d
 
-  redis:
-    image: redis
-    deploy:
-      restart_policy:
-        condition: on-failure
-    expose:
-      - "6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 20s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    volumes:
-      - "data:/data"
+  # mongo:
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #       max_attempts: 3
+  #   env_file: .env
+  #   healthcheck:
+  #     test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
+  #   image: mongo
+  #   expose:
+  #     - "27017"
+  #   volumes:
+  #     - data:/data
 
   redisinsight:
     image: redislabs/redisinsight:latest
