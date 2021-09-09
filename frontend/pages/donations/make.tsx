@@ -9,7 +9,7 @@ interface DonateProps {
   clientToken: string;
 }
 
-const Donate: FC<DonateProps> = (props: DonateProps) => {
+const MakeDonationPage : FC<DonateProps> = (props: DonateProps) => {
   const [clientToken, setClientToken] = useState(props.clientToken);
   const [instance, setInstance] = useState<any>();
   const [success, setSuccess] = useState(false);
@@ -124,45 +124,23 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
 
 const SuccessMessage: FC = () => (
   <div className="Success">
-    <Container
-      sx={{
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: "1.5rem",
-        marginBottom: "2rem",
-      }}
-    >
-      <header>
-        <p className="h3">Donated Successfully.</p>
-        <p>Thank you for your donation! Your patronage makes ModularHistory possible.</p>
-      </header>
-    </Container>
+    <header>
+      <p className="h3">Donated Successfully.</p>
+      <p>Thank you for your donation! Your patronage makes ModularHistory possible.</p>
+    </header>
   </div>
 );
 
 const ErrorMessage: FC = () => (
   <div className="Error">
-    <Container
-      sx={{
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: "1.5rem",
-        marginBottom: "2rem",
-      }}
-    >
-      <header>
-        <p className="h3">Oops, something went wrong.</p>
-        <p>Sorry, there were some issues with your donation.</p>
-      </header>
-    </Container>
+    <header>
+      <p className="h3">Oops, something went wrong.</p>
+      <p>Sorry, there were some issues with your donation.</p>
+    </header>
   </div>
 );
 
-export default Donate;
+export default MakeDonationPage;
 
 export const getServerSideProps: GetServerSideProps = async () => {
   let clientToken = null;
