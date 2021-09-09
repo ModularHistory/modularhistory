@@ -27,9 +27,14 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
         module.meta.highlight &&
         module.meta.highlight.text &&
         module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+          <Box
+            sx={{
+              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+              "& mark": { fontWeight: "500", color: "white" },
+            }}
+          >
             <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
               maxLine="4"
               basedOn="words"
             />
@@ -41,9 +46,14 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
         module.meta.highlight &&
         module.meta.highlight.text &&
         module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+          <Box
+            sx={{
+              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+              "& mark": { fontWeight: "500", color: "white" },
+            }}
+          >
             <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
               maxLine="4"
               basedOn="words"
             />
@@ -52,15 +62,23 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       break;
     case "quotes.quote": {
       content = (
-        //<blockquote className="blockquote">
+        // <blockquote className="blockquote">
         <div>
           {(module.meta &&
             module.meta.highlight &&
             module.meta.highlight.text &&
             module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-              <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+              <Box
+                sx={{
+                  "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+                  "& mark": { fontWeight: "500", color: "white" },
+                }}
+              >
                 <HTMLEllipsis
-                  unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+                  unsafeHTML={module.meta.highlight.text[0].replace(
+                    /(<(h[1-6])>.*?<\/h[1-6]>)/gi,
+                    ""
+                  )}
                   maxLine="4"
                   basedOn="words"
                 />
@@ -68,7 +86,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
             )) ??
             (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />)}
         </div>
-        //</blockquote>
+        // </blockquote>
       );
       break;
     }
@@ -83,9 +101,14 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
         module.meta.highlight &&
         module.meta.highlight.text &&
         module.meta.highlight.text.length > 0 && ( // TODO: Replace Regex with more formal fix
-          <Box sx={{ "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" } }}>
+          <Box
+            sx={{
+              "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+              "& mark": { fontWeight: "500", color: "white" },
+            }}
+          >
             <HTMLEllipsis
-              unsafeHTML={module.meta.highlight.text[0].replace(/(<([^>]+)>)/gi, "")}
+              unsafeHTML={module.meta.highlight.text[0].replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
               maxLine="4"
               basedOn="words"
             />
