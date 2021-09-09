@@ -169,12 +169,10 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <CardHeader className={"text-center"}>
           <small dangerouslySetInnerHTML={{ __html: header }} />
         </CardHeader>
-      ) : module.title || module.name || module.dateString ? ( // if title and dataString
+      ) : module.title || module.dateString ? ( // if title and dataString
         <CardHeader className={"text-center"}>
           {module.title && <small dangerouslySetInnerHTML={{ __html: module.title }} />}
-          {module.name && <small dangerouslySetInnerHTML={{ __html: module.name }} />}
           {module.title && module.dateString && <br />}
-          {module.name && module.dateString && <br />}
           {module.dateString && <small dangerouslySetInnerHTML={{ __html: module.dateString }} />}
         </CardHeader>
       ) : null}
