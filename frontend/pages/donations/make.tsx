@@ -9,7 +9,7 @@ interface DonateProps {
   clientToken: string;
 }
 
-const MakeDonationPage : FC<DonateProps> = (props: DonateProps) => {
+const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
   const [clientToken, setClientToken] = useState(props.clientToken);
   const [instance, setInstance] = useState<any>();
   const [success, setSuccess] = useState(false);
