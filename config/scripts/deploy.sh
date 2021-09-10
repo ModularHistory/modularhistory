@@ -9,8 +9,10 @@
 # TODO: Pull and deploy the webserver image only if necessary?
 images_to_pull=("django" "next" "webserver")
 
-# Specify containers to deploy, in order of startup.
-containers_to_deploy=("django" "celery" "celery_beat" "next")
+# Specify containers to deploy with zero downtime, in order of startup.
+# NOTE: These containers will briefly have two instances running simultaneously.
+# This means celery_beat cannot be included and must be deployed separately (with downtime).
+containers_to_deploy_without_downtime=("django" "celery" "next")
 
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
@@ -18,6 +20,23 @@ reload_nginx () {
     docker-compose exec -T webserver nginx -s reload || {
         echo "Failed to reload nginx config file."; exit 1
     }
+}
+
+wait_for_health () {
+    healthy=false; timeout=300; interval=15; waited=0
+    while [[ "$healthy" = false ]]; do
+        healthy=true
+        [[ "$(docker-compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
+        if [[ "$healthy" = false ]]; then
+            if [[ $waited -gt $timeout ]]; then 
+                docker-compose logs; echo "Timed out."; exit 1
+            fi
+            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$1"
+            echo ""; docker-compose ps; echo ""
+            echo "Waiting for $1 to be healthy (total waited: ${waited}s) ..."
+            sleep $interval; waited=$((waited + interval))
+        fi
+    done
 }
 
 # List extant containers.
@@ -40,30 +59,25 @@ for image_name in "${images_to_pull[@]}"; do
     }
 done
 
+# Take down celery_beat to avoid triggering a periodic task during the deploy.
+docker-compose rm --stop --force celery_beat
+
 # Deploy new containers.
 declare -A old_container_ids
-for container in "${containers_to_deploy[@]}"; do
+for container in "${containers_to_deploy_without_downtime[@]}"; do
     old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
     docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
     container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
-    new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
-    docker rename "$container_name" "$new_container_name"
+    # new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
+    # docker rename "$container_name" "$new_container_name"
     docker-compose ps | grep "Exit 1" && exit 1
-    healthy=false; timeout=300; interval=15; waited=0
-    while [[ "$healthy" = false ]]; do
-        healthy=true
-        [[ "$(docker-compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
-        if [[ "$healthy" = false ]]; then
-            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$container"
-            echo ""; docker-compose ps; echo ""
-            echo "Waiting for $container to be healthy (total waited: ${waited}s) ..."
-            sleep $interval; waited=$((waited + interval))
-            if [[ $waited -gt $timeout ]]; then 
-                docker-compose logs; echo "Timed out."; exit 1
-            fi
-        fi
-    done
+    wait_for_health "$container_name"
 done
+
+# Recreate celery_beat
+docker-compose up -d --no-deps celery_beat
+wait_for_health celery_beat
+
 echo "" && echo "Finished deploying new containers."
 echo "" && docker-compose ps
 
@@ -76,7 +90,7 @@ for old_container_id in "${old_container_ids[@]}"; do
     docker stop "$old_container_id"
     docker rm "$old_container_id"
 done
-for container in "${containers_to_deploy[@]}"; do
+for container in "${containers_to_deploy_without_downtime[@]}"; do
     docker-compose up -d --no-deps --scale "${container}=1" --no-recreate "$container"
 done
 echo "" && echo "Finished removing old containers."
