@@ -23,7 +23,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: titleCase(module.title) }} />;
+      content = <div>{titleCase(module.title)}</div>;
       break;
     case "propositions.proposition":
       content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;

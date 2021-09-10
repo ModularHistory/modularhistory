@@ -37,11 +37,10 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
           )
       )}
 
-      <h2
-        className="text-center my-3"
-        dangerouslySetInnerHTML={{ __html: titleCase(occurrence.title) }}
-      />
-      {occurrence.summary != occurrence.title && <p className="lead">{occurrence.summary}</p>}
+      <h2 className="text-center my-3">{titleCase(occurrence.title)}</h2>
+      {occurrence.summary != occurrence.title && (
+        <p className="lead" dangerouslySetInnerHTML={{ __html: occurrence.summary }} />
+      )}
       <div dangerouslySetInnerHTML={{ __html: occurrence.elaboration }} />
       {occurrence.postscript && <p dangerouslySetInnerHTML={{ __html: occurrence.postscript }} />}
 
