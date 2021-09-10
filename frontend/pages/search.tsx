@@ -236,7 +236,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           key={module.slug}
           data-index={index}
           onClick={selectModule}
-          ref={initialUrlAnchor === module.slug ? initialModuleRef : undefined}
+          ref={initialUrlAnchor === module.slug && index !== 0 ? initialModuleRef : undefined}
         >
           <ModuleUnionCard module={module} selected={index === moduleIndex} />
         </a>
