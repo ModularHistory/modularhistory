@@ -60,8 +60,7 @@ for image_name in "${images_to_pull[@]}"; do
 done
 
 # Take down celery_beat to avoid triggering a periodic task during the deploy.
-docker-compose stop celery_beat
-docker-compose rm celery_beat
+docker-compose rm --stop --force celery_beat
 
 # Deploy new containers.
 declare -A old_container_ids
