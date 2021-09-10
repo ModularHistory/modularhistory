@@ -107,7 +107,6 @@ class Image(MediaModel):
         return self.caption or self.image.name
 
     def clean(self):
-        """Prepare the image to be saved."""
         super().clean()
         image_is_duplicated = (
             self.caption

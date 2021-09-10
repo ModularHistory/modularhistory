@@ -12,6 +12,7 @@ from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
 from core.models.relations.moderated import ModeratedPositionedRelation
+from core.utils.sync import delay
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -106,7 +107,8 @@ class ModelWithImages(ExtendedModel):
         if images or not self.images.exists():
             return images
         images = [relation.image.serialize() for relation in self.image_relations.all()]
-        cache_images.delay(
+        delay(
+            cache_images,
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
             images,

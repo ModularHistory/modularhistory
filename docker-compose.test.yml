@@ -9,6 +9,10 @@ services:
   next:
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
+    depends_on:
+      - django
+      - celery
+      - celery_beat
   
   cypress:
     environment:

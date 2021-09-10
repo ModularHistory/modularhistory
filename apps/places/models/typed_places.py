@@ -1,32 +1,4 @@
-from django.db import models
-
-from apps.places.models.base import Place, PlaceTypes
-
-# Ordered list of location scopes (from specific to broad)
-LOCATION_PRECEDENCE = [
-    PlaceTypes.venue,
-    PlaceTypes.city,
-    PlaceTypes.county,
-    PlaceTypes.state,
-    PlaceTypes.country,
-    PlaceTypes.region,
-    PlaceTypes.continent,
-]
-
-
-def get_allowable_location_types(reference_location_type: str) -> list[str]:
-    """
-    Given a location type, return the allowable parent location types.
-
-    For example, if reference_location_type is "places.country", return
-    ["places.region", "places.continent"]
-    """
-    allowable_types: list[str] = []
-    for location_type in reversed(LOCATION_PRECEDENCE):
-        if location_type == reference_location_type:
-            return allowable_types
-        allowable_types.append(location_type)
-    return allowable_types
+from apps.places.models.base import Place
 
 
 class Venue(Place):
@@ -36,15 +8,6 @@ class Venue(Place):
         """Meta options for Venue."""
 
         # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(
-                    location__type__in=get_allowable_location_types(PlaceTypes.venue)
-                ),
-                name='location_is_allowable',
-            ),
-        ]
 
 
 class City(Place):

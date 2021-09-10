@@ -32,12 +32,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URL = config('BASE_URL', default='http://localhost')
 
 # --- URL MODIFICATION SETTINGS ---
-# https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
-# Do not prepend www to modularhistory.com.
-# The Nginx reverse proxy chops off the "www." from incoming requests.
+# Delegate URL modification to the Nginx reverse proxy server.
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-PREPEND_WWW
 PREPEND_WWW = False
-# When running in Docker, delegate slash appendage to the Nginx reverse proxy server.
-APPEND_SLASH = not DOCKERIZED
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-APPEND_SLASH
+APPEND_SLASH = False
 
 # --- SECURITY SETTINGS ---
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
@@ -156,6 +155,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.flatpages.apps.FlatPagesConfig',
+    'apps.redirects.apps.RedirectsConfig',
     'apps.chat.apps.ChatConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
@@ -294,6 +294,8 @@ DATABASES = {
         'PORT': 5432,
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 GRAPH_MODELS = {
     'app_labels': [

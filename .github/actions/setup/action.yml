@@ -68,7 +68,7 @@ runs:
     # Install and configure Poetry.
     - name: Install and configure Poetry
       # https://github.com/snok/install-poetry
-      uses: snok/install-poetry@v1.1.8
+      uses: snok/install-poetry@v1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -99,5 +99,5 @@ runs:
     # Write a .env file.
     - name: Create .env file
       run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b usr/local/bin;
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }}

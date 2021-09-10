@@ -52,14 +52,11 @@ class DatedModel(ExtendedModel):
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for DatedModel."""
-
         abstract = True
 
-    def save(self, *args, **kwargs):
-        """Save the entity to the database."""
+    def clean(self, *args, **kwargs):
         self.date_string = self.get_date_string()
-        super().save(*args, **kwargs)
+        super().clean()
 
     @property
     def year_html(self) -> Optional[SafeString]:
