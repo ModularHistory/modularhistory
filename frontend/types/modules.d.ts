@@ -35,6 +35,7 @@ export interface Image extends SearchableModule {
   providerString: string;
   description: string;
   bgImgPosition: string;
+  meta?: Meta;
 }
 
 export interface ModuleWithImages {
@@ -113,6 +114,7 @@ export interface Topic extends BaseModule {
   name: string;
   title: string;
   description: string;
+  meta?: Meta;
   propositions: Proposition[];
 }
 

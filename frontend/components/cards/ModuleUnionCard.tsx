@@ -36,27 +36,29 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   // ModuleUnionCard is a generic component for rendering cards of any
   // model type, removing the need to import every card component.
   let content;
+  const highlightSnippet =
+    module?.meta?.highlight?.text?.[0] ?? module?.meta?.highlight?.description?.[0]; // highlight text or highlight description
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={highlightSnippet} />
       );
       break;
     case "propositions.proposition":
-      content = module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={highlightSnippet} />
       );
       break;
     case "quotes.quote": {
       content = (
         // <blockquote className="blockquote">
         <div>
-          {(module?.meta?.highlight?.text && ( // TODO: Replace Regex with more formal fix
-            <HighlightEllipsis unsafeHTML={module.meta.highlight.text[0]} />
+          {(highlightSnippet && ( // TODO: Replace Regex with more formal fix
+            <HighlightEllipsis unsafeHTML={highlightSnippet} />
           )) ??
             (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />)}
         </div>
@@ -71,8 +73,8 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.organization":
     case "entities.entity":
     case "entities.group":
-      content = module?.meta?.highlight?.description && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={module.meta.highlight.description[0]} />
+      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+        <HighlightEllipsis unsafeHTML={highlightSnippet} />
       );
       break;
     default:
