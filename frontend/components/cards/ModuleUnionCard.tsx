@@ -26,7 +26,7 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
   >
     <HTMLEllipsis
       unsafeHTML={unsafeHTML.replace(/(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)/gi, "")} // removing h, p, and div HTML tags
-      maxLine="4"
+      maxLine="3"
       basedOn="words"
     />
   </Box>
@@ -47,17 +47,17 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
-      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="4" basedOn="words" />;
+      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.summary} maxLine="4" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.elaboration} maxLine="2" basedOn="words" />;
       break;
     case "propositions.proposition":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.summary} maxLine="4" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.elaboration} maxLine="2" basedOn="words" />;
       break;
     case "quotes.quote": {
       content = (
@@ -66,7 +66,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
           {(highlightSnippet && ( // TODO: Replace Regex with more formal fix
             <HighlightEllipsis unsafeHTML={highlightSnippet} />
           )) ??
-            (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="4" basedOn="words" />)}
+            (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="3" basedOn="words" />)}
         </div>
         // </blockquote>
       );
@@ -81,7 +81,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.group":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.description} maxLine="4" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.description} maxLine="3" basedOn="words" />;
       break;
     default:
       ((module: never) => {
