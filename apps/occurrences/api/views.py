@@ -1,8 +1,8 @@
 from rest_framework import permissions
-from core.api.views import ExtendedModelViewSet
 
 from apps.propositions.api.serializers import OccurrenceDrfSerializer
 from apps.propositions.models.occurrence import Occurrence
+from core.api.views import ExtendedModelViewSet
 
 
 class OccurrenceViewSet(ExtendedModelViewSet):
