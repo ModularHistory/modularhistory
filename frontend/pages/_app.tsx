@@ -13,19 +13,23 @@ import { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FC, ReactElement, useEffect } from "react";
+import TagManager from "react-gtm-module";
 import Cookies from "universal-cookie";
+
+initializeSentry();
+
+const tagManagerArgs = {
+  gtmId: "GTM-P68V7DK",
+};
 
 const DynamicPageTransitionProgressBar = dynamic(
   () => import("@/components/PageTransitionProgressBar")
 );
 
-initializeSentry();
-
-const cookies = new Cookies();
-
-const theme = createTheme({});
 export type GlobalTheme = typeof theme;
 
+const theme = createTheme({});
+const cookies = new Cookies();
 const clientSideEmotionCache = createCache({ key: "css" });
 
 interface SessionKillerProps {
@@ -54,6 +58,8 @@ const App: NextPage<ExtendedAppProps> = ({
   err,
 }: ExtendedAppProps) => {
   useEffect(() => {
+    // Initialize Google Tag Manager.
+    TagManager.initialize(tagManagerArgs);
     // Set the Django CSRF cookie if necessary.
     if (!cookies.get(DJANGO_CSRF_COOKIE_NAME)) {
       // Get Django CSRF cookie.
