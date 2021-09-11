@@ -1,4 +1,5 @@
 import ModuleDetail from "@/components/details/ModuleDetail";
+import { GlobalTheme } from "@/pages/_app";
 import { ModuleUnion } from "@/types/modules";
 import {
   Button,
@@ -8,10 +9,10 @@ import {
   DialogProps,
   DialogTitle,
   IconButton,
+  Skeleton,
+  styled,
   useMediaQuery,
-  useTheme,
 } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import { Dispatch, FC, SetStateAction } from "react";
 
@@ -23,7 +24,7 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 }));
 
 interface ModuleModalProps extends DialogProps {
-  module: ModuleUnion;
+  module: ModuleUnion | undefined;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -32,25 +33,33 @@ const ModuleModal: FC<ModuleModalProps> = (props: ModuleModalProps) => {
   const close = () => setOpen(false);
 
   // modal is fullscreen when the viewport is small
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
-
-  // TODO: add logic for selecting title based on module type
-  const title = module["title"];
+  const fullScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
 
   return (
     <Dialog open={open} onClose={close} fullScreen={fullScreen} {...dialogProps}>
       <DialogTitle>
-        {title}
+        {module?.title ?? <Skeleton width={"80%"} />}
         <CloseButton aria-label="close" onClick={close}>
           <CloseIcon />
         </CloseButton>
       </DialogTitle>
       <DialogContent dividers>
-        <ModuleDetail module={module} />
+        {module ? (
+          <ModuleDetail module={module} />
+        ) : (
+          <Skeleton
+            variant={"rectangular"}
+            sx={{ width: "inherit", minWidth: "50vw", height: "40vw" }}
+          />
+        )}
       </DialogContent>
       <DialogActions>
-        <Button component={"a"} href={`${module.absoluteUrl}`} target={"_blank"}>
+        <Button
+          component={"a"}
+          href={`${module?.absoluteUrl}`}
+          target={"_blank"}
+          disabled={!module?.absoluteUrl}
+        >
           Open in new tab
         </Button>
       </DialogActions>

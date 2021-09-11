@@ -1,12 +1,12 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
-from rest_framework.viewsets import ModelViewSet
+from core.api.views import ExtendedModelViewSet
 
 from apps.stories.models import Story
 from apps.stories.serializers import StorySerializer
 
 
-class StoryViewSet(ModelViewSet):
+class StoryViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing stories."""
 
     queryset = Story.objects.all()
