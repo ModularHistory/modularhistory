@@ -14,13 +14,14 @@ class Redirect(models.Model):
         _('redirect from'),
         max_length=200,
         db_index=True,
-        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/$')],
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+$')],
         help_text=_('Example: /events/search/'),
     )
     new_path = models.CharField(
         _('redirect to'),
         max_length=200,
         blank=True,
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+$')],
         help_text=_('Absolute path or full URL'),
     )
 
