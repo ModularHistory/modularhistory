@@ -9,6 +9,8 @@ from core.utils.sync import delay
 
 
 class Redirect(models.Model):
+    """A redirect from one URL path to another."""
+
     site = models.ForeignKey(Site, models.CASCADE, verbose_name=_('site'))
     old_path = models.CharField(
         _('redirect from'),
