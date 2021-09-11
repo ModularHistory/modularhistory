@@ -16,7 +16,9 @@ interface HighlightEllipsisProps {
 const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
   <Box
     sx={{
-      "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+      "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)", display: "inline" },
+      "& > div > div::before": { content: '"... "' }, // ellipses with trailing space
+      "& > div > div::after": { content: '" ..."' }, // ellipses with leading space
       "& p::before": { content: '"... "' }, // ellipses with trailing space
       "& p::after": { content: '" ..."' }, // ellipses with leading space
       "& mark": { fontWeight: "500", color: "white" },
