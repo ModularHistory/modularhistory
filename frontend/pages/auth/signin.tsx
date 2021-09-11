@@ -7,7 +7,6 @@ import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import React, {
-  Component,
   FormEventHandler,
   FunctionComponent,
   ReactElement,
