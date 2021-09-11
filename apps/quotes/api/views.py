@@ -1,8 +1,8 @@
 from rest_framework import permissions
-from core.api.views import ExtendedModelViewSet
 
 from apps.quotes.api.serializers import QuoteDrfSerializer
 from apps.quotes.models.quote import Quote
+from core.api.views import ExtendedModelViewSet
 
 
 class QuoteViewSet(ExtendedModelViewSet):

@@ -115,7 +115,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         if suppress_unverified:
             qs = qs.query('bool', filter=[Q('match', verified=True)])
 
-        # TODO: refactor & improve this. currently only applying highlights to quote#text and occurrence#description
         qs = qs.highlight(
             'text',
             number_of_fragments=1,
@@ -125,6 +124,13 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         )
         qs = qs.highlight(
             'description',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
+        )
+        qs = qs.highlight(
+            'elaboration',
             number_of_fragments=1,
             type='plain',
             pre_tags=['<mark>'],

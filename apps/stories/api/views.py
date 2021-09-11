@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
-from core.api.views import ExtendedModelViewSet
 
 from apps.stories.models import Story
 from apps.stories.serializers import StorySerializer
+from core.api.views import ExtendedModelViewSet
 
 
 class StoryViewSet(ExtendedModelViewSet):

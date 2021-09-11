@@ -1,11 +1,11 @@
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from core.api.views import ExtendedModelViewSet
 
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.entities.models.entity import Entity
 from apps.search.documents.entity import EntityInstantSearchDocument
+from core.api.views import ExtendedModelViewSet
 
 
 class EntityViewSet(ExtendedModelViewSet):

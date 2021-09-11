@@ -1,8 +1,8 @@
 from rest_framework import permissions
-from core.api.views import ExtendedModelViewSet
 
 from apps.sources.api.serializers import SourceDrfSerializer
 from apps.sources.models.source import Source
+from core.api.views import ExtendedModelViewSet
 
 
 class SourceViewSet(ExtendedModelViewSet):
