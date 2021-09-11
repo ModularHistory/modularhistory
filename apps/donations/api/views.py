@@ -24,7 +24,7 @@ def process(request):
     result = braintree.Transaction.sale(
         {
             'amount': request.data['amount'],
-            'payment_method_nonce': request.data['paymentMethodNonce'],
+            'payment_method_nonce': request.data['payment_method_nonce'],
             'customer': {'first_name': request.data['name']},
         }
     )

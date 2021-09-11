@@ -9,18 +9,21 @@ from core.utils.sync import delay
 
 
 class Redirect(models.Model):
+    """A redirect from one URL path to another."""
+
     site = models.ForeignKey(Site, models.CASCADE, verbose_name=_('site'))
     old_path = models.CharField(
         _('redirect from'),
         max_length=200,
         db_index=True,
-        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+\/$')],
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+$')],
         help_text=_('Example: /events/search/'),
     )
     new_path = models.CharField(
         _('redirect to'),
         max_length=200,
         blank=True,
+        validators=[RegexValidator(regex=r'^\/[-\w/\.\/]+$')],
         help_text=_('Absolute path or full URL'),
     )
 
