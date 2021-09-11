@@ -31,7 +31,7 @@ const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
             // remarkablemark/html-react-parser#221
             const element = domNode as Element;
 
-            if (element.name == "a") {
+            if (element.name === "a") {
               const { href } = element.attribs;
 
               // don't format external links
