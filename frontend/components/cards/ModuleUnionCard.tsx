@@ -17,11 +17,13 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
   <Box
     sx={{
       "& *": { fontSize: "0.8rem", backgroundColor: "rgba(0, 0, 0, 0)" },
+      "& p::before": { content: '"... "' }, // ellipses with trailing space
+      "& p::after": { content: '" ..."' }, // ellipses with leading space
       "& mark": { fontWeight: "500", color: "white" },
     }}
   >
     <HTMLEllipsis
-      unsafeHTML={unsafeHTML.replace(/(<(h[1-6])>.*?<\/h[1-6]>)/gi, "")}
+      unsafeHTML={unsafeHTML.replace(/(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)/gi, "")} // removing h, p, and div HTML tags
       maxLine="4"
       basedOn="words"
     />
@@ -37,21 +39,23 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   // model type, removing the need to import every card component.
   let content;
   const highlightSnippet =
-    module?.meta?.highlight?.text?.[0] ?? module?.meta?.highlight?.description?.[0]; // highlight text or highlight description
+    module?.meta?.highlight?.text?.[0] ??
+    module?.meta?.highlight?.description?.[0] ??
+    module?.meta?.highlight?.elaboration?.[0]; // highlight text, description, or elaboration
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
-      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
+      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="4" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      );
+      )) || <HTMLEllipsis unsafeHTML={module.summary} maxLine="4" basedOn="words" />;
       break;
     case "propositions.proposition":
-      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      );
+      )) || <HTMLEllipsis unsafeHTML={module.summary} maxLine="4" basedOn="words" />;
       break;
     case "quotes.quote": {
       content = (
@@ -73,9 +77,9 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.organization":
     case "entities.entity":
     case "entities.group":
-      content = highlightSnippet && ( // TODO: Replace Regex with more formal fix
+      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      );
+      )) || <HTMLEllipsis unsafeHTML={module.description} maxLine="4" basedOn="words" />;
       break;
     default:
       ((module: never) => {

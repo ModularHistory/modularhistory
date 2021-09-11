@@ -46,6 +46,7 @@ export interface ModuleWithImages {
 export interface Text {
   text?: string[]; // for quotes.quote
   description?: string[]; // for sources.source, entities.person
+  elaboration?: string[]; // for occurances
 }
 export interface Meta {
   score: number;
