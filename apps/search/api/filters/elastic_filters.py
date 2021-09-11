@@ -115,28 +115,26 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         if suppress_unverified:
             qs = qs.query('bool', filter=[Q('match', verified=True)])
 
-        qs = (
-            qs.highlight(
-                'text',
-                number_of_fragments=1,
-                type='plain',
-                pre_tags=['<mark>'],
-                post_tags=['</mark>'],
-            )
-            .highlight(
-                'description',
-                number_of_fragments=1,
-                type='plain',
-                pre_tags=['<mark>'],
-                post_tags=['</mark>'],
-            )
-            .highlight(
-                'elaboration',
-                number_of_fragments=1,
-                type='plain',
-                pre_tags=['<mark>'],
-                post_tags=['</mark>'],
-            )
+        qs = qs.highlight(
+            'text',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
+        )
+        qs = qs.highlight(
+            'description',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
+        )
+        qs = qs.highlight(
+            'elaboration',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
         )
         # logging.info(f'ES Indexes: {indexes}')
         # logging.info(f'ES Query: {pformat(qs.to_dict())}')
