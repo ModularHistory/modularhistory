@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.base import Model
 from django.utils import timezone
 from image_cropping import ImageCropWidget
 
@@ -11,13 +12,12 @@ from apps.moderation.forms import SoftModificationForm
 from apps.moderation.models.change.model import Change
 from apps.moderation.models.changeset.model import ChangeSet
 from apps.moderation.models.moderated_model.model import ModeratedModel
+from core.models.relations.moderated import ModeratedRelation
 
 if TYPE_CHECKING:
     from django.forms import ModelForm
     from django.forms.formsets import BaseFormSet as FormSet
     from django.http import HttpRequest
-
-    from core.models.relations.moderated import ModeratedRelation
 
 
 class ModeratedModelAdmin(ExtendedModelAdmin):
@@ -120,7 +120,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                 )
             )
             change_set: ChangeSet = parent_change.set or ChangeSet.objects.create()
-            relation: 'ModeratedRelation'
+            relation: Union['ModeratedRelation', Model]
             for relation in formset.new_objects:
                 relation.save_change(
                     contributor=request.user,
@@ -134,11 +134,14 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                     parent_change=parent_change,
                 )
             for relation in formset.deleted_objects:
-                relation.deleted = timezone.now()
-                relation.save_change(
-                    contributor=request.user,
-                    set=change_set,
-                    parent_change=parent_change,
-                )
+                if isinstance(relation, ModeratedRelation):
+                    relation.deleted = timezone.now()
+                    relation.save_change(
+                        contributor=request.user,
+                        set=change_set,
+                        parent_change=parent_change,
+                    )
+                else:
+                    relation.delete()
         else:
             super().save_formset(request, form, formset, change)
