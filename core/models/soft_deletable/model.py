@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Union
+
 from django.contrib.admin.utils import NestedObjects
 from django.db import models, router
 from django.utils import timezone
@@ -11,6 +13,11 @@ from .managers import (
 )
 from .signals import post_softdelete, post_undelete, pre_softdelete
 from .utils import related_objects
+
+if TYPE_CHECKING:
+    from django.db.models.base import Model
+
+    from apps.moderation.models.moderated_model.model import ModeratedModel
 
 
 class SoftDeletableModel(ExtendedModel):
@@ -71,8 +78,9 @@ class SoftDeletableModel(ExtendedModel):
         else:
             # Only soft-delete the object, marking it as deleted.
             # First, soft-delete related objects.
+            related_object: Union['ModeratedModel', 'Model']
             for related_object in related_objects(self):
-                if not related_object.deleted:
+                if not getattr(related_object, 'deleted', None):
                     related_object.delete(**kwargs)
             self.deleted = timezone.now()
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
