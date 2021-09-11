@@ -25,7 +25,10 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
     }}
   >
     <HTMLEllipsis
-      unsafeHTML={unsafeHTML.replace(/(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)/gi, "")} // removing h, p, and div HTML tags
+      unsafeHTML={unsafeHTML.replace(
+        /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)/gi,
+        ""
+      )} // removing h, p, and div HTML tags
       maxLine="3"
       basedOn="words"
     />
