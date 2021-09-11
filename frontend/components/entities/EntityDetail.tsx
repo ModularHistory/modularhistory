@@ -1,3 +1,4 @@
+import ModuleHTML from "@/components/details/ModuleHTML";
 import { Entity } from "@/types/modules";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
@@ -16,7 +17,8 @@ const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
           <ImageCard image={firstImage} />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: entity.description }} />
+
+      <ModuleHTML html={entity.description} />
     </>
   );
 };

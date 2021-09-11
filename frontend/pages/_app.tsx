@@ -24,6 +24,7 @@ initializeSentry();
 const cookies = new Cookies();
 
 const theme = createTheme({});
+export type GlobalTheme = typeof theme;
 
 const clientSideEmotionCache = createCache({ key: "css" });
 

@@ -18,6 +18,12 @@ on:
       - 'config/hooks/**'
   schedule:
     - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Comma-separated list of names of jobs to trigger
+        required: false
+        default: 'setup-script,build,pytest,e2e,test-deploy'
 
 env:
   ADMINS: ${{ secrets.ADMINS }}
@@ -198,7 +204,7 @@ jobs:
   test-deploy:
     name: Test deploy
     needs: [changed-files, build]
-    if: ${{ contains(needs.changed-files.outputs.modified-files, 'deploy.sh') }}
+    if: ${{ contains(needs.changed-files.outputs.modified-files, 'deploy.sh') || (github.event_name == 'workflow_dispatch' && contains(github.event.inputs.jobs, 'deploy')) }}
     runs-on: ubuntu-latest
     environment: test
     steps:
