@@ -29,7 +29,7 @@ class EntityDocument(Document):
 
 @registry.register_document
 class EntityInstantSearchDocument(Document):
-    """ElasticSearch document for entities."""
+    """ElasticSearch document for entities used by search-as-you-type."""
 
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
