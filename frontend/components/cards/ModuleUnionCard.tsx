@@ -1,6 +1,7 @@
 import { ModuleUnion, Topic } from "@/types/modules";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
+import { titleCase } from "title-case";
 import ModuleCard from "./ModuleCard";
 
 interface ModuleUnionCardProps {
@@ -22,7 +23,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;
+      content = <div>{titleCase(module.title)}</div>;
       break;
     case "propositions.proposition":
       content = <div dangerouslySetInnerHTML={{ __html: module.title }} />;

@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.entities.models.entity import Entity
-from apps.search.documents.entity import EntityDocument
+from apps.search.documents.entity import EntityInstantSearchDocument
 
 
 class EntityViewSet(ModelViewSet):
@@ -24,8 +24,8 @@ class EntityInstantSearchAPIView(APIView):
         if len(query) == 0:
             return Response([])
         results = (
-            EntityDocument.search()
-            .query('match', name__instant_search=query)
-            .extra(_source=['name'])
+            EntityInstantSearchDocument.search()
+            .query('multi_match', query=query)
+            .source(['name'])
         )
         return Response([{'id': result.meta.id} | result.to_dict() for result in results])

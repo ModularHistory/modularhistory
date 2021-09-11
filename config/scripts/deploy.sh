@@ -60,12 +60,12 @@ for image_name in "${images_to_pull[@]}"; do
 done
 
 # Take down celery_beat to avoid triggering a periodic task during the deploy.
-docker-compose stop celery_beat
-docker-compose rm celery_beat
+docker-compose rm --stop --force celery_beat
 
 # Deploy new containers.
 declare -A old_container_ids
 for container in "${containers_to_deploy_without_downtime[@]}"; do
+    echo "" && echo "Deploying $container ..."
     old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
     docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
     container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
