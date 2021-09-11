@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
-from core.api.views import ExtendedModelViewSet
 
 from apps.topics.api.serializers import TopicDrfSerializer
 from apps.topics.models.topic import Topic
+from core.api.views import ExtendedModelViewSet
 from core.pagination import VariableSizePagination
 
 

@@ -1,10 +1,10 @@
 from rest_framework import permissions
 from rest_framework.generics import RetrieveAPIView
-from core.api.views import ExtendedModelViewSet
 
 from apps.moderation.serializers import get_moderated_model_serializer
 from apps.propositions.api.serializers import PropositionDrfSerializer
 from apps.propositions.models import Proposition
+from core.api.views import ExtendedModelViewSet
 
 
 class PropositionViewSet(ExtendedModelViewSet):
