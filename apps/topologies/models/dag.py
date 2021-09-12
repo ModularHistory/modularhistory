@@ -259,13 +259,15 @@ def edge_factory(node_model: Union[str, Type[Node]]) -> Type[Edge]:
     class _Edge(Edge):
         parent = models.ForeignKey(
             node_model,
-            related_name=f'{node_model_name}_child',
+            related_name='child_edges',
             on_delete=models.CASCADE,
+            verbose_name=f'parent {node_model_name}',
         )
         child = models.ForeignKey(
             node_model,
-            related_name=f'{node_model_name}_parent',
+            related_name=f'parent_edges',
             on_delete=models.CASCADE,
+            verbose_name=f'child {node_model_name}',
         )
 
         class Meta:
