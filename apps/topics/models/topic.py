@@ -16,7 +16,10 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicEdge(edge_factory(node_model='topics.Topic')):
+Edge = edge_factory(node_model='topics.Topic', bases=(ModeratedRelation,))
+
+
+class TopicEdge(Edge):
     """An edge in the directed acyclic graph of topics."""
 
 
@@ -43,7 +46,10 @@ class TopicRelation(ModeratedRelation):
         return f'{self.topic} ~ {self.related_topic}'
 
 
-class Topic(node_factory(edge_model=TopicEdge), Module):
+Node = node_factory(edge_model=TopicEdge)
+
+
+class Topic(Module, Node):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -79,6 +85,10 @@ class Topic(node_factory(edge_model=TopicEdge), Module):
     def __str__(self) -> str:
         """Return the topic's string representation."""
         return self.name
+
+    def pre_save(self):
+        super(Module, self).pre_save()
+        super(Node, self).pre_save()
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')
