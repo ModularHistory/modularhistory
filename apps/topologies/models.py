@@ -9,7 +9,7 @@ from django.db import IntegrityError, connection, models
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
-from apps.trees.fields import LtreeField
+from apps.topologies.fields import LtreeField
 from core.models.model import ExtendedModel
 
 
@@ -21,7 +21,7 @@ class TreeModel(ExtendedModel):
         null=True,
         blank=True,
         # Direct children can be accessed via the `children` property.
-        related_name='tree_children',  # TODO: --> 'children'
+        related_name='children',
         on_delete=models.CASCADE,
         verbose_name=_('parent'),
     )
