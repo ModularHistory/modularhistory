@@ -178,6 +178,7 @@ class Proposition(  # noqa: WPS215
         paragraphed=False,
         processed=False,
     )
+
     elaboration = HTMLField(
         verbose_name=_('elaboration'),
         paragraphed=True,
@@ -257,6 +258,7 @@ class Proposition(  # noqa: WPS215
                 self.images.add(image)
 
     @property
+    @store
     def truncated_elaboration(self) -> Optional[SafeString]:
         """Return the occurrence's elaboration, truncated."""
         if not self.elaboration:
