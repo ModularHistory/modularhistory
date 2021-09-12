@@ -17,7 +17,7 @@ def write_map(self: Task, dry: bool = False):
     redirect: Redirect
     for redirect in Redirect.objects.filter(site_id=settings.SITE_ID):
         redirects_map_lines.append(f'{redirect.old_path} {redirect.new_path};')
-    redirects_map_content = '\n'.join(redirects_map_lines)
+    redirects_map_content = '\n'.join(redirects_map_lines) + '\n'
     if dry:
         print(redirects_map_content)
     else:

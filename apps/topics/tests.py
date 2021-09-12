@@ -16,8 +16,6 @@ def test_create_topic():
     topic.save()
     assert topic.id > 0
     assert topic.name == 'Foo'
-    assert topic.key == 'foo'
-    assert topic.path == 'foo'
 
 
 def test_children():
@@ -87,13 +85,13 @@ def test_descendants():
 
 # def test_ancestors():
 #     """Test accessing a topic's ancestors."""
-#     top = create_topic(name='Top', key='top')
-#     create_topic(name='Sport', key='sport', parent=top)
-#     science = create_topic(name='Science', key='science', parent=top)
-#     create_topic(name='Maths', key='maths', parent=science)
-#     biology = create_topic(name='Biology', key='biology', parent=science)
-#     genetics = create_topic(name='Genetics', key='genetics', parent=biology)
-#     neuroscience = create_topic(name='Neuroscience', key='neuroscience', parent=biology)
+#     top = create_topic(name='Top')
+#     create_topic(name='Sport', parent=top)
+#     science = create_topic(name='Science', parent=top)
+#     create_topic(name='Maths', parent=science)
+#     biology = create_topic(name='Biology', parent=science)
+#     genetics = create_topic(name='Genetics', parent=biology)
+#     neuroscience = create_topic(name='Neuroscience', parent=biology)
 #     neuroscience.refresh_from_db()
 
 #     # Test the `ancestor` custom lookup.

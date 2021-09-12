@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.serializers import TopicSerializer
 from apps.topologies.models import edge_factory, node_factory
-from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
 from core.models.model_with_cache import store
@@ -44,7 +43,7 @@ class TopicRelation(ModeratedRelation):
         return f'{self.topic} ~ {self.related_topic}'
 
 
-class Topic(node_factory(edge_model=TopicEdge), TreeModel, Module):
+class Topic(node_factory(edge_model=TopicEdge), Module):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)

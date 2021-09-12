@@ -185,11 +185,6 @@ class Node(AbstractModel):
     def clan(self):
         return self.filter_order_ids(self.clan_ids)
 
-    @staticmethod
-    def circular_checker(parent, child):
-        if child.id in parent.self_and_ancestor_ids:
-            raise ValidationError('The object is an ancestor.')
-
 
 def node_factory(
     edge_model: Type[ExtendedModel],
@@ -262,7 +257,9 @@ class Edge(Relation):
 
     def pre_save(self):
         super().pre_save()
-        self.parent.__class__.circular_checker(self.parent, self.child)
+        # Avoid circular ancestry.
+        if self.child.id in self.parent.self_and_ancestor_ids:
+            raise ValidationError('The child topic is an ancestor of the parent topic.')
 
 
 def edge_factory(node_model: Union[str, Type[Node]]) -> Type[Edge]:
