@@ -14,7 +14,7 @@ https://github.com/stdbrouw/django-treebeard-dag
 """
 
 from abc import abstractmethod
-from typing import Type, Union
+from typing import TYPE_CHECKING, Type, Union
 
 from django.core.exceptions import ValidationError
 from django.db import connection, models
@@ -23,6 +23,10 @@ from django.db.models import Case, When
 from core.models.abstract import AbstractModel
 from core.models.model import ExtendedModel
 from core.models.relations.relation import Relation
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
 
 ANCESTOR_QUERY = '''
 WITH RECURSIVE traverse(id, depth) AS (
@@ -62,7 +66,7 @@ ORDER BY MAX(depth), id ASC
 
 
 def filter_order(queryset, field_names, values):
-    'Filter queryset where field_name in values, order results in the same order as values'
+    """Filter queryset where field_name in values, order results in the same order as values."""
     if not isinstance(field_names, list):
         field_names = [field_names]
     case = []
@@ -83,6 +87,7 @@ class Node(AbstractModel):
     """
 
     edge_model: Type[ExtendedModel]
+    parents: 'QuerySet[Node]'
 
     class Meta:
         abstract = True
@@ -98,9 +103,8 @@ class Node(AbstractModel):
 
     def add_child(self, descendant, **kwargs):
         kwargs.update({'parent': self, 'child': descendant})
-        disable_check = kwargs.pop('disable_circular_check', False)
         cls = self.children.through(**kwargs)
-        return cls.save(disable_circular_check=disable_check)
+        return cls.save()
 
     def remove_child(self, descendant):
         self.children.through.objects.get(parent=self, child=descendant).delete()
@@ -114,6 +118,7 @@ class Node(AbstractModel):
     def filter_order_ids(self, ids):
         return filter_order(self.__class__.objects, 'pk', ids)
 
+    @property
     def ancestor_ids(self) -> list[int]:
         """Return a list of the ids of the node's ancestors."""
         with connection.cursor() as cursor:
@@ -123,21 +128,27 @@ class Node(AbstractModel):
             )
             return [row[0] for row in cursor.fetchall()]
 
+    @property
     def ancestor_and_self_ids(self):
-        return self.ancestor_ids() + [self.id]
+        return self.ancestor_ids + [self.id]
 
+    @property
     def self_and_ancestor_ids(self):
-        return self.ancestor_and_self_ids()[::-1]
+        return self.ancestor_and_self_ids[::-1]
 
+    @property
     def ancestors(self):
-        return self.filter_order_ids(self.ancestor_ids())
+        return self.filter_order_ids(self.ancestor_ids)
 
+    @property
     def ancestors_and_self(self):
-        return self.filter_order_ids(self.self_and_ancestor_ids())
+        return self.filter_order_ids(self.self_and_ancestor_ids)
 
+    @property
     def self_and_ancestors(self):
-        return self.ancestors_and_self()[::-1]
+        return self.ancestors_and_self[::-1]
 
+    @property
     def descendant_ids(self):
         with connection.cursor() as cursor:
             cursor.execute(
@@ -146,30 +157,37 @@ class Node(AbstractModel):
             )
             return [row[0] for row in cursor.fetchall()]
 
+    @property
     def self_and_descendant_ids(self):
-        return [self.id] + self.descendant_ids()
+        return [self.id] + self.descendant_ids
 
+    @property
     def descendants_and_self_ids(self):
-        return self.self_and_descendant_ids()[::-1]
+        return self.self_and_descendant_ids[::-1]
 
+    @property
     def descendants(self):
-        return self.filter_order_ids(self.descendant_ids())
+        return self.filter_order_ids(self.descendant_ids)
 
+    @property
     def self_and_descendants(self):
-        return self.filter_order_ids(self.self_and_descendant_ids())
+        return self.filter_order_ids(self.self_and_descendant_ids)
 
+    @property
     def descendants_and_self(self):
-        return self.self_and_descendants()[::-1]
+        return self.self_and_descendants[::-1]
 
+    @property
     def clan_ids(self):
-        return self.ancestor_ids() + self.self_and_descendant_ids()
+        return self.ancestor_ids + self.self_and_descendant_ids
 
+    @property
     def clan(self):
-        return self.filter_order_ids(self.clan_ids())
+        return self.filter_order_ids(self.clan_ids)
 
     @staticmethod
     def circular_checker(parent, child):
-        if child.id in parent.self_and_ancestor_ids():
+        if child.id in parent.self_and_ancestor_ids:
             raise ValidationError('The object is an ancestor.')
 
 
@@ -192,6 +210,7 @@ def node_factory(
         class Meta:
             abstract = True
 
+        @property
         def ancestor_ids(self):
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -200,6 +219,7 @@ def node_factory(
                 )
                 return [row[0] for row in cursor.fetchall()]
 
+        @property
         def descendant_ids(self):
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -213,13 +233,13 @@ def node_factory(
 
 class EdgeManager(models.Manager):
     def descendants(self, node):
-        return filter_order(self.model.objects, 'parent_id', node.self_and_descendant_ids())
+        return filter_order(self.model.objects, 'parent_id', node.self_and_descendant_ids)
 
     def ancestors(self, node):
-        return filter_order(self.model.objects, 'child_id', node.self_and_ancestor_ids())
+        return filter_order(self.model.objects, 'child_id', node.self_and_ancestor_ids)
 
     def clan(self, node):
-        return filter_order(self.model.objects, ['parent_id', 'child_id'], node.clan_ids())
+        return filter_order(self.model.objects, ['parent_id', 'child_id'], node.clan_ids)
 
 
 class Edge(Relation):
