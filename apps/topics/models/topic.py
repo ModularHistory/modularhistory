@@ -49,7 +49,7 @@ class TopicRelation(ModeratedRelation):
 Node = node_factory(edge_model=TopicEdge)
 
 
-class Topic(Module, Node):
+class Topic(Node, Module):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -87,8 +87,12 @@ class Topic(Module, Node):
         return self.name
 
     def pre_save(self):
+        super().pre_save()
         super(Module, self).pre_save()
-        super(Node, self).pre_save()
+
+    def post_save(self):
+        super().post_save()
+        super(Module, self).post_save()
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')
