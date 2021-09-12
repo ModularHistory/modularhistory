@@ -5,6 +5,7 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.serializers import TopicSerializer
+from apps.topologies.models import edge_factory, node_factory
 from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
@@ -16,8 +17,12 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
+class TopicEdge(edge_factory(node_model='topics.Topic')):
+    """An edge in the directed acyclic graph of topics."""
+
+
 class TopicRelation(ModeratedRelation):
-    """A relationship between equivalent or closely related topics."""
+    """A non-topological relationship between closely related topics."""
 
     topic = ForeignKey(
         to='topics.Topic',
@@ -39,24 +44,7 @@ class TopicRelation(ModeratedRelation):
         return f'{self.topic} ~ {self.related_topic}'
 
 
-class TopicParentChildRelation(ModeratedRelation):
-    """A relationship between a parent topic and child topic."""
-
-    parent_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='child_relations'
-    )
-    child_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='parent_relations'
-    )
-
-    class Meta:
-        unique_together = ['parent_topic', 'child_topic']
-
-    def __str__(self) -> str:
-        return f'{self.parent_topic} > {self.child_topic}'
-
-
-class Topic(TreeModel, Module):
+class Topic(node_factory(edge_model=TopicEdge), TreeModel, Module):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
