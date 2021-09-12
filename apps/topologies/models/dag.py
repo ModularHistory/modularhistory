@@ -83,7 +83,6 @@ class Node(AbstractModel):
     """
 
     edge_model: Type[ExtendedModel]
-    edge_model_table: str
 
     class Meta:
         abstract = True
