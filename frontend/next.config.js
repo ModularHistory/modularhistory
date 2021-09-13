@@ -34,6 +34,9 @@ const redirectRegex = /(.+) (.+);/;
 
 module.exports = {
   async redirects() {
+    if (!fs.existsSync(redirectsMapPath)) {
+      return [];
+    }
     const redirectsMapStream = fs.createReadStream(redirectsMapPath);
     const redirectsInterface = readline.createInterface({
       input: redirectsMapStream,
