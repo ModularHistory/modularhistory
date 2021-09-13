@@ -12,11 +12,13 @@ echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".s
     cd frontend && npx lint-staged && cd ..
 }
 
+echo "Linting Python code..."
 echo "$staged_files" | grep -E --quiet ".+.py" && {
     staged_python_files=$(echo "$staged_files" | grep -E ".+.py")
     # Autoformat and lint Python code.
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
+        echo "Autoformatting Python code..."
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
         for file in $staged_python_files; do
             # Check types with mypy first, since mypy is faster than pytype.
