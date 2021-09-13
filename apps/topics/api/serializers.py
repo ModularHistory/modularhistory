@@ -17,5 +17,4 @@ class TopicDrfSerializer(DrfModuleSerializer):
             'name',
             'aliases',
             'description',
-            'path',
         ]

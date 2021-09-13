@@ -14,11 +14,12 @@ https://github.com/stdbrouw/django-treebeard-dag
 """
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
 from django.db import connection, models
 from django.db.models import Case, When
+from django.db.models.base import Model
 
 from core.models.abstract import AbstractModel
 from core.models.model import ExtendedModel
@@ -185,11 +186,6 @@ class Node(AbstractModel):
     def clan(self):
         return self.filter_order_ids(self.clan_ids)
 
-    @staticmethod
-    def circular_checker(parent, child):
-        if child.id in parent.self_and_ancestor_ids:
-            raise ValidationError('The object is an ancestor.')
-
 
 def node_factory(
     edge_model: Type[ExtendedModel],
@@ -262,11 +258,16 @@ class Edge(Relation):
 
     def pre_save(self):
         super().pre_save()
-        self.parent.__class__.circular_checker(self.parent, self.child)
+        # Avoid circular ancestry.
+        if self.child.id in self.parent.self_and_ancestor_ids:
+            raise ValidationError('The child topic is an ancestor of the parent topic.')
 
 
-def edge_factory(node_model: Union[str, Type[Node]]) -> Type[Edge]:
-    """Return a model inheriting from `DagEdge` and implementing `parent` and `child`."""
+def edge_factory(
+    node_model: Union[str, Type[Node]], bases: Optional[tuple[Type[Model]]] = None
+) -> Type[Edge]:
+    """Return a model inheriting from `Edge` and implementing `parent` and `child`."""
+    bases = bases or tuple()
     if isinstance(node_model, str):
         try:
             node_model_name = node_model.split('.')[1]
@@ -275,7 +276,7 @@ def edge_factory(node_model: Union[str, Type[Node]]) -> Type[Edge]:
     else:
         node_model_name = node_model._meta.model_name
 
-    class _Edge(Edge):
+    class _Edge(Edge, *bases):
         parent = models.ForeignKey(
             node_model,
             related_name='child_edges',
@@ -291,5 +292,17 @@ def edge_factory(node_model: Union[str, Type[Node]]) -> Type[Edge]:
 
         class Meta:
             abstract = True
+
+        def pre_save(self):
+            super().pre_save()
+            for base in bases:
+                if issubclass(base, ExtendedModel):
+                    super(base, self).pre_save()
+
+        def post_save(self):
+            super().post_save()
+            for base in bases:
+                if issubclass(base, ExtendedModel):
+                    super(base, self).post_save()
 
     return _Edge

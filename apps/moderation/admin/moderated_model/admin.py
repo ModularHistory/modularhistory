@@ -5,6 +5,7 @@ from django.db.models.base import Model
 from django.utils import timezone
 from image_cropping import ImageCropWidget
 
+from apps.admin.list_filters.boolean_filters import HasValueFilter
 from apps.admin.model_admin import ExtendedModelAdmin
 from apps.admin.widgets.historic_date_widget import HistoricDateWidget
 from apps.moderation.constants import ModerationStatus
@@ -20,6 +21,12 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
+class DeletedFilter(HasValueFilter):
+    """Filter for deleted objects."""
+
+    title = parameter_name = field = 'deleted'
+
+
 class ModeratedModelAdmin(ExtendedModelAdmin):
     """Admin for models requiring moderation."""
 
@@ -28,6 +35,8 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     # `Change` admin. If False, the moderated model admin should function normally
     # and save changes directly to model instances.
     admin_integration_enabled = True
+
+    list_filter = [DeletedFilter]
 
     class Media(ExtendedModelAdmin.Media):
         """Include admin CSS and JS."""
