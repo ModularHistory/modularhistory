@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.serializers import TopicSerializer
 from apps.topologies.models import edge_factory, node_factory
-from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
 from core.models.model_with_cache import store
@@ -17,7 +16,10 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicEdge(edge_factory(node_model='topics.Topic')):
+Edge = edge_factory(node_model='topics.Topic', bases=(ModeratedRelation,))
+
+
+class TopicEdge(Edge):
     """An edge in the directed acyclic graph of topics."""
 
 
@@ -44,7 +46,10 @@ class TopicRelation(ModeratedRelation):
         return f'{self.topic} ~ {self.related_topic}'
 
 
-class Topic(node_factory(edge_model=TopicEdge), TreeModel, Module):
+Node = node_factory(edge_model=TopicEdge)
+
+
+class Topic(Node, Module):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -80,6 +85,14 @@ class Topic(node_factory(edge_model=TopicEdge), TreeModel, Module):
     def __str__(self) -> str:
         """Return the topic's string representation."""
         return self.name
+
+    def pre_save(self):
+        super().pre_save()
+        super(Module, self).pre_save()
+
+    def post_save(self):
+        super().post_save()
+        super(Module, self).post_save()
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')
