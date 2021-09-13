@@ -10,7 +10,7 @@
 images_to_pull=("django" "next" "webserver")
 
 # Specify containers to start IF NOT ALREADY RUNNING, in order of startup.
-containers_to_start=("postgres" "redis" "elasticserch" "django" "celery" "celery_beat" "next")
+containers_to_start=("postgres" "redis" "elasticsearch" "django" "celery" "celery_beat" "next")
 
 # Specify containers to deploy with zero downtime, in order of startup.
 # NOTE: These containers will briefly have two instances running simultaneously.
