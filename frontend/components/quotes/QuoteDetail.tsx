@@ -1,3 +1,4 @@
+import ModuleHTML from "@/components/details/ModuleHTML";
 import { Quote } from "@/types/modules";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
@@ -20,7 +21,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
         </div>
       )}
 
-      <div dangerouslySetInnerHTML={{ __html: quote.html }} />
+      <ModuleHTML html={quote.html} />
 
       {!!quote.cachedTags?.length && <TagList topics={quote.cachedTags} />}
 

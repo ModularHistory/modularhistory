@@ -1,12 +1,44 @@
 from django.urls import path
 
-from apps.admin import admin_site
+from apps.admin import TabularInline, admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.boolean_filters import HasRelationFilter
 from apps.moderation.admin.moderated_model.admin import ModeratedModelAdmin
 from apps.topics import models
-from apps.topics.admin.inlines import TopicRelationsInline
 from apps.topics.views import TagSearchView
+
+
+class TopicRelationsInline(TabularInline):
+    """Inline admin for a topic's related topics."""
+
+    model = models.Topic.related_topics.through
+    fk_name = 'topic'
+    autocomplete_fields = ['related_topic']
+    extra = 1
+    verbose_name_plural = 'related topics'
+    verbose_name = 'related topic'
+
+
+class ChildTopicsInline(TabularInline):
+    """Inline admin for a topic's child topics."""
+
+    model = models.TopicEdge
+    fk_name = 'parent'
+    autocomplete_fields = ['child']
+    extra = 1
+    verbose_name = 'child topic'
+    verbose_name_plural = 'child topics'
+
+
+class ParentTopicsInline(TabularInline):
+    """Inline admin for a topic's parent topics."""
+
+    model = models.TopicEdge
+    fk_name = 'child'
+    autocomplete_fields = ['parent']
+    extra = 1
+    verbose_name = 'parent topic'
+    verbose_name_plural = 'parent topics'
 
 
 class RelatedTopicFilter(ManyToManyAutocompleteFilter):
@@ -33,9 +65,11 @@ class TopicAdmin(ModeratedModelAdmin):
 
     autocomplete_fields = ['parent']
     inlines = [
+        ParentTopicsInline,
+        ChildTopicsInline,
         TopicRelationsInline,
     ]
-    exclude = ['key', 'cache', 'related_topics']
+    exclude = ['key', 'cache', 'related_topics', 'children']
     list_display = [
         'name',
         'aliases',

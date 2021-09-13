@@ -1,5 +1,7 @@
+import ModuleHTML from "@/components/details/ModuleHTML";
 import { Occurrence } from "@/types/modules";
 import { FC } from "react";
+import { titleCase } from "title-case";
 import ImageCard from "../images/ImageCard";
 import TagList from "../topics/TagList";
 
@@ -36,9 +38,13 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
           )
       )}
 
-      <h2 className="text-center my-3" dangerouslySetInnerHTML={{ __html: occurrence.title }} />
-      {occurrence.summary != occurrence.title && <p className="lead">{occurrence.summary}</p>}
-      <div dangerouslySetInnerHTML={{ __html: occurrence.elaboration }} />
+      <h2 className="text-center my-3">{titleCase(occurrence.title)}</h2>
+      {occurrence.summary != occurrence.title && (
+        <p className="lead" dangerouslySetInnerHTML={{ __html: occurrence.summary }} />
+      )}
+
+      <ModuleHTML html={occurrence.elaboration} />
+
       {occurrence.postscript && <p dangerouslySetInnerHTML={{ __html: occurrence.postscript }} />}
 
       {!!occurrence.cachedTags?.length && <TagList topics={occurrence.cachedTags} />}

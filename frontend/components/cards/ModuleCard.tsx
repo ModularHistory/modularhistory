@@ -3,6 +3,7 @@ import { Card } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { CSSProperties } from "@material-ui/styles";
 import { FC, ReactNode } from "react";
+import { titleCase } from "title-case";
 
 const StyledCard = styled(Card)({
   quotes: '"“" "”" "‘" "’"',
@@ -169,9 +170,11 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <CardHeader className={"text-center"}>
           <small dangerouslySetInnerHTML={{ __html: header }} />
         </CardHeader>
-      ) : module.dateString ? (
+      ) : module.title || module.dateString ? ( // if title and dataString
         <CardHeader className={"text-center"}>
-          <small dangerouslySetInnerHTML={{ __html: module.dateString }} />
+          {module.title && <small>{titleCase(module.title)}</small>}
+          {module.title && module.dateString && <br />}
+          {module.dateString && <small dangerouslySetInnerHTML={{ __html: module.dateString }} />}
         </CardHeader>
       ) : null}
       {children && <CardBody>{children}</CardBody>}

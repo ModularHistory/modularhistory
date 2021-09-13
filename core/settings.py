@@ -174,6 +174,7 @@ INSTALLED_APPS = [
     'apps.sources.apps.SourcesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
+    'apps.topologies.apps.TopologiesConfig',
     'apps.trees.apps.TreesConfig',
     'apps.users.apps.UsersConfig',
 ]
