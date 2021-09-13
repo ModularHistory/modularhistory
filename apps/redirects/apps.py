@@ -13,4 +13,5 @@ class RedirectsConfig(AppConfig):
         """Perform initialization tasks for the redirects app."""
         from .tasks import write_map
 
-        return delay(write_map)
+        delay(write_map)
+        return super().ready()
