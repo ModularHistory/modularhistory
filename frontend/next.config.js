@@ -3,6 +3,9 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 // const { withSentryConfig } = require("@sentry/nextjs");
+const fs = require("fs");
+const readline = require("readline");
+const path = require("path");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 require("dotenv").config({ path: "../.env" });
 const { SENTRY_FRONTEND_DSN, SHA, VERSION } = process.env;
@@ -25,7 +28,28 @@ const uploadSourceMaps =
   process.env.SENTRY_AUTH_TOKEN &&
   process.env.SHA;
 
+const volumesDir = path.join(process.cwd(), "../_volumes");
+const redirectsMapPath = path.join(volumesDir, "redirects/redirects.map");
+const redirectRegex = /(.+) (.+);/;
+
 module.exports = {
+  async redirects() {
+    const redirectsMapStream = fs.createReadStream(redirectsMapPath);
+    const redirectsInterface = readline.createInterface({
+      input: redirectsMapStream,
+      crlfDelay: Infinity,
+    });
+    const redirects = [];
+    redirectsInterface.on("line", function (line) {
+      const redirect = line.match(redirectRegex);
+      redirects.push({
+        source: redirect[1],
+        destination: redirect[2],
+        permanent: true,
+      });
+    });
+    return redirects;
+  },
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: process.env.ENVIRONMENT != "prod",
