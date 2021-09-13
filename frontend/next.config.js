@@ -35,6 +35,7 @@ const redirectRegex = /(.+) (.+);/;
 module.exports = {
   async redirects() {
     if (!fs.existsSync(redirectsMapPath)) {
+      console.log(`${redirectsMapPath} does not exist.`);
       return [];
     }
     const redirectsMapStream = fs.createReadStream(redirectsMapPath);
