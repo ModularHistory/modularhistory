@@ -180,6 +180,7 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
 django-currentuser = "^0.5.3"
+drf-writable-nested = "^0.6.3"
 
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]

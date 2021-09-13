@@ -11,7 +11,6 @@ from apps.moderation.constants import ModerationStatus
 from apps.moderation.models.change.model import Change
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderated_model.manager import ModeratedManager
-from core.models.model import ExtendedModel
 from core.models.soft_deletable import SoftDeletableModel
 
 if TYPE_CHECKING:
@@ -51,9 +50,14 @@ class ModeratedModel(SoftDeletableModel):
     def save(self, *args, **kwargs):
         moderate = kwargs.pop('moderate', True)
         contributor = kwargs.pop('contributor', get_current_authenticated_user())
-        if moderate:
+        if moderate and contributor:
             self.save_change(contributor=contributor)
         else:
+            # if contributor is None, but moderate=True, content moderation is skipped to avoid unintentional save_change calls
+            if moderate:
+                logging.error(
+                    'No contributor available to use to save a contribution, falling back to super().save'
+                )
             super().save(*args, **kwargs)
 
     def save_change(

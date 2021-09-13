@@ -32,7 +32,7 @@ class SoftDeletableModel(ExtendedModel):
     class Meta:
         abstract = True
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         was_deleted, was_undeleted = False, False
         if self.pk:
             was_previously_deleted = self.__class__.deleted_objects.filter(
@@ -42,7 +42,7 @@ class SoftDeletableModel(ExtendedModel):
                 was_undeleted = True
             # elif self.deleted and not was_previously_deleted:
             #     was_deleted = True
-        super().save(**kwargs)
+        super().save(*args, **kwargs)
         if was_undeleted:
             # Send undelete signal.
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)

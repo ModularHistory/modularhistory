@@ -136,4 +136,4 @@ def cache_images(model: str, instance_id: int, images: list):
         return
     model_instance: ModelWithImages = Model.objects.get(pk=instance_id)
     model_instance.cache['images'] = images
-    model_instance.save(wipe_cache=False)
+    model_instance.save(wipe_cache=False, moderate=False)

@@ -108,7 +108,7 @@ def store(
                             f'with value: {pformat(property_value)}'
                         )
                         # Specify `wipe_cache=False` to properly update the JSON value
-                        ModelWithCache.save(model_instance, wipe_cache=False)  # type: ignore
+                        ModelWithCache.save(model_instance, wipe_cache=False, moderate=False)  # type: ignore
                     return property_value
                 logging.error(
                     f'{model_instance.__class__.__name__} uses @store '

@@ -1282,6 +1282,14 @@ toml = "*"
 pipenv = ["pipenv"]
 
 [[package]]
+name = "drf-writable-nested"
+version = "0.6.3"
+description = "Writable nested helpers for django-rest-framework's serializers"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "easy-thumbnails"
 version = "2.7.1"
 description = "Easy thumbnails for Django"
@@ -3583,7 +3591,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "0c7f16f9d8d9b6e66dfe4cff140adbd5dc824ba0b1970388a3e176570b704fae"
+content-hash = "c0f6dbe87e0345bb422a3538a07dcdba7346e1efc5bd30fa881addead2d32b53"
 
 [metadata.files]
 aenum = [
@@ -4195,6 +4203,9 @@ docutils = [
 dparse = [
     {file = "dparse-0.5.1-py3-none-any.whl", hash = "sha256:e953a25e44ebb60a5c6efc2add4420c177f1d8404509da88da9729202f306994"},
     {file = "dparse-0.5.1.tar.gz", hash = "sha256:a1b5f169102e1c894f9a7d5ccf6f9402a836a5d24be80a986c7ce9eaed78f367"},
+]
+drf-writable-nested = [
+    {file = "drf_writable_nested-0.6.3-py3-none-any.whl", hash = "sha256:b96d30aca953f4dba313bb5697da4022470dc63fb2dbe68c93d38d389ec63ac2"},
 ]
 easy-thumbnails = [
     {file = "easy-thumbnails-2.7.1.tar.gz", hash = "sha256:f862949208d9066cd3d84ffcf9c2dbe9c7344ea6152b741e440f861eca46855c"},

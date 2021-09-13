@@ -43,7 +43,7 @@ class SluggedModel(TitledModel):
         if original_slug and self.slug != original_slug:
             Redirect.objects.update_or_create(
                 site_id=settings.SITE_ID,
-                old_path=self._original_absolute_url,
+                old_path=self.absolute_url.replace(self.slug, self._original_slug),
                 defaults={'new_path': self.absolute_url},
             )
         # Delete any redirects that would hijack this model instance's new URL.

@@ -134,4 +134,4 @@ def cache_citations(model: str, instance_id: int, citations: list):
         return
     model_instance: ModelWithSources = Model.objects.get(pk=instance_id)
     model_instance.cache['citations'] = citations
-    model_instance.save(wipe_cache=False)
+    model_instance.save(wipe_cache=False, moderate=False)
