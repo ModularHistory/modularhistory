@@ -11,7 +11,7 @@ class RedirectsConfig(AppConfig):
     # https://docs.djangoproject.com/en/dev/ref/applications/#django.apps.AppConfig.ready
     def ready(self) -> None:
         """Perform initialization tasks for the redirects app."""
-        # from .tasks import write_map
+        from .tasks import write_map
 
-        # delay(write_map)
+        delay(write_map)
         return super().ready()
