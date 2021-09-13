@@ -297,12 +297,14 @@ def edge_factory(
             super().pre_save()
             for base in bases:
                 if issubclass(base, ExtendedModel):
-                    super(base, self).pre_save()
+                    super_self: ExtendedModel = super(base, self)
+                    super_self.pre_save()
 
         def post_save(self):
             super().post_save()
             for base in bases:
                 if issubclass(base, ExtendedModel):
-                    super(base, self).post_save()
+                    super_self: ExtendedModel = super(base, self)
+                    super_self.post_save()
 
     return _Edge
