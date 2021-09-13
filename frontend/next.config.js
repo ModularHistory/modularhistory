@@ -51,21 +51,21 @@ module.exports = {
           }
         })
         .catch(console.error);
-      return redirects;
     } else {
       const redirectsMapStream = fs.createReadStream(redirectsMapPath);
       const redirectsInterface = readline.createInterface({
         input: redirectsMapStream,
         crlfDelay: Infinity,
       });
-      redirectsInterface.on("line", function (line) {
+      for await (const line of redirectsInterface) {
         const redirect = line.match(redirectRegex);
+        console.log(redirect);
         redirects.push({
           source: redirect[1],
           destination: redirect[2],
           permanent: true,
         });
-      });
+      }
     }
     return redirects;
   },
