@@ -9,6 +9,7 @@ def autoformat(
     filepaths: Optional[Iterable[str]] = None,
 ):
     """Autoformat Python code."""
+    print(f'Autoformatting files: {filepaths=}')
     if context is None:
         context = Context()
     commands = [

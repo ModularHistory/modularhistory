@@ -16,7 +16,7 @@ def delay(func: 'Task', *args, **kwargs):
     """
     if USE_CELERY:
         try:
-            func.delay(*args, **kwargs)
+            return func.delay(*args, **kwargs)
         except Exception as err:
             logging.error(err)
     logging.warning(f'Running {func.__name__} synchronously because Celery is disabled...')
@@ -34,7 +34,7 @@ def apply_async(
     """
     if USE_CELERY:
         try:
-            func.apply_async(args=args, kwargs=kwargs, **options)
+            return func.apply_async(args=args, kwargs=kwargs, **options)
         except Exception as err:
             logging.error(err)
     else:
