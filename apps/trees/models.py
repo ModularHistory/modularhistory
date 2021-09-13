@@ -21,7 +21,7 @@ class TreeModel(ExtendedModel):
         null=True,
         blank=True,
         # Direct children can be accessed via the `children` property.
-        related_name='tree_children',  # TODO: --> 'children'
+        related_name='children',
         on_delete=models.CASCADE,
         verbose_name=_('parent'),
     )
