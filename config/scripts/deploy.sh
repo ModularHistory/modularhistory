@@ -77,7 +77,7 @@ declare -a started_containers
 # If containers are not already running, start them up.
 for container in "${containers_to_start[@]}"; do
     docker-compose ps | grep -q "$container" | grep -q "Up" || {
-        docker-compose up -d --no-deps --no-recreate "$container"
+        docker-compose up -d --no-recreate "$container"
         started_containers+=("${container}")
     }
 done
