@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import re
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Union
 
 from django.db import models
 from django.db.models import QuerySet
@@ -51,7 +51,7 @@ class RelatedEntitiesField(CustomManyToManyField):
     target_model = 'entities.Entity'
     through_model_base = AbstractEntityRelation
 
-    def __init__(self, through: Union[Type[AbstractEntityRelation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractEntityRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('related entities')

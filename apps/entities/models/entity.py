@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -7,7 +7,6 @@ from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
-from typedmodels.models import TypedModel
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
@@ -34,9 +33,8 @@ from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
 from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.manager import TypedModelManager
 from core.models.model_with_cache import store
-from core.models.module import Module
+from core.models.module import TypedModule
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -94,8 +92,7 @@ class EntityRelation(AbstractEntityRelation):
 
 
 class Entity(
-    TypedModel,
-    Module,
+    TypedModule,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
@@ -159,7 +156,6 @@ class Entity(
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
-    objects = TypedModelManager()
     searchable_fields = ['name', 'aliases', 'description']
     serializer = EntitySerializer
     slug_base_fields = ('unabbreviated_name',)
@@ -253,7 +249,7 @@ class Entity(
             return ' '.join(categorization_words)
         return EMPTY_STRING
 
-    def validate_type(self, raises: Type[Exception] = ValidationError):
+    def validate_type(self, raises: type[Exception] = ValidationError):
         """Validate the entity's type."""
         if self.type == 'entities.entity' or not self.type:
             raise raises('Entity requires a type.')

@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Optional, Type, Union
+from typing import Dict, Optional, Union
 
 from django.apps import apps
 from django.db.models import Model
@@ -22,7 +22,7 @@ def get_html_for_view(
     if isinstance(model_instance, dict):
         app_name, model_name = model_instance['model'].split('.')
     else:
-        model_cls: Type[Model] = model_instance.__class__
+        model_cls: type[Model] = model_instance.__class__
         app_name = model_cls._meta.app_label
         model_name = model_cls.__name__.lower()
     template_directory_name = app_name

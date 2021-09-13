@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional
 
 from django.db import transaction
 from django.db.models.query import QuerySet
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class ChangeQuerySet(QuerySet):
     """Lazy database lookup for a set of `Change` instances."""
 
-    model: Type['Change']
+    model: type['Change']
 
     def apply(self):
         """Apply the changes to their referenced model instances."""

@@ -1,5 +1,5 @@
 import re
-from typing import Mapping, Optional, Type, Union
+from typing import Mapping, Optional, Union
 
 from aenum import Constant
 from django.conf import settings
@@ -33,13 +33,13 @@ from core.fields.html_field import HTMLField, TrumbowygWidget
 from core.fields.json_field import JSONField
 from core.models.manager import SearchableQuerySet
 
-AdminListFilter = Union[str, Type[ListFilter]]
+AdminListFilter = Union[str, type[ListFilter]]
 
 char_counter_code = (
     'if ($(this)).attr("maxLength")) {{ console.log("yes") }} else {{ console.log("no") }}'
 )
 
-FORM_FIELD_OVERRIDES: Mapping[Type[Field], Mapping[str, Type[Widget]]] = {
+FORM_FIELD_OVERRIDES: Mapping[type[Field], Mapping[str, type[Widget]]] = {
     CharField: {
         'widget': TextInput(attrs={'onClick': char_counter_code, 'style': 'width: 100%'})
     },
@@ -63,7 +63,7 @@ TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
 class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     """Base admin class for ModularHistory's models."""
 
-    model: Type[Model]
+    model: type[Model]
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 

@@ -1,7 +1,7 @@
 """AutocompleteFilter based on https://github.com/farhan0581/django-admin-autocomplete-filter."""
 
 import re
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Union
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
 from django.apps import apps
@@ -26,12 +26,12 @@ class AutocompleteFilter(BaseAutocompleteFilter):
 class ManyToManyAutocompleteFilter(AutocompleteFilter):
     """Autocomplete filter to be used with many-to-many relationships."""
 
-    m2m_cls: Union[Type['ExtendedModel'], str]
+    m2m_cls: Union[type['ExtendedModel'], str]
 
     def __init__(self, request: 'HttpRequest', query_params, model, model_admin):
         """Construct the many-to-many autocomplete filter."""
         super().__init__(request, query_params, model, model_admin)
-        m2m_cls: Type['ExtendedModel']
+        m2m_cls: type['ExtendedModel']
         if isinstance(self.m2m_cls, str):
             m2m_cls = apps.get_model(*(self.m2m_cls.split('.')))
         else:

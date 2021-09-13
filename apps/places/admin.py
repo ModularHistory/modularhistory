@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.db.models import Model
 
 from apps.admin import ExtendedModelAdmin, TabularInline, admin_site
@@ -11,7 +9,7 @@ from apps.places.forms import PlaceForm
 class AbstractLocationsInline(TabularInline):
     """Inline admin for an occurrence's locations."""
 
-    model: Type[Model]
+    model: type[Model]
     extra = 0
     autocomplete_fields = ['location']
     verbose_name = 'location'

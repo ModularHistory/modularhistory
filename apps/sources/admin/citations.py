@@ -1,12 +1,15 @@
-from typing import Type
+from typing import TYPE_CHECKING
 
 from apps.admin.inlines import TabularInline
+
+if TYPE_CHECKING:
+    from django.db.models.base import Model
 
 
 class AbstractSourcesInline(TabularInline):
     """Inline admin for sources."""
 
-    model: Type
+    model: type['Model']
 
     autocomplete_fields = ['source']
     # TODO: fix JSON widget so pages can be included in the inline editor

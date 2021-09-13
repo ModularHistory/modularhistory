@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.base import Model
@@ -43,7 +43,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
 
     def get_model_cls(
         self, obj: Optional['ModeratedModel'] = None
-    ) -> Optional[Type['ModeratedModel']]:
+    ) -> Optional[type['ModeratedModel']]:
         """Return the class of the moderated model."""
         if obj is None:
             return getattr(self, 'model', None)

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from django.db.models.manager import Manager
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class ChangeSetManager(Manager):
 
-    model: Type['ChangeSet']
+    model: type['ChangeSet']
 
     def get_queryset(self):
         return ChangeSetQuerySet(self.model, using=self._db)

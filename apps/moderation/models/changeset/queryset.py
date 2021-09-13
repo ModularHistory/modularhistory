@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional
 
 from django.db.models.query import QuerySet
 
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 class ChangeSetQuerySet(QuerySet):
 
-    model: Type['ChangeSet']
+    model: type['ChangeSet']
 
     def approve(self, moderator: Optional['User'], reason: Optional[str] = None):
         """Approve the change sets."""
