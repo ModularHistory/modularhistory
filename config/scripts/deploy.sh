@@ -76,7 +76,7 @@ declare -a started_containers
 
 # If containers are not already running, start them up.
 for container in "${containers_to_start[@]}"; do
-    docker-compose ps | grep -q "$container" | grep -q "Up" || {
+    docker-compose ps | grep "$container" | grep -q "Up" || {
         docker-compose up -d --no-recreate "$container"
         started_containers+=("${container}")
     }
@@ -127,7 +127,7 @@ reload_nginx
 
 # Confirm all containers are running.
 for container in "${containers_to_start[@]}"; do
-    docker-compose ps | grep -q "$container" | grep -q "Up" || {
+    docker-compose ps | grep "$container" | grep -q "Up" || {
         echo "WARNING: ${container} unexpectedly is not running. Starting..."
         docker-compose up -d "$container"
         wait_for_health "$container"

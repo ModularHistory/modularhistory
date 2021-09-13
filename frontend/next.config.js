@@ -9,7 +9,6 @@ const path = require("path");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 require("dotenv").config({ path: "../.env" });
 const { SENTRY_FRONTEND_DSN, SHA, VERSION } = process.env;
-
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/modularhistory/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
 process.env.SENTRY_ORG = "modularhistory";
@@ -34,24 +33,40 @@ const redirectRegex = /(.+) (.+);/;
 
 module.exports = {
   async redirects() {
+    const redirects = [];
     if (!fs.existsSync(redirectsMapPath)) {
       console.log(`${redirectsMapPath} does not exist.`);
-      return [];
-    }
-    const redirectsMapStream = fs.createReadStream(redirectsMapPath);
-    const redirectsInterface = readline.createInterface({
-      input: redirectsMapStream,
-      crlfDelay: Infinity,
-    });
-    const redirects = [];
-    redirectsInterface.on("line", function (line) {
-      const redirect = line.match(redirectRegex);
-      redirects.push({
-        source: redirect[1],
-        destination: redirect[2],
-        permanent: true,
+      await require("axios")
+        .get("http://django:8000/api/redirects/")
+        .then(({ data }) => {
+          const results = data["results"];
+          if (!Array.isArray(results)) {
+            for (const redirect of results) {
+              redirects.push({
+                source: redirect.oldPath,
+                destination: redirect.newPath,
+                permanent: true,
+              });
+            }
+          }
+        })
+        .catch(console.error);
+      return redirects;
+    } else {
+      const redirectsMapStream = fs.createReadStream(redirectsMapPath);
+      const redirectsInterface = readline.createInterface({
+        input: redirectsMapStream,
+        crlfDelay: Infinity,
       });
-    });
+      redirectsInterface.on("line", function (line) {
+        const redirect = line.match(redirectRegex);
+        redirects.push({
+          source: redirect[1],
+          destination: redirect[2],
+          permanent: true,
+        });
+      });
+    }
     return redirects;
   },
   // Delegate static file compression to Nginx in production.
