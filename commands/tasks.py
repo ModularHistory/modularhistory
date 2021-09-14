@@ -17,10 +17,6 @@ django.setup()
 
 from django.conf import settings  # noqa: E402
 
-GITHUB_API_BASE_URL = 'https://api.github.com'
-OWNER = 'modularhistory'
-REPO = 'modularhistory'
-GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = join(settings.BASE_DIR, '.github/.credentials')
 
 

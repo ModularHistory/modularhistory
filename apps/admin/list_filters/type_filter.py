@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, Sequence, Type
+from typing import TYPE_CHECKING, Any, Optional, Sequence
 
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
@@ -21,7 +21,7 @@ class ContentTypeFilter(SimpleListFilter):
         self,
         request: 'HttpRequest',
         params: dict[str, str],
-        model: Type['Model'],
+        model: type['Model'],
         model_admin: Any,
     ) -> None:
         self.model = model
@@ -50,7 +50,7 @@ class PolymorphicContentTypeFilter(ContentTypeFilter):
     """Filters sources by type."""
 
     parameter_name = 'polymorphic_ctype_id'
-    model_options: Optional[Sequence[Type['PolymorphicModel']]] = None
+    model_options: Optional[Sequence[type['PolymorphicModel']]] = None
 
     def lookups(self, request: 'HttpRequest', model_admin: PolymorphicParentModelAdmin):
         """Return an iterable of tuples (value, verbose value)."""
@@ -75,7 +75,7 @@ class TypeFilter(SimpleListFilter):
 
     title = 'type'
     parameter_name = 'type'
-    base_model: Type['TypedModel']
+    base_model: type['TypedModel']
 
     def lookups(self, request: 'HttpRequest', model_admin):
         """Return an iterable of tuples (value, verbose value)."""

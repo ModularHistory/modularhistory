@@ -1,7 +1,7 @@
 """Base model classes for ModularHistory."""
 
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Sequence, Type
+from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Sequence
 
 import regex
 import serpy
@@ -23,6 +23,7 @@ from apps.search.api.serializers import (
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged import SluggedModel
+from core.models.typed import TypedModel, TypedModelManager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
@@ -52,7 +53,7 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
     admin_url = serializers.CharField(required=False)
 
     class Meta(DrfSearchableModelSerializer.Meta):
-        model: Type['Module']
+        model: type['Module']
         fields = DrfSearchableModelSerializer.Meta.fields + [
             'title',
             'slug',
@@ -90,7 +91,7 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     objects: 'Manager' = ModuleManager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: Type[serializers.Serializer] = ModuleSerializer
+    serializer: type[serializers.Serializer] = ModuleSerializer
     placeholder_regex: Optional[str] = None
     slug_base_fields: Sequence[str] = ('title',)
 
@@ -100,14 +101,14 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
             self.slug = self.get_slug()
 
     def pre_save(self):
-        super(ModelWithCache, self).pre_save()
-        super(SluggedModel, self).pre_save()
-        super(SearchableModeratedModel, self).pre_save()
+        ModelWithCache.pre_save(self)
+        SluggedModel.pre_save(self)
+        SearchableModeratedModel.pre_save(self)
 
     def post_save(self):
-        super(ModelWithCache, self).post_save()
-        super(SluggedModel, self).post_save()
-        super(SearchableModeratedModel, self).post_save()
+        ModelWithCache.post_save(self)
+        SluggedModel.post_save(self)
+        SearchableModeratedModel.post_save(self)
 
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:
@@ -262,3 +263,16 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
             placeholder = f'[[ {model_name}: {pk}: {html} ]]'
         logging.debug(f'Updated {placeholder}')
         return placeholder
+
+
+class TypedModuleManager(TypedModelManager, ModuleManager):
+    """Manager for modules inheriting from `TypedModel`."""
+
+
+class TypedModule(TypedModel, Module):
+    """Combination of `TypedModel` and `Module`."""
+
+    class Meta:
+        abstract = True
+
+    objects = TypedModuleManager()

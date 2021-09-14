@@ -3,13 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-from apps.topics.models import Topic, TopicEdge
-
-
-def forwards_func(apps, schema_editor):
-    for t in Topic.objects.all():
-        for c in t.tree_children.all():
-            TopicEdge.objects.get_or_create(parent=t, child=c)
 
 
 class Migration(migrations.Migration):
@@ -79,5 +72,4 @@ class Migration(migrations.Migration):
                 to='topics.Topic',
             ),
         ),
-        migrations.RunPython(forwards_func, migrations.RunPython.noop),
     ]

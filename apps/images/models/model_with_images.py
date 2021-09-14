@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.apps import apps
 from django.db import models
@@ -48,7 +48,7 @@ class ImagesField(CustomManyToManyField):
     target_model = 'images.Image'
     through_model_base = AbstractImageRelation
 
-    def __init__(self, through: Union[Type[AbstractImageRelation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractImageRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('images')

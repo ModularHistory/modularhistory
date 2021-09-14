@@ -3,11 +3,9 @@ from typing import Optional
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from typedmodels.models import TypedModel
 
-from core.models.manager import TypedModelManager
 from core.models.model_with_cache import store
-from core.models.module import Module
+from core.models.module import TypedModule
 
 NAME_MAX_LENGTH: int = 40
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
@@ -52,7 +50,7 @@ def get_allowable_location_types(reference_location_type: str) -> list[str]:
     return allowable_types
 
 
-class Place(TypedModel, Module):
+class Place(TypedModule):
     """Where something has happened."""
 
     name = models.CharField(
@@ -72,7 +70,6 @@ class Place(TypedModel, Module):
     class Meta:
         unique_together = ['name', 'location']
 
-    objects = TypedModelManager()
     slug_base_fields = ('string',)
 
     def __str__(self) -> str:

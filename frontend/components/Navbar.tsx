@@ -21,10 +21,9 @@ type GlobalMenuItemWithoutSubmenuItems = Omit<GlobalMenuItem, "submenuItems">;
 const globalMenuItems: GlobalMenuItem[] = [
   {
     title: "About",
-    path: "/about",
+    path: "/",
     submenuItems: [
       { title: "Introduction", path: "/about/introduction", reactive: true },
-      { title: "About Us", path: "/about", reactive: true },
       { title: "Mission", path: "/about/mission", reactive: true },
       { title: "Manifesto", path: "/about/manifesto", reactive: true },
     ],

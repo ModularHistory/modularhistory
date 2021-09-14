@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Union
 
 import regex as re
 from aenum import Constant
@@ -72,14 +72,14 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
-    model_classes: dict[str, Type['ExtendedModel']] = {}
+    model_classes: dict[str, type['ExtendedModel']] = {}
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)
         logging.debug(f'Found {object_type} placeholder: {truncate(placeholder)}')
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
-            model_cls: Type['ExtendedModel'] = model_classes.get(
+            model_cls: type['ExtendedModel'] = model_classes.get(
                 model_cls_str, import_string(model_cls_str)
             )
             if model_cls_str not in model_classes:
@@ -258,7 +258,7 @@ class HTMLField(TextField):
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
-                model_cls: Type['ExtendedModel'] = import_string(model_cls_str)
+                model_cls: type['ExtendedModel'] = import_string(model_cls_str)
                 for match in model_cls.get_admin_placeholder_regex().finditer(html):
                     if match.group(PlaceholderGroups.MODEL_NAME) != content_type:
                         logging.error(

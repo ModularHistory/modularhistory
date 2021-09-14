@@ -63,7 +63,6 @@ class TopicAdmin(ModeratedModelAdmin):
 
     model = models.Topic
 
-    autocomplete_fields = ['parent']
     inlines = [
         ParentTopicsInline,
         ChildTopicsInline,
@@ -74,18 +73,15 @@ class TopicAdmin(ModeratedModelAdmin):
         'name',
         'aliases',
         'slug',
-        'path',
         'detail_link',
         'tags_string',
     ]
     list_filter = [RelatedTopicFilter, HasParentFilter]
     list_per_page = 25
-    ordering = ['name', 'path']
-    readonly_fields = ['path']
+    ordering = ['name']
     search_fields = [
         'name',
         'aliases',
-        'path',
         'description',
     ]
 

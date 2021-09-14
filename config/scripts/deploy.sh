@@ -5,19 +5,32 @@
 
 [ -z "$SHA" ] && echo "SHA is not set." && exit 1
 
+# Specify image/container names.
+postgres=postgres
+redis=redis
+elasticsearch=elasticsearch
+django=django
+celery=celery
+celery_beat=celery_beat
+next=next
+webserver=webserver
+
 # NOTE: The webserver image is pulled but not automatically deployed.
 # TODO: Pull and deploy the webserver image only if necessary?
-images_to_pull=("django" "next" "webserver")
+images_to_pull=("$django" "$next" "$webserver")
+
+# Specify containers to start IF NOT ALREADY RUNNING, in order of startup.
+containers_to_start=("$postgres" "$redis" "$elasticsearch" "$django" "$celery" "$celery_beat" "$next" "$webserver")
 
 # Specify containers to deploy with zero downtime, in order of startup.
 # NOTE: These containers will briefly have two instances running simultaneously.
 # This means celery_beat cannot be included and must be deployed separately (with downtime).
-containers_to_deploy_without_downtime=("django" "celery" "next")
+containers_to_deploy_without_downtime=("$django" "$celery" "$next")
 
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
     # https://nginx.org/en/docs/beginners_guide.html#control
-    docker-compose exec -T webserver nginx -s reload || {
+    docker-compose exec -T "$webserver" nginx -s reload || {
         echo "Failed to reload nginx config file."; exit 1
     }
 }
@@ -59,25 +72,37 @@ for image_name in "${images_to_pull[@]}"; do
     }
 done
 
+declare -a started_containers
+
+# If containers are not already running, start them up.
+for container in "${containers_to_start[@]}"; do
+    docker-compose ps | grep "$container" | grep -q "Up" || {
+        docker-compose up -d --no-recreate "$container"
+        started_containers+=("${container}")
+    }
+done
+
 # Take down celery_beat to avoid triggering a periodic task during the deploy.
 docker-compose rm --stop --force celery_beat
 
 # Deploy new containers.
 declare -A old_container_ids
 for container in "${containers_to_deploy_without_downtime[@]}"; do
-    echo "" && echo "Deploying $container ..."
-    old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
-    docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
-    container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
-    # new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
-    # docker rename "$container_name" "$new_container_name"
-    docker-compose ps | grep "Exit 1" && exit 1
-    wait_for_health "$container_name"
+    if [[ ! " ${started_containers[*]} " =~ " ${container} " ]]; then
+        echo "" && echo "Deploying $container ..."
+        old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
+        docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
+        container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
+        # new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
+        # docker rename "$container_name" "$new_container_name"
+        docker-compose ps | grep "Exit 1" && exit 1
+        wait_for_health "$container_name"
+    fi
 done
 
-# Recreate celery_beat
-docker-compose up -d --no-deps celery_beat
-wait_for_health celery_beat
+# Start celery_beat.
+docker-compose up -d --no-deps --no-recreate "$celery_beat"
+wait_for_health "$celery_beat"
 
 echo "" && echo "Finished deploying new containers."
 echo "" && docker-compose ps
@@ -99,6 +124,15 @@ echo "" && docker-compose ps
 
 # Reload nginx to stop trying to send traffic to the old containers.
 reload_nginx
+
+# Confirm all containers are running.
+for container in "${containers_to_start[@]}"; do
+    docker-compose ps | grep "$container" | grep -q "Up" || {
+        echo "WARNING: ${container} unexpectedly is not running. Starting..."
+        docker-compose up -d "$container"
+        wait_for_health "$container"
+    }
+done
 
 # Prune images.
 echo "" && echo "Pruning (https://docs.docker.com/config/pruning/) ..."

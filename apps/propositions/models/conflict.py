@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
@@ -27,7 +25,7 @@ class Conflict(ModeratedRelation):
 
 
 @receiver(post_save, sender=Conflict)
-def handle_post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
+def handle_post_save(sender: type[Conflict], instance: Conflict, created: bool, **kwargs):
     """Respond to the post_save signal."""
     # If saving a new conflict, add a complimentary conflict with `proposition` and
     # `conflicting_proposition` reversed.
@@ -39,7 +37,7 @@ def handle_post_save(sender: Type[Conflict], instance: Conflict, created: bool, 
 
 
 @receiver(post_delete, sender=Conflict)
-def handle_post_delete(sender: Type[Conflict], instance: Conflict, **kwargs):
+def handle_post_delete(sender: type[Conflict], instance: Conflict, **kwargs):
     """Respond to the post_delete signal."""
     # Delete the conflict's complimentary conflict.
     sender.objects.filter(

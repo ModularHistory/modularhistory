@@ -2,7 +2,8 @@
 
 echo 'Initializing webserver...'
 
-REDIRECTS_MAP_PATH=/modularhistory/_volumes/redirects/redirects.map
+REDIRECTS_MAP_DIR=/modularhistory/_volumes/redirects
+REDIRECTS_MAP_PATH="${REDIRECTS_MAP_DIR}/redirects.map"
 
 if [[ ! -f "$REDIRECTS_MAP_PATH" ]]; then
     touch "$REDIRECTS_MAP_PATH" || {
@@ -23,4 +24,14 @@ if [[ "$ENVIRONMENT" = prod ]]; then
     cron; 
 fi;
 
-nginx -g 'daemon off;'
+autoreload_redirects() {
+    while true; do
+        inotifywait --exclude .swp -e create -e modify -e delete -e move $REDIRECTS_MAP_DIR
+        nginx -t && {
+            echo "Detected Nginx configuration change. Reloading ..."
+            nginx -s reload
+        }
+    done
+}
+
+autoreload_redirects & nginx -g 'daemon off;'

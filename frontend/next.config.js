@@ -3,10 +3,12 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 // const { withSentryConfig } = require("@sentry/nextjs");
+const fs = require("fs");
+const readline = require("readline");
+const path = require("path");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 require("dotenv").config({ path: "../.env" });
 const { SENTRY_FRONTEND_DSN, SHA, VERSION } = process.env;
-
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/modularhistory/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
 process.env.SENTRY_ORG = "modularhistory";
@@ -25,7 +27,48 @@ const uploadSourceMaps =
   process.env.SENTRY_AUTH_TOKEN &&
   process.env.SHA;
 
+const volumesDir = path.join(process.cwd(), "../_volumes");
+const redirectsMapPath = path.join(volumesDir, "redirects/redirects.map");
+const redirectRegex = /(.+) (.+);/;
+
 module.exports = {
+  async redirects() {
+    const redirects = [];
+    if (!fs.existsSync(redirectsMapPath)) {
+      console.log(`${redirectsMapPath} does not exist.`);
+      await require("axios")
+        .get("http://django:8000/api/redirects/")
+        .then(({ data }) => {
+          const results = data["results"];
+          if (!Array.isArray(results)) {
+            for (const redirect of results) {
+              redirects.push({
+                source: redirect.oldPath,
+                destination: redirect.newPath,
+                permanent: true,
+              });
+            }
+          }
+        })
+        .catch(console.error);
+    } else {
+      const redirectsMapStream = fs.createReadStream(redirectsMapPath);
+      const redirectsInterface = readline.createInterface({
+        input: redirectsMapStream,
+        crlfDelay: Infinity,
+      });
+      for await (const line of redirectsInterface) {
+        const redirect = line.match(redirectRegex);
+        console.log(redirect);
+        redirects.push({
+          source: redirect[1],
+          destination: redirect[2],
+          permanent: true,
+        });
+      }
+    }
+    return redirects;
+  },
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: process.env.ENVIRONMENT != "prod",

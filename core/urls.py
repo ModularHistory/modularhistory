@@ -70,6 +70,7 @@ urlpatterns = [
     # ---------------------------------
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
+    path('api/redirects/', include(_api('redirects'), namespace='redirects_api')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),

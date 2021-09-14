@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from django.urls import reverse
 
@@ -27,7 +27,7 @@ class CollectionAdmin(SearchableModelAdmin):
 class AbstractCollectionsInline(TabularInline):
     """Inline admin for collections."""
 
-    model: Type[models.AbstractCollectionInclusion]
+    model: type[models.AbstractCollectionInclusion]
 
     autocomplete_fields = ['collection']
 

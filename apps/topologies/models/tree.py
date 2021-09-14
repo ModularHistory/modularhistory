@@ -1,7 +1,5 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
-from typing import Type
-
 import regex
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -106,7 +104,7 @@ class TreeModel(ExtendedModel):
         """Calculate the model instance's path value based on its key and parent."""
         return f'{self.parent.path}.{self.key}' if self.parent else self.key
 
-    def validate_parent(self, raises: Type[Exception] = ValidationError):
+    def validate_parent(self, raises: type[Exception] = ValidationError):
         """Validate the model instance's parent."""
         if not self._state.adding:
             if self.parent:

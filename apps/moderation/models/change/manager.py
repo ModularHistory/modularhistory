@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.manager import Manager
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class ChangeManager(Manager):
 
-    model: Type['Change']
+    model: type['Change']
 
     def get_queryset(self):
         return ChangeQuerySet(self.model, using=self._db)

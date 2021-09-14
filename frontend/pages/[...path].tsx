@@ -30,21 +30,59 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   let { path } = params || {};
   if (Array.isArray(path)) {
     path = path.join("/");
+  } else {
+    path = path ?? "";
   }
-  await axios
-    // the "extra" slashes around `path` are currently needed to
-    // match the `url` attribute of the FlatPage model.
-    .get(`http://django:8000/api/flatpages//${path}/`)
-    .then((response) => {
-      page = response.data;
-    })
-    .catch((error) => {
-      if (error.response?.status === 404) {
-        notFound = true;
-      } else {
-        throw error;
-      }
-    });
+
+  const getRedirectPath = async (path: string) => {
+    let redirectPath = "";
+    await axios
+      .get(`http://django:8000/api/redirects//${path}/`)
+      .then((response) => {
+        redirectPath = response.data.newPath;
+      })
+      .catch((error) => {
+        if (error.response?.status === 404) {
+          notFound = true;
+        } else {
+          throw error;
+        }
+      });
+    return redirectPath;
+  };
+
+  const retrieveFlatPage = async (path: string) => {
+    let flatPage = null;
+    // Strip leading slash from path.
+    path = path.replace(/^\/+/, "");
+    await axios
+      // the "extra" slashes around `path` are currently needed to
+      // match the `url` attribute of the FlatPage model.
+      .get(`http://django:8000/api/flatpages//${path}/`)
+      .then((response) => {
+        flatPage = response.data;
+        notFound = false;
+      })
+      .catch((error) => {
+        if (error.response?.status === 404) {
+          notFound = true;
+        } else {
+          throw error;
+        }
+      });
+    return flatPage;
+  };
+
+  // Retrieve the page.
+  page = await retrieveFlatPage(path);
+
+  // If the page was not found, attempt to fall back on a redirect.
+  if (!page) {
+    const redirectPath = await getRedirectPath(path);
+    if (redirectPath) {
+      page = await retrieveFlatPage(redirectPath);
+    }
+  }
 
   return {
     props: {
