@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.apps import apps
 from django.db import models
@@ -48,7 +48,7 @@ class TagsField(CustomManyToManyField):
     target_model = 'topics.Topic'
     through_model_base = AbstractTopicRelation
 
-    def __init__(self, through: Union[Type[AbstractTopicRelation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractTopicRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('tags')

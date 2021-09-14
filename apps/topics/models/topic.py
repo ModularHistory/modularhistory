@@ -1,5 +1,7 @@
 """Model classes for topics."""
 
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
@@ -11,6 +13,10 @@ from core.fields.html_field import HTMLField
 from core.models.model_with_cache import store
 from core.models.module import Module
 from core.models.relations.moderated import ModeratedRelation
+
+if TYPE_CHECKING:
+    from apps.topologies.models.dag import Node as BaseNode
+
 
 NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -46,7 +52,7 @@ class TopicRelation(ModeratedRelation):
         return f'{self.topic} ~ {self.related_topic}'
 
 
-Node = node_factory(edge_model=TopicEdge)
+Node: type['BaseNode'] = node_factory(edge_model=TopicEdge)
 
 
 class Topic(Node, Module):
@@ -87,12 +93,12 @@ class Topic(Node, Module):
         return self.name
 
     def pre_save(self):
-        super().pre_save()
-        super(Module, self).pre_save()
+        Node.pre_save(self)
+        Module.pre_save(self)
 
     def post_save(self):
-        super().post_save()
-        super(Module, self).post_save()
+        Node.post_save(self)
+        Module.post_save(self)
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')

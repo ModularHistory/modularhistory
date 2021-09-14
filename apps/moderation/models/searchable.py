@@ -1,5 +1,3 @@
-from typing import Type
-
 from apps.moderation.models.moderated_model.manager import ModeratedManager, ModeratedQuerySet
 from apps.moderation.models.moderated_model.model import ModeratedModel
 from apps.search.models.searchable_model import SearchableModel
@@ -13,7 +11,7 @@ class SearchableModeratedQuerySet(ModeratedQuerySet, SearchableQuerySet):
 class SearchableModeratedManager(ModeratedManager, SearchableManager):
     """Manager for moderated models of which users can search for instances."""
 
-    model: Type['SearchableModeratedModel']
+    model: type['SearchableModeratedModel']
     queryset_cls = SearchableModeratedQuerySet
 
 
@@ -26,9 +24,9 @@ class SearchableModeratedModel(ModeratedModel, SearchableModel):
         abstract = True
 
     def pre_save(self):
-        super(SearchableModel, self).pre_save()
-        super(ModeratedModel, self).pre_save()
+        SearchableModel.pre_save(self)
+        ModeratedModel.pre_save(self)
 
     def post_save(self):
-        super(SearchableModel, self).post_save()
-        super(ModeratedModel, self).post_save()
+        SearchableModel.post_save(self)
+        ModeratedModel.post_save(self)

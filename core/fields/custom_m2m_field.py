@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Union
 
 from django.db import models
 from django.utils.module_loading import import_string
@@ -7,8 +7,8 @@ from django.utils.module_loading import import_string
 class CustomManyToManyField(models.ManyToManyField):
     """A field for an m2m relationship with a specific target model."""
 
-    target_model: Union[str, Type[models.Model]]
-    through_model_base = Union[str, Type[models.Model]]
+    target_model: Union[str, type[models.Model]]
+    through_model_base = Union[str, type[models.Model]]
 
     def __init__(self, **kwargs):
         """Construct the field."""

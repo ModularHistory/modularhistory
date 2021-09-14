@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Sequence, Type, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
 from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
@@ -92,7 +92,7 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
         models.Webpage,
     )
     list_display = AbstractSourceAdmin.list_display + ['ctype_name']
-    list_filter: list[Union[str, Type[ListFilter]]] = [
+    list_filter: list[Union[str, type[ListFilter]]] = [
         SourceTypeFilter,
         *AbstractSourceAdmin.list_filter,
     ]
@@ -126,7 +126,7 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     inlines = AbstractSourceAdmin.inlines
     list_display = AbstractSourceAdmin.list_display
     # Without a hint, mypy seems unable to infer the type of `filter` in list comprehensions.
-    filter: Union[str, Type[ListFilter]]
+    filter: Union[str, type[ListFilter]]
     list_filter = AbstractSourceAdmin.list_filter
     list_per_page = 15
     readonly_fields = AbstractSourceAdmin.readonly_fields

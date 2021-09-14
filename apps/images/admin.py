@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from django.db.models.aggregates import Count
 from image_cropping import ImageCroppingMixin
@@ -54,7 +54,7 @@ class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
 class AbstractImagesInline(TabularInline):
     """Abstract base inline for images."""
 
-    model: Type['Model']
+    model: type['Model']
 
     autocomplete_fields = ['image']
     readonly_fields = ['admin_image_element']

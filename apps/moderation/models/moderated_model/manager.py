@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 
@@ -16,7 +16,7 @@ class ModeratedQuerySet(SoftDeletableQuerySet):
 class ModeratedManager(SoftDeletableManager):
     """Manager for moderated models."""
 
-    model: Type['ModeratedModel']
+    model: type['ModeratedModel']
     queryset_cls = ModeratedQuerySet
     exclude_unverified = settings.TESTING  # TODO: change to True
 

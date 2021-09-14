@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional
 
 from django.urls import path
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class SearchableModelAdmin(ModeratedModelAdmin):
     """Model admin for searchable models."""
 
-    model: Type['SearchableModel']
+    model: type['SearchableModel']
 
     exclude = ['cache', 'tags']
     readonly_fields = []

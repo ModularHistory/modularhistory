@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -46,7 +46,7 @@ class LocationsField(CustomManyToManyField):
     target_model = 'places.Place'
     through_model_base = AbstractLocationRelation
 
-    def __init__(self, through: Union[Type[AbstractLocationRelation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractLocationRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('locations')

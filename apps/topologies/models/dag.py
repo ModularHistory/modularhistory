@@ -14,7 +14,7 @@ https://github.com/stdbrouw/django-treebeard-dag
 """
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.core.exceptions import ValidationError
 from django.db import connection, models
@@ -79,7 +79,7 @@ def filter_order(queryset, field_names, values):
     return queryset.filter(**filter_condition).order_by(order_by)
 
 
-class Node(AbstractModel):
+class Node(AbstractModel, ExtendedModel):
     """
     A node in a directed acyclic graph.
 
@@ -87,7 +87,7 @@ class Node(AbstractModel):
     which returns a model inheriting from this model.
     """
 
-    edge_model: Type[ExtendedModel]
+    edge_model: type[ExtendedModel]
     parents: 'QuerySet[Node]'
 
     class Meta:
@@ -188,9 +188,9 @@ class Node(AbstractModel):
 
 
 def node_factory(
-    edge_model: Type[ExtendedModel],
+    edge_model: type[ExtendedModel],
     children_null: bool = True,
-) -> Type[Node]:
+) -> type[Node]:
     """Return a model class that inherits from `DagNode` and implements `children`."""
     edge_model_table = edge_model._meta.db_table
 
@@ -238,7 +238,7 @@ class EdgeManager(models.Manager):
         return filter_order(self.model.objects, ['parent_id', 'child_id'], node.clan_ids)
 
 
-class Edge(Relation):
+class Edge(AbstractModel, Relation):
     """An edge, or relation, in a directed acyclic graph."""
 
     @property
@@ -264,8 +264,8 @@ class Edge(Relation):
 
 
 def edge_factory(
-    node_model: Union[str, Type[Node]], bases: Optional[tuple[Type[Model]]] = None
-) -> Type[Edge]:
+    node_model: Union[str, type[Node]], bases: Optional[tuple[type[Model]]] = None
+) -> type[Edge]:
     """Return a model inheriting from `Edge` and implementing `parent` and `child`."""
     bases = bases or tuple()
     if isinstance(node_model, str):

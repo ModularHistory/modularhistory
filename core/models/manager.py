@@ -1,7 +1,7 @@
 """Manager classes for ModularHistory's models."""
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Callable, Iterable, Optional, Type, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Case, IntegerField, QuerySet, When
@@ -9,13 +9,10 @@ from django.db.models.expressions import Value
 from django.db.models.manager import Manager
 from django.utils.module_loading import import_string
 from elasticsearch_dsl import Q
-from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
 from apps.dates.structures import HistoricDateTime
 
 if TYPE_CHECKING:
-    from django.db.models.query import ValuesQuerySet
-
     from apps.search.documents.base import Document
     from core.models.model import ExtendedModel
 
@@ -27,8 +24,8 @@ class SearchableMixin:
     annotate: Callable[..., QuerySet]
     filter: Callable[..., QuerySet]
     first: Callable[..., 'ExtendedModel']
-    model: Type['ExtendedModel']
-    values_list: Callable[..., 'ValuesQuerySet']
+    model: type['ExtendedModel']
+    values_list: Callable[..., Iterable]
 
     def get_closest_to_datetime(
         self: Union[Manager, QuerySet],
@@ -125,7 +122,3 @@ class SearchableManager(SearchableMixin, Manager):
         for index, field in enumerate(fields):
             natural_key[field] = args[index]
         return self.get(**natural_key)
-
-
-class TypedModelManager(BaseTypedModelManager, SearchableManager):
-    """Wrapper for TypedModelManager."""
