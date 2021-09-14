@@ -177,7 +177,7 @@ Twisted = [
         "windows_platform",
     ], version = "^20.3", markers = "sys_platform == 'win32'" },
 ]
-uvicorn = { extras = ["standard"], version = "^0.12" }
+uvicorn = { extras = ["standard"], version = "^0.15" }
 youtube-dl = "^2020.7.28"
 
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
