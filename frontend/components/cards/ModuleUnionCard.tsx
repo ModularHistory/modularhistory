@@ -55,12 +55,12 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "propositions.occurrence":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.elaboration} maxLine="2" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />;
       break;
     case "propositions.proposition":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.elaboration} maxLine="2" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />;
       break;
     case "quotes.quote": {
       content = (

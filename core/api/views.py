@@ -1,4 +1,5 @@
 from typing import Optional
+
 from rest_framework.viewsets import ModelViewSet
 
 
@@ -15,8 +16,8 @@ class ExtendedModelViewSet(ModelViewSet):
         return super().get_object()
 
     def list(self, *args, **kwargs):
-        if self.list_attributes is not None:
-            self.queryset = self.queryset.values(*self.list_attributes)
+        # if self.list_attributes is not None:
+        #     self.queryset = self.queryset.values(*self.list_attributes)
         return super().list(*args, **kwargs)
 
     def get_serializer(self, *args, **kwargs):
