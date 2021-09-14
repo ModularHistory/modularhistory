@@ -15,12 +15,12 @@ def delay(func: 'Task', *args, **kwargs):
     based on the `USE_CELERY` environment variable.
     """
     if USE_CELERY:
-        func.delay(*args, **kwargs)
-    else:
-        logging.warning(
-            f'Running {func.__name__} synchronously because Celery is disabled...'
-        )
-        func(*args, **kwargs)
+        try:
+            return func.delay(*args, **kwargs)
+        except Exception as err:
+            logging.error(err)
+    logging.warning(f'Running {func.__name__} synchronously because Celery is disabled...')
+    func(*args, **kwargs)
 
 
 def apply_async(
@@ -33,7 +33,10 @@ def apply_async(
     based on the `USE_CELERY` environment variable.
     """
     if USE_CELERY:
-        func.apply_async(args=args, kwargs=kwargs, **options)
+        try:
+            return func.apply_async(args=args, kwargs=kwargs, **options)
+        except Exception as err:
+            logging.error(err)
     else:
         logging.warning(
             f'Running {func.__name__} synchronously because Celery is disabled...'

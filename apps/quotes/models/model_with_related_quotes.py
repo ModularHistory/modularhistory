@@ -1,6 +1,6 @@
 """Classes for models with related quotes."""
 
-from typing import Type, Union
+from typing import Union
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -41,7 +41,7 @@ class RelatedQuotesField(CustomManyToManyField):
     target_model = 'quotes.Quote'
     through_model_base = AbstractQuoteRelation
 
-    def __init__(self, through: Union[Type[AbstractQuoteRelation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractQuoteRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('related quotes')

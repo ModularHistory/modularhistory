@@ -57,6 +57,7 @@ services:
       - "3000"
     volumes:
       - ./_volumes/static:/modularhistory/_volumes/static
+      - ./_volumes/redirects:/modularhistory/_volumes/redirects
 
   django:
     image: "ghcr.io/modularhistory/django:$SHA"

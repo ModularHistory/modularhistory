@@ -80,8 +80,10 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 
     "
   }
-  [[ "$up" = true ]] && docker-compose up -d webserver
 }
+
+# Restart any stopped containers, if containers were previously running.
+[[ "$up" = true ]] && docker-compose up -d webserver
 
 # Prompt to update hooks if necessary.
 if [[ $post_merge_hook_changed = true ]]; then

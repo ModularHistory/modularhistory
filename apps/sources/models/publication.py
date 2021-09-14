@@ -3,11 +3,10 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from typedmodels.models import TypedModel
 
 from core.fields.html_field import HTMLField
-from core.models.manager import TypedModelManager
-from core.models.model import ExtendedModel
+from core.models import ExtendedModel
+from core.models.typed import TypedModel, TypedModelManager
 from core.utils.html import soupify
 
 PUBLICATION_TYPES = (

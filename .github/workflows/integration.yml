@@ -511,31 +511,7 @@ jobs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
-      shell: bash
-      run: |
-        echo "Pulling images ..."
-        docker-compose pull -q
-        echo "" && echo "Starting containers with version $SHA ..."
-        docker-compose up -d webserver
-        echo "" && docker-compose ps
-        healthy=false; timeout=300; interval=15; waited=0
-        log_interval=$((interval*2))
-        while [[ "$healthy" = false ]]; do
-          healthy=true
-          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
-          if [[ "$healthy" = false ]]; then
-            if [[ $waited -gt $timeout ]]; then
-              echo "" && echo "Timed out."
-              docker-compose logs; exit 1
-            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
-              echo "" && docker-compose logs --tail 15
-              echo "" && docker-compose ps
-            fi
-            echo "" && echo "Waiting for containers (${waited}s) ..."
-            sleep $interval && waited=$((waited + interval))
-          fi
-        done; docker-compose ps
-        echo "" && echo "Finished starting up containers."
+      run: bash config/scripts/deploy.sh
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -652,31 +628,7 @@ jobs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
-      shell: bash
-      run: |
-        echo "Pulling images ..."
-        docker-compose pull -q
-        echo "" && echo "Starting containers with version $SHA ..."
-        docker-compose up -d webserver
-        echo "" && docker-compose ps
-        healthy=false; timeout=300; interval=15; waited=0
-        log_interval=$((interval*2))
-        while [[ "$healthy" = false ]]; do
-          healthy=true
-          docker-compose ps | grep -E -q 'Exit 1|unhealthy|starting' && healthy=false
-          if [[ "$healthy" = false ]]; then
-            if [[ $waited -gt $timeout ]]; then
-              echo "" && echo "Timed out."
-              docker-compose logs; exit 1
-            elif [[ ! $((waited%log_interval)) -eq 0 ]]; then
-              echo "" && docker-compose logs --tail 15
-              echo "" && docker-compose ps
-            fi
-            echo "" && echo "Waiting for containers (${waited}s) ..."
-            sleep $interval && waited=$((waited + interval))
-          fi
-        done; docker-compose ps
-        echo "" && echo "Finished starting up containers."
+      run: bash config/scripts/deploy.sh
     - name: Run deploy script
       run: bash config/scripts/deploy.sh
     - name: Run deploy script x2

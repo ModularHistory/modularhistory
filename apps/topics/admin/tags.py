@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Model
 from django.db.models.query import QuerySet
@@ -12,7 +10,7 @@ from core.constants.strings import NO, YES
 class AbstractTagsInline(TabularInline):
     """Abstract base inline for related topics."""
 
-    model: Type[Model]
+    model: type[Model]
     autocomplete_fields = ['topic']
     exclude = ['verified']
     verbose_name = 'tag'

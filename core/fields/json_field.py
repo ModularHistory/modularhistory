@@ -3,7 +3,7 @@
 import json
 import logging
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from django.core.exceptions import ValidationError
 from django.db.models import (  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
@@ -24,7 +24,7 @@ class JSONField(BaseJSONField):
     """
 
     schema: Optional[Union[str, dict]]
-    model: Type['Model']
+    model: type['Model']
 
     def __init__(self, *args, schema=None, **kwargs):
         """Override `__init__`."""
@@ -102,7 +102,7 @@ class ExtraField:
         self.help_text = help_text
 
     def __get__(
-        self, instance: Optional['Model'], owner: Optional[Type['Model']] = None
+        self, instance: Optional['Model'], owner: Optional[type['Model']] = None
     ) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""
         if instance is None:
@@ -133,7 +133,7 @@ class ExtraField:
         # Update the JSON field
         setattr(instance, self.json_field_name, json_value)
 
-    def __set_name__(self, owner: Type['Model'], name: str):
+    def __set_name__(self, owner: type['Model'], name: str):
         """See https://docs.python.org/3/reference/datamodel.html#object.__set_name__."""
         self.name = name
 

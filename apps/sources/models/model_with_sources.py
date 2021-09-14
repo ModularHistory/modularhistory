@@ -1,7 +1,7 @@
 """Classes for models with relations to sources."""
 
 import logging
-from typing import Optional, Type, Union
+from typing import Optional, Union
 
 from django.apps import apps
 from django.utils.html import format_html
@@ -23,7 +23,7 @@ class SourcesField(CustomManyToManyField):
     target_model = 'sources.Source'
     through_model_base = AbstractCitation
 
-    def __init__(self, through: Union[Type[AbstractCitation], str], **kwargs):
+    def __init__(self, through: Union[type[AbstractCitation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('sources')

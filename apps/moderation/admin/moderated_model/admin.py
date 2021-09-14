@@ -1,10 +1,11 @@
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.base import Model
 from django.utils import timezone
 from image_cropping import ImageCropWidget
 
+from apps.admin.list_filters.boolean_filters import HasValueFilter
 from apps.admin.model_admin import ExtendedModelAdmin
 from apps.admin.widgets.historic_date_widget import HistoricDateWidget
 from apps.moderation.constants import ModerationStatus
@@ -20,6 +21,12 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
+class DeletedFilter(HasValueFilter):
+    """Filter for deleted objects."""
+
+    title = parameter_name = field = 'deleted'
+
+
 class ModeratedModelAdmin(ExtendedModelAdmin):
     """Admin for models requiring moderation."""
 
@@ -29,12 +36,14 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     # and save changes directly to model instances.
     admin_integration_enabled = True
 
+    list_filter = [DeletedFilter]
+
     class Media(ExtendedModelAdmin.Media):
         """Include admin CSS and JS."""
 
     def get_model_cls(
         self, obj: Optional['ModeratedModel'] = None
-    ) -> Optional[Type['ModeratedModel']]:
+    ) -> Optional[type['ModeratedModel']]:
         """Return the class of the moderated model."""
         if obj is None:
             return getattr(self, 'model', None)

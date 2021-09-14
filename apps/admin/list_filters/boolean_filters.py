@@ -13,6 +13,19 @@ class BooleanListFilter(SimpleListFilter):
         return (YES, YES), (NO, NO)
 
 
+class HasValueFilter(BooleanListFilter):
+    """Filters based on whether model instances have a value for the specified field."""
+
+    field: str
+
+    def queryset(self, request, queryset):
+        """Return the filtered queryset."""
+        option = self.value()
+        if option in (YES, NO):
+            return queryset.filter(**{f'{self.field}__isnull': option != YES})
+        return queryset
+
+
 class HasRelationFilter(BooleanListFilter):
     """Filters based on whether model instances have the specified relation."""
 

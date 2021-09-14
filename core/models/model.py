@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type
+from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern
 
 import regex
 import serpy
@@ -40,7 +40,7 @@ class ExtendedModel(Model):
 
     objects: 'Manager' = SearchableManager.from_queryset(SearchableQuerySet)()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: Type[Serializer]
+    serializer: type[Serializer]
     placeholder_regex: Optional[str] = None
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
@@ -253,7 +253,7 @@ class ModelSerializer(serpy.Serializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: Type['ExtendedModel'] = instance.__class__
+        model_cls: type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
 
@@ -278,7 +278,7 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: Type['ExtendedModel'] = instance.__class__
+        model_cls: type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
 
     class Meta:
