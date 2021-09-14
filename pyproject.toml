@@ -194,7 +194,7 @@ pytest-xdist = "^2.1.0"
 # [tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
 binaryornot = "^0.4"
-celery-types = "^0.3.0"
+celery-types = "^0.8.0"
 coverage-badge = "^1.0"
 darglint = "^1.5.5"
 django-stubs = "^1.8"
