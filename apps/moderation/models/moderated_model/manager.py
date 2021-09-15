@@ -10,7 +10,29 @@ if TYPE_CHECKING:
 
 
 class ModeratedQuerySet(SoftDeletableQuerySet):
-    """Lazy db lookup for moderated models."""
+    """Default queryset for the ModeratedManager.
+    Calling obj.delete/undelete is inefficient but allows moderated deletes.
+    """
+
+    def delete(self):
+        """Override bulk delete behavior."""
+        assert self.query.can_filter(), 'Cannot use "limit" or "offset" with delete.'
+        obj: 'ModeratedModel'
+        for obj in self.all():
+            obj.delete()
+        self._result_cache = None
+
+    delete.alters_data = True
+
+    def undelete(self):
+        """Undelete soft-deleted instances."""
+        assert self.query.can_filter(), 'Cannot use "limit" or "offset" with undelete.'
+        obj: 'ModeratedModel'
+        for obj in self.all():
+            obj.undelete()
+        self._result_cache = None
+
+    undelete.alters_data = True
 
 
 class ModeratedManager(SoftDeletableManager):

@@ -56,21 +56,25 @@ class SoftDeletableModel(ExtendedModel):
             post_undelete.send(sender=self.__class__, instance=self, using=using)
 
     def undelete(self, **kwargs):
+        self._undelete(on_save=self.save, **kwargs)
+
+    def _undelete(self, on_save, **kwargs):
         """Undelete a soft-deleted model."""
         assert self.deleted
         self.deleted = None
-        self.save(**kwargs)
+        on_save(**kwargs)
         for related in related_objects(self):
             if getattr(related, 'deleted', None) is not None:
                 related.undelete()
 
     def delete(self, **kwargs):
+        """Override Django's delete behavior."""
         # This avoids a recursive call on `delete`; see
         # https://github.com/makinacorpus/django-safedelete/issues/117.
-        self._delete(**kwargs)
+        self._delete(on_save=self.save, **kwargs)
 
-    def _delete(self, **kwargs):
-        """Override Django's delete behavior."""
+    def _delete(self, on_save, **kwargs):
+        """Soft-delete behavior."""
         hard: bool = kwargs.pop('hard', self.deleted is not None)
         if hard:
             # Normally hard-delete the object.
@@ -86,7 +90,7 @@ class SoftDeletableModel(ExtendedModel):
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
             # send pre_softdelete signal
             pre_softdelete.send(sender=self.__class__, instance=self, using=using)
-            self.save(**kwargs)
+            on_save(**kwargs)
             # send softdelete signal
             post_softdelete.send(sender=self.__class__, instance=self, using=using)
             collector = NestedObjects(using=router.db_for_write(self))

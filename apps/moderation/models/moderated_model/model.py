@@ -47,6 +47,14 @@ class ModeratedModel(SoftDeletableModel):
             'date_string',
         ]
 
+    def delete(self, **kwargs):
+        """Override saving after deletion to use moderation"""
+        super()._delete(on_save=self.save, **kwargs)
+
+    def undelete(self, **kwargs):
+        """Override saving after un-deletion to use moderation"""
+        super()._undelete(on_save=self.save, **kwargs)
+
     def save(self, *args, **kwargs):
         moderate = kwargs.pop('moderate', True)
         contributor = kwargs.pop('contributor', get_current_authenticated_user())
@@ -69,6 +77,9 @@ class ModeratedModel(SoftDeletableModel):
         """Save changes to a `Change` instance."""
         object_is_new = self._state.adding
         self.clean()
+        logging.info(
+            f'Saving a change: pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
+        )
         if object_is_new:
             self.verified = False
             super().save()
