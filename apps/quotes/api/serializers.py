@@ -67,6 +67,8 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, TaggableDrfModuleSeriali
             'citations',
             'images',
             'attributees',
+            'related_quotes',
+            'related_entities',
         ]
         extra_kwargs = TaggableDrfModuleSerializer.Meta.extra_kwargs | {
             'text': {'write_only': True},
@@ -79,6 +81,18 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, TaggableDrfModuleSeriali
                 'queryset': Image.objects.all(),
             },
             'attributees': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Entity.objects.all(),
+            },
+            'related_quotes': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Quote.objects.all(),
+            },
+            'related_entities': {
                 'write_only': True,
                 'required': False,
                 'read_only': False,
