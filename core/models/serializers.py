@@ -45,3 +45,4 @@ class DrfTypedModuleSerializer(DrfModuleSerializer):
 
     class Meta(DrfModuleSerializer.Meta):
         fields = DrfModuleSerializer.Meta.fields + ['type']
+        extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs

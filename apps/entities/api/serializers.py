@@ -37,9 +37,6 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
         many=True, required=False, source='categorizations.all'
     )
 
-    # write only fields are not rendered to output
-    birth_date = serializers.DateTimeField(write_only=True, required=False)
-    death_date = serializers.DateTimeField(write_only=True, required=False)
     birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
     deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
 
@@ -65,6 +62,7 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
 
     class Meta(DrfTypedModuleSerializer.Meta):
         model = Entity
+        read_only_fields = ['truncated_description']
         fields = DrfTypedModuleSerializer.Meta.fields + [
             'name',
             'unabbreviated_name',
@@ -72,9 +70,12 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'description',
             'truncated_description',
             'categorizations',
-            'birth_date',
+            'birth_date',  # write only versions are not rendered to output
             'death_date',
             'birthDate',
             'deathDate',
         ]
-        read_only_fields = ['truncated_description']
+        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+            'birth_date': {'write_only': True, 'required': False},
+            'death_date': {'write_only': True, 'required': False},
+        }
