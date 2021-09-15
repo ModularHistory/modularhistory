@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.entity import Entity
-from core.models.module import DrfTypedModuleSerializer
+from core.models.serializers import DrfTypedModuleSerializer
 
 
 class CategorySerializer(serializers.Serializer):

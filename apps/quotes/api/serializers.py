@@ -7,8 +7,8 @@ from rest_framework.validators import UniqueTogetherValidator
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
-from apps.topics.api.serializers import TaggableDrfModuleSerializer
 from core.models.model import DrfModelSerializer
+from core.models.serializers import DrfModuleSerializer
 
 
 class CitationDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
@@ -33,7 +33,7 @@ class CitationDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
         ]
 
 
-class QuoteDrfSerializer(WritableNestedModelSerializer, TaggableDrfModuleSerializer):
+class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for quotes."""
 
     save_after_m2m_update = True
@@ -50,9 +50,9 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, TaggableDrfModuleSeriali
             )
         return value
 
-    class Meta(TaggableDrfModuleSerializer.Meta):
+    class Meta(DrfModuleSerializer.Meta):
         model = Quote
-        fields = TaggableDrfModuleSerializer.Meta.fields + [
+        fields = DrfModuleSerializer.Meta.fields + [
             'text',
             'pretext',
             'context',
@@ -70,7 +70,7 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, TaggableDrfModuleSeriali
             'related_quotes',
             'related_entities',
         ]
-        extra_kwargs = TaggableDrfModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
             'text': {'write_only': True},
             'pretext': {'write_only': True},
             'context': {'write_only': True},

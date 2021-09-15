@@ -1,7 +1,7 @@
 """Serializers for the entities app."""
 from apps.sources.models import Source, SourceContainment
 from core.models.model import DrfModelSerializer
-from core.models.module import DrfModuleSerializer
+from core.models.serializers import DrfModuleSerializer
 
 
 class SourceDrfSerializer(DrfModuleSerializer):

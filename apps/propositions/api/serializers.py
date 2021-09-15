@@ -1,6 +1,6 @@
 from apps.propositions.models import Argument, Occurrence, Proposition
 from core.models.model import DrfModelSerializer
-from core.models.module import DrfModuleSerializer
+from core.models.serializers import DrfModuleSerializer
 
 
 class _PropositionDrfSerializer(DrfModuleSerializer):

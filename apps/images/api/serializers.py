@@ -1,7 +1,7 @@
 """Serializers for the entities app."""
 
 from apps.images.models import Image
-from core.models.module import DrfModuleSerializer
+from core.models.serializers import DrfModuleSerializer
 
 
 class ImageDrfSerializer(DrfModuleSerializer):
