@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 FieldList = list[str]
 
+
 # TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
@@ -147,9 +148,9 @@ class ExtendedModel(Model):
         )
 
     def get_html_for_view(
-        self,
-        view: str = Views.DETAIL,
-        text_to_highlight: Optional[str] = None,
+            self,
+            view: str = Views.DETAIL,
+            text_to_highlight: Optional[str] = None,
     ) -> SafeString:
         """Return HTML for the view (e.g., "card" or "detail") of the instance."""
         return get_html_for_view_(
@@ -189,9 +190,9 @@ class ExtendedModel(Model):
 
     @classmethod
     def get_object_html(
-        cls,
-        match: Match,
-        use_preretrieved_html: bool = False,
+            cls,
+            match: Match,
+            use_preretrieved_html: bool = False,
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
@@ -271,9 +272,15 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
         if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.
-            allowed = set(fields)
-            existing = set(self.fields)
-            for field_name in existing - allowed:
+            requested_fields = set(fields)
+            defined_fields = set(self.fields)
+
+            if requested_fields - defined_fields:
+                raise ValueError(
+                    f'Fields {requested_fields - defined_fields} do not exist on serializer {self.__class__}'
+                )
+
+            for field_name in defined_fields - requested_fields:
                 self.fields.pop(field_name)
 
     def get_model(self, instance: ExtendedModel) -> str:
