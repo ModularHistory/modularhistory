@@ -14,6 +14,7 @@ class EntityViewSet(ExtendedModelViewSet):
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
     serializer_class = EntityDrfSerializer
     permission_classes = [permissions.AllowAny]
+    list_fields = ExtendedModelViewSet.list_fields + ['title', 'name', 'truncated_description', 'primary_image']
 
 
 class EntityInstantSearchAPIView(APIView):

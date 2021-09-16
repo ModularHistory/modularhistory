@@ -275,8 +275,6 @@ class DrfModelSerializer(serializers.ModelSerializer):
             existing = set(self.fields)
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
-            for field_name in allowed - existing:
-                print(f'>>> {field_name}')  # TODO: deal with these read-only fields
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""

@@ -2,12 +2,7 @@ import { ModuleUnion, Topic } from "@/types/modules";
 import { Box } from "@material-ui/system";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
-import ModuleCard from "./ModuleCard";
-
-interface ModuleUnionCardProps {
-  module: Exclude<ModuleUnion, Topic>;
-  selected?: boolean;
-}
+import ModuleCard, { ModuleCardProps } from "./ModuleCard";
 
 interface HighlightEllipsisProps {
   unsafeHTML: string;
@@ -25,6 +20,7 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
     }}
   >
     <HTMLEllipsis
+      // TODO: Replace Regex with more formal fix
       unsafeHTML={unsafeHTML.replace(
         /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)/gi,
         ""
@@ -34,6 +30,11 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
     />
   </Box>
 );
+
+interface ModuleUnionCardProps extends ModuleCardProps {
+  module: Exclude<ModuleUnion, Topic>;
+  selected?: boolean;
+}
 
 const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   module,
@@ -53,25 +54,25 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
-      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />;
+      content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
+        <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />
+      );
       break;
     case "propositions.proposition":
-      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />;
+      content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
+        <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />
+      );
       break;
     case "quotes.quote": {
       content = (
-        // <blockquote className="blockquote">
-        <div>
-          {(highlightSnippet && ( // TODO: Replace Regex with more formal fix
-            <HighlightEllipsis unsafeHTML={highlightSnippet} />
-          )) ??
-            (module.bite && <HTMLEllipsis unsafeHTML={module.bite} maxLine="3" basedOn="words" />)}
-        </div>
-        // </blockquote>
+        <blockquote className="blockquote">
+          <div>
+            {(highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) ??
+              (module.bite && (
+                <HTMLEllipsis unsafeHTML={module.bite} maxLine="3" basedOn="words" />
+              ))}
+          </div>
+        </blockquote>
       );
       break;
     }
@@ -84,7 +85,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "entities.group":
       content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
         <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.description} maxLine="3" basedOn="words" />;
+      )) || <HTMLEllipsis unsafeHTML={module.truncatedDescription} maxLine="3" basedOn="words" />;
       break;
     default:
       ((module: never) => {

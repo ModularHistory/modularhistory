@@ -11,4 +11,4 @@ class OccurrenceViewSet(ExtendedModelViewSet):
     queryset = Occurrence.objects.all()
     serializer_class = OccurrenceDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    list_attributes = ['slug', 'title', 'truncated_elaboration']
+    list_fields = ExtendedModelViewSet.list_fields + ['title', 'truncated_elaboration', 'primary_image']

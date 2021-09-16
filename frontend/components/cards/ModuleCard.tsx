@@ -1,4 +1,4 @@
-import { BaseModule, Image } from "@/types/modules";
+import { Image, ModuleUnion, Source, Topic } from "@/types/modules";
 import { Card } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { CSSProperties } from "@material-ui/styles";
@@ -125,8 +125,8 @@ const CardBody = styled("div")({
   },
 });
 
-interface ModuleCardProps {
-  module: BaseModule;
+export interface ModuleCardProps {
+  module: ModuleUnion;
   header?: string;
   className?: string;
   style?: CSSProperties;
@@ -143,8 +143,8 @@ const ModuleCard: FC<ModuleCardProps> = ({
   let bgImage: Image | undefined;
   if (module.model == "images.image") {
     bgImage = module as Image;
-  } else {
-    bgImage = module.cachedImages?.[0];
+  } else if (moduleHasPrimaryImage(module)) {
+    bgImage = module.primaryImage;
   }
   return (
     <StyledCard className={`m-2 ${className || ""}`} sx={style} data-type={module.model}>
@@ -182,3 +182,10 @@ const ModuleCard: FC<ModuleCardProps> = ({
   );
 };
 export default ModuleCard;
+
+function moduleHasPrimaryImage(
+  module: ModuleUnion
+): module is Exclude<ModuleUnion, Source | Topic> {
+  const modelsWithoutImages: ModuleUnion["model"][] = ["topics.topic", "sources.source"];
+  return !modelsWithoutImages.includes(module.model);
+}
