@@ -67,6 +67,12 @@ echo "$changed_files" | grep --quiet 'poetry.lock' && {
   fi
 }
 
+# Update Next dependencies if necessary.
+echo "$changed_files" | grep --quiet 'frontend/package.*\.json' && {
+    # Install dependencies in background, since no rebuild is needed afterward.
+    npm i --prefix "$(git rev-parse --show-toplevel)/frontend" &
+}
+
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
   # TODO: Determine more intelligently whether seeding is required?
