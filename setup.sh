@@ -386,6 +386,9 @@ nvm --version &>/dev/null || {
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 
+echo "Updating npm to latest supported version"
+nvm install-latest-npm
+
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 npm i -g prettier eslint cypress
