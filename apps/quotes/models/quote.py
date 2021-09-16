@@ -144,7 +144,6 @@ class Quote(
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        unique_together = ['date', 'bite']
         ordering = ['date']
 
     placeholder_regex = quote_placeholder_regex
