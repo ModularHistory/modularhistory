@@ -19,22 +19,23 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
     # Autoformat and lint Python code.
     poetry --quiet && [[ -d ".venv" ]] && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
+        space_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ' ')
         echo "Autoformatting Python code..."
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
-        for file in $staged_python_files; do
-            # Check types with mypy first, since mypy is faster than pytype.
-            # https://github.com/google/pytype#usage
-            poetry run mypy "$file" || {
-                echo "
-                    ${BOLD}Examine the error above. Should it be fixed?${NORMAL}
-                    Pytype may give more helpful output:
-                        poetry run pytype --output .cache/pytype $file
-                "
-            }
-        done
-        for file in $staged_python_files; do
-            poetry run flake8 "$file" || linting_failed=true
-        done
+
+        # Check types with mypy first, since mypy is faster than pytype.
+        # https://github.com/google/pytype#usage
+        poetry run mypy "$space_delimited_filepaths" || {
+            echo "
+                ${BOLD}Examine the error above. Should it be fixed?${NORMAL}
+                Pytype may give more helpful output:
+                    poetry run pytype --output .cache/pytype $file
+            "
+        }
+
+
+        poetry run flake8 "$space_delimited_filepaths" || linting_failed=true
+
         if [[ "$linting_failed" = true ]]; then
             echo "
                 ${RED}Please fix the issues identified above, then recommit.${NORMAL}
