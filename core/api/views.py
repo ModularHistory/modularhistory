@@ -7,7 +7,7 @@ class ExtendedModelViewSet(ModelViewSet):
     """A ModelViewSet which allows accessing objects by slug or primary key."""
 
     lookup_url_kwarg = 'pk_or_slug'
-    list_fields: Optional[list[str]] = ['model', 'slug']
+    list_fields: Optional[list[str]] = ['model', 'slug', 'title']
 
     def get_object(self):
         self.lookup_field = (

@@ -11,5 +11,8 @@ class QuoteViewSet(ExtendedModelViewSet):
     queryset = Quote.objects.all()
     serializer_class = QuoteDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    list_fields = ExtendedModelViewSet.list_fields + ['bite', 'slug', 'primary_image']
-
+    list_fields = ExtendedModelViewSet.list_fields + [
+        'bite',
+        'date_string',
+        'primary_image',
+    ]

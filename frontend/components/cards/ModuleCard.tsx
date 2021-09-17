@@ -170,13 +170,13 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <CardHeader className={"text-center"}>
           <small dangerouslySetInnerHTML={{ __html: header }} />
         </CardHeader>
-      ) : module.title || module.dateString ? ( // if title and dataString
+      ) : (
         <CardHeader className={"text-center"}>
           {module.title && <small>{titleCase(module.title)}</small>}
           {module.title && module.dateString && <br />}
           {module.dateString && <small dangerouslySetInnerHTML={{ __html: module.dateString }} />}
         </CardHeader>
-      ) : null}
+      )}
       {children && <CardBody>{children}</CardBody>}
     </StyledCard>
   );
