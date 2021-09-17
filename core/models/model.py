@@ -148,9 +148,9 @@ class ExtendedModel(Model):
         )
 
     def get_html_for_view(
-            self,
-            view: str = Views.DETAIL,
-            text_to_highlight: Optional[str] = None,
+        self,
+        view: str = Views.DETAIL,
+        text_to_highlight: Optional[str] = None,
     ) -> SafeString:
         """Return HTML for the view (e.g., "card" or "detail") of the instance."""
         return get_html_for_view_(
@@ -190,9 +190,9 @@ class ExtendedModel(Model):
 
     @classmethod
     def get_object_html(
-            cls,
-            match: Match,
-            use_preretrieved_html: bool = False,
+        cls,
+        match: Match,
+        use_preretrieved_html: bool = False,
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
