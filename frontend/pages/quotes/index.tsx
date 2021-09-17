@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleCard from "@/components/cards/ModuleUnionCard";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
@@ -23,7 +23,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Grid item key={quote.slug} xs={6} sm={4} md={3}>
       <Link href={`/quotes/${quote.slug}`}>
         <a>
-          <ModuleCard module={quote} />
+          <ModuleUnionCard module={quote} />
         </a>
       </Link>
     </Grid>
