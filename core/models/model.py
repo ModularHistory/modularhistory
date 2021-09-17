@@ -265,14 +265,13 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
-        fields = kwargs.pop('fields', None)
+        requested_fields = kwargs.pop('fields', set())
 
         # Instantiate the superclass normally
         super().__init__(*args, **kwargs)
 
-        if fields is not None:
+        if requested_fields:
             # Drop any fields that are not specified in the `fields` argument.
-            requested_fields = set(fields)
             defined_fields = set(self.fields)
 
             if requested_fields - defined_fields:
@@ -281,7 +280,7 @@ class DrfModelSerializer(serializers.ModelSerializer):
                 )
 
             for field_name in defined_fields - requested_fields:
-                self.fields.pop(field_name)
+                del self.fields[field_name]
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
