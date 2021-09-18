@@ -14,11 +14,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
-import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
@@ -96,6 +96,26 @@ const StyledContainer = styled(Container)({
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
   const router = useRouter();
   const formContext = useSearchFormState();
+  const inputNames = [
+    "query",
+    "ordering",
+    "start_year",
+    "start_year_type",
+    "end_year",
+    "end_year_type",
+    "entities",
+    "topics",
+    "quality",
+    "content_types",
+  ] as const;
+  const inputsRef = useRef(
+    Object.fromEntries(
+      inputNames.map(
+        (name) => [name, null] // eslint-disable-line
+      )
+    ) as Record<typeof inputNames[number], null | string | number | (string | number)[]>
+  );
+  console.log(inputsRef);
 
   // When `sm` is 6, inputs may be rendered side-by-side.
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
@@ -118,7 +138,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
               name="query"
               defaultValue={formContext.formState["query"] || ""}
               disabled={formContext.disabled}
-              onChange={formContext.setFormStateFromEvent}
+              onChange={({ target: { value } }) => (inputsRef.current.query = value)}
               onKeyUp={handleKeyUp}
             />
           </Grid>
@@ -160,15 +180,26 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
-              {() =>
+            <InstantSearch
+              label={"Topics"}
+              name={"topics"}
+              labelKey={"name"}
+              getDataForInput={(input, config) =>
+                axiosWithoutAuth
+                  .get("/api/topics/instant_search/", {
+                    params: { query: input },
+                    ...config,
+                  })
+                  .then(({ data }) => data)
+              }
+              getInitialValue={(ids) =>
                 axiosWithoutAuth
                   .get("/graphql/", {
-                    params: { query: "{ topics { id name } }" },
+                    params: { query: `{ topics(ids: [${ids}]) { id name } }` },
                   })
-                  .then((response) => response.data["data"]["topics"])
+                  .then(({ data: { data } }) => data.topics)
               }
-            </MultiSelect>
+            />
           </Grid>
 
           <Grid item xs={12} sm={sm}>
