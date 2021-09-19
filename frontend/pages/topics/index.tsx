@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Card } from "@material-ui/core";
+import { Card, CardContent } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import { styled } from "@material-ui/core/styles";
 import axios from "axios";
@@ -74,7 +74,10 @@ const Topics: FC<TopicsProps> = ({ topicsData, className }: TopicsProps) => {
           {topics.map((topic) => (
             <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
               <StyledTopicCard className={`m-2 ${className || ""}`} data-type={topic.model}>
-                <h3>{topic.name}</h3>
+                {/*<CardHeader title={topic.name}/>*/}
+                <CardContent>
+                  <h3>{topic.name}</h3>
+                </CardContent>
               </StyledTopicCard>
             </Link>
           ))}
