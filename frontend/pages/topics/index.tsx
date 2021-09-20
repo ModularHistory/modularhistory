@@ -10,7 +10,6 @@ import Link from "next/link";
 import React, { FC } from "react";
 
 const StyledTopicCard = styled(Card)({
-  quotes: '"“" "”" "‘" "’"',
   cursor: "pointer",
   position: "relative",
   textOverflow: "ellipsis",
@@ -18,7 +17,6 @@ const StyledTopicCard = styled(Card)({
   width: "20rem",
   color: "black",
   display: "inline-block",
-  justifyContent: "center",
   "&:first-child": {
     marginTop: "0 !important",
   },
@@ -31,24 +29,6 @@ const StyledTopicCard = styled(Card)({
       "& p": {
         marginBottom: "1rem",
       },
-    },
-    "& .image-credit": {
-      display: "none",
-    },
-  },
-  "& .img-bg": {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    opacity: "0.8",
-    backgroundColor: "black",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "100% auto",
-    "&:hover": {
-      opacity: "0.9",
     },
   },
 });
@@ -74,7 +54,6 @@ const Topics: FC<TopicsProps> = ({ topicsData, className }: TopicsProps) => {
           {topics.map((topic) => (
             <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
               <StyledTopicCard className={`m-2 ${className || ""}`} data-type={topic.model}>
-                {/*<CardHeader title={topic.name}/>*/}
                 <CardContent>
                   <h3>{topic.name}</h3>
                 </CardContent>
