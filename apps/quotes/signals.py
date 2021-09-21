@@ -1,29 +1,11 @@
 """
 Responders to Django signals for the quote app.
 """
-from django.db.models import Q, QuerySet
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-from apps.moderation.models import ModeratedModel
+from apps.moderation.signals import process_relation_changes
 from apps.quotes import models
-
-
-def process_relation_changes(
-    sender: ModeratedModel,
-    instance: ModeratedModel,
-    related_field_name,
-    relations: QuerySet,
-    **kwargs,
-):
-    action = kwargs.pop('action', None)
-    related_ids = kwargs.pop('pk_set', set())
-
-    if action == 'post_add':
-        related_filter = Q(**{f'{related_field_name}__in': related_ids})
-        # re-save newly relations to trigger moderation
-        for relation in relations.filter(related_filter):
-            relation.save()
 
 
 @receiver(m2m_changed, sender=models.ImageRelation)

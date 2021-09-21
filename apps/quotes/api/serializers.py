@@ -37,6 +37,8 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for quotes."""
 
     save_after_m2m_update = True
+
+    title = serializers.CharField(required=False, allow_blank=False)
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
 
     def get_model(self, instance) -> str:  # noqa
@@ -75,6 +77,8 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'text': {'write_only': True},
             'pretext': {'write_only': True},
             'context': {'write_only': True},
+            'date': {'write_only': True, 'required': False},
+            'end_date': {'write_only': True, 'required': False},
             'images': {
                 'write_only': True,
                 'required': False,
