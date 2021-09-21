@@ -23,6 +23,3 @@ class TypedModel(BasedTypedModel, ExtendedModel, metaclass=TypedModelMetaclass):
         super().pre_save()
         if not getattr(self, '_typedmodels_type', None):
             raise RuntimeError(f'Untyped {self.__class__.__name__} cannot be saved.')
-
-    def save(self, *args, **kwargs):
-        ExtendedModel.save(self, *args, **kwargs)
