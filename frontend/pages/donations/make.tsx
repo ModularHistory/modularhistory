@@ -109,7 +109,7 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
                   />
                 </div>
               </div>
-              <DropIn options={{ authorization: clientToken, paypal: {flow: 'vault'}, venmo: {allowNewBrowserTab: false} }} onInstance={setInstance} />
+              <DropIn options={{ authorization: clientToken, paypal: {flow: 'vault'}, venmo: {allowNewBrowserTab: false, allowDesktop: true} }} onInstance={setInstance} />
               <Button variant="contained" color="primary" onClick={makeDonation}>
                 Make donation
               </Button>
