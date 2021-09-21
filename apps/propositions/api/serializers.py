@@ -15,6 +15,7 @@ class _PropositionDrfSerializer(DrfModuleSerializer):
         fields = DrfModuleSerializer.Meta.fields + [
             'summary',
             'elaboration',
+            'truncated_elaboration',
             'certainty',
             'date_string',
             'tags_html',
@@ -22,6 +23,7 @@ class _PropositionDrfSerializer(DrfModuleSerializer):
             'primary_image',
             'cached_images',
         ]
+        read_only_fields = ['truncated_elaboration']
         extra_kwargs = {'certainty': {'required': False}}
 
 

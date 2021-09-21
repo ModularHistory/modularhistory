@@ -74,6 +74,7 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'death_date',
             'birthDate',
             'deathDate',
+            'primary_image',
         ]
         extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
             'birth_date': {'write_only': True, 'required': False},

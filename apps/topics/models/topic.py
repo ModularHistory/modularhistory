@@ -101,7 +101,7 @@ class Topic(Node, Module):
         Module.post_save(self)
 
     @property  # type: ignore
-    @store(attribute_name='related_topics_string')
+    @store(key='related_topics_string')
     def tags_string(self) -> str:
         """Return a list of the topic's related topics as a string."""
         return TOPIC_STRING_DELIMITER.join(

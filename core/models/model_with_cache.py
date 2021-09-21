@@ -40,7 +40,7 @@ class ModelWithCache(ExtendedModel):
 def store(
     _func=None,
     *,
-    attribute_name: Optional[str] = None,
+    key: Optional[str] = None,
     caster: Optional[Callable] = None,
 ):
     """
@@ -87,7 +87,7 @@ def store(
             # Avoid recursion errors when creating new model instances
             if model_instance.pk:
                 if isinstance(model_instance, ModelWithCache):
-                    property_name = attribute_name or model_property.__name__
+                    property_name = key or model_property.__name__
                     # If the computation result is None, the key will be added to the
                     # JSON but its value will be None. Therefore, to check for a
                     # previous computation result, we must explicitly check for the

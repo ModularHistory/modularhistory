@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleCard from "@/components/cards/ModuleUnionCard";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
@@ -23,9 +23,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
     <Grid item key={occurrence.slug} xs={6} sm={4} md={3}>
       <Link href={`/occurrences/${occurrence.slug}`}>
         <a>
-          <ModuleCard module={occurrence}>
-            <div dangerouslySetInnerHTML={{ __html: occurrence.title }} />
-          </ModuleCard>
+          <ModuleUnionCard module={occurrence} />
         </a>
       </Link>
     </Grid>
