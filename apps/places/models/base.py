@@ -97,7 +97,7 @@ class Place(TypedModule):
         return self.name
 
     @property  # type: ignore
-    @store(attribute_name='string')
+    @store(key='string')
     def string(self) -> str:
         """Presentable string to display in HTML."""
         location = self.location

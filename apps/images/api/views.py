@@ -11,3 +11,4 @@ class ImageViewSet(ExtendedModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    list_fields = None

@@ -11,3 +11,4 @@ class SourceViewSet(ExtendedModelViewSet):
     queryset = Source.objects.all()
     serializer_class = SourceDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    list_fields = None

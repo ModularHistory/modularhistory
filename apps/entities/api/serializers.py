@@ -61,5 +61,6 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'death_date',
             'birthDate',
             'deathDate',
+            'primary_image',
         ]
         read_only_fields = ['truncated_description']

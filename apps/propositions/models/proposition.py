@@ -45,6 +45,7 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
+from core.models.model_with_cache import store
 from core.models.module import Module
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
@@ -178,6 +179,7 @@ class Proposition(  # noqa: WPS215
         paragraphed=False,
         processed=False,
     )
+
     elaboration = HTMLField(
         verbose_name=_('elaboration'),
         paragraphed=True,
@@ -257,6 +259,7 @@ class Proposition(  # noqa: WPS215
                 self.images.add(image)
 
     @property
+    @store
     def truncated_elaboration(self) -> Optional[SafeString]:
         """Return the occurrence's elaboration, truncated."""
         if not self.elaboration:
