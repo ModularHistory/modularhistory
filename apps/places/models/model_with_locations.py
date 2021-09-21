@@ -87,7 +87,7 @@ class ModelWithLocations(ExtendedModel):
             return None
 
     @property  # type: ignore
-    @store(attribute_name='serialized_locations')
+    @store(key='serialized_locations')
     def serialized_locations(self) -> list[dict]:
         """Return a list of dictionaries representing the instance's locations."""
         return [

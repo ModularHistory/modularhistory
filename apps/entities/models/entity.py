@@ -223,7 +223,7 @@ class Entity(
         )
         return categorizations.select_related('category')
 
-    @store(attribute_name='categorization_string')
+    @store(key='categorization_string')
     def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> str:
         """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
