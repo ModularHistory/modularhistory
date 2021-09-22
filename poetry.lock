@@ -985,7 +985,7 @@ Django = ">=2.1"
 
 [[package]]
 name = "django-postgresql-dag"
-version = "0.2.5"
+version = "0.3.1"
 description = "Directed Acyclic Graph implementation for Django & Postgresql"
 category = "main"
 optional = false
@@ -3613,7 +3613,7 @@ multidict = ">=4.0"
 
 [[package]]
 name = "youtube-dl"
-version = "2020.12.31"
+version = "2021.6.6"
 description = "YouTube video downloader"
 category = "main"
 optional = false
@@ -3647,7 +3647,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "a0f9ac71a7147e9ea92ab4f337c6fcf4e4d4a55bab7fc08f891170f7f77e2d85"
+content-hash = "6aff3acfba30ec6d66e3664c65d75a39954a846fcf0348b02e95b4b66dc83ee4"
 
 [metadata.files]
 aenum = [
@@ -4182,8 +4182,8 @@ django-polymorphic = [
     {file = "django_polymorphic-3.0.0-py2.py3-none-any.whl", hash = "sha256:73b75eb44ea302bd32820f8661e469509d245ce7f7ff09cd2ad149e5c42034ff"},
 ]
 django-postgresql-dag = [
-    {file = "django-postgresql-dag-0.2.5.tar.gz", hash = "sha256:7b9e3e0969996346892d24402427fbd2e93caffe5e24ce51effeeab721e6b11f"},
-    {file = "django_postgresql_dag-0.2.5-py3-none-any.whl", hash = "sha256:044489adb784e9d3d0aa2dd88a3134ce865ecbb3496965d28691d113ca20acce"},
+    {file = "django-postgresql-dag-0.3.1.tar.gz", hash = "sha256:7f100b6da5feda675300934d815ed3e951574433d1e1b42fe19adb3d0d142bbb"},
+    {file = "django_postgresql_dag-0.3.1-py3-none-any.whl", hash = "sha256:e9d888d434856c1e7b4c4e81b821bc3d9e65ebde9e14ff63b9407de7bde8c4f9"},
 ]
 django-redis = [
     {file = "django-redis-5.0.0.tar.gz", hash = "sha256:048f665bbe27f8ff2edebae6aa9c534ab137f1e8fa7234147ef470df3f3aa9b8"},
@@ -5852,8 +5852,8 @@ yarl = [
     {file = "yarl-1.6.3.tar.gz", hash = "sha256:8a9066529240171b68893d60dca86a763eae2139dd42f42106b03cf4b426bf10"},
 ]
 youtube-dl = [
-    {file = "youtube_dl-2020.12.31-py2.py3-none-any.whl", hash = "sha256:995fcc59de777177f51ed91537d083bbb9323d7d71c8f12635583b246e3ac78a"},
-    {file = "youtube_dl-2020.12.31.tar.gz", hash = "sha256:173fca869f8d2a6008cd7d13627f368adc1f334e973f49f03a3fe62b16ac2fea"},
+    {file = "youtube_dl-2021.6.6-py2.py3-none-any.whl", hash = "sha256:263e04d53fb8ba3dfbd246ad09b7d388e896c132a20cc770c26ee7684de050ac"},
+    {file = "youtube_dl-2021.6.6.tar.gz", hash = "sha256:cb2d3ee002158ede783e97a82c95f3817594df54367ea6a77ce5ceea4772f0ab"},
 ]
 zipp = [
     {file = "zipp-3.5.0-py3-none-any.whl", hash = "sha256:957cfda87797e389580cb8b9e3870841ca991e2125350677b2ca83a0e99390a3"},
