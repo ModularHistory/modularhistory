@@ -4,7 +4,7 @@ import {
   FormLabel,
   Radio,
   RadioGroup as MuiRadioGroup,
-} from "@material-ui/core";
+} from "@mui/material";
 import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 

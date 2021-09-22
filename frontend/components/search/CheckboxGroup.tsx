@@ -5,7 +5,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-} from "@material-ui/core";
+} from "@mui/material";
 import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 

@@ -1,8 +1,8 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { Topic } from "@/types/modules";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
