@@ -1,5 +1,4 @@
-import { HTMLReactParserOptions } from "html-react-parser";
-import { Element } from "html-react-parser/node_modules/domhandler/lib/node";
+import { Element, HTMLReactParserOptions } from "html-react-parser";
 import { FC, ReactElement, useEffect, useState } from "react";
 
 interface ModuleHTMLProps {
