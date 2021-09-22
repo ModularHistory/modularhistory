@@ -57,7 +57,10 @@ class Query(graphene.ObjectType):
     @staticmethod
     def resolve_topics(root, info, ids: list[int], **kwargs) -> 'QuerySet[Topic]':
         """Return the queryset against which a 'topics' query should be executed."""
-        return Topic.objects.filter(id__in=ids)
+        queryset = Topic.objects.all()
+        if ids:
+            queryset.filter(id__in=ids)
+        return queryset
 
     @staticmethod
     def resolve_topics_with_conclusions(root, info, **kwargs) -> 'QuerySet[Topic]':

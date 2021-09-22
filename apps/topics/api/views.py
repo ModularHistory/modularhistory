@@ -1,11 +1,11 @@
 from rest_framework import permissions
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from core.api.views import ExtendedModelViewSet
+from rest_framework.views import APIView
 
+from apps.search.documents import TopicInstantSearchDocument
 from apps.topics.api.serializers import TopicDrfSerializer
 from apps.topics.models.topic import Topic
-from apps.search.documents import TopicInstantSearchDocument
+from core.api.views import ExtendedModelViewSet
 from core.pagination import VariableSizePagination
 
 
@@ -16,6 +16,7 @@ class TopicViewSet(ExtendedModelViewSet):
     serializer_class = TopicDrfSerializer
     pagination_class = VariableSizePagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    list_fields = {'name', 'id'}
 
 
 class TopicInstantSearchAPIView(APIView):
