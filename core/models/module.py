@@ -16,9 +16,7 @@ from apps.moderation.models.searchable import (
     SearchableModeratedManager,
     SearchableModeratedModel,
 )
-from apps.search.api.serializers import (
-    SearchableModelSerializer,
-)
+from apps.search.api.serializers import SearchableModelSerializer
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged import SluggedModel
@@ -248,3 +246,6 @@ class TypedModule(TypedModel, Module):
         abstract = True
 
     objects = TypedModuleManager()
+
+    def save(self, *args, **kwargs):
+        Module.save(self, *args, **kwargs)
