@@ -105,7 +105,7 @@ django-admin-rangefilter = "^0.8.1"
 django-admin-tools = "==0.9.1"
 django-autoslug = "^1.9.8"
 django-cachalot = "^2.3.5"
-django-cors-headers = "3.6.0"
+django-cors-headers = "3.8.0"
 django-crispy-forms = "^1.10"
 django-cryptography = "^1.0"
 django-celery-beat = "^2.2.0"
@@ -121,10 +121,10 @@ django-imagekit = "^4.0.2"
 django-image-cropping = "^1.5"
 django-meta = "^2.0.0"
 django-polymorphic = "^3.0.0"
-django-postgresql-dag = "^0.2.5"
+django-postgresql-dag = "^0.3.1"
 django-redis = "^5.0.0"
 django-sass-processor = "==1.0.1"
-django-select2 = "==7.7.1"
+django-select2 = "==7.7.2"
 django-settings-export = "==1.2.1"
 django-silk = "^4.1.0"
 django-split-settings = "^1.0.1"
@@ -178,7 +178,7 @@ Twisted = [
     ], version = "^20.3", markers = "sys_platform == 'win32'" },
 ]
 uvicorn = { extras = ["standard"], version = "^0.15" }
-youtube-dl = "^2020.7.28"
+youtube-dl = "^2021.6.6"
 
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]
@@ -224,7 +224,7 @@ isort = "^5.6.4"
 libsass = "^0.21.0"
 mypy = "^0.910"
 pep8-naming = "^0.11.1"
-pylint = "^2.6.0"
+pylint = "^2.11.1"
 pyre-check = "^0.9.3"
 pytype = "^2021.5.11"
 rope = "^0.19.0"
@@ -239,7 +239,7 @@ types-requests = "^2.25.6"
 unify = "^0.5"
 virtualenv-clone = "^0.5.4"
 wemake-python-styleguide = "^0.15.2"
-Werkzeug = "^1.0.1"
+Werkzeug = "^2.0.1"
 wordcloud = "^1.8.0"
 
 [tool.pytest.ini_options]
