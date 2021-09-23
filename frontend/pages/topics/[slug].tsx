@@ -3,7 +3,7 @@ import ModuleContainer from "@/components/details/ModuleContainer";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { Topic } from "@/types/modules";
-import { Card } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
@@ -19,38 +19,6 @@ const StyledTopicResultCard = styled(Card)({
   marginBottom: "1rem",
   width: "40rem",
   color: "black",
-  "&:first-child": {
-    marginTop: "0 !important",
-  },
-  "& .fa": {
-    "-webkit-text-stroke": "initial",
-    textShadow: "none",
-  },
-  "&.image-card": {
-    "& .card-body": {
-      "& p": {
-        marginBottom: "1rem",
-      },
-    },
-    "& .image-credit": {
-      display: "none",
-    },
-  },
-  "& .img-bg": {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    opacity: "0.8",
-    backgroundColor: "black",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "100% auto",
-    "&:hover": {
-      opacity: "0.9",
-    },
-  },
 });
 
 interface TopicProps {
@@ -69,18 +37,24 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
         {topic.propositions &&
           topic.propositions.map((proposition) => (
             <Link href={`/propositions/${proposition.slug}`} key={proposition.slug} passHref>
-              <StyledTopicResultCard>
-                <div>
-                  <h4 dangerouslySetInnerHTML={{ __html: proposition.summary }} />
-                  {proposition.elaboration && (
-                    <HTMLEllipsis
-                      unsafeHTML={proposition.elaboration}
-                      maxLine="3"
-                      basedOn="words"
+              <a>
+                <StyledTopicResultCard>
+                  <div>
+                    <CardHeader
+                      title={<h4 dangerouslySetInnerHTML={{ __html: proposition.summary }} />}
                     />
-                  )}
-                </div>
-              </StyledTopicResultCard>
+                    {proposition.elaboration && (
+                      <CardContent>
+                        <HTMLEllipsis
+                          unsafeHTML={proposition.elaboration}
+                          maxLine="3"
+                          basedOn="words"
+                        />
+                      </CardContent>
+                    )}
+                  </div>
+                </StyledTopicResultCard>
+              </a>
             </Link>
           ))}
       </ModuleContainer>
