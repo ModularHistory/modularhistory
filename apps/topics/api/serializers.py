@@ -18,3 +18,4 @@ class TopicDrfSerializer(DrfModuleSerializer):
             'aliases',
             'description',
         ]
+        fields.remove('tags')
