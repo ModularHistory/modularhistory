@@ -1,6 +1,7 @@
 import ModuleDetail from "@/components/details/ModuleDetail";
 import { GlobalTheme } from "@/pages/_app";
 import { ModuleUnion } from "@/types/modules";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Dialog,
@@ -12,8 +13,7 @@ import {
   Skeleton,
   styled,
   useMediaQuery,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
 import { Dispatch, FC, SetStateAction } from "react";
 
 const CloseButton = styled(IconButton)(({ theme }) => ({

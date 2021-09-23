@@ -1,5 +1,5 @@
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Box } from "@material-ui/system";
+import { Box } from "@mui/material";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard, { ModuleCardProps } from "./ModuleCard";

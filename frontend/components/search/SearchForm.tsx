@@ -1,8 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
 import InstantSearch from "@/components/search/InstantSearch";
-import { Container, Grid } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
+import { Container, Grid } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,

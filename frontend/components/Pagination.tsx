@@ -1,6 +1,6 @@
-import { Breakpoint, useMediaQuery, useTheme } from "@material-ui/core";
-import MuiPagination, { PaginationProps as MuiPaginationProps } from "@material-ui/core/Pagination";
-import { styled } from "@material-ui/core/styles";
+import { Breakpoint, useMediaQuery, useTheme } from "@mui/material";
+import MuiPagination, { PaginationProps as MuiPaginationProps } from "@mui/material/Pagination";
+import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 

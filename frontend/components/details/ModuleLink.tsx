@@ -1,6 +1,6 @@
 import ModuleModal from "@/components/details/ModuleModal";
 import { ModuleUnion } from "@/types/modules";
-import { styled } from "@material-ui/core/styles";
+import { styled } from "@mui/material/styles";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";

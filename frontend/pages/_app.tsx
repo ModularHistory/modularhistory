@@ -6,7 +6,7 @@ import { initializeSentry } from "@/sentry";
 import "@/styles/globals.css";
 import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";

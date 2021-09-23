@@ -1,5 +1,5 @@
 import { Image } from "@/types/modules";
-import { styled } from "@material-ui/core/styles";
+import { styled } from "@mui/material/styles";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "../cards/ModuleCard";

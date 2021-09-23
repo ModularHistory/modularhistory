@@ -1,4 +1,4 @@
-import { Box, Fade, LinearProgress } from "@material-ui/core";
+import { Box, Fade, LinearProgress } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 
