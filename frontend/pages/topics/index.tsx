@@ -1,39 +1,12 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Button, Card } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { styled } from "@material-ui/core/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import React, { FC } from "react";
-
-const StyledTopicCard = styled(Card)({
-  cursor: "pointer",
-  position: "relative",
-  textOverflow: "ellipsis",
-  minHeight: "5rem",
-  width: "20rem",
-  color: "black",
-  display: "inline-block",
-  "&:first-child": {
-    marginTop: "0 !important",
-  },
-  "& .fa": {
-    "-webkit-text-stroke": "initial",
-    textShadow: "none",
-  },
-  "&.image-card": {
-    "& .card-body": {
-      "& p": {
-        marginBottom: "1rem",
-      },
-    },
-  },
-});
-
-export { StyledTopicCard };
 
 interface TopicsProps {
   topicsData: {
@@ -43,7 +16,7 @@ interface TopicsProps {
   className?: string;
 }
 
-const Topics: FC<TopicsProps> = ({ topicsData, className }: TopicsProps) => {
+const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   const topics = topicsData.topics || [];
 
   return (
@@ -55,10 +28,14 @@ const Topics: FC<TopicsProps> = ({ topicsData, className }: TopicsProps) => {
             <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
               <Button
                 component="a"
+                variant="outlined"
+                size="small"
                 sx={{
                   color: "black",
                   margin: "0.6rem 1.2rem",
                   display: "inline-block",
+                  fontSize: "1rem",
+                  border: ".08rem solid black",
                 }}
               >
                 {topic.name}
