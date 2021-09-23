@@ -13,7 +13,3 @@ services:
       - django
       - celery
       - celery_beat
-  
-  cypress:
-    environment:
-      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
