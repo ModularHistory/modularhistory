@@ -10,7 +10,7 @@ import Link from "next/link";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
-const StyledTopicResultCard = styled(Card)({
+const TopicPropositionCard = styled(Card)({
   quotes: '"“" "”" "‘" "’"',
   cursor: "pointer",
   position: "relative",
@@ -38,7 +38,7 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
           topic.propositions.map((proposition) => (
             <Link href={`/propositions/${proposition.slug}`} key={proposition.slug} passHref>
               <a>
-                <StyledTopicResultCard>
+                <TopicPropositionCard raised>
                   <div>
                     <CardHeader
                       title={<h4 dangerouslySetInnerHTML={{ __html: proposition.summary }} />}
@@ -53,7 +53,7 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
                       </CardContent>
                     )}
                   </div>
-                </StyledTopicResultCard>
+                </TopicPropositionCard>
               </a>
             </Link>
           ))}
