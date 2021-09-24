@@ -1,8 +1,8 @@
 import { handleLogout } from "@/auth";
 import Layout from "@/components/Layout";
-import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
-import Container from "@material-ui/core/Container";
-import Alert from "@material-ui/lab/Alert";
+import Alert from "@mui/lab/Alert";
+import { Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
+import Container from "@mui/material/Container";
 import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { useRouter } from "next/router";

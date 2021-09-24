@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 FieldList = list[str]
 
+
 # TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
@@ -261,6 +262,25 @@ class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     model = serializers.SerializerMethodField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        requested_fields = kwargs.pop('fields', set())
+
+        # Instantiate the superclass normally
+        super().__init__(*args, **kwargs)
+
+        if requested_fields:
+            # Drop any fields that are not specified in the `fields` argument.
+            defined_fields = set(self.fields)
+
+            if requested_fields - defined_fields:
+                raise ValueError(
+                    f'Fields {requested_fields - defined_fields} do not exist on serializer {self.__class__}'
+                )
+
+            for field_name in defined_fields - requested_fields:
+                del self.fields[field_name]
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""

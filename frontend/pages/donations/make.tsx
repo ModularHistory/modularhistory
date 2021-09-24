@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
-import { Button } from "@material-ui/core";
-import Container from "@material-ui/core/Container";
+import { Button } from "@mui/material";
+import Container from "@mui/material/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";

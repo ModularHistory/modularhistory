@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import Container from "@material-ui/core/Container";
+import Container from "@mui/material/Container";
 import Link from "next/link";
 import React, { FC } from "react";
 

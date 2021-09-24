@@ -11,7 +11,6 @@ class TopicSerializer(ModuleSerializer):
     name = serpy.StrField()
     aliases = serpy.StrField()
     description = serpy.StrField()
-    path = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""

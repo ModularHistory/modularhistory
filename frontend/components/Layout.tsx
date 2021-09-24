@@ -3,6 +3,7 @@ import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent, PropsWithChildren, useEffect } from "react";
+import { titleCase } from "title-case";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
@@ -44,7 +45,7 @@ const Layout: FunctionComponent<LayoutProperties> = ({
   return (
     <>
       <Head>
-        <title>{title || "Home"} | ModularHistory</title>
+        <title>{titleCase(title) || "Home"} | ModularHistory</title>
         <link rel="canonical" href={canonicalUrl || router.pathname} />
       </Head>
       <Navbar />

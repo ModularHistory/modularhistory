@@ -1,15 +1,14 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleCard from "@/components/cards/ModuleCard";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Entity } from "@/types/modules";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface EntitiesDataProps {
   totalPages: number;
@@ -26,9 +25,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Grid item key={entity.slug} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity.slug}`}>
         <a>
-          <ModuleCard module={entity} header={entity.name}>
-            <HTMLEllipsis unsafeHTML={entity.description} maxLine="4" basedOn="words" />
-          </ModuleCard>
+          <ModuleUnionCard module={entity} />
         </a>
       </Link>
     </Grid>

@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { Box, Container, Typography } from "@material-ui/core";
+import { Box, Container, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
 import Head from "next/head";

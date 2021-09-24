@@ -3,7 +3,7 @@
 */
 
 import Layout from "@/components/Layout";
-import Container from "@material-ui/core/Container";
+import Container from "@mui/material/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
 import { FC, MouseEventHandler, useRef, useState } from "react";

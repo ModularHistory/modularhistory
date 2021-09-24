@@ -1,6 +1,6 @@
 import { handleLogout } from "@/auth";
 import Layout from "@/components/Layout";
-import { Box, Container, Typography } from "@material-ui/core";
+import { Box, Container, Typography } from "@mui/material";
 import { useSession } from "next-auth/client";
 import React, { FunctionComponent, useEffect } from "react";
 

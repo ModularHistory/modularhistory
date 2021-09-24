@@ -1,8 +1,8 @@
 import ModuleHTML from "@/components/details/ModuleHTML";
 import TagList from "@/components/topics/TagList";
 import { Proposition } from "@/types/modules";
-import { Box } from "@material-ui/core";
-import Slider from "@material-ui/core/Slider";
+import { Box } from "@mui/material";
+import Slider from "@mui/material/Slider";
 import { useSession } from "next-auth/client";
 import { FC } from "react";
 import ArgumentSet from "./ArgumentSet";

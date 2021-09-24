@@ -1,15 +1,14 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleCard from "@/components/cards/ModuleUnionCard";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Quote } from "@/types/modules";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface QuotesProps {
   quotesData: {
@@ -24,17 +23,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Grid item key={quote.slug} xs={6} sm={4} md={3}>
       <Link href={`/quotes/${quote.slug}`}>
         <a>
-          <ModuleCard module={quote}>
-            <blockquote className="blockquote">
-              <HTMLEllipsis unsafeHTML={quote.bite} maxLine="5" basedOn="words" />
-              {quote.attributeeString && (
-                <footer
-                  className="blockquote-footer"
-                  dangerouslySetInnerHTML={{ __html: quote.attributeeString }}
-                />
-              )}
-            </blockquote>
-          </ModuleCard>
+          <ModuleUnionCard module={quote} />
         </a>
       </Link>
     </Grid>

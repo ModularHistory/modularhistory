@@ -65,7 +65,7 @@ export interface Quote extends SearchableModule, ModuleWithImages {
   cachedCitations: Citation[];
 }
 
-export interface Occurrence extends Proposition, SearchableModule, ModuleWithImages {
+export interface Occurrence extends Proposition {
   model: "propositions.occurrence";
 }
 
@@ -81,6 +81,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   model: "entities.entity" | "entities.organization" | "entities.person" | "entities.group";
   name: string;
   description: string;
+  truncatedDescription: string;
   meta?: Meta;
 }
 
@@ -90,10 +91,11 @@ export interface Argument extends BaseModule {
   premises: Proposition[];
 }
 
-export interface Proposition extends SearchableModule {
+export interface Proposition extends SearchableModule, ModuleWithImages {
   model: "propositions.proposition";
   summary: string;
   elaboration: string;
+  truncatedElaboration: string;
   certainty: number;
   arguments: Argument[];
   meta?: Meta;

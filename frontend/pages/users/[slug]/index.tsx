@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
-import { Container } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { Container } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
 import { getSession, useSession } from "next-auth/client";

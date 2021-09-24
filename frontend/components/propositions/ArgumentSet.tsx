@@ -1,11 +1,11 @@
 import { Argument } from "@/types/modules";
-import { alpha, Theme } from "@material-ui/core";
-import Collapse from "@material-ui/core/Collapse";
-import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
-import { TransitionProps } from "@material-ui/core/transitions";
-import { TreeItem, TreeView } from "@material-ui/lab";
-import { TreeItemProps } from "@material-ui/lab/TreeItem";
-import { createStyles, withStyles } from "@material-ui/styles";
+import { TreeItem, TreeView } from "@mui/lab";
+import { TreeItemProps } from "@mui/lab/TreeItem";
+import { alpha, Theme } from "@mui/material";
+import Collapse from "@mui/material/Collapse";
+import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
+import { TransitionProps } from "@mui/material/transitions";
+import { createStyles, withStyles } from "@mui/styles";
 import { animated, useSpring } from "@react-spring/web";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";

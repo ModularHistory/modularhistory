@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Proposition } from "@/types/modules";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 

@@ -61,7 +61,7 @@ class Collection(ModelWithCache):
         return soupify(self.html).get_text()
 
     @property  # type: ignore
-    @store(attribute_name='html', caster=format_html)
+    @store(key='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
         return format_html(self.__html__())
@@ -104,7 +104,7 @@ class Repository(ModelWithCache):
         return soupify(self.html).get_text()
 
     @property  # type: ignore
-    @store(attribute_name='html', caster=format_html)
+    @store(key='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
         return format_html(self.__html__())
