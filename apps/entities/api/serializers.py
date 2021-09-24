@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework import serializers
 
+from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.entity import Entity
 from core.models.serializers import DrfTypedModuleSerializer
@@ -37,6 +38,9 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
         many=True, required=False, source='categorizations.all'
     )
 
+    # write only versions are not rendered to output
+    birth_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    death_date = HistoricDateTimeDrfField(write_only=True, required=False)
     birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
     deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
 
@@ -70,13 +74,9 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'description',
             'truncated_description',
             'categorizations',
-            'birth_date',  # write only versions are not rendered to output
+            'birth_date',
             'death_date',
             'birthDate',
             'deathDate',
             'primary_image',
         ]
-        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
-            'birth_date': {'write_only': True, 'required': False},
-            'death_date': {'write_only': True, 'required': False},
-        }

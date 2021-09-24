@@ -27,7 +27,6 @@ class ModelWithCache(ExtendedModel):
         when the instance is updated and saved from the admin (or via a script),
         properties will be recomputed when next accessed.  TODO: do better.
         """
-        print(f'ModelWithCache.save: {kwargs}')
         if wipe_cache:
             self.cache = {}  # type: ignore
         super().save(*args, **kwargs)  # type: ignore

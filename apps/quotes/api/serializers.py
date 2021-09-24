@@ -4,6 +4,7 @@ from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
+from apps.dates.fields import HistoricDateTimeDrfField
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
@@ -40,6 +41,8 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
 
     title = serializers.CharField(required=False, allow_blank=False)
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
+    date = HistoricDateTimeDrfField(write_only=True, required=False)
+    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
@@ -63,6 +66,7 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'attributee_html',
             'attributee_string',
             'date',
+            'end_date',
             'date_string',
             'primary_image',
             'cached_images',
@@ -77,8 +81,6 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'text': {'write_only': True},
             'pretext': {'write_only': True},
             'context': {'write_only': True},
-            'date': {'write_only': True, 'required': False},
-            'end_date': {'write_only': True, 'required': False},
             'images': {
                 'write_only': True,
                 'required': False,
