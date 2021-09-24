@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Button } from "@material-ui/core";
+import { Button, Divider } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import axios from "axios";
 import { GetServerSideProps } from "next";
@@ -18,29 +18,40 @@ interface TopicsProps {
 
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   const topics = topicsData.topics || [];
+  const topicsByLetters: Record<string, typeof topics> = {};
+  topics.map((topic) => {
+    const firstLetter = topic.name[0].toUpperCase() || " ";
+    topicsByLetters[firstLetter] = topicsByLetters[firstLetter] || []; //create array if not created already
+    topicsByLetters[firstLetter].push(topic);
+  });
 
   return (
     <Layout title={"Topics"}>
       <Container>
         <PageHeader>Topics</PageHeader>
         <div style={{ marginBottom: "2rem", textAlign: "center" }}>
-          {topics.map((topic) => (
-            <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
-              <Button
-                component="a"
-                variant="outlined"
-                size="small"
-                sx={{
-                  color: "black",
-                  margin: "0.6rem 1.2rem",
-                  display: "inline-block",
-                  fontSize: "1rem",
-                  border: ".08rem solid black",
-                }}
-              >
-                {topic.name}
-              </Button>
-            </Link>
+          {Object.keys(topicsByLetters).map((key) => (
+            <>
+              <Divider sx={{ my: "2" }}>{key}</Divider>
+              {topicsByLetters[key].map((topic: any) => (
+                <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
+                  <Button
+                    component="a"
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      color: "black",
+                      margin: "0.6rem 1.2rem",
+                      display: "inline-block",
+                      fontSize: "1rem",
+                      border: ".08rem solid black",
+                    }}
+                  >
+                    {topic.name}
+                  </Button>
+                </Link>
+              ))}
+            </>
           ))}
         </div>
       </Container>
