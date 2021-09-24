@@ -89,7 +89,7 @@ class Place(TypedModule):
                 raise ValidationError(
                     f'{self} cannot have a parent location of type {location.type}.'
                 )
-        super().save()
+        super().save(*args, **kwargs)
 
     def get_default_title(self) -> str:
         """Return the value the title should be set to, if not manually set."""
