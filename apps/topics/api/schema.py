@@ -59,7 +59,7 @@ class Query(graphene.ObjectType):
         """Return the queryset against which a 'topics' query should be executed."""
         queryset = Topic.objects.all()
         if ids:
-            queryset.filter(id__in=ids)
+            queryset = queryset.filter(id__in=ids)
         return queryset
 
     @staticmethod
