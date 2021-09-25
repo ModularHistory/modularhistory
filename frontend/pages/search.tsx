@@ -19,7 +19,7 @@ import {
   useCallback,
   useEffect,
   useRef,
-  useState,
+  useState
 } from "react";
 
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
