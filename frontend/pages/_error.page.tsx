@@ -6,7 +6,7 @@ import Layout from "@/components/Layout";
 import * as Sentry from "@sentry/node";
 import NextErrorComponent from "next/error";
 
-const Error = ({ statusCode, hasGetInitialPropsRun, err }) => {
+const ErrorPage = ({ statusCode, hasGetInitialPropsRun, err }: any) => {
   if (!hasGetInitialPropsRun && err) {
     // getInitialProps is not called in case of
     // https://github.com/vercel/next.js/issues/8592. As a workaround, we pass
@@ -22,11 +22,11 @@ const Error = ({ statusCode, hasGetInitialPropsRun, err }) => {
   );
 };
 
-Error.getInitialProps = async ({ res, err, asPath }) => {
-  const errorInitialProps = await NextErrorComponent.getInitialProps({
+ErrorPage.getInitialProps = async ({ res, err, asPath }: any) => {
+  const errorInitialProps = (await NextErrorComponent.getInitialProps({
     res,
     err,
-  });
+  } as any)) as any;
 
   // Workaround for https://github.com/vercel/next.js/issues/8592, mark when
   // getInitialProps has run
@@ -64,4 +64,4 @@ Error.getInitialProps = async ({ res, err, asPath }) => {
   return errorInitialProps;
 };
 
-export default Error;
+export default ErrorPage;

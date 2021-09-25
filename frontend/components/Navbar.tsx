@@ -94,7 +94,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
 
   const router = useRouter();
   // TODO: Create session type and remove this cast to `any`.
-  const [session, loading] = useSession() as any;
+  const [session, loading] = useSession();
 
   const login: MouseEventHandler = (e) => {
     e.preventDefault();
@@ -103,7 +103,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
 
   const logout: MouseEventHandler = (e) => {
     e.preventDefault();
-    handleLogout(session);
+    session && handleLogout(session);
   };
 
   const hideAccountControls =
