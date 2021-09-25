@@ -35,7 +35,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
             <>
               <Divider sx={{ my: 2 }}>{key}</Divider>
               {topicsByLetters[key].map((topic) => (
-                <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
+                <Link href={`/topics/${topic.slug}`} key={topic.name} passHref prefetch={false}>
                   <Button
                     component="a"
                     variant="outlined"
