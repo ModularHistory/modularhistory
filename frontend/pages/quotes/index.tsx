@@ -21,7 +21,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
   const quotes = quotesData["results"] || [];
   const quoteCards = quotes.map((quote) => (
     <Grid item key={quote.slug} xs={6} sm={4} md={3}>
-      <Link href={`/quotes/${quote.slug}`}>
+      <Link href={`/quotes/${quote.slug}`} prefetch={false}>
         <a>
           <ModuleUnionCard module={quote} />
         </a>

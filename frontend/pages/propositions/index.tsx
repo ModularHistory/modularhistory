@@ -29,7 +29,7 @@ const Propositions: FC<PropositionsProps> = ({ topics }: PropositionsProps) => {
               <List>
                 {topic.conclusions.map((proposition) => (
                   <ListItem key={proposition.slug}>
-                    <Link href={`/propositions/${proposition.slug}`}>
+                    <Link href={`/propositions/${proposition.slug}`} prefetch={false}>
                       <a>
                         <div dangerouslySetInnerHTML={{ __html: proposition.summary }} />
                       </a>
