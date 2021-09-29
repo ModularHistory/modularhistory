@@ -21,7 +21,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
   const occurrences = occurrencesData["results"] || [];
   const occurrenceCards = occurrences.map((occurrence) => (
     <Grid item key={occurrence.slug} xs={6} sm={4} md={3}>
-      <Link href={`/occurrences/${occurrence.slug}`}>
+      <Link href={`/occurrences/${occurrence.slug}`} prefetch={false}>
         <a>
           <ModuleUnionCard module={occurrence} />
         </a>

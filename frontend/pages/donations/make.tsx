@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { Button } from "@mui/material";
+import { Alert, AlertTitle, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
@@ -76,7 +76,7 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
         }}
       >
         {(!clientToken && <p className="lead">Loading...</p>) ||
-          (!success && !error && (
+          (
             <div>
               <header>
                 <p className="h3">Help us keep ModularHistory running</p>
@@ -85,6 +85,8 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
                   ModularHistory afloat, you can use this form to make a donation.
                 </p>
               </header>
+              {(success && <SuccessMessage />) ||
+              (error && <ErrorMessage />)}
               <div className="row col-12 p-0 m-0 mt-3">
                 <div className="col pl-0">
                   <input
@@ -109,35 +111,29 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
                   />
                 </div>
               </div>
-              <DropIn options={{ authorization: clientToken }} onInstance={setInstance} />
+              <DropIn options={{ authorization: clientToken, paypal: {flow: 'vault'}, venmo: {allowNewBrowserTab: false, allowDesktop: true} }} onInstance={setInstance} />
               <Button variant="contained" color="primary" onClick={makeDonation}>
                 Make donation
               </Button>
             </div>
-          )) ||
-          (success && <SuccessMessage />) ||
-          (error && <ErrorMessage />)}
+          )}
       </Container>
     </Layout>
   );
 };
 
 const SuccessMessage: FC = () => (
-  <div className="Success">
-    <header>
-      <p className="h3">Donated Successfully.</p>
-      <p>Thank you for your donation! Your patronage makes ModularHistory possible.</p>
-    </header>
-  </div>
+  <Alert severity="success">
+    <AlertTitle>Donated Successfully.</AlertTitle>
+    <strong>Thank you for your donation!</strong> Your patronage makes ModularHistory possible.
+  </Alert>
 );
 
 const ErrorMessage: FC = () => (
-  <div className="Error">
-    <header>
-      <p className="h3">Oops, something went wrong.</p>
-      <p>Sorry, there were some issues with your donation.</p>
-    </header>
-  </div>
+  <Alert severity="error">
+      <AlertTitle>Oops, something went wrong.</AlertTitle>
+      Sorry, there were some issues with your donation.
+  </Alert>
 );
 
 export default MakeDonationPage;

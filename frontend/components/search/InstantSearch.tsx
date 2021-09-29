@@ -124,7 +124,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
       renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
       sx={{
         "& .MuiChip-root": {
-          margin: 1,
           fontSize: "11px",
           height: "20px",
           "& .MuiChip-label": {
