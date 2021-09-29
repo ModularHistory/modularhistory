@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import { Alert, AlertTitle, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import DropIn from "braintree-web-drop-in-react";
+import { GetServerSideProps } from "next";
 import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 interface DonateProps {
