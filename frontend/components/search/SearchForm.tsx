@@ -18,7 +18,6 @@ import {
 } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
-import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
@@ -160,15 +159,26 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
-              {() =>
+            <InstantSearch
+              label={"Topics"}
+              name={"topics"}
+              labelKey={"name"}
+              getDataForInput={(input, config) =>
+                axiosWithoutAuth
+                  .get("/api/topics/instant_search/", {
+                    params: { query: input },
+                    ...config,
+                  })
+                  .then(({ data }) => data)
+              }
+              getInitialValue={(ids) =>
                 axiosWithoutAuth
                   .get("/graphql/", {
-                    params: { query: "{ topics { id name } }" },
+                    params: { query: `{ topics(ids: [${ids}]) { id name } }` },
                   })
-                  .then((response) => response.data["data"]["topics"])
+                  .then(({ data: { data } }) => data.topics)
               }
-            </MultiSelect>
+            />
           </Grid>
 
           <Grid item xs={12} sm={sm}>
