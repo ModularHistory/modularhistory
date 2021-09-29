@@ -22,14 +22,19 @@ SPEECH_TYPES = (
 )
 
 
-class SpeechTypeValidator:
-    """A validator for the type of model instance referenced by `speech`."""
+class TypeValidator:
+    """A validator for the type of model instance referenced by a foreign key."""
 
-    def __init__(self, value: Optional['ExtendedModel']):
+    type: str
+
+    def __call__(self, value: Optional['ExtendedModel'], *args, **kwargs):
+        """Run the validator."""
         if value and value.type != self.type:
-            raise ValidationError(
-                f'{value} must be of type "{self.type}" and not "{value.type}".'
-            )
+            raise ValidationError(f'{value} must be of type "{self.type}".')
+
+
+class SpeechTypeValidator(TypeValidator):
+    """A validator for the type of model instance referenced by `speech`."""
 
     type = 'speech'
 
@@ -55,7 +60,7 @@ class Speech(Source):
         related_name='speech',
         null=True,
         blank=True,
-        validators=[SpeechTypeValidator],
+        validators=[SpeechTypeValidator()],
     )
 
     def __html__(self) -> str:
