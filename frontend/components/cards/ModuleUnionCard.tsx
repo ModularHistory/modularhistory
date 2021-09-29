@@ -8,9 +8,9 @@ interface HighlightEllipsisProps {
   unsafeHTML: string;
 }
 
-function applyHTMLFilter(str: string) {
+function applyHTMLFilter(unsafeHTML: string) {
   // TODO: Replace regex with more formal fix
-  return str.replace(
+  return unsafeHTML.replace(
     /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)|(<module[^>]*?>.*?<\/module>)|(<\/?blockquote[^>]*?>)/gi,
     ""
   );
@@ -80,14 +80,12 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       break;
     case "quotes.quote": {
       content = (
-        //<blockquote className="blockquote">
         <div>
           {(highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) ??
             (module.bite && (
               <HTMLEllipsis unsafeHTML={applyHTMLFilter(module.bite)} maxLine="3" basedOn="words" />
             ))}
         </div>
-        //</blockquote>
       );
       break;
     }
