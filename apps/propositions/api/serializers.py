@@ -17,6 +17,7 @@ class _PropositionDrfSerializer(DrfModuleSerializer):
             'elaboration',
             'truncated_elaboration',
             'certainty',
+            'date',
             'date_string',
             'tags_html',
             'cached_citations',

@@ -71,6 +71,15 @@ def get_month_from_season(season: str) -> int:
     return 10
 
 
+def serialize_date(date):
+    if isinstance(date, HistoricDateTime):
+        return date.serialize()
+    elif isinstance(date, datetime):
+        return date.isoformat()
+    else:
+        return None
+
+
 class HistoricDateTime(datetime):
     """Datetime capable of representing dates before CE."""
 

@@ -2,8 +2,11 @@
 from rest_framework import serializers
 
 from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
 from apps.sources.models import Source, SourceContainment
+from apps.sources.models.mixins.page_numbers import PageNumbersMixin
+from apps.sources.models.mixins.textual import TextualMixin
 from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer
 
@@ -17,16 +20,14 @@ class SourceDrfSerializer(DrfModuleSerializer):
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    def get_model(self, instance) -> str:
-        """Return the model name of the instance."""
-        return 'sources.source'
-
     class Meta(DrfModuleSerializer.Meta):
         model = Source
+        # TODO: missing `file` field
         fields = DrfModuleSerializer.Meta.fields + [
             'citation_html',
             'content',
             'date',
+            'end_date',
             'date_string',
             'url',
             'href',
@@ -73,4 +74,36 @@ class ContainmentDrfSerializer(DrfModelSerializer):
             'page_number',
             'end_page_number',
             'container',
+        ]
+
+
+class TextualDrfSerializerMixin(serializers.ModelSerializer):
+    """TextualMixin serializer."""
+
+    original_publication_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    originalPublicationDate = serializers.SerializerMethodField(
+        'get_original_publication_date', read_only=True
+    )
+
+    def get_original_publication_date(self, instance):
+        return serialize_date(instance.original_publication_date)
+
+    class Meta:
+        model = TextualMixin
+        fields = [
+            'editors',
+            'original_edition',
+            'original_publication_date',
+            'originalPublicationDate',
+        ]
+
+
+class PageNumbersDrfSerializerMixin(TextualDrfSerializerMixin):
+    """PageNumbersMixin serializer."""
+
+    class Meta(TextualDrfSerializerMixin.Meta):
+        model = PageNumbersMixin
+        fields = TextualDrfSerializerMixin.Meta.fields + [
+            'page_number',
+            'end_page_number',
         ]

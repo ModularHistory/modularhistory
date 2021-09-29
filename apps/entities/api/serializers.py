@@ -1,9 +1,8 @@
-import datetime
 
 from rest_framework import serializers
 
 from apps.dates.fields import HistoricDateTimeDrfField
-from apps.dates.structures import HistoricDateTime
+from apps.dates.structures import serialize_date
 from apps.entities.models.entity import Entity
 from core.models.serializers import DrfTypedModuleSerializer
 
@@ -46,23 +45,11 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
-        birth_date = instance.birth_date
-        if isinstance(birth_date, HistoricDateTime):
-            return birth_date.serialize()
-        elif isinstance(birth_date, datetime.datetime):
-            return birth_date.isoformat()
-        else:
-            return None
+        return serialize_date(instance.birth_date)
 
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
-        death_date = instance.death_date
-        if isinstance(death_date, HistoricDateTime):
-            return death_date.serialize()
-        elif isinstance(death_date, datetime.datetime):
-            return death_date.isoformat()
-        else:
-            return None
+        return serialize_date(instance.death_date)
 
     class Meta(DrfTypedModuleSerializer.Meta):
         model = Entity
