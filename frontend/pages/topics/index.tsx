@@ -1,40 +1,58 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Topic } from "@/types/modules";
+import { ModuleUnion, Topic } from "@/types/modules";
+import { Divider } from "@mui/material";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { FC } from "react";
+import React, { FC } from "react";
 
 interface TopicsProps {
   topicsData: {
-    topics: Pick<Topic, "name" | "slug">[];
+    topics: Pick<Topic, "name" | "slug" | "model">[];
   };
+  module: ModuleUnion;
+  className?: string;
 }
 
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   const topics = topicsData.topics || [];
+  const topicsByLetters: Record<string, typeof topics> = {};
+  topics.map((topic) => {
+    const firstLetter = topic.name[0].toUpperCase();
+    topicsByLetters[firstLetter] = topicsByLetters[firstLetter] || []; //create array if not created already
+    topicsByLetters[firstLetter].push(topic);
+  });
 
   return (
     <Layout title={"Topics"}>
       <Container>
         <PageHeader>Topics</PageHeader>
         <div style={{ marginBottom: "2rem", textAlign: "center" }}>
-          {topics.map((topic) => (
-            <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
-              <Button
-                component="a"
-                sx={{
-                  color: "black",
-                  margin: "0.6rem 1.2rem",
-                  display: "inline-block",
-                }}
-              >
-                {topic.name}
-              </Button>
-            </Link>
+          {Object.keys(topicsByLetters).map((key) => (
+            <>
+              <Divider sx={{ my: 2 }}>{key}</Divider>
+              {topicsByLetters[key].map((topic) => (
+                <Link href={`/topics/${topic.slug}`} key={topic.name} passHref prefetch={false}>
+                  <Button
+                    component="a"
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      color: "black",
+                      margin: "0.6rem 1.2rem",
+                      display: "inline-block",
+                      fontSize: "1rem",
+                      border: ".08rem solid black",
+                    }}
+                  >
+                    {topic.name}
+                  </Button>
+                </Link>
+              ))}
+            </>
           ))}
         </div>
       </Container>
