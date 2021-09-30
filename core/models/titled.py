@@ -1,6 +1,9 @@
+import serpy
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from rest_framework import serializers
+from titlecase import titlecase
 
 from core.models.model import ExtendedModel
 
@@ -28,3 +31,12 @@ class TitledModel(ExtendedModel):
 
     def get_default_title(self) -> str:
         raise NotImplementedError
+
+
+class TitleCaseField(serpy.StrField):
+    to_value = staticmethod(titlecase)
+
+
+class TitleCaseDrfField(serializers.CharField):
+    def to_representation(self, value: str) -> str:
+        return titlecase(super().to_representation(value))
