@@ -29,9 +29,7 @@ interface TopicProps {
  */
 const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
   const numberOfResults = Object.keys(topic.propositions).length;
-  const topicHeader =
-    (numberOfResults != 1 && `${topic.name} (${numberOfResults} Results)`) ||
-    `${topic.name} (1 Result)`;
+  const topicHeader = `${topic.name} (${numberOfResults} Result${numberOfResults == 1 ? "" : "s"})`;
   return (
     <Layout title={topic.name}>
       <ModuleContainer>
