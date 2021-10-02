@@ -28,8 +28,10 @@ interface TopicProps {
  * A page that renders the HTML of a single topic.
  */
 const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
-  const numberOfResults = Object.keys(topic.propositions).length;
-  const topicHeader = `${topic.name} (${numberOfResults} Result${numberOfResults == 1 ? "" : "s"})`;
+  const numberOfResults = topic.propositions.length;
+  const topicHeader = `${topic.name} (${numberOfResults} Result${
+    numberOfResults === 1 ? "" : "s"
+  })`;
   return (
     <Layout title={topic.name}>
       <ModuleContainer>

@@ -48,7 +48,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
                       border: ".08rem solid black",
                     }}
                   >
-                    {`${topic.name} (${Object.keys(topic.propositions).length})`}
+                    {`${topic.name} (${topic.propositions.length})`}
                   </Button>
                 </Link>
               ))}
