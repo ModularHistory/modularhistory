@@ -14,8 +14,6 @@ from core.models.serializers import DrfModuleSerializer, SerializableDrfField
 class SourceDrfSerializer(DrfModuleSerializer):
     """Serializer for sources."""
 
-    save_after_m2m_update = True
-
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)

@@ -261,10 +261,6 @@ class ModelSerializer(serpy.Serializer):
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
-    # Instances will be re-saved after m2m field updates in .create/.update
-    # needed for models like Quote that have post_save triggers that depends on relation data
-    save_after_m2m_update = False
-
     model = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
@@ -290,18 +286,6 @@ class DrfModelSerializer(serializers.ModelSerializer):
         """Return the model name of the instance."""
         model_cls: type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
-
-    def create(self, validated_data):
-        instance = super().create(validated_data)
-        if self.save_after_m2m_update:
-            instance.save(moderate=False)
-        return instance
-
-    def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        if self.save_after_m2m_update:
-            instance.save(moderate=False)
-        return instance
 
     class Meta:
         fields = ['id', 'model']

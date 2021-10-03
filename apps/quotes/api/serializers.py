@@ -37,8 +37,6 @@ class CitationDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
 class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for quotes."""
 
-    save_after_m2m_update = True
-
     title = serializers.CharField(required=False, allow_blank=False)
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeDrfField(write_only=True, required=False)
