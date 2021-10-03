@@ -12,7 +12,7 @@ from apps.sources.api.sources.report.urls import router as report_router
 from apps.sources.api.sources.speech.urls import router as speech_router
 
 router = routers.DefaultRouter()
-router.register('', views.SourceViewSet)
+router.register('sources', views.SourceViewSet)
 
 app_name = 'sources'
 
