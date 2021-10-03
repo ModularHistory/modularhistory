@@ -14,7 +14,3 @@ class ImageSerializer(ModuleSerializer):
     caption_html = serpy.StrField()
     provider_string = serpy.StrField()
     bg_img_position = serpy.Field()
-
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'images.image'

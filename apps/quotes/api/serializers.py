@@ -42,10 +42,6 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     date = HistoricDateTimeDrfField(write_only=True, required=False)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'quotes.quote'
-
     def validate_text(self, value):
         if len(value) < TEXT_MIN_LENGTH:
             raise serializers.ValidationError(

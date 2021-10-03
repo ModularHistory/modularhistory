@@ -12,3 +12,4 @@ class PlaceViewSet(ExtendedModelViewSet):
     queryset = Place.objects.all()
     serializer_class = PlaceDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    list_fields = None

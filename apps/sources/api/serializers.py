@@ -61,10 +61,6 @@ class ContainmentDrfSerializer(DrfModelSerializer):
 
     container = SourceDrfSerializer()
 
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'sources.sourcecontainment'
-
     class Meta(DrfModelSerializer.Meta):
         model = SourceContainment
         fields = DrfModelSerializer.Meta.fields + [

@@ -8,7 +8,7 @@ import regex
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
@@ -254,8 +254,7 @@ class ModelSerializer(serpy.Serializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: type['ExtendedModel'] = instance.__class__
-        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+        return get_model(instance)
 
 
 class DrfModelSerializer(serializers.ModelSerializer):
@@ -284,8 +283,7 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: type['ExtendedModel'] = instance.__class__
-        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+        return get_model(instance)
 
     class Meta:
         fields = ['id', 'model']
@@ -298,3 +296,21 @@ class DrfTypedModelSerializer(DrfModelSerializer):
 
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
+
+
+def get_model(instance: ExtendedModel) -> str:
+    """Return the model name of the instance."""
+    model_cls: type['ExtendedModel'] = instance.__class__
+    app_label = model_cls._meta.app_label
+    model_type = model_cls.__name__.lower()
+    try:
+        type_field = instance._meta.get_field('type')
+        is_polymorphic = hasattr(instance, 'polymorphic_model_marker')
+        is_typed = hasattr(instance, 'typed_model_marker')
+        if not is_polymorphic and not is_typed:
+            instance_type = type_field.value_from_object(instance)
+            if not instance_type.startswith(app_label):
+                model_type = instance_type
+    except FieldDoesNotExist:
+        pass
+    return f'{app_label}.{model_type}'

@@ -7,10 +7,6 @@ from core.models.serializers import DrfModuleSerializer
 class ImageDrfSerializer(DrfModuleSerializer):
     """Serializer for images."""
 
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'images.image'
-
     class Meta(DrfModuleSerializer.Meta):
         model = Image
         fields = DrfModuleSerializer.Meta.fields + [

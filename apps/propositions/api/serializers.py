@@ -47,10 +47,6 @@ class PropositionDrfSerializer(_PropositionDrfSerializer):
 class OccurrenceDrfSerializer(PropositionDrfSerializer):
     """Serializer for occurrences."""
 
-    def get_model(self, instance) -> str:
-        """Return the model name of the instance."""
-        return 'propositions.occurrence'
-
     class Meta(PropositionDrfSerializer.Meta):
         model = Occurrence
         fields = PropositionDrfSerializer.Meta.fields + ['postscript']

@@ -242,6 +242,8 @@ class TypedModuleManager(TypedModelManager, ModuleManager):
 class TypedModule(TypedModel, Module):
     """Combination of `TypedModel` and `Module`."""
 
+    typed_model_marker = True
+
     class Meta:
         abstract = True
 

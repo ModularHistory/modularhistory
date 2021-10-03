@@ -17,7 +17,3 @@ class QuoteSerializer(ModuleSerializer):
     cached_images = serpy.Field()
     primary_image = serpy.Field()
     cached_citations = serpy.Field()
-
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'quotes.quote'

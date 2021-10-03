@@ -14,12 +14,12 @@ class PropositionViewSet(ExtendedModelViewSet):
     serializer_class = PropositionDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         # get_absolute_url for occurrences currently returns a link with "propositions"
         # instead of "occurrences". For now, we work around this by allowing retrieval
         # of occurrences through the propositions API, but listing should exclude occurrences.
         self.queryset = self.queryset.filter(type='propositions.conclusions')
-        return super().list(request)
+        return super().list(request, **kwargs)
 
 
 class PropositionModerationAPIView(RetrieveAPIView):
