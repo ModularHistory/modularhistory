@@ -8,7 +8,7 @@ from apps.sources.models import Source, SourceContainment
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from apps.sources.models.mixins.textual import TextualMixin
 from core.models.model import DrfModelSerializer
-from core.models.serializers import DrfModuleSerializer
+from core.models.serializers import DrfModuleSerializer, SerializableDrfField
 
 
 class SourceDrfSerializer(DrfModuleSerializer):
@@ -80,6 +80,7 @@ class ContainmentDrfSerializer(DrfModelSerializer):
 class TextualDrfSerializerMixin(serializers.ModelSerializer):
     """TextualMixin serializer."""
 
+    originalEdition = SerializableDrfField(read_only=True, source='original_edition')
     original_publication_date = HistoricDateTimeDrfField(write_only=True, required=False)
     originalPublicationDate = serializers.SerializerMethodField(
         'get_original_publication_date', read_only=True
@@ -93,6 +94,7 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
         fields = [
             'editors',
             'original_edition',
+            'originalEdition',
             'original_publication_date',
             'originalPublicationDate',
         ]

@@ -2,7 +2,7 @@ from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializ
 from apps.sources.models import Book, Section
 
 
-class BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
+class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
     """Serializer for book sources."""
 
     class Meta(SourceDrfSerializer.Meta):
@@ -19,6 +19,12 @@ class BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
                 'volume_number',
             ]
         )
+
+
+class BookDrfSerializer(_BookDrfSerializer):
+    """Serializer for book sources."""
+
+    originalEdition = _BookDrfSerializer(read_only=True, source='original_edition')
 
 
 class SectionDrfSerializer(SourceDrfSerializer):

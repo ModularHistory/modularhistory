@@ -2,9 +2,15 @@ from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDr
 from apps.sources.models import Entry
 
 
-class EntryDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
+class _EntryDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
     """Serializer for journal entry sources."""
 
     class Meta(SourceDrfSerializer.Meta):
         model = Entry
         fields = SourceDrfSerializer.Meta.fields + PageNumbersDrfSerializerMixin.Meta.fields
+
+
+class EntryDrfSerializer(_EntryDrfSerializer):
+    """Serializer for journal entry sources."""
+
+    originalEdition = _EntryDrfSerializer(read_only=True, source='original_edition')

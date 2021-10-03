@@ -46,3 +46,10 @@ class DrfTypedModuleSerializer(DrfModuleSerializer):
     class Meta(DrfModuleSerializer.Meta):
         fields = DrfModuleSerializer.Meta.fields + ['type']
         extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs
+
+
+class SerializableDrfField(serializers.Field):
+    """DRF field serializer that uses models .serialize() which uses Model.serializer_class"""
+
+    def to_representation(self, value):
+        return value.serialize()

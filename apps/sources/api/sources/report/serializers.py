@@ -2,7 +2,7 @@ from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializ
 from apps.sources.models import Report
 
 
-class ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
+class _ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
     """Serializer for report sources."""
 
     class Meta(SourceDrfSerializer.Meta):
@@ -15,3 +15,9 @@ class ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
                 'number',
             ]
         )
+
+
+class ReportDrfSerializer(_ReportDrfSerializer):
+    """Serializer for report sources."""
+
+    originalEdition = _ReportDrfSerializer(read_only=True, source='original_edition')

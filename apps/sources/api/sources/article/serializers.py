@@ -2,7 +2,7 @@ from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDr
 from apps.sources.models import Article
 
 
-class ArticleDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
+class _ArticleDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
     """Serializer for article sources."""
 
     class Meta(SourceDrfSerializer.Meta):
@@ -16,3 +16,9 @@ class ArticleDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
                 'volume',
             ]
         )
+
+
+class ArticleDrfSerializer(_ArticleDrfSerializer):
+    """Serializer for article sources."""
+
+    originalEdition = _ArticleDrfSerializer(read_only=True, source='original_edition')
