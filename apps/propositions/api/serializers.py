@@ -6,10 +6,6 @@ from core.models.serializers import DrfModuleSerializer
 class _PropositionDrfSerializer(DrfModuleSerializer):
     """Serializer for propositions."""
 
-    def get_model(self, instance) -> str:
-        """Return the model name of serialized propositions."""
-        return 'propositions.proposition'
-
     class Meta(DrfModuleSerializer.Meta):
         model = Proposition
         fields = DrfModuleSerializer.Meta.fields + [
