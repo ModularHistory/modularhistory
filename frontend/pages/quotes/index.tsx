@@ -4,8 +4,8 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Quote } from "@/types/modules";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
@@ -21,7 +21,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
   const quotes = quotesData["results"] || [];
   const quoteCards = quotes.map((quote) => (
     <Grid item key={quote.slug} xs={6} sm={4} md={3}>
-      <Link href={`/quotes/${quote.slug}`}>
+      <Link href={`/quotes/${quote.slug}`} prefetch={false}>
         <a>
           <ModuleUnionCard module={quote} />
         </a>

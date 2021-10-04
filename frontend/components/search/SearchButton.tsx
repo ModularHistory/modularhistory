@@ -1,4 +1,4 @@
-import { Button, ButtonProps, CircularProgress } from "@material-ui/core";
+import { Button, ButtonProps, CircularProgress } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, MouseEventHandler, useContext, useEffect } from "react";
 import PageTransitionContext from "../PageTransitionContext";

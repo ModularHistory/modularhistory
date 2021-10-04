@@ -1,11 +1,20 @@
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Box } from "@material-ui/system";
+import { Box } from "@mui/material";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard, { ModuleCardProps } from "./ModuleCard";
 
 interface HighlightEllipsisProps {
   unsafeHTML: string;
+}
+
+function applyHTMLFilter(unsafeHTML: string) {
+  // TODO: Replace regex with more formal fix
+  return unsafeHTML.replace(
+    /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)|(<module[^>]*?>.*?<\/module>)|(<\/?blockquote[^>]*?>)/gi,
+    ""
+  );
+  //Removing <h>, <p>, <div>, <module> (for images), and <blockquote> tags from content snippet
 }
 
 const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
@@ -19,15 +28,7 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
       "& mark": { fontWeight: "500", color: "white" },
     }}
   >
-    <HTMLEllipsis
-      // TODO: Replace Regex with more formal fix
-      unsafeHTML={unsafeHTML.replace(
-        /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)/gi,
-        ""
-      )} // removing h, p, and div HTML tags
-      maxLine="3"
-      basedOn="words"
-    />
+    <HTMLEllipsis unsafeHTML={applyHTMLFilter(unsafeHTML)} maxLine="3" basedOn="words" />
   </Box>
 );
 
@@ -51,41 +52,59 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
-      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
+      content = (
+        <HTMLEllipsis
+          unsafeHTML={applyHTMLFilter(module.captionHtml)}
+          maxLine="3"
+          basedOn="words"
+        />
+      );
       break;
     case "propositions.occurrence":
       content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
-        <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />
+        <HTMLEllipsis
+          unsafeHTML={applyHTMLFilter(module.truncatedElaboration)}
+          maxLine="2"
+          basedOn="words"
+        />
       );
       break;
     case "propositions.proposition":
       content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
-        <HTMLEllipsis unsafeHTML={module.truncatedElaboration} maxLine="2" basedOn="words" />
+        <HTMLEllipsis
+          unsafeHTML={applyHTMLFilter(module.elaboration)}
+          maxLine="2"
+          basedOn="words"
+        />
       );
       break;
     case "quotes.quote": {
       content = (
-        <blockquote className="blockquote">
-          <div>
-            {(highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) ??
-              (module.bite && (
-                <HTMLEllipsis unsafeHTML={module.bite} maxLine="3" basedOn="words" />
-              ))}
-          </div>
-        </blockquote>
+        <div>
+          {(highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) ??
+            (module.bite && (
+              <HTMLEllipsis unsafeHTML={applyHTMLFilter(module.bite)} maxLine="3" basedOn="words" />
+            ))}
+        </div>
       );
       break;
     }
     case "sources.source":
-      content = <div dangerouslySetInnerHTML={{ __html: module.citationHtml }} />;
+      content = (
+        <div>{module.citationHtml && <HighlightEllipsis unsafeHTML={module.citationHtml} />}</div>
+      );
       break;
     case "entities.person":
     case "entities.organization":
     case "entities.entity":
     case "entities.group":
-      content = (highlightSnippet && ( // TODO: Replace Regex with more formal fix
-        <HighlightEllipsis unsafeHTML={highlightSnippet} />
-      )) || <HTMLEllipsis unsafeHTML={module.truncatedDescription} maxLine="3" basedOn="words" />;
+      content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
+        <HTMLEllipsis
+          unsafeHTML={applyHTMLFilter(module.truncatedDescription)}
+          maxLine="3"
+          basedOn="words"
+        />
+      );
       break;
     default:
       ((module: never) => {

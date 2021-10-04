@@ -50,14 +50,17 @@ class TopicType(ModuleType):
 class Query(graphene.ObjectType):
     """GraphQL query for all topics."""
 
-    topics = graphene.List(TopicType)
+    topics = graphene.List(TopicType, ids=graphene.List(graphene.Int))
     topics_with_conclusions = graphene.List(TopicType)
     topic = graphene.Field(TopicType, slug=graphene.String())
 
     @staticmethod
-    def resolve_topics(root, info, **kwargs) -> 'QuerySet[Topic]':
+    def resolve_topics(root, info, ids: list[int], **kwargs) -> 'QuerySet[Topic]':
         """Return the queryset against which a 'topics' query should be executed."""
-        return Topic.objects.all()
+        queryset = Topic.objects.all()
+        if ids:
+            queryset = queryset.filter(id__in=ids)
+        return queryset
 
     @staticmethod
     def resolve_topics_with_conclusions(root, info, **kwargs) -> 'QuerySet[Topic]':

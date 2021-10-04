@@ -1,4 +1,4 @@
-import { Container, useMediaQuery } from "@material-ui/core";
+import { Container, useMediaQuery } from "@mui/material";
 import { FC, ReactNode } from "react";
 
 interface ModuleContainerProps {

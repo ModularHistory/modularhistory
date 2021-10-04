@@ -1,9 +1,9 @@
 import { makeDjangoApiUrl } from "@/auth";
 import axios from "@/axiosWithAuth";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import Input from "@mui/material/Input";
+import InputLabel from "@mui/material/InputLabel";
 import { FC, FormEventHandler, useState } from "react";
 
 interface PasswordChangeFormProps {

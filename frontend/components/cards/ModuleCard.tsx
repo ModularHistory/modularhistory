@@ -1,7 +1,7 @@
 import { Image, ModuleUnion, Source, Topic } from "@/types/modules";
-import { Card } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
-import { CSSProperties } from "@material-ui/styles";
+import { Card } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { FC, ReactNode } from "react";
 import { titleCase } from "title-case";
 

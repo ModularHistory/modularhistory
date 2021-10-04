@@ -4,8 +4,8 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Entity } from "@/types/modules";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
@@ -23,7 +23,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData.results || [];
   const entityCards = entities.map((entity) => (
     <Grid item key={entity.slug} xs={6} sm={4} md={3}>
-      <Link href={`/entities/${entity.slug}`}>
+      <Link href={`/entities/${entity.slug}`} prefetch={false}>
         <a>
           <ModuleUnionCard module={entity} />
         </a>

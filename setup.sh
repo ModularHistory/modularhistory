@@ -311,7 +311,7 @@ poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
   echo "Installing Poetry ..."
   # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 -
   _append_to_sh_profile "$poetry_init"
   poetry --version &>/dev/null || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."

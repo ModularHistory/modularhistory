@@ -1,5 +1,5 @@
-import Autocomplete from "@material-ui/core/Autocomplete";
-import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 import axios, { AxiosRequestConfig } from "axios";
 import React, {
   FC,
@@ -124,7 +124,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
       renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
       sx={{
         "& .MuiChip-root": {
-          margin: 1,
           fontSize: "11px",
           height: "20px",
           "& .MuiChip-label": {
