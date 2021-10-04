@@ -1,3 +1,4 @@
+import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "@/auth";
 import { Divider } from "@mui/material";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
@@ -7,7 +8,6 @@ import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
 
 interface GlobalMenuItem {
   title: string;
@@ -155,6 +155,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
       style={{ minHeight: "4rem" }}
       expand="md"
       collapseOnSelect
+      data-testid={"navbar"}
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
