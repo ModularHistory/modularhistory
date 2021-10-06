@@ -182,6 +182,7 @@ youtube-dl = "^2020.7.28"
 django-currentuser = "^0.5.3"
 drf-writable-nested = "^0.6.3"
 
+django-querycount = "^0.7.0"
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]
 # TODO: Use separate test group after it's supported in next Poetry version

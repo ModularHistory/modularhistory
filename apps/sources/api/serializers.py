@@ -4,7 +4,9 @@ from rest_framework import serializers
 from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
+from apps.sources.api.sources.document.collection.serializers import CollectionDrfSerializer
 from apps.sources.models import Source, SourceContainment
+from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from apps.sources.models.mixins.textual import TextualMixin
 from core.models.model import DrfModelSerializer
@@ -102,4 +104,21 @@ class PageNumbersDrfSerializerMixin(TextualDrfSerializerMixin):
         fields = TextualDrfSerializerMixin.Meta.fields + [
             'page_number',
             'end_page_number',
+        ]
+
+
+class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
+    """DocumentMixin serializer."""
+
+    collection_serialized = CollectionDrfSerializer(read_only=True, source='collection')
+
+    class Meta(PageNumbersDrfSerializerMixin.Meta):
+        model = DocumentMixin
+        fields = PageNumbersDrfSerializerMixin.Meta.fields + [
+            'collection',
+            'collection_serialized',
+            'collection_number',
+            'location_info',
+            'descriptive_phrase',
+            'information_url',
         ]
