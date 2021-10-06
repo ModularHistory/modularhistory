@@ -180,6 +180,7 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.15" }
 youtube-dl = "^2021.6.6"
 
+rope = "^0.20.1"
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]
 # TODO: Use separate test group after it's supported in next Poetry version

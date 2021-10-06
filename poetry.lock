@@ -1025,7 +1025,7 @@ management_command = ["django-compressor (>=2.4)"]
 
 [[package]]
 name = "django-select2"
-version = "7.7.1"
+version = "7.7.3"
 description = "Select2 option fields for Django"
 category = "main"
 optional = false
@@ -3009,14 +3009,14 @@ docutils = ">=0.11,<1.0"
 
 [[package]]
 name = "rope"
-version = "0.19.0"
+version = "0.20.1"
 description = "a python refactoring library..."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
 [package.extras]
-dev = ["pytest"]
+dev = ["pytest", "pytest-timeout"]
 
 [[package]]
 name = "safety"
@@ -3653,7 +3653,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "6aff3acfba30ec6d66e3664c65d75a39954a846fcf0348b02e95b4b66dc83ee4"
+content-hash = "7b24a0908ea70c1725abbd8444b407f75460353181d454ab88b20d9d3777551f"
 
 [metadata.files]
 aenum = [
@@ -4204,8 +4204,8 @@ django-sass-processor = [
     {file = "django_sass_processor-1.0.1-py3-none-any.whl", hash = "sha256:1f043180c47754018e803a77da003377f5ea6558de57cd6946eb27a32e9c16a2"},
 ]
 django-select2 = [
-    {file = "django-select2-7.7.1.tar.gz", hash = "sha256:dd091342e99436818b3fa98783ae6c24fb2a0cbc37ebd3faa0aef68422b6e416"},
-    {file = "django_select2-7.7.1-py2.py3-none-any.whl", hash = "sha256:8c54984bb931d842eab6a46d1b427c6883e5f5347529cda27dcd942fb37d87b9"},
+    {file = "django-select2-7.7.3.tar.gz", hash = "sha256:063d29df5598ec6549a4d49cc4beb85d585987a4e470224592034aff2d4f0a3f"},
+    {file = "django_select2-7.7.3-py2.py3-none-any.whl", hash = "sha256:7bf5b35595624a3318f46d69f639e38dafb123fa4a6f82d63a6a1ac6d532317d"},
 ]
 django-settings-export = [
     {file = "django-settings-export-1.2.1.tar.gz", hash = "sha256:fceeae49fc597f654c1217415d8e049fc81c930b7154f5d8f28c432db738ff79"},
@@ -5554,7 +5554,7 @@ restructuredtext-lint = [
     {file = "restructuredtext_lint-1.3.2.tar.gz", hash = "sha256:d3b10a1fe2ecac537e51ae6d151b223b78de9fafdd50e5eb6b08c243df173c80"},
 ]
 rope = [
-    {file = "rope-0.19.0.tar.gz", hash = "sha256:64e6d747532e1f5c8009ec5aae3e5523a5bcedf516f39a750d57d8ed749d90da"},
+    {file = "rope-0.20.1.tar.gz", hash = "sha256:505a2f6b4ac7b18e0429be179f4d8712243a194da5c866b0731f9d91ce7590bb"},
 ]
 safety = [
     {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
