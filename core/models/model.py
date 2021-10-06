@@ -260,6 +260,7 @@ class ModelSerializer(serpy.Serializer):
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
+    id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
