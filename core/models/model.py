@@ -294,6 +294,13 @@ class DrfTypedModelSerializer(DrfModelSerializer):
 
     type = serializers.CharField(write_only=True, required=True)
 
+    def validate_type(self, value):
+        types = self.Meta.model._typedmodels_registry
+        if value not in types:
+            raise serializers.ValidationError(
+                f'Invalid model type={value}, allowed types: {", ".join(types.keys())}'
+            )
+
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
 
