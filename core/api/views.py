@@ -1,6 +1,7 @@
 from typing import Optional
 
 from django.db.models import QuerySet
+from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 
 
@@ -9,7 +10,7 @@ class ExtendedModelViewSet(ModelViewSet):
 
     lookup_url_kwarg = 'pk_or_slug'
     list_fields: Optional[set[str]] = {'model', 'slug', 'title'}
-
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     prefetch_relations = []
 
     def get_object(self):
