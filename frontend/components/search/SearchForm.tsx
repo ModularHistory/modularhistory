@@ -72,11 +72,9 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
   const submitForm = () => {
     const queryParams = { ...fieldsRef.current };
-    console.log("before", queryParams);
     for (const name in queryParams) {
       if (!queryParams[name as Field]) delete queryParams[name as Field];
     }
-    console.log("after", queryParams);
 
     router.push({
       query: queryParams,
@@ -165,6 +163,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           <InstantSearch
             label={"Topics"}
             labelKey={"name"}
+            onChange={fieldCallbacks.topics}
             disabled={isLoading}
             defaultValue={
               fieldsRef.current.topics
@@ -177,7 +176,6 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
                     .then(({ data: { data } }) => data.topics)
                 : []
             }
-            onChange={fieldCallbacks.topics}
             getDataForInput={(input, config) =>
               axiosWithoutAuth
                 .get("/api/topics/instant_search/", {

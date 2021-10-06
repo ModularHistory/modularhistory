@@ -81,7 +81,7 @@ describe("Instant search input field", () => {
     });
 
     expect(onChangeMock).toBeCalledTimes(1);
-    expect(onChangeMock).toBeCalledWith([options]);
+    expect(onChangeMock).toBeCalledWith(options.map((o) => o[idKey]));
   });
 
   it("throttles data fetching", async () => {
