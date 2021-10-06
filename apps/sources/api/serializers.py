@@ -32,6 +32,7 @@ class SourceDrfSerializer(DrfModuleSerializer):
             'url',
             'href',
             'file',
+            'location',
             'attributee_html',
             'attributees',
             'related_entities',

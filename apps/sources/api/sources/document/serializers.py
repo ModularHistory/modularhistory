@@ -1,9 +1,12 @@
+from apps.dates.fields import HistoricDateTimeDrfField
 from apps.sources.api.serializers import DocumentDrfSerializerMixin, SourceDrfSerializer
 from apps.sources.models import Document
 
 
 class _DocumentDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
     """Serializer for document sources."""
+
+    date = HistoricDateTimeDrfField(write_only=True, required=False)
 
     class Meta(SourceDrfSerializer.Meta):
         model = Document
