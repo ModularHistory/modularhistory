@@ -28,7 +28,7 @@ type Field = typeof fields[number];
 type FieldsRef = MutableRefObject<Record<Field, any>>;
 type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
 
-interface SearchFormProps {
+export interface SearchFormProps {
   inSidebar?: boolean;
 }
 
@@ -97,6 +97,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             onChange={(e) => fieldCallbacks.query(e.target.value)}
             onKeyUp={handleKeyUp}
             disabled={isLoading}
+            data-testid={"queryField"}
           />
         </Grid>
 
