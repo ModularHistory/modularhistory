@@ -18,9 +18,9 @@ describe("Search Form", () => {
 
   it("excludes undefined fields from search parameters", async () => {
     const query = {
-      query: "query",
-      topics: ["1", "2", "3"],
+      quality: "verified",
     };
+
     mockRouter.setCurrentUrl({
       pathname: "/",
       query,
@@ -28,7 +28,10 @@ describe("Search Form", () => {
 
     const { getByTestId } = await waitFor(() => render(<SearchForm />));
 
+    const queryInput = getByTestId("queryField").querySelector("input");
+    expect(queryInput).not.toBeNull();
+    userEvent.type(queryInput!, "query");
     userEvent.click(getByTestId("searchButton"));
-    expect(Router).toMatchObject({ query });
+    expect(Router.query).toEqual({ ...query, query: "query" });
   });
 });

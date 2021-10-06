@@ -88,7 +88,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
   };
 
   return (
-    <StyledContainer>
+    <StyledContainer data-testid={"searchForm"}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={sm}>
           <TextField
