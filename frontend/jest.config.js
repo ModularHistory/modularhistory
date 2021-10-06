@@ -1,6 +1,10 @@
 // https://nextjs.org/docs/testing
 module.exports = {
-  collectCoverageFrom: ["**/*.{js,jsx,ts,tsx}", "!**/*.d.ts", "!**/node_modules/**"],
+  collectCoverageFrom: [
+    "{components,pages}/**/*.{js,jsx,ts,tsx}",
+    "!**/*.d.ts",
+    // "!**/node_modules/**",
+  ],
   moduleNameMapper: {
     // Handle module path aliases defined in tsconfig.json
     "^@/(.*)$": "<rootDir>/$1",
@@ -17,7 +21,7 @@ module.exports = {
     "^.+\\.(jpg|jpeg|png|gif|webp|svg)$": "<rootDir>/__mocks__/fileMock.js",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/"],
+  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/", "<rootDir>/cypress/"],
   testEnvironment: "jsdom",
   transform: {
     /* Use babel-jest to transpile tests with the next/babel preset
