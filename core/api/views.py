@@ -14,9 +14,11 @@ class ExtendedModelViewSet(ModelViewSet):
     prefetch_relations = []
 
     def get_object(self):
-        self.lookup_field = (
-            'pk' if str(self.kwargs[self.lookup_url_kwarg]).isnumeric() else 'slug'
+        is_slug = (
+            'slug' in self.serializer_class.Meta.fields
+            and not str(self.kwargs[self.lookup_url_kwarg]).isnumeric()
         )
+        self.lookup_field = 'slug' if is_slug else 'pk'
         return super().get_object()
 
     def get_serializer(self, *args, **kwargs):
