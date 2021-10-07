@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
+import TodayInHistory from "@/components/TodayInHistory";
 import { Box } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -8,6 +9,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useState } from "react";
+
 
 function useQueryState(initialState: string) {
   const [query, setQuery] = useState(initialState);
@@ -75,6 +77,8 @@ export default function Home() {
           </CardContent>
         </Card>
       </Box>
+      <TodayInHistory>
+      </TodayInHistory>
     </Layout>
   );
 }
