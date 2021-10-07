@@ -31,7 +31,6 @@ const TodayInHistory: FC = () => {
       {(!carouselData && <p className="lead">Loading...</p>) || (
         <div className="carousel-container" style={{ maxHeight: "40%" }}>
           <PageHeader>Today in History</PageHeader>
-
           <Carousel
             additionalTransfrom={0}
             arrows={carouselData.length > 1}
@@ -39,6 +38,7 @@ const TodayInHistory: FC = () => {
             autoPlaySpeed={3000}
             centerMode={false}
             containerClass="container-with-dots"
+            draggable={false}
             focusOnSelect={false}
             infinite
             keyBoardControl
@@ -74,7 +74,7 @@ const TodayInHistory: FC = () => {
             }}
             showDots={false}
             slidesToSlide={1}
-            swipeable
+            swipeable={carouselData.length > 1}
           >
             {carouselData.length > 0 ? (
               carouselData.map((module, index) => (
