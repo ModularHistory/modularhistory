@@ -1,4 +1,5 @@
 """Serializers for the entities app."""
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from apps.dates.fields import HistoricDateTimeDrfField
@@ -13,12 +14,30 @@ from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer, SerializableDrfField
 
 
-class SourceDrfSerializer(DrfModuleSerializer):
+class SourceContainmentDrfSerializer(DrfModelSerializer):
+    """Serializer for source containments."""
+
+    class Meta(DrfModelSerializer.Meta):
+        model = SourceContainment
+        fields = DrfModelSerializer.Meta.fields + [
+            'source',
+            'container',
+            'phrase',
+            'page_number',
+            'end_page_number',
+            'position',
+        ]
+
+
+class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for sources."""
 
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    source_containments = SourceContainmentDrfSerializer(
+        many=True, write_only=True, required=False
+    )
 
     class Meta(DrfModuleSerializer.Meta):
         model = Source
@@ -37,6 +56,7 @@ class SourceDrfSerializer(DrfModuleSerializer):
             'attributees',
             'related_entities',
             'containment_html',
+            'source_containments',
         ]
         extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
             'citation_html': {'read_only': True},
@@ -57,21 +77,6 @@ class SourceDrfSerializer(DrfModuleSerializer):
                 'queryset': Entity.objects.all(),
             },
         }
-
-
-class ContainmentDrfSerializer(DrfModelSerializer):
-    """Serializer for source containments."""
-
-    container = SourceDrfSerializer()
-
-    class Meta(DrfModelSerializer.Meta):
-        model = SourceContainment
-        fields = DrfModelSerializer.Meta.fields + [
-            'phrase',
-            'page_number',
-            'end_page_number',
-            'container',
-        ]
 
 
 class TextualDrfSerializerMixin(serializers.ModelSerializer):
