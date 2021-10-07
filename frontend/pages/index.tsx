@@ -10,7 +10,6 @@ import TextField from "@mui/material/TextField";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useState } from "react";
 
-
 function useQueryState(initialState: string) {
   const [query, setQuery] = useState(initialState);
   const setQueryFromEvent = ({ target: { value } }: { target: { value: string } }) =>
@@ -68,17 +67,22 @@ export default function Home() {
           margin: "1.5rem 1rem 1.5rem 1rem",
         }}
       >
-        <Card elevation={5}>
-          <CardContent>
-            <Container>
-              <p>Search modules by topic, entity, or keywords.</p>
-              {searchForm}
-            </Container>
-          </CardContent>
-        </Card>
+        <Grid container spacing={5} justifyContent={"center"}>
+          <Grid item>
+            <Card elevation={5}>
+              <CardContent>
+                <Container>
+                  <p>Search modules by topic, entity, or keywords.</p>
+                  {searchForm}
+                </Container>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <TodayInHistory />
+          </Grid>
+        </Grid>
       </Box>
-      <TodayInHistory>
-      </TodayInHistory>
     </Layout>
   );
 }
