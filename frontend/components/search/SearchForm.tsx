@@ -210,7 +210,11 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
               { key: "images", defaultChecked: false },
               { key: "sources" },
               { key: "entities" },
-            ]}
+            ].map(({ key, defaultChecked }) => ({
+              key,
+              defaultChecked:
+                fieldsRef.current.contentTypes?.includes(key) ?? defaultChecked ?? true,
+            }))}
           />
         </Grid>
 

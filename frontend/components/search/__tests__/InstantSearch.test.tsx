@@ -4,7 +4,7 @@ import InstantSearch, { InstantSearchProps } from "../InstantSearch";
 
 describe("Instant search input field", () => {
   const [idKey, labelKey] = ["id", "label"];
-  const createOptions = (n: number = 0) => {
+  const createOptions = (n = 0) => {
     return [...Array(n).keys()].map((n) => ({ [idKey]: `${n}`, [labelKey]: `label${n}` }));
   };
 
@@ -17,7 +17,9 @@ describe("Instant search input field", () => {
           defaultValue={[]}
           idKey={idKey}
           labelKey={labelKey}
-          onChange={() => {}}
+          onChange={() => {
+            return;
+          }}
           {...props}
         />
       )

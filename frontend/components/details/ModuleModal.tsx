@@ -1,5 +1,5 @@
 import ModuleDetail from "@/components/details/ModuleDetail";
-import { GlobalTheme } from "@/pages/_app";
+import { GlobalTheme } from "@/pages/_app.page";
 import { ModuleUnion } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
 import {
