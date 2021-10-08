@@ -116,7 +116,7 @@ describe("Instant search input field", () => {
     await act(async () => userEvent.type(input, "anime"));
     expect(getDataForInputMock).toHaveBeenCalledTimes(1);
 
-    await act(async () => jest.advanceTimersByTime(throttleDelay + 1));
+    await waitFor(() => jest.advanceTimersByTime(throttleDelay + 1));
     expect(getDataForInputMock).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
