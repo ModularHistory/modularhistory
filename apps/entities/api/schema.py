@@ -29,7 +29,7 @@ class EntityType(ModuleType):
 
     @staticmethod
     def resolve_related_quotes(root: Entity, *args, **kwargs):
-        return root.related_quotes.all()
+        return root.quotes.all()
 
     # @staticmethod
     # def resolve_related_entities(root: Entity, *args, **kwargs):

@@ -3,11 +3,22 @@ import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Entity } from "@/types/modules";
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardContent, CardHeader, styled } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
+
+const EntityRelatedQuoteCard = styled(Card)({
+  quotes: '"“" "”" "‘" "’"',
+  cursor: "pointer",
+  position: "relative",
+  textOverflow: "ellipsis",
+  minHeight: "5rem",
+  marginBottom: "1rem",
+  width: "40rem",
+  color: "black",
+});
 
 interface EntityProps {
   entity: Entity;
@@ -24,16 +35,26 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
     <Layout title={entity.name}>
       <ModuleContainer>
         <ModuleDetail module={entity} />
-        {hasRelatedQuotes && <CardHeader title={`Quotes from ${entity.name}`}></CardHeader>}
+      </ModuleContainer>
+      <ModuleContainer>
+        {hasRelatedQuotes && (
+          <CardHeader
+            title={`Quotes from ${entity.name}:`}
+            style={{ textAlign: "center" }}
+          ></CardHeader>
+        )}
         {hasRelatedQuotes &&
           entity.relatedQuotes?.map((relatedQuote) => (
             <Link href={`/quotes/${relatedQuote.slug}`} key={relatedQuote.slug} passHref>
               <a>
-                <Card>
+                <EntityRelatedQuoteCard raised>
+                  {relatedQuote.dateString && (
+                    <CardHeader title={relatedQuote.dateString}></CardHeader>
+                  )}
                   <CardContent>
                     <HTMLEllipsis unsafeHTML={relatedQuote.bite} maxLine="3" basedOn="words" />
                   </CardContent>
-                </Card>
+                </EntityRelatedQuoteCard>
               </a>
             </Link>
           ))}
@@ -61,6 +82,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             title
             slug
             bite
+            dateString
           }
         }
       }`,
