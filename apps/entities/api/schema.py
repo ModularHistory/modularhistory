@@ -27,6 +27,10 @@ class EntityType(ModuleType):
         """Return the value to be assigned to an entity's `model` attribute."""
         return 'entities.entity'
 
+    @staticmethod
+    def resolve_related_quotes(root, info, slug: str):
+        return root.related_quotes.all()
+
 
 class Query(graphene.ObjectType):
     """GraphQL query for all entities."""
@@ -48,18 +52,6 @@ class Query(graphene.ObjectType):
             if slug.isnumeric():
                 try:
                     return Entity.objects.get(pk=int(slug))
-                except GraphQLError:
-                    pass
-        return None
-
-    @staticmethod
-    def resolve_related_quotes(root, info, slug: str):
-        try:
-            return Entity.objects.get(pk=int(slug)).related_quotes.all()
-        except ObjectDoesNotExist:
-            if slug.isnumeric():
-                try:
-                    return Entity.objects.get(slug=slug).related_quotes.all()
                 except GraphQLError:
                     pass
         return None
