@@ -33,6 +33,7 @@ from apps.admin.model_admin import admin_site
 from apps.propositions.map import PropositionSitemap
 from apps.users.api.views import set_csrf_token
 from core import errors
+from core.environment import IS_DEV
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -98,10 +99,10 @@ urlpatterns = [
     path('healthcheck/', bare_status),  # basic healthcheck
     path('ht/', include('health_check.urls')),
     # ---------------------------------
-    # GraphQL
+    # GraphQL (enabled during DEV, disabled during PROD)
     # ---------------------------------
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
-    path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=IS_DEV))),
+    path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=IS_DEV))),
     # ---------------------------------
     # Debugging & dev utilities
     # ---------------------------------
