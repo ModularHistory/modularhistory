@@ -7,12 +7,15 @@ from graphql.error import GraphQLError
 
 from apps.entities.models.entity import Entity
 from apps.graph.types import ModuleType
+from apps.quotes.api.schema import QuoteType
 
 
 class EntityType(ModuleType):
     """GraphQL type for the Entity model."""
 
     cached_images = GenericScalar(source='cached_images')
+    related_quotes = graphene.List(QuoteType, slug=graphene.String())
+    # related_entities = graphene.List(EntityType)
 
     class Meta:
         model = Entity
@@ -48,6 +51,22 @@ class Query(graphene.ObjectType):
                 except GraphQLError:
                     pass
         return None
+
+    @staticmethod
+    def resolve_related_quotes(root, info, slug: str):
+        try:
+            return Entity.objects.get(pk=int(slug)).related_quotes.all()
+        except ObjectDoesNotExist:
+            if slug.isnumeric():
+                try:
+                    return Entity.objects.get(slug=slug).related_quotes.all()
+                except GraphQLError:
+                    pass
+        return None
+
+    # @staticmethod
+    # def resolve_related_entities(root, info, slug: str) -> list[Entity]:
+    # return Entity.objects.get(pk=int(slug)).related_entities.all()
 
 
 # class Mutation(graphene.ObjectType):

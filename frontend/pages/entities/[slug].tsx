@@ -38,6 +38,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           cachedImages
           model
           adminUrl
+          relatedQuotes {
+            slug
+          }
         }
       }`,
   };
