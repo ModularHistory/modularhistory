@@ -4,7 +4,6 @@ import {
   refreshAccessToken,
 } from "@/auth";
 import axiosWithAuth from "@/axiosWithAuth";
-import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
   Account,

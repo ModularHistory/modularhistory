@@ -32,6 +32,8 @@ const redirectsMapPath = path.join(volumesDir, "redirects/redirects.map");
 const redirectRegex = /(.+) (.+);/;
 
 module.exports = {
+  // allow tests to be co-located with pages
+  pageExtensions: ["page.tsx", "page.ts"],
   async redirects() {
     const redirects = [];
     if (!fs.existsSync(redirectsMapPath)) {

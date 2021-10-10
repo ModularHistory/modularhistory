@@ -1,26 +1,18 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import axios, { AxiosRequestConfig } from "axios";
-import React, {
-  FC,
-  SyntheticEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react";
 import { throttle } from "throttle-debounce";
-import { SearchFormContext } from "./SearchForm";
 
-type Option = Record<string, string | number>;
+type Option = Record<string, string>;
 
-interface InstantSearchProps {
+export interface InstantSearchProps {
   label: string;
-  name: string;
-  getDataForInput: (input: string, config: AxiosRequestConfig) => Promise<Option[]>;
-  getInitialValue: (ids: (string | number)[]) => Promise<Option[]>;
+  defaultValue: Option[] | Promise<Option[]>;
+  onChange: (value: string[]) => void;
+  getDataForInput: (input: string, config: AxiosRequestConfig) => Option[] | Promise<Option[]>;
   labelKey: string;
+  disabled?: boolean;
   idKey?: string;
   minimumSearchLength?: number;
   throttleDelay?: number;
@@ -32,7 +24,6 @@ interface InstantSearchProps {
  * @param label - the input field label.
  * @param name - the query parameter name used during form submission.
  * @param getDataForInput - the callback used to retrieve results for a given text input.
- * @param getInitialValue - the callback used to load option data for an array of option IDs.
  * @param labelKey - the key used to access an option's label attribute.
  * @param idKey - the key used to access an option's id attribute.
  * @param minimumSearchLength - the minimum length of text input required to call `getDataForInput`.
@@ -41,34 +32,30 @@ interface InstantSearchProps {
  */
 const InstantSearch: FC<InstantSearchProps> = ({
   label,
-  name,
+  defaultValue,
+  onChange,
   getDataForInput,
-  getInitialValue,
   labelKey,
+  disabled,
   idKey = "id",
   minimumSearchLength = 1,
   throttleDelay = 250,
 }: InstantSearchProps) => {
-  const { formState, setFormState, disabled } = useContext(SearchFormContext);
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
-  const [inputValue, setInputValue] = useState("");
 
   // load labels for values initially loaded from url parameters
   useEffect(() => {
-    let initialValue = formState[name] || [];
-    if (!Array.isArray(initialValue)) {
-      initialValue = [initialValue];
-    }
-    if (initialValue.length === 0) return;
-
-    getInitialValue(initialValue).then((options) => {
-      setSelectedOptions((prevState) => [...prevState, ...options]);
+    Promise.resolve(defaultValue).then((defaultValue) => {
+      setSelectedOptions((prevState) => [
+        ...prevState,
+        ...(Array.isArray(defaultValue) ? defaultValue : [defaultValue]),
+      ]);
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleValueChange = (event: SyntheticEvent, values: Option[]) => {
-    setFormState((prevState) => ({ ...prevState, [name]: values.map((value) => value[idKey]) }));
+    onChange(values.map((value) => value[idKey]));
     setSelectedOptions(values);
   };
 
@@ -77,7 +64,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
   // eslint-disable-next-line
   const getThrottledDataForInput = useCallback(
     throttle(throttleDelay, (...args: Parameters<typeof getDataForInput>) =>
-      getDataForInput(...args)
+      Promise.resolve(getDataForInput(...args))
         .then(setOptions)
         // TODO: add more resilient error handling
         .catch((error) => {
@@ -90,8 +77,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
   );
   const cancelTokenSourceRef = useRef(axios.CancelToken.source());
   const handleInputChange = (event: SyntheticEvent, value: string) => {
-    setInputValue(value);
-
     // when input changes, cancel any pending requests
     cancelTokenSourceRef.current.cancel();
     cancelTokenSourceRef.current = axios.CancelToken.source();
@@ -104,7 +89,6 @@ const InstantSearch: FC<InstantSearchProps> = ({
     getThrottledDataForInput(value, { cancelToken: cancelTokenSourceRef.current.token });
   };
 
-  // https://next.material-ui.com/components/autocomplete/
   return (
     <Autocomplete
       multiple
@@ -117,11 +101,17 @@ const InstantSearch: FC<InstantSearchProps> = ({
       onChange={handleValueChange}
       // we do not use strict equality here since ids may be numbers or strings
       isOptionEqualToValue={(option, value) => option[idKey] == value[idKey]}
-      inputValue={inputValue}
       onInputChange={handleInputChange}
       ChipProps={{ size: "small" }}
       disabled={disabled}
-      renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label={label}
+          inputProps={{ ...params.inputProps, "data-testid": "instantSearchInput" }}
+        />
+      )}
       sx={{
         "& .MuiChip-root": {
           fontSize: "11px",

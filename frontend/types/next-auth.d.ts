@@ -9,6 +9,7 @@ declare module "next-auth" {
   interface User {
     username: string;
     handle: string;
+    avatar: string;
     accessToken: string;
     accessTokenExpiry: number;
     refreshToken: string;

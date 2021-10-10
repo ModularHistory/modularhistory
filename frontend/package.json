@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest --watch"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
@@ -52,6 +53,9 @@
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.1.0",
+    "@testing-library/user-event": "^13.2.1",
     "@types/jquery": "^3.5.6",
     "@types/next-auth": "^3.7.1",
     "@types/node": "^16.9.4",
@@ -61,12 +65,17 @@
     "@types/throttle-debounce": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "babel-jest": "^27.2.2",
     "eslint": "^7.32.0",
     "eslint-config-next": "^11.1.2",
     "eslint-plugin-react": "^7.26.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.2.2",
     "lint-staged": "^11.1.2",
+    "next-router-mock": "^0.5.2",
     "prettier": "^2.4.1",
     "prettier-plugin-organize-imports": "^2.3.3",
+    "react-test-renderer": "^17.0.2",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typescript": "^4.4.3"
