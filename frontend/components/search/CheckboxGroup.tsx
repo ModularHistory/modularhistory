@@ -6,7 +6,7 @@ import {
   FormGroup,
   FormLabel,
 } from "@mui/material";
-import { FC, useRef, useState } from "react";
+import { FC, useRef } from "react";
 
 interface CheckboxGroupProps {
   label: string;
@@ -30,23 +30,21 @@ interface CheckboxGroupProps {
  */
 const CheckboxGroup: FC<CheckboxGroupProps> = ({
   label,
-  defaultValue,
   onChange,
   options,
   disabled,
 }: CheckboxGroupProps) => {
-  // If the current state is not set, default to all options.
-  // This is the default behavior expected by the API.
-
-  const optionStates = useRef(
+  // prevent a warning about defaultValue changing after initial render
+  const defaultChecks = useRef(
     Object.fromEntries(options.map(({ key, defaultChecked }) => [key, defaultChecked ?? true]))
-  );
+  ).current;
 
-  // event handler for user input
+  const checks = useRef(defaultChecks).current;
+
   const handleChange: CheckboxProps["onChange"] = ({ target }, checked) => {
-    optionStates.current[target.name] = checked;
+    checks[target.name] = checked;
     onChange(
-      Object.entries(optionStates.current).reduce((checkedOptionKeys: string[], [key, checked]) => {
+      Object.entries(checks).reduce((checkedOptionKeys: string[], [key, checked]) => {
         if (checked) checkedOptionKeys.push(key);
         return checkedOptionKeys;
       }, [])
@@ -63,10 +61,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
           <FormControlLabel
             control={
               <Checkbox
-                defaultChecked={
-                  // prevent a warning about defaultValue changing after initial render
-                  useState(() => defaultValue?.includes(key) ?? optionStates.current[key])[0]
-                }
+                defaultChecked={defaultChecks[key]}
                 onChange={handleChange}
                 name={key}
                 color={"primary"}

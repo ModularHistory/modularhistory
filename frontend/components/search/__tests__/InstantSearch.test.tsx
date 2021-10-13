@@ -4,7 +4,7 @@ import InstantSearch, { InstantSearchProps } from "../InstantSearch";
 
 describe("Instant search input field", () => {
   const [idKey, labelKey] = ["id", "label"];
-  const createOptions = (n: number = 0) => {
+  const createOptions = (n = 0) => {
     return [...Array(n).keys()].map((n) => ({ [idKey]: `${n}`, [labelKey]: `label${n}` }));
   };
 
@@ -17,7 +17,9 @@ describe("Instant search input field", () => {
           defaultValue={[]}
           idKey={idKey}
           labelKey={labelKey}
-          onChange={() => {}}
+          onChange={() => {
+            return;
+          }}
           {...props}
         />
       )
@@ -109,14 +111,14 @@ describe("Instant search input field", () => {
     const input = getByTestId("instantSearchInput");
 
     expect(getDataForInputMock).toHaveBeenCalledTimes(0);
-    await act(async () => userEvent.type(input, "watch"));
+    await act(async () => await userEvent.type(input, "watch"));
     expect(getDataForInputMock).toHaveBeenCalledTimes(1);
-    await act(async () => userEvent.type(input, "more"));
+    await act(async () => await userEvent.type(input, "more"));
     expect(getDataForInputMock).toHaveBeenCalledTimes(1);
-    await act(async () => userEvent.type(input, "anime"));
+    await act(async () => await userEvent.type(input, "anime"));
     expect(getDataForInputMock).toHaveBeenCalledTimes(1);
 
-    await waitFor(() => jest.advanceTimersByTime(throttleDelay + 1));
+    jest.advanceTimersByTime(throttleDelay + 1);
     expect(getDataForInputMock).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
