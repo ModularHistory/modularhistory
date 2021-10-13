@@ -4,6 +4,7 @@ import { render, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";
 import Router from "next/router";
+import { FC } from "react";
 import ReactDOMServer from "react-dom/server";
 
 describe("ModuleHTML", () => {
@@ -72,10 +73,11 @@ describe("ModuleHTML", () => {
   });
 
   it("does not use next/link when on search page", async () => {
+    const Wrapper: FC<any> = (props) => <ThemeProvider theme={useTheme()} {...props} />;
     mockRouter.setCurrentUrl("/search");
     const { moduleHTML } = await doubleRender({
       options: {
-        wrapper: (props) => <ThemeProvider theme={useTheme()} {...props} />,
+        wrapper: Wrapper,
       },
     });
 
