@@ -9,7 +9,7 @@ thread_router.register('', views.ThreadViewSet)
 post_router = routers.DefaultRouter()
 post_router.register('', views.PostViewSet)
 
-app_name = 'entities'
+app_name = 'forums'
 
 urlpatterns = [
     path('threads/', include(thread_router.urls)),

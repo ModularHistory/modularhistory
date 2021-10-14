@@ -36,7 +36,7 @@ const Entities: FC<PostsProps> = ({ postsData }: PostsProps) => {
         content: "New post from button",
         title: titleInputRef.current?.value || "default title",
         date: new Date().toISOString(),
-        author: 42,
+        author: 48,
         parentThread: 1,
       })
       .then(router.reload)
