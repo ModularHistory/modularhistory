@@ -1,8 +1,10 @@
 from typing import Optional
 
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
+
+from core.pagination import VariableSizePagination
 
 
 class ExtendedModelViewSet(ModelViewSet):
@@ -12,6 +14,8 @@ class ExtendedModelViewSet(ModelViewSet):
     list_fields: Optional[set[str]] = {'model', 'slug', 'title'}
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     prefetch_relations = []
+
+    pagination_class = VariableSizePagination
 
     def get_object(self):
         is_slug = (
@@ -26,4 +30,12 @@ class ExtendedModelViewSet(ModelViewSet):
         return super().get_serializer(*args, **kwargs, fields=fields)
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.prefetch_related(*self.prefetch_relations)
+        prefetch_relations = self.prefetch_relations
+        # remove simple prefetches if Prefetch object with same name exists
+        # allows to override parent class declared prefetch relations and avoid duplicates
+        for prefetch in prefetch_relations:
+            if isinstance(prefetch, Prefetch):
+                name = prefetch.prefetch_through
+                if name in prefetch_relations:
+                    prefetch_relations.remove(name)
+        return queryset.prefetch_related(*prefetch_relations)

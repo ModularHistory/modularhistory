@@ -6,6 +6,7 @@ from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
 from apps.sources.api.sources.document.collection.serializers import CollectionDrfSerializer
+from apps.sources.api.sources.file.serializers import SourceFileDrfSerializer
 from apps.sources.models import Source, SourceContainment
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
@@ -35,9 +36,11 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+
     source_containments = SourceContainmentDrfSerializer(
         many=True, write_only=True, required=False
     )
+    file_serialized = SourceFileDrfSerializer(read_only=True, source='file')
 
     class Meta(DrfModuleSerializer.Meta):
         model = Source
@@ -57,6 +60,8 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'related_entities',
             'containment_html',
             'source_containments',
+            'file',
+            'file_serialized',
         ]
         extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
             'citation_html': {'read_only': True},

@@ -1,7 +1,7 @@
 from apps.topics.api.serializers import TopicDrfSerializer
 from apps.topics.models.topic import Topic
 from core.api.views import ExtendedModelViewSet
-from core.pagination import VariableSizePagination
+from core.pagination import LargeSizePagination, VariableSizePagination
 
 
 class TopicViewSet(ExtendedModelViewSet):
@@ -9,4 +9,4 @@ class TopicViewSet(ExtendedModelViewSet):
 
     queryset = Topic.objects.all()
     serializer_class = TopicDrfSerializer
-    pagination_class = VariableSizePagination
+    pagination_class = LargeSizePagination

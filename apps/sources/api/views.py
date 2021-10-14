@@ -1,5 +1,3 @@
-from rest_framework import permissions
-
 from apps.sources.api.serializers import SourceDrfSerializer
 from apps.sources.models.source import Source
 from core.api.views import ExtendedModelViewSet
@@ -11,3 +9,9 @@ class SourceViewSet(ExtendedModelViewSet):
     queryset = Source.objects.all()
     serializer_class = SourceDrfSerializer
     list_fields = None
+
+    prefetch_relations = ExtendedModelViewSet.prefetch_relations + [
+        'file',
+        'tags',
+        'original_edition',
+    ]

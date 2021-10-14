@@ -1,4 +1,4 @@
-from apps.sources.api.sources.publications.serializers import (
+from apps.sources.api.sources.publication.serializers import (
     PublicationDrfSerializer,
     WebpageDrfSerializer,
     WebsiteDrfSerializer,

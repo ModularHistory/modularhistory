@@ -26,8 +26,7 @@ class DocumentViewSet(SourceViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentDrfSerializer
 
-    prefetch_relations = [
-        'tags',
+    prefetch_relations = SourceViewSet.prefetch_relations + [
         build_document_prefetch(),
         Prefetch(
             'original_edition',
