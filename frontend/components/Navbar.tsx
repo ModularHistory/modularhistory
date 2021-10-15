@@ -1,13 +1,59 @@
 import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "@/auth";
-import { Divider } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import { Divider, styled, TextField } from "@mui/material";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, MouseEventHandler } from "react";
+import { ParsedUrlQueryInput } from "querystring";
+import React, {
+  FC,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  MutableRefObject,
+  useContext,
+  useRef,
+} from "react";
 import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import PageTransitionContext from "./PageTransitionContext";
+
+const fields = ["query"] as const;
+type Field = typeof fields[number];
+type FieldsRef = MutableRefObject<Record<Field, any>>;
+type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
+
+const StyledTextField = styled(TextField)({
+  root: {
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+    },
+    "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
+      borderColor: "red", //default
+    },
+    "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
+      borderColor: "blue", //hovered
+    },
+    "&$cssFocused $notchedOutline": {
+      borderColor: "purple", //focused
+    },
+  },
+});
 
 interface GlobalMenuItem {
   title: string;
@@ -106,6 +152,32 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
     session && handleLogout(session);
   };
 
+  const fieldsRef = useRef(
+    Object.fromEntries(fields.map((name) => [name, router.query[name]]))
+  ) as FieldsRef;
+  const fieldCallbacks = Object.fromEntries(
+    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
+  ) as FieldCallbacks;
+  const isLoading = useContext(PageTransitionContext);
+
+  const submitForm = () => {
+    const queryParams = { ...fieldsRef.current };
+    for (const name in queryParams) {
+      if (!queryParams[name as Field]) delete queryParams[name as Field];
+    }
+
+    router.push({
+      pathname: "/search",
+      query: queryParams,
+    });
+  };
+
+  const handleKeyUp: KeyboardEventHandler = (event) => {
+    if (event.key === "Enter") {
+      submitForm();
+    }
+  };
+
   const hideAccountControls =
     router.pathname === LOGIN_PAGE_PATH || router.pathname === AUTH_REDIRECT_PATH;
   let accountControls = (
@@ -174,6 +246,14 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
             )
           )}
         </Nav>
+        <StyledTextField
+          label={<SearchIcon />}
+          defaultValue={fieldsRef.current.query}
+          onChange={(e) => fieldCallbacks.query(e.target.value)}
+          onKeyUp={handleKeyUp}
+          disabled={isLoading}
+          variant="outlined"
+        />
         <Nav>{!hideAccountControls && !loading && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
