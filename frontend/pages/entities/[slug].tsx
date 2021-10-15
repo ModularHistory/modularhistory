@@ -28,36 +28,32 @@ interface EntityProps {
  * A page that renders the HTML of a single entity.
  */
 const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
-  const hasRelatedQuotes = (entity.relatedQuotes && entity.relatedQuotes.length) || undefined;
-  //const hasRelatedEntities = entity.relatedEntities && entity.relatedEntities.length || undefined; #TODO: fix in entity schema
-
   return (
     <Layout title={entity.name}>
       <ModuleContainer>
         <ModuleDetail module={entity} />
-      </ModuleContainer>
-      <ModuleContainer>
-        {hasRelatedQuotes && (
-          <CardHeader
-            title={`Quotes from ${entity.name}:`}
-            style={{ textAlign: "center" }}
-          ></CardHeader>
+        {entity.relatedQuotes && entity.relatedQuotes.length && (
+          <>
+            <CardHeader
+              title={`Quotes from ${entity.name}:`}
+              style={{ textAlign: "center" }}
+            ></CardHeader>
+            {entity.relatedQuotes?.map((relatedQuote) => (
+              <Link href={`/quotes/${relatedQuote.slug}`} key={relatedQuote.slug} passHref>
+                <a>
+                  <EntityRelatedQuoteCard raised>
+                    {relatedQuote.dateString && (
+                      <CardHeader title={relatedQuote.dateString}></CardHeader>
+                    )}
+                    <CardContent>
+                      <HTMLEllipsis unsafeHTML={relatedQuote.bite} maxLine="3" basedOn="words" />
+                    </CardContent>
+                  </EntityRelatedQuoteCard>
+                </a>
+              </Link>
+            ))}
+          </>
         )}
-        {hasRelatedQuotes &&
-          entity.relatedQuotes?.map((relatedQuote) => (
-            <Link href={`/quotes/${relatedQuote.slug}`} key={relatedQuote.slug} passHref>
-              <a>
-                <EntityRelatedQuoteCard raised>
-                  {relatedQuote.dateString && (
-                    <CardHeader title={relatedQuote.dateString}></CardHeader>
-                  )}
-                  <CardContent>
-                    <HTMLEllipsis unsafeHTML={relatedQuote.bite} maxLine="3" basedOn="words" />
-                  </CardContent>
-                </EntityRelatedQuoteCard>
-              </a>
-            </Link>
-          ))}
       </ModuleContainer>
     </Layout>
   );

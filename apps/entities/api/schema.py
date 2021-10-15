@@ -55,10 +55,6 @@ class Query(graphene.ObjectType):
                     pass
         return None
 
-    # @staticmethod
-    # def resolve_related_entities(root, info, slug: str) -> list[Entity]:
-    # return Entity.objects.get(pk=int(slug)).related_entities.all()
-
 
 # class Mutation(graphene.ObjectType):
 #    pass
