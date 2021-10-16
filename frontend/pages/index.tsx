@@ -1,3 +1,4 @@
+import AboutModularHistory from "@/components/AboutModularHistory";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import { Box } from "@mui/material";
@@ -75,6 +76,7 @@ export default function Home() {
           </CardContent>
         </Card>
       </Box>
+      <AboutModularHistory />
     </Layout>
   );
 }
