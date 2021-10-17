@@ -286,6 +286,28 @@ class DrfModelSerializer(serializers.ModelSerializer):
         """Return the model name of the instance."""
         return get_model(instance)
 
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
+
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: serializers.Field
+
+        for field_name, field in self.get_fields().items():
+            fields.append(
+                {
+                    'name': field_name,
+                    'editable': not getattr(field, 'read_only', False),
+                    'verbose_name': getattr(field, 'verbose_name', None),
+                    'choices': getattr(field, 'choices', None),
+                    'help_text': getattr(field, 'help_text', None),
+                    'type': field.__class__.__name__,
+                }
+            )
+        return fields
+
     class Meta:
         fields = ['id', 'model']
 

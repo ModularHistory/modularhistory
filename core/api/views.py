@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.db.models import Prefetch, QuerySet
 from rest_framework import permissions
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from core.pagination import VariableSizePagination
@@ -39,3 +40,15 @@ class ExtendedModelViewSet(ModelViewSet):
                 if name in prefetch_relations:
                     prefetch_relations.remove(name)
         return queryset.prefetch_related(*prefetch_relations)
+
+    moderated_fields_lookup_keyword = 'fields'
+
+    def retrieve(self, request, *args, **kwargs):
+        is_moderated_fields = (
+            self.kwargs[self.lookup_url_kwarg] == self.moderated_fields_lookup_keyword
+        )
+        if is_moderated_fields:
+            serializer = self.get_serializer()
+            return Response(serializer.get_moderated_fields())
+        else:
+            return super().retrieve(request, *args, **kwargs)
