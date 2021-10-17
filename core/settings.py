@@ -360,7 +360,7 @@ QUERYCOUNT = {
     #     'MIN_TIME_TO_LOG':0,
     #     'MIN_QUERY_COUNT_TO_LOG':0
     # },
-    'DISPLAY_DUPLICATES': 5,
+    'DISPLAY_DUPLICATES': 20,
     'RESPONSE_HEADER': 'X-DjangoQueryCount-Count',
     'IGNORE_SQL_PATTERNS': [r'silk_'],
 }
