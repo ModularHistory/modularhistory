@@ -1,7 +1,7 @@
 import axios from "@/axiosWithAuth";
 import TextField from "@/components/forms/StyledTextField";
-import { Grid } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { Grid } from "@mui/material";
+import Button from "@mui/material/Button";
 import { User } from "next-auth";
 import { FC, FormEventHandler, useState } from "react";
 

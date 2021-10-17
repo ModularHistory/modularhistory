@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import { FlatPage as FlatPageType } from "@/types/modules";
-import { Container, useMediaQuery } from "@material-ui/core";
+import { Container, useMediaQuery } from "@mui/material";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";

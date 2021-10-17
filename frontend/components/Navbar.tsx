@@ -1,4 +1,5 @@
-import { Divider } from "@material-ui/core";
+import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "@/auth";
+import { Divider } from "@mui/material";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,7 +8,6 @@ import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
 
 interface GlobalMenuItem {
   title: string;
@@ -94,7 +94,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
 
   const router = useRouter();
   // TODO: Create session type and remove this cast to `any`.
-  const [session, loading] = useSession() as any;
+  const [session, loading] = useSession();
 
   const login: MouseEventHandler = (e) => {
     e.preventDefault();
@@ -103,7 +103,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
 
   const logout: MouseEventHandler = (e) => {
     e.preventDefault();
-    handleLogout(session);
+    session && handleLogout(session);
   };
 
   const hideAccountControls =
@@ -155,6 +155,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
       style={{ minHeight: "4rem" }}
       expand="md"
       collapseOnSelect
+      data-testid={"navbar"}
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>

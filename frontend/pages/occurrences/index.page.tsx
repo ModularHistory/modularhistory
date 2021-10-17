@@ -4,8 +4,8 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Occurrence } from "@/types/modules";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
@@ -21,7 +21,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
   const occurrences = occurrencesData["results"] || [];
   const occurrenceCards = occurrences.map((occurrence) => (
     <Grid item key={occurrence.slug} xs={6} sm={4} md={3}>
-      <Link href={`/occurrences/${occurrence.slug}`}>
+      <Link href={`/occurrences/${occurrence.slug}`} prefetch={false}>
         <a>
           <ModuleUnionCard module={occurrence} />
         </a>

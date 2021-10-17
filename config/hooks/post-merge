@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$HOME/.profile"
 
 # For debugging:
 echo "Successfully pulled to $(pwd)."
