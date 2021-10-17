@@ -1,7 +1,6 @@
 """Serializers for the entities app."""
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
@@ -45,7 +44,6 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
 
     class Meta(DrfModuleSerializer.Meta):
         model = Source
-        # TODO: missing `file` field
         fields = DrfModuleSerializer.Meta.fields + [
             'citation_html',
             'content',
