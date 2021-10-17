@@ -1,13 +1,14 @@
 """Serializers for the entities app."""
-from drf_writable_nested import WritableNestedModelSerializer
+from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
 from apps.sources.api.sources.document.collection.serializers import CollectionDrfSerializer
 from apps.sources.api.sources.file.serializers import SourceFileDrfSerializer
-from apps.sources.models import Source, SourceContainment
+from apps.sources.models import AbstractCitation, Source, SourceContainment
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from apps.sources.models.mixins.textual import TextualMixin
@@ -132,4 +133,20 @@ class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
             'location_info',
             'descriptive_phrase',
             'information_url',
+        ]
+
+
+class CitationDrfSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
+    """Serializer for abstract citations."""
+
+    class Meta(DrfModelSerializer.Meta):
+        model = AbstractCitation
+        fields = DrfModelSerializer.Meta.fields + [
+            'html',
+            'source',
+            'citation_phrase',
+            'citation_html',
+            'pages',
+            'position',
+            'content_object',
         ]

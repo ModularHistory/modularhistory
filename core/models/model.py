@@ -296,11 +296,7 @@ class DrfTypedModelSerializer(DrfModelSerializer):
     type = serializers.CharField(write_only=True, required=True)
 
     def validate_type(self, value):
-        types = self.Meta.model._typedmodels_registry
-        if value not in types:
-            raise serializers.ValidationError(
-                f'Invalid model type={value}, allowed types: {", ".join(types.keys())}'
-            )
+        return validate_model_type(self, value)
 
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
@@ -322,3 +318,19 @@ def get_model(instance: ExtendedModel) -> str:
     except FieldDoesNotExist:
         pass
     return f'{app_label}.{model_type}'
+
+
+def validate_model_type(serializer: serializers.ModelSerializer, value):
+    model = serializer.Meta.model
+    if hasattr(serializer.Meta, 'allowed_types'):
+        types = getattr(serializer.Meta, 'allowed_types')
+    elif hasattr(model, 'typed_model_marker'):
+        types = model._typedmodels_registry.values()
+    else:
+        types = list(map(lambda x: x[0], model._meta.get_field('type').choices))
+
+    if value not in types:
+        raise serializers.ValidationError(
+            f'Invalid model type={value}, allowed types: {", ".join(types)}'
+        )
+    return value

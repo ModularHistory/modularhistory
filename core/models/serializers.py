@@ -5,6 +5,8 @@ from rest_framework import serializers
 from apps.search.api.serializers import DrfSearchableModelSerializer
 from apps.topics.models import Topic
 
+from .model import validate_model_type
+
 if TYPE_CHECKING:
     from .module import Module
 
@@ -43,9 +45,11 @@ class DrfTypedModuleSerializer(DrfModuleSerializer):
 
     type = serializers.CharField(write_only=True, required=True)
 
+    def validate_type(self, value):
+        return validate_model_type(self, value)
+
     class Meta(DrfModuleSerializer.Meta):
         fields = DrfModuleSerializer.Meta.fields + ['type']
-        extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs
 
 
 class SerializableDrfField(serializers.Field):
