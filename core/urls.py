@@ -99,9 +99,9 @@ urlpatterns = [
     path('healthcheck/', bare_status),  # basic healthcheck
     path('ht/', include('health_check.urls')),
     # ---------------------------------
-    # GraphQL (enabled during DEV, disabled during PROD)
+    # GraphQL (GraphIQL enabled during DEV, disabled during PROD)
     # ---------------------------------
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=IS_DEV))),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
     path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=IS_DEV))),
     # ---------------------------------
     # Debugging & dev utilities
