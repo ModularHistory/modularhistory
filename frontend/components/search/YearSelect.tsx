@@ -1,50 +1,45 @@
 import { Grid, MenuItem } from "@mui/material";
-import { FC, useContext } from "react";
+import { FC } from "react";
 import TextField from "../forms/StyledTextField";
-import { SearchFormContext } from "./SearchForm";
 
 interface YearSelectProps {
   label: string;
-  name: string;
+  defaultYearValue: string;
+  defaultTypeValue: string;
+  onYearChange: (value: string) => void;
+  onTypeChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-const YearSelect: FC<YearSelectProps> = ({ label, name }: YearSelectProps) => {
-  /**
-   * A component for year range inputs in the search form.
-   * `label` is displayed in the number input.
-   * `name` is the query parameter key used in the search API request.
-   */
-
-  const { formState, setFormStateFromEvent, disabled } = useContext(SearchFormContext);
-
-  // `typeName` is the query param key for the year type (e.g. "CE").
-  // TODO: this feature is not yet implemented.
-  const typeName = `${name}_type`;
-
-  // set default values if not in state
-  const value = formState[name] ?? "";
-  const type = formState[typeName] ?? "CE";
-
-  // https://material-ui.com/api/text-field/
+/**
+ * A component for year range inputs in the search form.
+ * `label` is displayed in the number input.
+ */
+const YearSelect: FC<YearSelectProps> = ({
+  label,
+  defaultYearValue,
+  defaultTypeValue,
+  onYearChange,
+  onTypeChange,
+  disabled,
+}: YearSelectProps) => {
   return (
     <>
       <Grid item xs={6}>
         <TextField
           label={label}
           type={"number"}
-          InputProps={{ inputProps: { min: 1 } }}
-          name={name}
-          value={value}
-          onChange={setFormStateFromEvent}
+          inputProps={{ min: 1 }}
+          defaultValue={defaultYearValue}
+          onChange={(e) => onYearChange(e.target.value)}
           disabled={disabled}
         />
       </Grid>
       <Grid item xs={6}>
         <TextField
           select
-          name={typeName}
-          value={type}
-          onChange={setFormStateFromEvent}
+          onChange={(e) => onTypeChange(e.target.value)}
+          defaultValue={defaultTypeValue ?? "CE"}
           disabled={disabled}
         >
           {["CE", "BCE", "YBP"].map((opt) => (

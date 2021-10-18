@@ -6,17 +6,18 @@ import {
   FormGroup,
   FormLabel,
 } from "@mui/material";
-import { FC, useContext } from "react";
-import { SearchFormContext } from "./SearchForm";
+import { FC, useRef } from "react";
 
 interface CheckboxGroupProps {
   label: string;
-  name: string;
-  children: Array<{
-    label: string;
+  defaultValue: string;
+  onChange: (value: string[]) => void;
+  options: Array<{
     key: string;
+    label?: string;
     defaultChecked?: boolean;
   }>;
+  disabled?: boolean;
 }
 
 /**
@@ -27,34 +28,27 @@ interface CheckboxGroupProps {
  *   `label` is rendered next to the option.
  *   `key` is the value of the option used in the API request.
  */
-const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: CheckboxGroupProps) => {
-  // get current input values
-  const { formState, setFormState, disabled } = useContext(SearchFormContext);
+const CheckboxGroup: FC<CheckboxGroupProps> = ({
+  label,
+  onChange,
+  options,
+  disabled,
+}: CheckboxGroupProps) => {
+  // prevent a warning about defaultValue changing after initial render
+  const defaultChecks = useRef(
+    Object.fromEntries(options.map(({ key, defaultChecked }) => [key, defaultChecked ?? true]))
+  ).current;
 
-  // If the current state is not set, default to all options.
-  // This is the default behavior expected by the API.
-  const state = formState[name];
-  let checkedItems: string[];
-  if (state) {
-    checkedItems = (Array.isArray(state) ? state : [state]).map(String);
-  } else {
-    checkedItems = children.reduce((filtered: string[], item) => {
-      if (item.defaultChecked !== false) filtered.push(item.key);
-      return filtered;
-    }, []);
-  }
+  const checks = useRef(defaultChecks).current;
 
-  // event handler for user input
   const handleChange: CheckboxProps["onChange"] = ({ target }, checked) => {
-    if (checked) {
-      // add option to selected values
-      checkedItems.push(target.name);
-    } else {
-      // remove option from selected values
-      const index = checkedItems.findIndex((item) => item === target.name);
-      if (index >= 0) checkedItems.splice(index, 1);
-    }
-    setFormState((prevState) => ({ ...prevState, [name]: checkedItems }));
+    checks[target.name] = checked;
+    onChange(
+      Object.entries(checks).reduce((checkedOptionKeys: string[], [key, checked]) => {
+        if (checked) checkedOptionKeys.push(key);
+        return checkedOptionKeys;
+      }, [])
+    );
   };
 
   // The component structure below is similar to the demo at
@@ -63,17 +57,17 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: Checkb
     <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
       <FormGroup>
-        {children.map(({ label, key }) => (
+        {options.map(({ label, key }) => (
           <FormControlLabel
             control={
               <Checkbox
-                checked={checkedItems.includes(key)}
+                defaultChecked={defaultChecks[key]}
                 onChange={handleChange}
                 name={key}
                 color={"primary"}
               />
             }
-            label={label}
+            label={label ?? key.charAt(0).toUpperCase() + key.substr(1)}
             key={key}
           />
         ))}

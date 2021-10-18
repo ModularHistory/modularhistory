@@ -11,7 +11,7 @@ import React, { FC } from "react";
 
 interface TopicsProps {
   topicsData: {
-    topics: Pick<Topic, "name" | "slug" | "model">[];
+    topics: Pick<Topic, "name" | "slug" | "model" | "propositions">[];
   };
   module: ModuleUnion;
   className?: string;
@@ -48,7 +48,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
                       border: ".08rem solid black",
                     }}
                   >
-                    {topic.name}
+                    {`${topic.name} (${topic.propositions.length})`}
                   </Button>
                 </Link>
               ))}
@@ -68,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   await axios
     .get("http://django:8000/graphql/", {
-      params: { query: "{ topics { name slug } }" },
+      params: { query: "{ topics { name slug propositions { slug } } }" },
     })
     .then(({ data }) => {
       topicsData = data.data;

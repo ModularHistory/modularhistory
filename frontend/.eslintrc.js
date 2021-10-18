@@ -2,7 +2,7 @@
 
 const sharedRules = {
   "no-console": "off",
-  "no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
+  "no-unused-vars": "off",
   "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "react/react-in-jsx-scope": ["off"],
   "@typescript-eslint/no-explicit-any": "off",
