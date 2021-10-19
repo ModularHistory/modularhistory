@@ -20,6 +20,11 @@ def get_moderated_model_serializer(
 
 
 class PythonSerializer(Serializer):
+    """
+    Patched version of django Serializer that uses model.fields instead of local_fields to include parent inherited fields in serialization.
+    Patch is needed due to a bug where it won't save fields of parent model, when using multi-table inheritance (ex: Source child models)
+    """
+
     def serialize(
         self,
         queryset,
