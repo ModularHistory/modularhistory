@@ -1,5 +1,4 @@
-import logging
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import Optional, TYPE_CHECKING, Union
 
 from django.apps import apps
 from django.db import models
@@ -139,7 +138,6 @@ def cache_tags(model: str, instance_id: int, tags: list):
         logging.error(f'{Model} has no cache.')
         return
     model_instance: 'ModelWithCache' = Model.objects.get(pk=instance_id)
-    logging.error(model_instance.text)
     model_instance.cache['tags'] = tags
     model_instance.save(wipe_cache=False, moderate=False)
     model_instance.refresh_from_db()

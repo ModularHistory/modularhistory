@@ -3,9 +3,10 @@ from typing import Optional, Union
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.python import Deserializer as PythonDeserializer
-from django.core.serializers.python import Serializer as PythonSerializer
 from django.db.models import JSONField, Model
 from rest_framework.utils.encoders import JSONEncoder
+
+from apps.moderation.serializers import PythonSerializer
 
 SerializedModel = list[dict]
 
@@ -93,12 +94,13 @@ def serialize_instance(instance: Model) -> SerializedModel:
         if is_string_field and getattr(instance, field.name, None) is None:
             setattr(instance, field.name, '')
     value_set = [instance]
-    if instance._meta.parents:
-        value_set += [
-            getattr(instance, f.name)
-            for f in list(instance._meta.parents.values())
-            if f is not None
-        ]
+    # patch: disable adding parent models because patched PythonSerializer includes parent fields
+    # if instance._meta.parents:
+    #     value_set += [
+    #         getattr(instance, f.name)
+    #         for f in list(instance._meta.parents.values())
+    #         if f is not None
+    #     ]
     serialized_value = PythonSerializer().serialize(value_set)
     return serialized_value
 

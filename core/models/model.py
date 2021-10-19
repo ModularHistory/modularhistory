@@ -260,6 +260,7 @@ class ModelSerializer(serpy.Serializer):
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
+    id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
@@ -285,6 +286,28 @@ class DrfModelSerializer(serializers.ModelSerializer):
         """Return the model name of the instance."""
         return get_model(instance)
 
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
+
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: serializers.Field
+
+        for field_name, field in self.get_fields().items():
+            fields.append(
+                {
+                    'name': field_name,
+                    'editable': not getattr(field, 'read_only', False),
+                    'verbose_name': getattr(field, 'verbose_name', None),
+                    'choices': getattr(field, 'choices', None),
+                    'help_text': getattr(field, 'help_text', None),
+                    'type': field.__class__.__name__,
+                }
+            )
+        return fields
+
     class Meta:
         fields = ['id', 'model']
 
@@ -293,6 +316,9 @@ class DrfTypedModelSerializer(DrfModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
     type = serializers.CharField(write_only=True, required=True)
+
+    def validate_type(self, value):
+        return validate_model_type(self, value)
 
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
@@ -309,8 +335,24 @@ def get_model(instance: ExtendedModel) -> str:
         is_typed = hasattr(instance, 'typed_model_marker')
         if not is_polymorphic and not is_typed:
             instance_type = type_field.value_from_object(instance)
-            if not instance_type.startswith(app_label):
+            if isinstance(instance_type, str) and not instance_type.startswith(app_label):
                 model_type = instance_type
     except FieldDoesNotExist:
         pass
     return f'{app_label}.{model_type}'
+
+
+def validate_model_type(serializer: serializers.ModelSerializer, value):
+    model = serializer.Meta.model
+    if hasattr(serializer.Meta, 'allowed_types'):
+        types = getattr(serializer.Meta, 'allowed_types')
+    elif hasattr(model, 'typed_model_marker'):
+        types = model._typedmodels_registry.values()
+    else:
+        types = list(map(lambda x: x[0], model._meta.get_field('type').choices))
+
+    if value not in types:
+        raise serializers.ValidationError(
+            f'Invalid model type={value}, allowed types: {", ".join(types)}'
+        )
+    return value

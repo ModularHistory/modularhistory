@@ -182,7 +182,9 @@ django-currentuser = "^0.5.3"
 drf-writable-nested = "^0.6.3"
 youtube-dl = "^2021.6.6"
 
+django-querycount = "^0.7.0"
 rope = "^0.20.1"
+
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]
 # TODO: Use separate test group after it's supported in next Poetry version

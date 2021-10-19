@@ -203,8 +203,10 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Access the `user` from anywhere:
-    # https://pypi.org/project/django-currentuser
+    # https://github.com/PaesslerAG/django-currentuser
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    # https://github.com/bradmontgomery/django-querycount
+    # 'querycount.middleware.QueryCountMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
@@ -350,6 +352,19 @@ DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 DB_INIT_DIR = os.path.join(VOLUMES_DIR, 'db/init')
 DB_INIT_FILENAME = 'init.sql'
 DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
+
+QUERYCOUNT = {
+    # 'THRESHOLDS': {
+    #     'MEDIUM': 50,
+    #     'HIGH': 200,
+    #     'MIN_TIME_TO_LOG':0,
+    #     'MIN_QUERY_COUNT_TO_LOG':0
+    # },
+    'DISPLAY_DUPLICATES': 20,
+    'RESPONSE_HEADER': 'X-DjangoQueryCount-Count',
+    'IGNORE_SQL_PATTERNS': [r'silk_'],
+}
+
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8

@@ -1,4 +1,3 @@
-from rest_framework import permissions
 from rest_framework.generics import RetrieveAPIView
 
 from apps.moderation.serializers import get_moderated_model_serializer
@@ -12,7 +11,6 @@ class PropositionViewSet(ExtendedModelViewSet):
 
     queryset = Proposition.objects.all()
     serializer_class = PropositionDrfSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request, **kwargs):
         # get_absolute_url for occurrences currently returns a link with "propositions"

@@ -8,25 +8,18 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/router";
-import { MouseEventHandler, useState } from "react";
-
-function useQueryState(initialState: string) {
-  const [query, setQuery] = useState(initialState);
-  const setQueryFromEvent = ({ target: { value } }: { target: { value: string } }) =>
-    setQuery(value);
-  return [query, setQueryFromEvent] as const;
-}
+import { MouseEventHandler, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const [query, setQuery] = useQueryState("");
+  const queryInputRef = useRef<HTMLInputElement>(null);
 
   // event handler for pressing enter or clicking search button
   const search = ({ key }: { key?: string }) => {
     if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
-      query: { query },
+      query: { query: queryInputRef.current?.value },
     });
   };
 
@@ -40,18 +33,18 @@ export default function Home() {
     >
       <Grid item>
         <TextField
+          inputRef={queryInputRef}
           id={"id_query"}
           name={"query"}
           variant={"outlined"}
           size={"small"}
           style={{ minWidth: "280px" }}
-          onChange={setQuery}
           onKeyPress={search}
-          data-cy={"query"}
+          inputProps={{ "data-testid": "query" }}
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search as MouseEventHandler} data-cy={"searchButton"} />
+        <SearchButton onClick={search as MouseEventHandler} data-testid={"searchButton"} />
       </Grid>
     </Grid>
   );

@@ -85,7 +85,10 @@ class SoftDeletableModel(ExtendedModel):
             related_object: Union['ModeratedModel', 'Model']
             for related_object in related_objects(self):
                 if not getattr(related_object, 'deleted', None):
-                    related_object.delete(**kwargs)
+                    # patch: child models like article return themselves in related objects
+                    is_self = related_object.pk == self.pk
+                    if not is_self:
+                        related_object.delete(**kwargs)
             self.deleted = timezone.now()
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
             # send pre_softdelete signal

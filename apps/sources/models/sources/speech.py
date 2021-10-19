@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 
 from apps.places.models import Venue
@@ -22,6 +23,7 @@ SPEECH_TYPES = (
 )
 
 
+@deconstructible
 class TypeValidator:
     """A validator for the type of model instance referenced by a foreign key."""
 
@@ -32,11 +34,17 @@ class TypeValidator:
         if value and value.type != self.type:
             raise ValidationError(f'{value} must be of type "{self.type}".')
 
+    def __eq__(self, other):
+        return isinstance(other, TypeValidator) and self.type == other.type
+
 
 class SpeechTypeValidator(TypeValidator):
     """A validator for the type of model instance referenced by `speech`."""
 
     type = 'speech'
+
+    def __eq__(self, other):
+        return super().__eq__(other) and isinstance(other, SpeechTypeValidator)
 
 
 class Speech(Source):

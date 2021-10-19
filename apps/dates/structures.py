@@ -87,6 +87,7 @@ class HistoricDateTime(datetime):
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
+    # TODO: this override somehow causes a crash when trying to delete a child model like Article
     def __new__(
         cls,
         year: int,

@@ -4,8 +4,8 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
+from apps.moderation.models import ModeratedModel
 from core.fields.html_field import HTMLField
-from core.models import ExtendedModel
 from core.models.typed import TypedModel, TypedModelManager
 from core.utils.html import soupify
 
@@ -16,7 +16,7 @@ PUBLICATION_TYPES = (
 )
 
 
-class AbstractPublication(ExtendedModel):
+class AbstractPublication(ModeratedModel):
     """Abstract base class for publications."""
 
     name = models.CharField(

@@ -8,24 +8,16 @@ from apps.dates.fields import HistoricDateTimeDrfField
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
+from apps.sources.api.serializers import CitationDrfSerializerMixin
 from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer
 
 
-class CitationDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
-    """Serializer for citations."""
+class CitationDrfSerializer(CitationDrfSerializerMixin):
+    """Serializer for quote citations."""
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta(CitationDrfSerializerMixin.Meta):
         model = Citation
-        fields = DrfModelSerializer.Meta.fields + [
-            'html',
-            'source',
-            'citation_phrase',
-            'citation_html',
-            'pages',
-            'position',
-            'content_object',
-        ]
         validators = [
             UniqueTogetherValidator(
                 queryset=Citation.objects.all(),
