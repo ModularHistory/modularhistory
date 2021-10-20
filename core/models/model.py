@@ -254,7 +254,7 @@ class ModelSerializer(serpy.Serializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        return get_model(instance)
+        return get_model_name(instance)
 
 
 class DrfModelSerializer(serializers.ModelSerializer):
@@ -284,7 +284,7 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        return get_model(instance)
+        return get_model_name(instance)
 
     def get_moderated_fields(self) -> list[dict]:
         """
@@ -324,7 +324,7 @@ class DrfTypedModelSerializer(DrfModelSerializer):
         fields = DrfModelSerializer.Meta.fields + ['type']
 
 
-def get_model(instance: ExtendedModel) -> str:
+def get_model_name(instance: ExtendedModel) -> str:
     """Return the model name of the instance."""
     model_cls: type['ExtendedModel'] = instance.__class__
     app_label = model_cls._meta.app_label
