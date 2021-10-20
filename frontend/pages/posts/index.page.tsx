@@ -2,9 +2,15 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Button, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { FC, useRef } from "react";
@@ -16,7 +22,7 @@ interface PostsProps {
   };
 }
 
-const Entities: FC<PostsProps> = ({ postsData }: PostsProps) => {
+const Posts: FC<PostsProps> = ({ postsData }: PostsProps) => {
   const posts = postsData.results || [];
   // const entityCards = entities.map((post) => (
   //   <Grid item key={post.slug} xs={6} sm={4} md={3}>
@@ -27,7 +33,6 @@ const Entities: FC<PostsProps> = ({ postsData }: PostsProps) => {
   //     </Link>
   //   </Grid>
   // ));
-
   const titleInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const createNewPost = () => {
@@ -47,19 +52,53 @@ const Entities: FC<PostsProps> = ({ postsData }: PostsProps) => {
     <Layout title={"Posts"}>
       <Container>
         <PageHeader>Posts</PageHeader>
-        <TextField inputRef={titleInputRef} />
+        {/* <TextField inputRef={titleInputRef} /> */}
         <Button onClick={createNewPost} />
         <Pagination count={postsData["totalPages"]} />
-        <Grid container spacing={2}>
-          <pre>{JSON.stringify(posts, null, 4)}</pre>
-        </Grid>
+        <TableContainer component={Paper}>
+          <Table
+            sx={{
+              minWidth: 650,
+            }}
+            aria-label="posts table"
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell>Title</TableCell>
+              <TableCell>Content</TableCell> 
+              <TableCell>Date</TableCell>
+              <TableCell>Author</TableCell>
+              <TableCell>Parent&nbsp;Thread</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {posts.map((post) => (
+            <TableRow
+              key={post.name}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              {/* <TableCell component="th" scope="row">
+                {post.name}
+              </TableCell> */}
+              <TableCell>
+                  {post.title}
+              </TableCell>
+              <TableCell>{post.content}</TableCell>
+              <TableCell>{post.date}</TableCell>
+              <TableCell>{post.author}</TableCell>
+              <TableCell>{post.parentThread}</TableCell>
+            </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        </TableContainer>
         <Pagination count={postsData["totalPages"]} />
       </Container>
     </Layout>
   );
 };
 
-export default Entities;
+export default Posts;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
