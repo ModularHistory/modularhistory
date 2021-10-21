@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
@@ -61,7 +61,7 @@
     "@types/node": "^16.9.4",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.21",
-    "@types/react-dom": "^17.0.9",
+    "@types/react-dom": "^17.0.10",
     "@types/react-gtm-module": "^2.0.1",
     "@types/throttle-debounce": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
