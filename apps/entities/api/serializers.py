@@ -3,6 +3,7 @@ from rest_framework import serializers
 from apps.dates.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models.entity import Entity
+from apps.images.models import Image
 from core.models.serializers import DrfTypedModuleSerializer
 
 
@@ -29,7 +30,9 @@ class CategorizationSerializer(serializers.Serializer):
 
 
 class EntityDrfSerializer(DrfTypedModuleSerializer):
-    """Serializer for entities."""
+    """Serializer for entities.
+    TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
+    """
 
     description = serializers.CharField(required=False)
     categorizations = CategorizationSerializer(
@@ -68,5 +71,18 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'death_date',
             'birth_date_serialized',
             'death_date_serialized',
+            'birth',
+            'death',
+            'images',
+            'cached_images',
             'primary_image',
+            'reference_urls',
         ]
+        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+            'images': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Image.objects.all(),
+            },
+        }
