@@ -347,7 +347,7 @@ def validate_model_type(serializer: serializers.ModelSerializer, value):
     if hasattr(serializer.Meta, 'allowed_types'):
         types = getattr(serializer.Meta, 'allowed_types')
     elif hasattr(model, 'typed_model_marker'):
-        types = model._typedmodels_registry.values()
+        types = model._typedmodels_registry.keys()
     else:
         types = list(map(lambda x: x[0], model._meta.get_field('type').choices))
 
