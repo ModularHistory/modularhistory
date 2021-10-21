@@ -1,14 +1,12 @@
-import AboutModularHistory from "@/components/AboutModularHistory";
 import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
 import SearchButton from "@/components/search/SearchButton";
-import { Box } from "@mui/material";
+import { Box, Container, Divider, Grid, Link, Paper } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/router";
-import { MouseEventHandler, useState } from "react";
+import { FC, MouseEventHandler, useState } from "react";
 
 function useQueryState(initialState: string) {
   const [query, setQuery] = useState(initialState);
@@ -80,3 +78,21 @@ export default function Home() {
     </Layout>
   );
 }
+
+const AboutModularHistory: FC  = () => {
+  return(
+    <Container>
+      <PageHeader>About Modularhistory</PageHeader>
+      <Paper sx={{p: 2, margin: "0 auto", maxWidth: "80vw", flexGrow: 1}}>
+        <Grid container spacing = {2}>
+          <Grid item xs>
+            <p>ModularHistory is a 501(c)(3) nonprofit organization dedicated to helping people learn about and understand the history of our world, our society, and issues of modern sociopolitical discourse.</p>
+            <Divider variant = "middle" />
+            <p>ModularHistory provide its content for free.</p>
+            <p>To support us, <Link href = "/donations" variant = "body2">{' donate now.'}</Link></p>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
+  );
+};
