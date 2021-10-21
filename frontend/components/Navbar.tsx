@@ -238,7 +238,6 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
           )}
         </Nav>
         <StyledTextField
-          //label={<SearchIcon sx={{ fill: "lightslategray" }} />}
           defaultValue={fieldsRef.current.query}
           onChange={(e) => fieldCallbacks.query(e.target.value)}
           onKeyUp={handleKeyUp}
