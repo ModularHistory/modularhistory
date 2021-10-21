@@ -25,32 +25,22 @@ type FieldsRef = MutableRefObject<Record<Field, any>>;
 type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
 
 const StyledTextField = styled(TextField)({
-  root: {
-    "& label.Mui-focused": {
-      color: "white",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "white",
+      borderStyle: "none",
     },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "white",
+    "& input": {
+      backgroundColor: "white",
     },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
+    "&:hover fieldset": {
+      borderColor: "white",
     },
-    "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
-      borderColor: "red", //default
+    "&:focused fieldset": {
+      borderColor: "white",
     },
-    "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
-      borderColor: "blue", //hovered
-    },
-    "&$cssFocused $notchedOutline": {
-      borderColor: "purple", //focused
+    "& .Mui-focused fieldset": {
+      borderColor: "white",
     },
   },
 });
@@ -247,7 +237,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
           )}
         </Nav>
         <StyledTextField
-          label={<SearchIcon />}
+          label={<SearchIcon sx={{ fill: "lightslategray" }} />}
           defaultValue={fieldsRef.current.query}
           onChange={(e) => fieldCallbacks.query(e.target.value)}
           onKeyUp={handleKeyUp}
