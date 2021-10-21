@@ -7,12 +7,14 @@ from graphql.error import GraphQLError
 
 from apps.entities.models.entity import Entity
 from apps.graph.types import ModuleType
+from apps.quotes.api.schema import QuoteType
 
 
 class EntityType(ModuleType):
     """GraphQL type for the Entity model."""
 
     cached_images = GenericScalar(source='cached_images')
+    related_quotes = graphene.List(QuoteType, slug=graphene.String())
 
     class Meta:
         model = Entity
@@ -23,6 +25,10 @@ class EntityType(ModuleType):
     def resolve_model(root: Entity, *args) -> str:
         """Return the value to be assigned to an entity's `model` attribute."""
         return 'entities.entity'
+
+    @staticmethod
+    def resolve_related_quotes(root: Entity, *args, **kwargs):
+        return root.quotes.all()
 
 
 class Query(graphene.ObjectType):

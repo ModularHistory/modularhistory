@@ -34,7 +34,7 @@ const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
               const { href } = element.attribs;
 
               // don't format external links
-              if (!href.startsWith("/")) {
+              if (!href?.startsWith("/")) {
                 return;
               }
 
@@ -60,7 +60,7 @@ const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
     );
   }, [html]);
 
-  return renderedHTML;
+  return <div data-testid={"moduleHTML"}>{renderedHTML}</div>;
 };
 
 export default ModuleHTML;
