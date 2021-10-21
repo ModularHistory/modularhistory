@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
@@ -45,7 +45,7 @@
     "react-google-recaptcha-v3": "^1.9.5",
     "react-gtm-module": "^2.0.11",
     "react-lines-ellipsis": "^0.15.0",
-    "react-social-login-buttons": "^3.5.1",
+    "react-social-login-buttons": "^3.6.0",
     "react-swipeable-views": "^0.14.0",
     "sass": "^1.42.0",
     "throttle-debounce": "^3.0.1",
