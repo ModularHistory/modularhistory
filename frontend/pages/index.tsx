@@ -81,7 +81,7 @@ export default function Home() {
 
 const AboutModularHistory: FC  = () => {
   return(
-    <Container>
+    <Container sx={{marginBottom: "20px"}}>
       <PageHeader>About Modularhistory</PageHeader>
       <Paper sx={{p: 2, margin: "0 auto", maxWidth: "80vw", flexGrow: 1}}>
         <Grid container spacing = {2}>
