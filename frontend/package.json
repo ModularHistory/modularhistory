@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/lab": "^5.0.0-alpha.48",
-    "@mui/material": "^5.0.1",
+    "@mui/material": "^5.0.4",
     "@mui/styles": "^5.0.1",
     "@react-spring/web": "^9.2.4",
     "@sentry/browser": "^6.12.0",
