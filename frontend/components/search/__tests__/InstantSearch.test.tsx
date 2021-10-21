@@ -41,6 +41,17 @@ describe("Instant search input field", () => {
     expect(getAllByText(options[0][labelKey])).toHaveLength(1);
   });
 
+  it("works with non-array for defaultValue", async () => {
+    // this behavior is needed because the defaultValue
+    // pulled from `router` might not be an array
+    const options = createOptions(1);
+    const { getAllByText } = await renderInstantSearch({
+      defaultValue: options[0],
+    });
+
+    expect(getAllByText(options[0][labelKey])).toHaveLength(1);
+  });
+
   it("calls onChange with array of ids", async () => {
     const options = createOptions(2);
     const onChangeMock = jest.fn();
@@ -111,5 +122,27 @@ describe("Instant search input field", () => {
     expect(getDataForInputMock).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
+  });
+
+  it("doesn't retrieve data for input length below threshold", async () => {
+    const minimumSearchLength = 2;
+    const options = createOptions(1);
+    const getDataForInputMock = jest.fn();
+    getDataForInputMock.mockReturnValue(options);
+    const { getByTestId, getByText, queryByText } = await renderInstantSearch({
+      getDataForInput: getDataForInputMock,
+      minimumSearchLength,
+    });
+
+    const input = getByTestId("instantSearchInput");
+    await act(async () => await userEvent.type(input, "{space}"));
+    expect(getDataForInputMock).toHaveBeenCalledTimes(0);
+    await act(async () => await userEvent.type(input, "{space}"));
+    expect(getDataForInputMock).toHaveBeenCalledTimes(1);
+    expect(getDataForInputMock).toHaveBeenCalledWith("  ", expect.anything());
+    await act(async () => await userEvent.type(input, "{backspace}"));
+    expect(getDataForInputMock).toHaveBeenCalledTimes(1);
+    expect(queryByText(options[0][labelKey])).toBeNull();
+    getByText("Type to search");
   });
 });
