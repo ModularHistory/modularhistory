@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from apps.dates.fields import HistoricDateTimeDrfField
@@ -40,8 +39,12 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
     # write only versions are not rendered to output
     birth_date = HistoricDateTimeDrfField(write_only=True, required=False)
     death_date = HistoricDateTimeDrfField(write_only=True, required=False)
-    birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
-    deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
+    birth_date_serialized = serializers.SerializerMethodField(
+        'get_serialized_birth_date', read_only=True
+    )
+    death_date_serialized = serializers.SerializerMethodField(
+        'get_serialized_death_date', read_only=True
+    )
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -63,7 +66,7 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'categorizations',
             'birth_date',
             'death_date',
-            'birthDate',
-            'deathDate',
+            'birth_date_serialized',
+            'death_date_serialized',
             'primary_image',
         ]
