@@ -7,13 +7,13 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
     "@draft-js-plugins/inline-toolbar": "^4.1.2",
     "@draft-js-plugins/static-toolbar": "^4.1.2",
-    "@emotion/react": "^11.4.1",
+    "@emotion/react": "^11.5.0",
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
