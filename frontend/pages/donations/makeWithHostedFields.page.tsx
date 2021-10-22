@@ -6,6 +6,7 @@ import Layout from "@/components/Layout";
 import Container from "@mui/material/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC, MouseEventHandler, useRef, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -85,7 +86,8 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   };
 
   return (
-    <Layout title="Donate">
+    <Layout>
+      <NextSeo title="Donate" />
       <Container>
         {(!clientToken && <p className="lead">Loading...</p>) || (
           <div>
