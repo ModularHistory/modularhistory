@@ -77,15 +77,19 @@ const App: NextPage<ExtendedAppProps> = ({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta httpEquiv="Content-Language" content="en" />
-        {/* <meta property="og:type" content="website" /> */}
-        {/* TODO: Use a better image. (This is the image that appears
-                  in messaging apps when a link to the website is shared.) */}
-        {/*<meta property="og:image" content="{% static 'logo_head_white.png' %}" />*/}
-        {/* <meta property="og:url" content="https://www.modularhistory.com/" /> */}
-        <meta property="og:title" content="ModularHistory" />
-        <meta property="og:description" content="History, modularized." />
         <meta name="facebook-domain-verification" content="dfnrpkj6k5hhiqtxmtxsgw23xr8bfr" />
       </Head>
+      <DefaultSeo
+        openGraph={{
+          type: "website",
+          url: "https://www.modularhistory.com/",
+          site_name: "ModularHistory",
+          description: "History, modularized.",
+        }}
+        twitter={{ handle: "@modularhistory" }}
+        titleTemplate="%s | ModularHistory" // https://github.com/garmeeh/next-seo#title-template
+        defaultTitle="ModularHistory" // https://github.com/garmeeh/next-seo#default-title
+      />
       <noscript>
         <iframe
           src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
@@ -98,16 +102,6 @@ const App: NextPage<ExtendedAppProps> = ({
         <SessionKiller>
           <PageTransitionContextProvider>
             <ThemeProvider theme={theme}>
-              <DefaultSeo
-                openGraph={{
-                  type: "website",
-                  url: "https://www.modularhistory.com/",
-                  site_name: "ModularHistory",
-                }}
-                twitter={{ handle: "@modularhistory" }}
-                titleTemplate="%s | ModularHistory" // https://github.com/garmeeh/next-seo#title-template
-                defaultTitle="ModularHistory" // https://github.com/garmeeh/next-seo#default-title
-              />
               <DynamicPageTransitionProgressBar />
               <Component {...pageProps} err={err} />
             </ThemeProvider>
