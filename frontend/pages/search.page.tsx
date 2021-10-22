@@ -8,6 +8,7 @@ import { Box, Container, Drawer, useMediaQuery } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import qs from "qs";
@@ -45,7 +46,8 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
   const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
 
   return (
-    <Layout title={title}>
+    <Layout>
+      <NextSeo title={title} />
       {props.results.length === 0 ? (
         <EmptySearchResults />
       ) : (

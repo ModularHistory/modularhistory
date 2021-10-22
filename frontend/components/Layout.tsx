@@ -1,23 +1,10 @@
 import { AUTH_COOKIES } from "@/auth";
 import { useSession } from "next-auth/client";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { FunctionComponent, PropsWithChildren, useEffect } from "react";
-import { titleCase } from "title-case";
+import { FunctionComponent, useEffect } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
-interface LayoutProperties {
-  title: string;
-  canonicalUrl?: string;
-}
-
-const Layout: FunctionComponent<LayoutProperties> = ({
-  title,
-  canonicalUrl,
-  children,
-}: PropsWithChildren<LayoutProperties>) => {
-  const router = useRouter();
+const Layout: FunctionComponent = ({ children }) => {
   const [session, _loading] = useSession();
 
   // https://next-auth.js.org/tutorials/refresh-token-rotation#client-side
@@ -44,10 +31,6 @@ const Layout: FunctionComponent<LayoutProperties> = ({
 
   return (
     <>
-      <Head>
-        <title>{titleCase(title) || "Home"} | ModularHistory</title>
-        <link rel="canonical" href={canonicalUrl || router.pathname} />
-      </Head>
       <Navbar />
       <div className="main-content">{children}</div>
       <Footer />

@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { Occurrence } from "@/types/modules";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface OccurrenceProps {
@@ -15,7 +16,8 @@ interface OccurrenceProps {
  */
 const OccurrenceDetailPage: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
-    <Layout title={occurrence.title}>
+    <Layout>
+      <NextSeo title={occurrence.title} />
       <ModuleContainer>
         <ModuleDetail module={occurrence} />
       </ModuleContainer>
