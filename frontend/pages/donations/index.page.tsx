@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import Container from "@mui/material/Container";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import React, { FC } from "react";
 
@@ -10,7 +11,8 @@ const introduction = `
 
 const Donations: FC = () => {
   return (
-    <Layout title="Donations">
+    <Layout>
+      <NextSeo title="Donations" />
       <Container
         sx={{
           height: "100%",

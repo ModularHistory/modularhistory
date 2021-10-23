@@ -5,7 +5,7 @@ import { FC } from "react";
 const NotFound: FC = () => {
   // Do not record an exception in Sentry for 404. (This is opinionated.)
   return (
-    <Layout title="404">
+    <Layout>
       <Error statusCode={404} />
     </Layout>
   );

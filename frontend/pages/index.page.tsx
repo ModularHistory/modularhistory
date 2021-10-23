@@ -49,7 +49,7 @@ export default function Home() {
   );
 
   return (
-    <Layout title={"Home"}>
+    <Layout>
       <Box
         sx={{
           flex: "1 1",

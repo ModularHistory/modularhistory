@@ -7,6 +7,7 @@ import { Quote } from "@/types/modules";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -30,7 +31,8 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
   ));
 
   return (
-    <Layout title={"Quotes"}>
+    <Layout>
+      <NextSeo title={"Quotes"} />
       <Container>
         <PageHeader>Quotes</PageHeader>
         <Pagination count={quotesData["totalPages"]} />

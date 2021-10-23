@@ -3,8 +3,10 @@ import { Alert, AlertTitle, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
+
 interface DonateProps {
   clientToken: string;
 }
@@ -64,7 +66,8 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
   };
 
   return (
-    <Layout title="Donate">
+    <Layout>
+      <NextSeo title="Donate" />
       <Container
         sx={{
           height: "100%",
@@ -75,48 +78,53 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
           marginBottom: "2rem",
         }}
       >
-        {(!clientToken && <p className="lead">Loading...</p>) ||
-          (
-            <div>
-              <header>
-                <p className="h3">Help us keep ModularHistory running</p>
-                <p>
-                  ModularHistory provide its content for free. If you would like to help keep
-                  ModularHistory afloat, you can use this form to make a donation.
-                </p>
-              </header>
-              {(success && <SuccessMessage />) ||
-              (error && <ErrorMessage />)}
-              <div className="row col-12 p-0 m-0 mt-3">
-                <div className="col pl-0">
-                  <input
-                    ref={nameRef}
-                    type="text"
-                    className="form-control"
-                    name="name"
-                    id="name"
-                    placeholder="Name"
-                    required
-                  />
-                </div>
-                <div className="col pr-0">
-                  <input
-                    ref={amountRef}
-                    type="number"
-                    className="form-control"
-                    name="amount"
-                    id="amount"
-                    placeholder="Amount"
-                    required
-                  />
-                </div>
+        {(!clientToken && <p className="lead">Loading...</p>) || (
+          <div>
+            <header>
+              <p className="h3">Help us keep ModularHistory running</p>
+              <p>
+                ModularHistory provide its content for free. If you would like to help keep
+                ModularHistory afloat, you can use this form to make a donation.
+              </p>
+            </header>
+            {(success && <SuccessMessage />) || (error && <ErrorMessage />)}
+            <div className="row col-12 p-0 m-0 mt-3">
+              <div className="col pl-0">
+                <input
+                  ref={nameRef}
+                  type="text"
+                  className="form-control"
+                  name="name"
+                  id="name"
+                  placeholder="Name"
+                  required
+                />
               </div>
-              <DropIn options={{ authorization: clientToken, paypal: {flow: 'vault'}, venmo: {allowNewBrowserTab: false, allowDesktop: true} }} onInstance={setInstance} />
-              <Button variant="contained" color="primary" onClick={makeDonation}>
-                Make donation
-              </Button>
+              <div className="col pr-0">
+                <input
+                  ref={amountRef}
+                  type="number"
+                  className="form-control"
+                  name="amount"
+                  id="amount"
+                  placeholder="Amount"
+                  required
+                />
+              </div>
             </div>
-          )}
+            <DropIn
+              options={{
+                authorization: clientToken,
+                paypal: { flow: "vault" },
+                venmo: { allowNewBrowserTab: false, allowDesktop: true },
+              }}
+              onInstance={setInstance}
+            />
+            <Button variant="contained" color="primary" onClick={makeDonation}>
+              Make donation
+            </Button>
+          </div>
+        )}
       </Container>
     </Layout>
   );
@@ -131,8 +139,8 @@ const SuccessMessage: FC = () => (
 
 const ErrorMessage: FC = () => (
   <Alert severity="error">
-      <AlertTitle>Oops, something went wrong.</AlertTitle>
-      Sorry, there were some issues with your donation.
+    <AlertTitle>Oops, something went wrong.</AlertTitle>
+    Sorry, there were some issues with your donation.
   </Alert>
 );
 

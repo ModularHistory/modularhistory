@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import { Box, Container, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
+import { NextSeo } from "next-seo";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
@@ -38,7 +39,8 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
           <meta httpEquiv="refresh" content={`1; URL=${redirectUrl}`} />
         </Head>
       )}
-      <Layout title={"Redirect"} canonicalUrl="/redirect">
+      <Layout>
+        <NextSeo title={"Redirect"} canonical="/redirect" />
         <Container>
           <Box
             display="flex"
