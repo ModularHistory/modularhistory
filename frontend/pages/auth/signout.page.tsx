@@ -2,6 +2,7 @@ import { handleLogout } from "@/auth";
 import Layout from "@/components/Layout";
 import { Box, Container, Typography } from "@mui/material";
 import { useSession } from "next-auth/client";
+import { NextSeo } from "next-seo";
 import React, { FunctionComponent, useEffect } from "react";
 
 const SignOut: FunctionComponent = () => {
@@ -12,7 +13,8 @@ const SignOut: FunctionComponent = () => {
     }
   }, [session]);
   return (
-    <Layout title={"Sign out"}>
+    <Layout>
+      <NextSeo title={"Sign out"} />
       <Container>
         <Box
           display="flex"

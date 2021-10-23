@@ -16,7 +16,7 @@ const ErrorPage = ({ statusCode, hasGetInitialPropsRun, err }: any) => {
   }
 
   return (
-    <Layout title={statusCode}>
+    <Layout>
       <NextErrorComponent statusCode={statusCode} />
     </Layout>
   );
