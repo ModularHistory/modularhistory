@@ -25,7 +25,7 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
 
         # Check types with mypy first, since mypy is faster than pytype.
         # https://github.com/google/pytype#usage
-        poetry run mypy "$space_delimited_filepaths" || {
+        poetry run mypy $space_delimited_filepaths || {
             echo "
                 ${BOLD}Examine the error above. Should it be fixed?${NORMAL}
                 Pytype may give more helpful output:
@@ -34,7 +34,7 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
         }
 
 
-        poetry run flake8 "$space_delimited_filepaths" || linting_failed=true
+        poetry run flake8 $space_delimited_filepaths || linting_failed=true
 
         if [[ "$linting_failed" = true ]]; then
             echo "

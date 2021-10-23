@@ -16,6 +16,7 @@ import { GetServerSideProps } from "next";
 import { User } from "next-auth";
 import { csrfToken, getSession, providers, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
+import { NextSeo } from "next-seo";
 import { ChangeEvent, FC, ReactNode, useState } from "react";
 import Image from "react-bootstrap/Image";
 
@@ -66,7 +67,8 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   };
   if (session) {
     return (
-      <Layout title={String(user.name || user.handle)}>
+      <Layout>
+        <NextSeo title={String(user.name || user.handle)} />
         <Container
           sx={{
             paddingTop: "2rem",

@@ -5,35 +5,41 @@ import {
   Radio,
   RadioGroup as MuiRadioGroup,
 } from "@mui/material";
-import { FC, useContext } from "react";
-import { SearchFormContext } from "./SearchForm";
+import { FC, useState } from "react";
 
 interface RadioGroupProps {
   label: string;
-  name: string;
-  children: string[];
+  defaultValue: string;
+  onChange: (value: string) => void;
+  options: string[];
+  disabled?: boolean;
 }
 
-const RadioGroup: FC<RadioGroupProps> = ({ label, name, children }: RadioGroupProps) => {
+const RadioGroup: FC<RadioGroupProps> = ({
+  label,
+  defaultValue,
+  onChange,
+  options,
+  disabled,
+}: RadioGroupProps) => {
   // A component for radio input in the search form.
   // `label` is displayed above the radio group.
   // `name` is the query parameter key used in the search API request.
-  // `children` is an array of options (strings).
+  // `options` is an array of strings.
   //    The value of the option to be used in API requests is
   //    assumed to be the lowercase of each option.
-
-  const { formState, setFormStateFromEvent, disabled } = useContext(SearchFormContext);
-
-  // if state is not specified, default to the first option
-  const value = formState[name] || children[0].toLowerCase();
 
   // See the demo at
   // https://material-ui.com/components/radio-buttons/#radiogroup
   return (
     <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
-      <MuiRadioGroup name={name} value={value} onChange={setFormStateFromEvent}>
-        {children.map((opt) => (
+      <MuiRadioGroup
+        // useState prevents a warning about defaultValue changing after initial render
+        defaultValue={useState(() => defaultValue ?? options[0].toLowerCase())[0]}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {options.map((opt) => (
           <FormControlLabel
             label={opt}
             key={opt}

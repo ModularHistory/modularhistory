@@ -11,6 +11,7 @@ from graphene_django.debug import DjangoDebug
 from apps.entities.api import schema as entities_schema
 from apps.images.api import schema as images_schema
 from apps.propositions.api import schema as propositions_schema
+from apps.quotes.api import schema as quotes_schema
 from apps.sources.api import schema as sources_schema
 from apps.topics.api import schema as topics_schema
 
@@ -21,6 +22,7 @@ class Query(
     propositions_schema.Query,
     sources_schema.Query,
     topics_schema.Query,
+    quotes_schema.Query,
 ):
     """
     Unified GraphQL query.
