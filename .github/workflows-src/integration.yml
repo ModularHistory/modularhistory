@@ -84,7 +84,7 @@ jobs:
     - name: Get changed files
       id: changed-files
       # https://github.com/tj-actions/changed-files
-      uses: tj-actions/changed-files@v9.3
+      uses: tj-actions/changed-files@v10.1
 
   setup-script:
     name: Test setup script
@@ -276,7 +276,7 @@ jobs:
     continue-on-error: true
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
