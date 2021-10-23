@@ -4,11 +4,11 @@ import graphene
 from django.core.exceptions import ObjectDoesNotExist
 from graphene.types.generic import GenericScalar
 from graphql.error import GraphQLError
+from titlecase import titlecase
 
 from apps.graph.types import ModuleType
 from apps.propositions.models import Proposition
 from apps.propositions.models.argument import Argument
-from apps.propositions.models.proposition import Proposition
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -34,6 +34,7 @@ class PropositionType(ModuleType):
 
     arguments = graphene.List(PropositionArgumentType)
     cached_images = GenericScalar(source='cached_images')
+    summary = graphene.String()
 
     class Meta:
         model = Proposition
@@ -49,6 +50,10 @@ class PropositionType(ModuleType):
     @staticmethod
     def resolve_model(*args) -> str:  # noqa: D102
         return 'propositions.proposition'
+
+    @staticmethod
+    def resolve_summary(root: Proposition, *args) -> str:
+        return titlecase(root.summary)
 
 
 class Query(graphene.ObjectType):
