@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { Entity } from "@/types/modules";
 import { Card, CardContent, CardHeader, styled } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
@@ -29,7 +30,8 @@ interface EntityProps {
  */
 const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
-    <Layout title={entity.name}>
+    <Layout>
+      <NextSeo title={entity.name} />
       <ModuleContainer>
         <ModuleDetail module={entity} />
         {entity.relatedQuotes && entity.relatedQuotes.length && (

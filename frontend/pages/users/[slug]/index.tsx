@@ -4,6 +4,7 @@ import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
 import { getSession, useSession } from "next-auth/client";
+import { NextSeo } from "next-seo";
 import React, { FC } from "react";
 import Image from "react-bootstrap/Image";
 
@@ -15,7 +16,8 @@ const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
   const [_session, loading] = useSession();
   if (!user || loading) return null;
   return (
-    <Layout title={String(user.name || user.handle)}>
+    <Layout>
+      <NextSeo title={String(user.name || user.handle)} />
       <Container style={{ paddingTop: "2rem" }}>
         <Grid container spacing={3} alignContent="center">
           <Grid item sm={4}>

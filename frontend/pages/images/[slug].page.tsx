@@ -4,6 +4,7 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Image } from "@/types/modules";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface ImageProps {
@@ -15,7 +16,8 @@ interface ImageProps {
  */
 const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
-    <Layout title={image.captionHtml}>
+    <Layout>
+      <NextSeo title={image.captionHtml} />
       <ModuleContainer>
         <ModuleDetail module={image} />
       </ModuleContainer>
