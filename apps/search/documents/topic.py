@@ -1,10 +1,9 @@
+from django_elasticsearch_dsl import Document as ESDocument
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, instant_search_analyzer
 from apps.topics.models.topic import Topic
-
-from django_elasticsearch_dsl import Document as ESDocument
 
 
 @registry.register_document
