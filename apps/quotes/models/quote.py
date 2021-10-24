@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 
     from apps.entities.models.entity import Entity
 
+TEXT_MIN_LENGTH: int = 15
 BITE_MAX_LENGTH: int = 400
 
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
@@ -150,7 +151,6 @@ class Quote(
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        unique_together = ['date', 'bite']
         ordering = ['date']
 
     placeholder_regex = quote_placeholder_regex
@@ -180,9 +180,10 @@ class Quote(
     def clean(self):
         super().clean()
         no_text = not self.text
-        min_text_length = 15
-        if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
-            raise ValidationError('The quote must have text.')
+        if no_text or len(f'{self.text}') < TEXT_MIN_LENGTH:  # e.g., <p>&nbsp;</p>
+            raise ValidationError(
+                f'The quote must have text or too short (min_length={TEXT_MIN_LENGTH}).'
+            )
         if not self.bite:
             text = self.text
             if len(text) > BITE_MAX_LENGTH:

@@ -7,9 +7,10 @@ is due to limitations of inline model admins. See:
 https://github.com/django/django/commit/9d104a21e20f9c5ec41d19fd919d0e808aa13dba
 """
 
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
+from apps.moderation.signals import process_relation_changes
 from apps.sources import models
 from apps.sources.tasks import update_source
 
@@ -54,3 +55,13 @@ def respond_to_source_containment_deletion(
 ):
     """Respond to deletion of a source-container relationship."""
     process_pre_delete(instance.source)
+
+
+@receiver(m2m_changed, sender=models.SourceContainment)
+def respond_to_proposition_argument_changes(
+    sender: models.SourceContainment, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-source_containment relationship."""
+    process_relation_changes(
+        sender, instance, 'source', instance.source_containments.all(), **kwargs
+    )

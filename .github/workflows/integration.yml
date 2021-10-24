@@ -397,6 +397,21 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       run: poetry run invoke test --no-docker
+  jest:
+    name: Run frontend unit tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: npm install --prefix frontend/
+    - name: Run jest
+      run: npm run test --prefix frontend/
   e2e:
     name: Run e2e tests
     needs: [build]

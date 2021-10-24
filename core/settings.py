@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from os.path import join
 
 from decouple import config
@@ -201,6 +202,11 @@ MIDDLEWARE = [
     # Add the `user` attribute to the request:
     # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Access the `user` from anywhere:
+    # https://github.com/PaesslerAG/django-currentuser
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    # https://github.com/bradmontgomery/django-querycount
+    # 'querycount.middleware.QueryCountMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
@@ -251,6 +257,11 @@ TEMPLATES = [
 ]
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+if DEBUG:
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': timedelta(minutes=7 * 24 * 60),
+    }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -341,6 +352,19 @@ DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 DB_INIT_DIR = os.path.join(VOLUMES_DIR, 'db/init')
 DB_INIT_FILENAME = 'init.sql'
 DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
+
+QUERYCOUNT = {
+    # 'THRESHOLDS': {
+    #     'MEDIUM': 50,
+    #     'HIGH': 200,
+    #     'MIN_TIME_TO_LOG':0,
+    #     'MIN_QUERY_COUNT_TO_LOG':0
+    # },
+    'DISPLAY_DUPLICATES': 20,
+    'RESPONSE_HEADER': 'X-DjangoQueryCount-Count',
+    'IGNORE_SQL_PATTERNS': [r'silk_'],
+}
+
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
