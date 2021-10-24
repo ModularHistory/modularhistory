@@ -84,6 +84,16 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   truncatedDescription: string;
   meta?: Meta;
 }
+export interface Collection {
+  model: "collections.collection";
+  slug: string;
+  title: string;
+  creator: User;
+  quotes: Quote[];
+  entities: Entity[];
+  propositions: Proposition[];
+  sources: Source[];
+}
 
 export interface Argument extends BaseModule {
   type: string;
@@ -113,7 +123,15 @@ export interface Topic extends BaseModule {
   propositions: Proposition[];
 }
 
-export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
+export type ModuleUnion =
+  | Image
+  | Quote
+  | Occurrence
+  | Source
+  | Entity
+  | Proposition
+  | Topic
+  | Collection;
 
 export interface FlatPage {
   title: string;

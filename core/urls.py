@@ -83,6 +83,7 @@ urlpatterns = [
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('api/users/', include(_api('users'), namespace='users_api')),
     path('users/', include('apps.users.urls', namespace='users')),
+    path('api/collections/', include(_api('collections'), namespace='collections_api')),
     re_path(r'api/csrf/set/?', set_csrf_token),
     # ---------------------------------
     # Auth URLs

@@ -1,14 +1,14 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 
-from apps.collections.models import Collections
-from apps.propositions.api.serializers import OccurrenceDrfSerializer
+from apps.collections.api.serializers import CollectionDrfSerializer
+from apps.collections.models import Collection
 
 
-class CollectionsViewSet(ModelViewSet):
-    """API endpoint for viewing and editing occurrences."""
+class CollectionViewSet(ModelViewSet):
+    """API endpoint for viewing and editing collections."""
 
-    queryset = Collections.objects.all()
+    queryset = Collection.objects.all()
     lookup_field = 'slug'
-    serializer_class = OccurrenceDrfSerializer
+    serializer_class = CollectionDrfSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

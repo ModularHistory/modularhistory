@@ -9,6 +9,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
+from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import (
@@ -60,6 +61,12 @@ def get_quote_fk(related_name: str) -> ManyToManyForeignKey:
         related_name=related_name,
         verbose_name='quote',
     )
+
+
+class CollectionInclusion(AbstractCollectionInclusion):
+    """An inclusion of a proposition in a collection."""
+
+    content_object = get_quote_fk(related_name='collection_inclusions')
 
 
 class Citation(AbstractCitation):

@@ -8,6 +8,9 @@ from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
 from core.models.slugged import SluggedModel
 
+# Quotes, Sources
+
+
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
@@ -51,6 +54,18 @@ class Collection(SearchableModel, SluggedModel):
     propositions = models.ManyToManyField(
         to='propositions.Proposition',
         through='propositions.CollectionInclusion',
+        related_name='collections',
+        blank=True,
+    )
+    quotes = models.ManyToManyField(
+        to='quotes.Quote',
+        through='quotes.CollectionInclusion',
+        related_name='collections',
+        blank=True,
+    )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        through='sources.CollectionInclusion',
         related_name='collections',
         blank=True,
     )

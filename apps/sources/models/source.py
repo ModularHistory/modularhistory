@@ -16,6 +16,7 @@ from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
 
+from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
@@ -67,6 +68,12 @@ def get_source_fk(related_name: str) -> ManyToManyForeignKey:
         related_name=related_name,
         verbose_name='source',
     )
+
+
+class CollectionInclusion(AbstractCollectionInclusion):
+    """An inclusion of a proposition in a collection."""
+
+    content_object = get_source_fk(related_name='collection_inclusions')
 
 
 class TopicRelation(AbstractTopicRelation):
