@@ -123,11 +123,14 @@ const AboutModularHistory: FC = () => {
         <Box sx={{ m: 3 }}>
           <Grid container alignItems="center">
             <Grid item>
-              <p>ModularHistory provide its content for free.</p>
               <p>
-                To support us,{" "}
+                To support ModularHistory’s mission, you can{" "}
+                <Link href="/about/contributing" variant="body2">
+                  {"contribute content"}
+                </Link>{" "}
+                and/or{" "}
                 <Link href="/donations" variant="body2">
-                  {" donate now."}
+                  {" donate."}
                 </Link>
               </p>
             </Grid>
