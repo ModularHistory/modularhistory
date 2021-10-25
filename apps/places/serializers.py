@@ -10,7 +10,3 @@ class PlaceSerializer(ModelSerializer):
     """Serializer for places."""
 
     string = serpy.Field()
-
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'places.place'

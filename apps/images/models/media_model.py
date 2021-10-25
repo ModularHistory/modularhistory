@@ -24,3 +24,13 @@ class MediaModel(Module, TaggableModel, DatedModel):
     def get_default_title(self) -> str:
         """Return the value the title should be set to, if not manually set."""
         return self.caption
+
+    @property
+    def caption_html(self) -> str:
+        """Return the user-facing caption HTML."""
+        return self.caption
+
+    @property
+    def description_html(self) -> str:
+        """Return the user-facing caption HTML."""
+        return self.description

@@ -39,6 +39,7 @@ const SearchButton: FC<SearchButtonProps> = ({ onClick, ...childProps }: SearchB
       size={"large"}
       disabled={isLoading}
       onClick={onClick}
+      data-testid={"searchButton"}
       {...childProps}
     >
       {buttonText}

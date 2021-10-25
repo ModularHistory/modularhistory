@@ -4,68 +4,31 @@ import InstantSearch from "@/components/search/InstantSearch";
 import { Container, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
-import {
-  ChangeEventHandler,
-  createContext,
-  Dispatch,
-  FC,
-  KeyboardEventHandler,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import type { ParsedUrlQueryInput } from "querystring";
+import { FC, KeyboardEventHandler, MutableRefObject, useContext, useRef } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
 
-interface SearchFormState {
-  formState: Record<string, string | number | (string | number)[] | undefined>;
-  setFormState: Dispatch<SetStateAction<SearchFormState["formState"]>>;
-  setFormStateFromEvent: ChangeEventHandler;
-  disabled: boolean;
-}
+const fields = [
+  "query",
+  "ordering",
+  "startYear",
+  "startYearType",
+  "endYear",
+  "endYearType",
+  "entities",
+  "topics",
+  "quality",
+  "contentTypes",
+] as const;
+type Field = typeof fields[number];
+type FieldsRef = MutableRefObject<Record<Field, any>>;
+type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
 
-export const SearchFormContext = createContext<SearchFormState>({} as SearchFormState);
-
-/**
- * This hook is used to centralize the state of all search form inputs.
- * Returns an object containing:
- *   `state`: the current values for all inputs.
- *   `setState`: function that directly sets the state.
- *   `setStateFromEvent`: function that accepts an event and extracts
- *                        the new state from the event.
- */
-function useSearchFormState(): SearchFormState {
-  const router = useRouter();
-
-  // load the initial state from url query params
-  const [formState, setFormState] = useState<SearchFormState["formState"]>(router.query);
-
-  // event handler used by several inputs to set their state
-  const setFormStateFromEvent = useCallback(
-    ({ target }) => setFormState((prevState) => ({ ...prevState, [target.name]: target.value })),
-    []
-  );
-
-  useEffect(() => {
-    // Remove any params we don't want sent to the next search page
-    // and update form state when browser history is navigated.
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-    const { page, ...query } = router.query;
-    setFormState(query || {});
-  }, [router.query]);
-
-  // Disable the entire form when page transition are occurring
-  const isLoading = useContext(PageTransitionContext);
-
-  return { formState, setFormState, setFormStateFromEvent, disabled: isLoading };
-}
-
-interface SearchFormProps {
+export interface SearchFormProps {
   inSidebar?: boolean;
 }
 
@@ -94,13 +57,30 @@ const StyledContainer = styled(Container)({
  */
 const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
   const router = useRouter();
-  const formContext = useSearchFormState();
+  const isLoading = useContext(PageTransitionContext);
+
+  const fieldsRef = useRef(
+    Object.fromEntries(fields.map((name) => [name, router.query[name]]))
+  ) as FieldsRef;
+  const fieldCallbacks = Object.fromEntries(
+    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
+  ) as FieldCallbacks;
 
   // When `sm` is 6, inputs may be rendered side-by-side.
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
   const sm = inSidebar ? 12 : 6;
 
-  const submitForm = () => router.push({ query: formContext.formState as any });
+  const submitForm = () => {
+    const queryParams = { ...fieldsRef.current };
+    for (const name in queryParams) {
+      if (!queryParams[name as Field]) delete queryParams[name as Field];
+    }
+
+    router.push({
+      query: queryParams,
+    });
+  };
+
   const handleKeyUp: KeyboardEventHandler = (event) => {
     if (event.key === "Enter") {
       submitForm();
@@ -108,102 +88,142 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
   };
 
   return (
-    <SearchFormContext.Provider value={formContext}>
-      <StyledContainer>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={sm}>
-            <TextField
-              label="Query"
-              name="query"
-              defaultValue={formContext.formState["query"] || ""}
-              disabled={formContext.disabled}
-              onChange={formContext.setFormStateFromEvent}
-              onKeyUp={handleKeyUp}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={sm}>
-            <RadioGroup label={"Ordering"} name={"ordering"}>
-              {["Relevance", "Date"]}
-            </RadioGroup>
-          </Grid>
-
-          <Grid container item xs={12} sm={sm}>
-            <YearSelect label={"Start year"} name={"start_year"} />
-          </Grid>
-          <Grid container item xs={12} sm={sm}>
-            <YearSelect label={"End year"} name={"end_year"} />
-          </Grid>
-
-          <Grid item xs={12} sm={sm}>
-            <InstantSearch
-              label={"Entities"}
-              name={"entities"}
-              labelKey={"name"}
-              getDataForInput={(input, config) =>
-                axiosWithoutAuth
-                  .get("/api/entities/instant_search/", {
-                    params: { query: input },
-                    ...config,
-                  })
-                  .then(({ data }) => data)
-              }
-              getInitialValue={(ids) =>
-                axiosWithoutAuth
-                  .get("/graphql/", {
-                    params: { query: `{ entities(ids: [${ids}]) { id name } }` },
-                  })
-                  .then(({ data: { data } }) => data.entities)
-              }
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={sm}>
-            <InstantSearch
-              label={"Topics"}
-              name={"topics"}
-              labelKey={"name"}
-              getDataForInput={(input, config) =>
-                axiosWithoutAuth
-                  .get("/api/topics/instant_search/", {
-                    params: { query: input },
-                    ...config,
-                  })
-                  .then(({ data }) => data)
-              }
-              getInitialValue={(ids) =>
-                axiosWithoutAuth
-                  .get("/graphql/", {
-                    params: { query: `{ topics(ids: [${ids}]) { id name } }` },
-                  })
-                  .then(({ data: { data } }) => data.topics)
-              }
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={sm}>
-            <RadioGroup label={"Quality"} name={"quality"}>
-              {["All", "Verified"]}
-            </RadioGroup>
-          </Grid>
-
-          <Grid item xs={12} sm={sm}>
-            {/* #ContentTypesHardCoded */}
-            <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {{ label: "Occurrences", key: "occurrences" }}
-              {{ label: "Quotes", key: "quotes" }}
-              {{ label: "Images", key: "images", defaultChecked: false }}
-              {{ label: "Sources", key: "sources" }}
-              {{ label: "Entities", key: "entities" }}
-            </CheckboxGroup>
-          </Grid>
-
-          <Grid item xs={12}>
-            <SearchButton onClick={submitForm} />
-          </Grid>
+    <StyledContainer data-testid={"searchForm"}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={sm}>
+          <TextField
+            label="Query"
+            defaultValue={fieldsRef.current.query}
+            onChange={(e) => fieldCallbacks.query(e.target.value)}
+            onKeyUp={handleKeyUp}
+            disabled={isLoading}
+            data-testid={"queryField"}
+          />
         </Grid>
-      </StyledContainer>
-    </SearchFormContext.Provider>
+
+        <Grid item xs={12} sm={sm}>
+          <RadioGroup
+            label={"Ordering"}
+            defaultValue={fieldsRef.current.ordering}
+            onChange={fieldCallbacks.ordering}
+            options={["Relevance", "Date"]}
+            disabled={isLoading}
+          />
+        </Grid>
+
+        <Grid container item xs={12} sm={sm}>
+          <YearSelect
+            label={"Start year"}
+            defaultYearValue={fieldsRef.current.startYear}
+            defaultTypeValue={fieldsRef.current.startYearType}
+            onYearChange={fieldCallbacks.startYear}
+            onTypeChange={fieldCallbacks.startYearType}
+            disabled={isLoading}
+          />
+        </Grid>
+        <Grid container item xs={12} sm={sm}>
+          <YearSelect
+            label={"End year"}
+            defaultYearValue={fieldsRef.current.endYear}
+            defaultTypeValue={fieldsRef.current.endYearType}
+            onYearChange={fieldCallbacks.endYear}
+            onTypeChange={fieldCallbacks.endYearType}
+            disabled={isLoading}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={sm}>
+          <InstantSearch
+            label={"Entities"}
+            labelKey={"name"}
+            onChange={fieldCallbacks.entities}
+            disabled={isLoading}
+            defaultValue={
+              fieldsRef.current.entities
+                ? axiosWithoutAuth
+                    .get("/graphql/", {
+                      params: {
+                        query: `{ entities(ids: [${fieldsRef.current.entities}]) { id name } }`,
+                      },
+                    })
+                    .then(({ data: { data } }) => data.entities)
+                : []
+            }
+            getDataForInput={(input, config) =>
+              axiosWithoutAuth
+                .get("/api/entities/instant_search/", {
+                  params: { query: input },
+                  ...config,
+                })
+                .then(({ data }) => data)
+            }
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={sm}>
+          <InstantSearch
+            label={"Topics"}
+            labelKey={"name"}
+            onChange={fieldCallbacks.topics}
+            disabled={isLoading}
+            defaultValue={
+              fieldsRef.current.topics
+                ? axiosWithoutAuth
+                    .get("/graphql/", {
+                      params: {
+                        query: `{ topics(ids: [${fieldsRef.current.topics}]) { id name } }`,
+                      },
+                    })
+                    .then(({ data: { data } }) => data.topics)
+                : []
+            }
+            getDataForInput={(input, config) =>
+              axiosWithoutAuth
+                .get("/api/topics/instant_search/", {
+                  params: { query: input },
+                  ...config,
+                })
+                .then(({ data }) => data)
+            }
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={sm}>
+          <RadioGroup
+            label={"Quality"}
+            defaultValue={fieldsRef.current.quality}
+            onChange={fieldCallbacks.quality}
+            options={["All", "Verified"]}
+            disabled={isLoading}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={sm}>
+          {/* #ContentTypesHardCoded */}
+          <CheckboxGroup
+            label={"Content Types"}
+            defaultValue={fieldsRef.current.contentTypes}
+            onChange={fieldCallbacks.contentTypes}
+            disabled={isLoading}
+            options={[
+              { key: "occurrences" },
+              { key: "quotes" },
+              { key: "images", defaultChecked: false },
+              { key: "sources" },
+              { key: "entities" },
+            ].map(({ key, defaultChecked }) => ({
+              key,
+              defaultChecked:
+                fieldsRef.current.contentTypes?.includes(key) ?? defaultChecked ?? true,
+            }))}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <SearchButton onClick={submitForm} />
+        </Grid>
+      </Grid>
+    </StyledContainer>
   );
 };
 

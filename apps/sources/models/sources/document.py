@@ -5,10 +5,10 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from apps.moderation.models import ModeratedModel
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.source import Source
 from core.models.model_with_cache import ModelWithCache, store
-from core.models.slugged import SluggedModel
 from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
@@ -34,7 +34,7 @@ class Document(Source, DocumentMixin):
         return self.components_to_html(components)
 
 
-class Collection(ModelWithCache):
+class Collection(ModeratedModel, ModelWithCache):
     """A collection of documents."""
 
     name = models.CharField(
@@ -75,7 +75,7 @@ class Collection(ModelWithCache):
         return ', '.join([component for component in components if component])
 
 
-class Repository(ModelWithCache):
+class Repository(ModeratedModel, ModelWithCache):
     """A repository of collections of documents."""
 
     name = models.CharField(

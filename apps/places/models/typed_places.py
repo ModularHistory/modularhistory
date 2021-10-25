@@ -1,4 +1,3 @@
-
 from apps.places.models.base import Place
 
 

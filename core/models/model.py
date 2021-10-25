@@ -8,7 +8,7 @@ import regex
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
@@ -254,13 +254,13 @@ class ModelSerializer(serpy.Serializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: type['ExtendedModel'] = instance.__class__
-        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+        return get_model_name(instance)
 
 
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
+    id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
@@ -284,8 +284,29 @@ class DrfModelSerializer(serializers.ModelSerializer):
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: type['ExtendedModel'] = instance.__class__
-        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'
+        return get_model_name(instance)
+
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
+
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: serializers.Field
+
+        for field_name, field in self.get_fields().items():
+            fields.append(
+                {
+                    'name': field_name,
+                    'editable': not getattr(field, 'read_only', False),
+                    'verbose_name': getattr(field, 'verbose_name', None),
+                    'choices': getattr(field, 'choices', None),
+                    'help_text': getattr(field, 'help_text', None),
+                    'type': field.__class__.__name__,
+                }
+            )
+        return fields
 
     class Meta:
         fields = ['id', 'model']
@@ -296,5 +317,42 @@ class DrfTypedModelSerializer(DrfModelSerializer):
 
     type = serializers.CharField(write_only=True, required=True)
 
+    def validate_type(self, value):
+        return validate_model_type(self, value)
+
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
+
+
+def get_model_name(instance: ExtendedModel) -> str:
+    """Return the model name of the instance."""
+    model_cls: type['ExtendedModel'] = instance.__class__
+    app_label = model_cls._meta.app_label
+    model_type = model_cls.__name__.lower()
+    try:
+        type_field = instance._meta.get_field('type')
+        is_polymorphic = hasattr(instance, 'polymorphic_model_marker')
+        is_typed = hasattr(instance, 'typed_model_marker')
+        if not is_polymorphic and not is_typed:
+            instance_type = type_field.value_from_object(instance)
+            if isinstance(instance_type, str) and not instance_type.startswith(app_label):
+                model_type = instance_type
+    except FieldDoesNotExist:
+        pass
+    return f'{app_label}.{model_type}'
+
+
+def validate_model_type(serializer: serializers.ModelSerializer, value):
+    model = serializer.Meta.model
+    if hasattr(serializer.Meta, 'allowed_types'):
+        types = getattr(serializer.Meta, 'allowed_types')
+    elif hasattr(model, 'typed_model_marker'):
+        types = model._typedmodels_registry.keys()
+    else:
+        types = list(map(lambda x: x[0], model._meta.get_field('type').choices))
+
+    if value not in types:
+        raise serializers.ValidationError(
+            f'Invalid model type={value}, allowed types: {", ".join(types)}'
+        )
+    return value
