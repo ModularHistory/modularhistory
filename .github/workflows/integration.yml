@@ -93,7 +93,7 @@ jobs:
         fetch-depth: 0
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v10.1
+      uses: tj-actions/changed-files@v11
   setup-script:
     name: Test setup script
     needs: changed-files
