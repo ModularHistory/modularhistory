@@ -15,10 +15,6 @@ class _PropositionSerializer(ModuleSerializer):
     cached_citations = serpy.Field()
     tags_html = serpy.StrField()
 
-    def get_model(self, instance) -> str:
-        """Return the model name of serialized propositions."""
-        return 'propositions.proposition'
-
 
 class ArgumentSerializer(serpy.Serializer):
     """Serializer for arguments."""
@@ -40,16 +36,8 @@ class PropositionSerializer(_PropositionSerializer):
     tags_html = serpy.StrField()
     arguments = ArgumentSerializer(many=True, attr='arguments.all', call=True)
 
-    def get_model(self, instance) -> str:
-        """Return the model name of serialized propositions."""
-        return 'propositions.proposition'
-
 
 class OccurrenceSerializer(PropositionSerializer):
     """Serializer for occurrences."""
 
     postscript = serpy.StrField()
-
-    def get_model(self, instance) -> str:
-        """Return the model name of the instance."""
-        return 'propositions.occurrence'

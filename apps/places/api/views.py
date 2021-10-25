@@ -1,5 +1,3 @@
-from rest_framework import permissions
-
 from apps.places.api.serializers import PlaceDrfSerializer
 from apps.places.models import Place
 from core.api.views import ExtendedModelViewSet
@@ -10,5 +8,4 @@ class PlaceViewSet(ExtendedModelViewSet):
 
     queryset = Place.objects.all()
     serializer_class = PlaceDrfSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     list_fields = None
