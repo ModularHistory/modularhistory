@@ -252,7 +252,7 @@ class Change(AbstractChange):
                 # effective approval by the moderator.
                 extant_approvals.update(effective=False)
             else:
-                logging.error(f'Attempted to duplicate an approval.')
+                logging.error('Attempted to duplicate an approval.')
                 return extant_approvals.first()
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
