@@ -242,12 +242,18 @@ class Change(AbstractChange):
         """
         # If the moderator has already approved the change, don't add another approval;
         # instead, log an error and return the extant approval.
-        extant_approval = self.moderations.filter(
+        extant_approvals = self.moderations.filter(
             moderator=moderator, verdict=ModerationStatus.APPROVED, effective=True
         )
-        if extant_approval.exists():
-            logging.error(f'Attempted to duplicate an approval.')
-            return extant_approval.first()
+        if extant_approvals.exists():
+            if force:
+                # Still allow force-approval, but invalidate prior (presumably
+                # non-forced) approvals by the moderator so that there's only one
+                # effective approval by the moderator.
+                extant_approvals.update(effective=False)
+            else:
+                logging.error(f'Attempted to duplicate an approval.')
+                return extant_approvals.first()
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
             moderator=moderator,
@@ -268,7 +274,6 @@ class Change(AbstractChange):
         """Moderate the change."""
         if verdict not in self._ModerationStatus.values:
             raise ValueError(f'Verdict value must be one of {self._ModerationStatus.values}.')
-
         moderation: Moderation = Moderation.objects.create(
             moderator=moderator,
             change=self,
