@@ -31,6 +31,12 @@ class ModelWithCache(ExtendedModel):
             self.cache = {}  # type: ignore
         super().save(*args, **kwargs)  # type: ignore
 
+    def pre_save(self):
+        """Run any logic required before the instance is saved to the db."""
+
+    def post_save(self):
+        """Run any logic required after the instance is saved to the db."""
+
     @property
     def pretty_cache(self) -> str:
         """Return prettified JSON string of computations, for debugging/admin."""
@@ -108,7 +114,7 @@ def store(
                             f'with value: {pformat(property_value)}'
                         )
                         # Specify `wipe_cache=False` to properly update the JSON value
-                        ModelWithCache.save(model_instance, wipe_cache=False)  # type: ignore
+                        model_instance.save(wipe_cache=False, moderate=False)  # type: ignore
                     return property_value
                 logging.error(
                     f'{model_instance.__class__.__name__} uses @store '
