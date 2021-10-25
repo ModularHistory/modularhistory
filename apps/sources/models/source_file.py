@@ -12,12 +12,13 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from apps.moderation.models import ModeratedModel
 from core.fields.file_field import SourceFileField, upload_to
 from core.models.model import ExtendedModel
 from core.templatetags.media import media as fix_url
 
 
-class SourceFile(ExtendedModel):
+class SourceFile(ModeratedModel):
     """A source file with page numbers."""
 
     file = SourceFileField(
