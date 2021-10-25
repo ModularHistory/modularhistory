@@ -2,7 +2,6 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -12,8 +11,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { FC, useRef } from "react";
+import { NextSeo } from "next-seo";
+import { FC } from "react";
 
 interface PostsProps {
   postsData: {
@@ -33,27 +32,28 @@ const Posts: FC<PostsProps> = ({ postsData }: PostsProps) => {
   //     </Link>
   //   </Grid>
   // ));
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const createNewPost = () => {
-    axiosWithoutAuth
-      .post("/api/forums/posts/", {
-        content: "New post from button",
-        title: titleInputRef.current?.value || "default title",
-        date: new Date().toISOString(),
-        author: 48,
-        parentThread: 1,
-      })
-      .then(router.reload)
-      .catch(console.error);
-  };
+  // const titleInputRef = useRef<HTMLInputElement>(null);
+  // const router = useRouter();
+  // const createNewPost = () => {
+  //   axiosWithoutAuth
+  //     .post("/api/forums/posts/", {
+  //       content: "New post from button",
+  //       title: titleInputRef.current?.value || "default title",
+  //       date: new Date().toISOString(),
+  //       author: 48,
+  //       parentThread: 1,
+  //     })
+  //     .then(router.reload)
+  //     .catch(console.error);
+  // };
 
   return (
-    <Layout title={"Posts"}>
+    <Layout>
+      <NextSeo title={"Posts"} />
       <Container>
         <PageHeader>Posts</PageHeader>
         {/* <TextField inputRef={titleInputRef} /> */}
-        <Button onClick={createNewPost} />
+        {/* <Button onClick={createNewPost} /> */}
         <Pagination count={postsData["totalPages"]} />
         <TableContainer component={Paper}>
           <Table
@@ -61,36 +61,34 @@ const Posts: FC<PostsProps> = ({ postsData }: PostsProps) => {
               minWidth: 650,
             }}
             aria-label="posts table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Content</TableCell> 
-              <TableCell>Date</TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Parent&nbsp;Thread</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {posts.map((post) => (
-            <TableRow
-              key={post.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              {/* <TableCell component="th" scope="row">
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Content</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Author</TableCell>
+                <TableCell>Parent&nbsp;Thread</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {posts.map((post) => (
+                <TableRow
+                  key={post.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  {/* <TableCell component="th" scope="row">
                 {post.name}
               </TableCell> */}
-              <TableCell>
-                  {post.title}
-              </TableCell>
-              <TableCell>{post.content}</TableCell>
-              <TableCell>{post.date}</TableCell>
-              <TableCell>{post.author}</TableCell>
-              <TableCell>{post.parentThread}</TableCell>
-            </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <TableCell>{post.title}</TableCell>
+                  <TableCell>{post.content}</TableCell>
+                  <TableCell>{post.date}</TableCell>
+                  <TableCell>{post.author}</TableCell>
+                  <TableCell>{post.parentThread}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </TableContainer>
         <Pagination count={postsData["totalPages"]} />
       </Container>
