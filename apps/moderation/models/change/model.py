@@ -325,3 +325,4 @@ class Change(AbstractChange):
         # Update the change status to "pending".
         self.moderation_status = ModerationStatus.PENDING
         self.save()
+        return True
