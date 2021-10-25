@@ -47,8 +47,19 @@ class Moderation(models.Model):
         related_name='moderations',
     )
     verdict = models.PositiveSmallIntegerField(choices=ModerationOutcome.choices)
-    reason = models.TextField(blank=True, null=True)
-    date = models.DateTimeField(auto_now_add=True, editable=False)
+    reason = models.TextField(
+        blank=True,
+        null=True,
+        help_text='The reason for the moderation verdict (approval or rejection)',
+    )
+    date = models.DateTimeField(
+        auto_now_add=True,
+        editable=False,
+        help_text='The date of the moderation',
+    )
+
+    # Boolean reflecting whether the moderation verdict applies to the change currently.
+    effective = models.BooleanField(default=True)
 
     objects = ModerationManager()
 

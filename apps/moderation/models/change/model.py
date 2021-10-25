@@ -240,6 +240,14 @@ class Change(AbstractChange):
         superuser and `force=True` is specified, the moderation status is
         immediately updated to APPROVED, and the change is applied.
         """
+        # If the moderator has already approved the change, don't add another approval;
+        # instead, log an error and return the extant approval.
+        extant_approval = self.moderations.filter(
+            moderator=moderator, verdict=ModerationStatus.APPROVED, effective=True
+        )
+        if extant_approval.exists():
+            logging.error(f'Attempted to duplicate an approval.')
+            return extant_approval.first()
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
             moderator=moderator,
@@ -260,6 +268,7 @@ class Change(AbstractChange):
         """Moderate the change."""
         if verdict not in self._ModerationStatus.values:
             raise ValueError(f'Verdict value must be one of {self._ModerationStatus.values}.')
+
         moderation: Moderation = Moderation.objects.create(
             moderator=moderator,
             change=self,
@@ -288,5 +297,26 @@ class Change(AbstractChange):
             reason=reason,
         )
         self.moderation_status = ModerationStatus.REJECTED
+        self.n_remaining_approvals_required = self.n_required_approvals
         self.save()
         return moderation
+
+    def update(self, changed_object: 'ModeratedModel') -> bool:
+        """
+        Update the change's changed object and reset the number of required approvals.
+
+        Returns a boolean reflecting whether the object was actually changed.
+        """
+        if self.changed_object == changed_object:
+            return False
+        # Update the changed object.
+        self.changed_object = changed_object
+        # Reset the number of remaining approvals required.
+        self.n_remaining_approvals_required = self.n_required_approvals
+        # Invalidate extant approvals.
+        self.moderations.filter(effective=True, verdict=ModerationStatus.APPROVED).update(
+            effective=False
+        )
+        # Update the change status to "pending".
+        self.moderation_status = ModerationStatus.PENDING
+        self.save()

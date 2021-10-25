@@ -93,10 +93,9 @@ class ModeratedModel(SoftDeletableModel):
                 content_before=_change.changed_object,
                 content_after=self,
             )
-            _change.changed_object = self
             _change.set = set or _change.set  # TODO
             _change.parent = parent_change or _change.parent  # TODO
-            _change.save()
+            _change.update(changed_object=self)
         else:
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
