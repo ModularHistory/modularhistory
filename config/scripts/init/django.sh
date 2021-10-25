@@ -4,7 +4,8 @@ wait-for-it.sh postgres:5432 -- wait-for-it.sh elasticsearch:9200 --
 
 # python manage.py cleanup_django_defender  # TODO
 
-poetry install
+# update dependencies in dev to avoid requiring image rebuild
+[[ "$ENVIRONMENT" = dev ]] && poetry install
 
 # Create a db backup, if there are any migrations to apply.
 python manage.py migrate --check || {
