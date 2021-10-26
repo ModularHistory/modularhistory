@@ -242,6 +242,10 @@ class Change(AbstractChange):
         """
         # If the moderator has already approved the change (in its current state),
         # don't add another approval; instead, log an error and return the extant approval.
+        # This prevents a single moderator from approving a change multiple times and
+        # circumventing `n_required_approvals`. NOTE: Moderators can re-moderate a change
+        # after it is updated; we use the `effective` field to exclude stale moderations
+        # from this check.
         extant_approvals = self.moderations.filter(
             moderator=moderator,
             verdict=ModerationStatus.APPROVED,
