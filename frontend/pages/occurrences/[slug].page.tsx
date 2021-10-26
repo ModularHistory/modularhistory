@@ -17,7 +17,11 @@ interface OccurrenceProps {
 const OccurrenceDetailPage: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
     <Layout>
-      <NextSeo title={occurrence.title} canonical={occurrence.absoluteUrl} />
+      <NextSeo
+        title={occurrence.title}
+        canonical={occurrence.absoluteUrl}
+        description={occurrence.summary}
+      />
       <ModuleContainer>
         <ModuleDetail module={occurrence} />
       </ModuleContainer>
