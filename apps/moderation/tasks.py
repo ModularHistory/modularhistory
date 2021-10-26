@@ -32,6 +32,7 @@ def handle_approval(approval_id: int):
         # Set `verified=True` on the changed object.
         changed_object: 'ModeratedModel' = change.changed_object
         changed_object.verified = True
+        change.changed_object = changed_object
         change.save()
 
         # Check if the status of the change's associated change set can also be updated.
