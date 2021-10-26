@@ -83,6 +83,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   description: string;
   truncatedDescription: string;
   meta?: Meta;
+  relatedQuotes?: Quote[];
 }
 
 export interface Argument extends BaseModule {

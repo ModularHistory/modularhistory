@@ -6,6 +6,7 @@ import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -19,7 +20,8 @@ interface PropositionsProps {
 
 const Propositions: FC<PropositionsProps> = ({ topics }: PropositionsProps) => {
   return (
-    <Layout title={"Propositions"}>
+    <Layout>
+      <NextSeo title={"Propositions"} />
       <Container>
         <PageHeader>Propositions</PageHeader>
         {topics &&

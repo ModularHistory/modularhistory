@@ -47,8 +47,24 @@ class Moderation(models.Model):
         related_name='moderations',
     )
     verdict = models.PositiveSmallIntegerField(choices=ModerationOutcome.choices)
-    reason = models.TextField(blank=True, null=True)
-    date = models.DateTimeField(auto_now_add=True, editable=False)
+    reason = models.TextField(
+        blank=True,
+        null=True,
+        help_text='The reason for the moderation verdict (approval or rejection)',
+    )
+    date = models.DateTimeField(
+        auto_now_add=True,
+        editable=False,
+        help_text='The date of the moderation',
+    )
+
+    # Boolean reflecting whether the moderation verdict is stale. This should be `False`
+    # for a newly added moderation, but if a change is updated (i.e., if additional changes
+    # are made), it should be set to `True` (so that the extant moderation becomes stale and
+    # the change must be moderated again). A single moderator has only one non-stale
+    # moderation at a time. NOTE: This field is used to avoid counting stale approvals
+    # when determining whether a change has received the required number of approvals.
+    stale = models.BooleanField(default=False)
 
     objects = ModerationManager()
 

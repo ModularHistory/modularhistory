@@ -45,7 +45,7 @@ logging.debug(f'Image placeholder pattern: {image_placeholder_regex}')
 
 
 def get_image_fk(related_name: str) -> ManyToManyForeignKey:
-    """Return a foreign key field referencing a proposition."""
+    """Return a foreign key field referencing a image."""
     return ManyToManyForeignKey(
         to='images.Image',
         related_name=related_name,
@@ -54,7 +54,7 @@ def get_image_fk(related_name: str) -> ManyToManyForeignKey:
 
 
 class TopicRelation(AbstractTopicRelation):
-    """A relationship between a proposition and a topic."""
+    """A relationship between a image and a topic."""
 
     content_object = get_image_fk(related_name='topic_relations')
 
@@ -137,11 +137,6 @@ class Image(MediaModel):
     def aspect_ratio(self) -> float:
         """Return the image's aspect ratio as a float."""
         return self.width / self.height  # type: ignore
-
-    @property
-    def caption_html(self) -> str:
-        """Return the user-facing caption HTML."""
-        return self.caption
 
     @property
     def cropped_image_url(self) -> Optional[str]:
