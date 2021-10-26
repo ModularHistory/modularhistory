@@ -47,7 +47,16 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
 
   return (
     <Layout>
-      <NextSeo title={title} />
+      <NextSeo
+        title={title}
+        // TODO: build canonical URL for search?
+        // canonical={"/search"}
+        description={
+          query
+            ? `See occurrences, quotes, sources, etc. related to ${query}`
+            : `Browse historical occurrences, quotes, sources, and more.`
+        }
+      />
       {props.results.length === 0 ? (
         <EmptySearchResults />
       ) : (
