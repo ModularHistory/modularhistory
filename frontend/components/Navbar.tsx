@@ -1,6 +1,6 @@
 import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "@/auth";
 import SearchIcon from "@mui/icons-material/Search";
-import { Divider, InputAdornment, styled, TextField } from "@mui/material";
+import { Box, Divider, InputAdornment, styled, TextField } from "@mui/material";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -26,6 +26,8 @@ type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void
 
 const StyledTextField = styled(TextField)({
   backgroundColor: "white",
+  minWidth: "30rem",
+
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
       borderColor: "white",
@@ -237,20 +239,22 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
             )
           )}
         </Nav>
-        <StyledTextField
-          defaultValue={fieldsRef.current.query}
-          onChange={(e) => fieldCallbacks.query(e.target.value)}
-          onKeyUp={handleKeyUp}
-          disabled={isLoading}
-          variant="outlined"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ fill: "gray" }} />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box sx={{ paddingRight: "1.5rem" }}>
+          <StyledTextField
+            defaultValue={fieldsRef.current.query}
+            onChange={(e) => fieldCallbacks.query(e.target.value)}
+            onKeyUp={handleKeyUp}
+            disabled={isLoading}
+            variant="outlined"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fill: "gray" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
         <Nav>{!hideAccountControls && !loading && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
