@@ -32,6 +32,14 @@ class FlatPage(ModeratedModel):
         ),
     )
     title = models.CharField(verbose_name=_('title'), max_length=200)
+    meta_description = models.TextField(
+        verbose_name=_('meta description'),
+        help_text=(
+            "Content for the page's meta description, which is displayed "
+            "underneath the page title on Google SERPs; should catch users' "
+            'attention and increase and increase the click rate'
+        ),
+    )
     content = HTMLField(verbose_name=_('content'), blank=True)
     enable_comments = models.BooleanField(_('enable comments'), default=False)
     registration_required = models.BooleanField(

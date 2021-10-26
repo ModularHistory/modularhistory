@@ -17,7 +17,7 @@ const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
   if (!user || loading) return null;
   return (
     <Layout>
-      <NextSeo title={String(user.name || user.handle)} />
+      <NextSeo title={String(user.name || user.handle)} noindex />
       <Container style={{ paddingTop: "2rem" }}>
         <Grid container spacing={3} alignContent="center">
           <Grid item sm={4}>
