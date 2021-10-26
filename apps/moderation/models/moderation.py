@@ -58,7 +58,13 @@ class Moderation(models.Model):
         help_text='The date of the moderation',
     )
 
-    # Boolean reflecting whether the moderation verdict applies to the change currently.
+    # Boolean reflecting whether the moderation verdict applies to the change in its current
+    # state. This should be `True` for a newly added moderation, but if a change is updated
+    # (i.e., if additional changes are made), it should be set to `False` (so that the
+    # extant moderation become "ineffective" and the change must be moderated again). A
+    # single moderator has only one "effective" moderation at a time. NOTE: This field is
+    # used to avoid counting stale approvals when determining whether a change has received
+    # the required number of approvals.
     effective = models.BooleanField(default=True)
 
     objects = ModerationManager()

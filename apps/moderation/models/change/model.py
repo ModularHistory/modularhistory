@@ -240,10 +240,12 @@ class Change(AbstractChange):
         superuser and `force=True` is specified, the moderation status is
         immediately updated to APPROVED, and the change is applied.
         """
-        # If the moderator has already approved the change, don't add another approval;
-        # instead, log an error and return the extant approval.
+        # If the moderator has already approved the change (in its current state),
+        # don't add another approval; instead, log an error and return the extant approval.
         extant_approvals = self.moderations.filter(
-            moderator=moderator, verdict=ModerationStatus.APPROVED, effective=True
+            moderator=moderator,
+            verdict=ModerationStatus.APPROVED,
+            effective=True,
         )
         if extant_approvals.exists():
             if force:
@@ -318,7 +320,7 @@ class Change(AbstractChange):
         self.changed_object = changed_object
         # Reset the number of remaining approvals required.
         self.n_remaining_approvals_required = self.n_required_approvals
-        # Invalidate extant approvals.
+        # Invalidate extant approvals by setting effective=False.
         self.moderations.filter(effective=True, verdict=ModerationStatus.APPROVED).update(
             effective=False
         )
