@@ -7,13 +7,14 @@ import {
   Card,
   CardContent,
   Container,
+  Divider,
   Grid,
   Link,
   TextField,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import React, { MouseEventHandler, useRef } from "react";
+import React, { FC, MouseEventHandler, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -105,57 +106,120 @@ export default function Home() {
   );
 
   return (
-    <Layout title={"Home"}>
-      <Box
-        sx={{
-          flex: "1 1",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "1.5rem 1rem 1.5rem 1rem",
-        }}
-      >
-        <Card elevation={5}>
-          <CardContent>
-            <Container>
-              <p>Search modules by topic, entity, or keywords.</p>
-              {searchForm}
-            </Container>
-          </CardContent>
-        </Card>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "1.5rem 1rem 1.5rem 1rem",
-        }}
-        hidden
-      >
-        <Card elevation={5}>
-          <CardContent>
-            <Grid
-              item
+    <Layout>
+      <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
+        <Grid item xs={8} alignItems="center" justifyContent="center">
+          <Container>
+            <AboutModularHistory />
+          </Container>
+        </Grid>
+        <Grid item xs={8}>
+          <Container>
+            <Box
               sx={{
-                alignItems: "center",
+                flex: "1 1",
                 display: "flex",
-                justifyContent: "space-between",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "1.5rem 1rem 1.5rem 1rem",
               }}
             >
-              <Typography style={{ fontSize: "20pt", fontWeight: "bold" }}>
-                Sign up for the weekly ModularHistory newsletter
-              </Typography>
-              <Button>
-                <CloseIcon />
-              </Button>
-            </Grid>
-            <Typography>Sign up to recieve our newsletter!</Typography>
-            {subscriptionForm}
-            {subscribeDisclaimer}
-          </CardContent>
-        </Card>
-      </Box>
+              <Card elevation={5}>
+                <CardContent>
+                  <Container>
+                    <p>Search modules by topic, entity, or keywords.</p>
+                    {searchForm}
+                  </Container>
+                </CardContent>
+              </Card>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "1.5rem 1rem 1.5rem 1rem",
+              }}
+              hidden
+            >
+              <Card elevation={5}>
+                <CardContent>
+                  <Grid
+                    item
+                    sx={{
+                      alignItems: "center",
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography style={{ fontSize: "20pt", fontWeight: "bold" }}>
+                      Sign up for the weekly ModularHistory newsletter
+                    </Typography>
+                    <Button>
+                      <CloseIcon />
+                    </Button>
+                  </Grid>
+                  <Typography>Sign up to recieve our newsletter!</Typography>
+                  {subscriptionForm}
+                  {subscribeDisclaimer}
+                </CardContent>
+              </Card>
+            </Box>
+          </Container>
+        </Grid>
+      </Grid>
     </Layout>
   );
 }
+
+const AboutModularHistory: FC = () => {
+  return (
+    <Box
+      sx={{
+        flex: "1 1",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "1.5rem 1rem 1.5rem 1rem",
+        p: 4,
+      }}
+    >
+      <Card elevation={5}>
+        <Box sx={{ m: 3 }}>
+          <Grid container alignItems="center" justifyContent="center">
+            <Grid item>
+              <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+                About ModularHistory
+              </Typography>
+            </Grid>
+          </Grid>
+          <p>
+            ModularHistory is a nonprofit organization dedicated to helping people learn about and
+            understand the history of our world, our society, and issues of modern sociopolitical
+            discourse.
+          </p>
+          <Button variant="contained" href="/about/">
+            Learn More
+          </Button>
+        </Box>
+        <Divider variant="middle" />
+        <Box sx={{ m: 3 }}>
+          <Grid container alignItems="center">
+            <Grid item>
+              <p>
+                To support ModularHistory’s mission, you can{" "}
+                <Link href="/about/contributing" variant="body2">
+                  {"contribute content"}
+                </Link>{" "}
+                and/or{" "}
+                <Link href="/donations" variant="body2">
+                  {" donate."}
+                </Link>
+              </p>
+            </Grid>
+          </Grid>
+        </Box>
+      </Card>
+    </Box>
+  );
+};

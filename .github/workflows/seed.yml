@@ -60,7 +60,7 @@ jobs:
       with:
         workflow: .github/workflows/seed.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9

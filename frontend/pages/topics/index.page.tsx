@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import axios from "axios";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import React, { FC } from "react";
 
@@ -27,7 +28,8 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   });
 
   return (
-    <Layout title={"Topics"}>
+    <Layout>
+      <NextSeo title={"Topics"} />
       <Container>
         <PageHeader>Topics</PageHeader>
         <div style={{ marginBottom: "2rem", textAlign: "center" }}>

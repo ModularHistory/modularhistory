@@ -209,7 +209,7 @@ class Change(AbstractChange):
             try:
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
-                    model_instance.save()
+                    model_instance.save(moderate=False)
                     self.merged_date = timezone.now()
                     self.save()
             except Exception as err:

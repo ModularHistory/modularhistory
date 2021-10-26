@@ -11,7 +11,3 @@ class StorySerializer(ModuleSerializer):
     handle = serpy.Field()
     description = serpy.StrField()
     cached_citations = serpy.Field()
-
-    def get_model(self, instance) -> str:
-        """Return the model name of the instance."""
-        return 'stories.story'

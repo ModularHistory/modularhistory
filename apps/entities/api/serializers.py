@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
+from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.structures import serialize_date
 from apps.entities.models.entity import Entity
-from core.models.module import DrfTypedModuleSerializer
+from apps.images.models import Image
+from core.models.serializers import DrfTypedModuleSerializer
 
 
 class CategorySerializer(serializers.Serializer):
@@ -27,29 +30,36 @@ class CategorizationSerializer(serializers.Serializer):
 
 
 class EntityDrfSerializer(DrfTypedModuleSerializer):
-    """Serializer for entities."""
+    """Serializer for entities.
+    TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
+    """
 
     description = serializers.CharField(required=False)
     categorizations = CategorizationSerializer(
         many=True, required=False, source='categorizations.all'
     )
 
-    # write only fields are not rendered to output
-    birth_date = serializers.DateField(write_only=True, required=False)
-    death_date = serializers.DateField(write_only=True, required=False)
-    birthDate = serializers.SerializerMethodField('get_serialized_birth_date', read_only=True)
-    deathDate = serializers.SerializerMethodField('get_serialized_death_date', read_only=True)
+    # write only versions are not rendered to output
+    birth_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    death_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    birth_date_serialized = serializers.SerializerMethodField(
+        'get_serialized_birth_date', read_only=True
+    )
+    death_date_serialized = serializers.SerializerMethodField(
+        'get_serialized_death_date', read_only=True
+    )
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
-        return instance.birth_date.serialize() if instance.birth_date else None
+        return serialize_date(instance.birth_date)
 
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
-        return instance.death_date.serialize() if instance.death_date else None
+        return serialize_date(instance.death_date)
 
     class Meta(DrfTypedModuleSerializer.Meta):
         model = Entity
+        read_only_fields = ['truncated_description']
         fields = DrfTypedModuleSerializer.Meta.fields + [
             'name',
             'unabbreviated_name',
@@ -59,8 +69,20 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'categorizations',
             'birth_date',
             'death_date',
-            'birthDate',
-            'deathDate',
+            'birth_date_serialized',
+            'death_date_serialized',
+            'birth',
+            'death',
+            'images',
+            'cached_images',
             'primary_image',
+            'reference_urls',
         ]
-        read_only_fields = ['truncated_description']
+        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+            'images': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Image.objects.all(),
+            },
+        }

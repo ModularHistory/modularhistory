@@ -28,7 +28,7 @@ runs:
   steps:
     # Check out source code.
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
     # Set up Python.

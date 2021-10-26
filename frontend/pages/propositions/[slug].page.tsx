@@ -4,6 +4,7 @@ import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Proposition } from "@/types/modules";
 import { Button, Grid } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface PropositionProps {
@@ -15,7 +16,8 @@ interface PropositionProps {
  */
 const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
-    <Layout title={proposition.summary}>
+    <Layout>
+      <NextSeo title={proposition.summary} />
       <Grid
         container
         direction="row"

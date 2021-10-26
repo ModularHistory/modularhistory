@@ -39,7 +39,7 @@ class SoftDeletableModel(ExtendedModel):
     class Meta:
         abstract = True
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         was_deleted, was_undeleted = False, False
         if self.pk:
             was_previously_deleted = self.__class__.deleted_objects.filter(
@@ -49,28 +49,32 @@ class SoftDeletableModel(ExtendedModel):
                 was_undeleted = True
             # elif self.deleted and not was_previously_deleted:
             #     was_deleted = True
-        super().save(**kwargs)
+        super().save(*args, **kwargs)
         if was_undeleted:
             # Send undelete signal.
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
             post_undelete.send(sender=self.__class__, instance=self, using=using)
 
     def undelete(self, **kwargs):
+        self._undelete(on_save=self.save, **kwargs)
+
+    def _undelete(self, on_save, **kwargs):
         """Undelete a soft-deleted model."""
         assert self.deleted
         self.deleted = None
-        self.save(**kwargs)
+        on_save(**kwargs)
         for related in related_objects(self):
             if getattr(related, 'deleted', None) is not None:
                 related.undelete()
 
     def delete(self, **kwargs):
+        """Override Django's delete behavior."""
         # This avoids a recursive call on `delete`; see
         # https://github.com/makinacorpus/django-safedelete/issues/117.
-        self._delete(**kwargs)
+        self._delete(on_save=self.save, **kwargs)
 
-    def _delete(self, **kwargs):
-        """Override Django's delete behavior."""
+    def _delete(self, on_save, **kwargs):
+        """Soft-delete behavior."""
         hard: bool = kwargs.pop('hard', self.deleted is not None)
         if hard:
             # Normally hard-delete the object.
@@ -81,12 +85,15 @@ class SoftDeletableModel(ExtendedModel):
             related_object: Union['ModeratedModel', 'Model']
             for related_object in related_objects(self):
                 if not getattr(related_object, 'deleted', None):
-                    related_object.delete(**kwargs)
+                    # patch: child models like article return themselves in related objects
+                    is_self = related_object.pk == self.pk
+                    if not is_self:
+                        related_object.delete(**kwargs)
             self.deleted = timezone.now()
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
             # send pre_softdelete signal
             pre_softdelete.send(sender=self.__class__, instance=self, using=using)
-            self.save(**kwargs)
+            on_save(**kwargs)
             # send softdelete signal
             post_softdelete.send(sender=self.__class__, instance=self, using=using)
             collector = NestedObjects(using=router.db_for_write(self))
