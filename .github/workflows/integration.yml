@@ -47,6 +47,7 @@ env:
   EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
   EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
   EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
   IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
@@ -93,7 +94,7 @@ jobs:
         fetch-depth: 0
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v9.3
+      uses: tj-actions/changed-files@v11
   setup-script:
     name: Test setup script
     needs: changed-files
@@ -116,7 +117,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -198,7 +199,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -329,7 +330,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -432,7 +433,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -549,7 +550,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -668,7 +669,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -760,7 +761,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Checkout repository
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:

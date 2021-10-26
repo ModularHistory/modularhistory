@@ -136,7 +136,9 @@ export type ModuleUnion =
 
 export interface FlatPage {
   title: string;
+  metaDescription: string;
   content: string;
+  path: string;
 }
 
 export interface Change {

@@ -73,22 +73,56 @@ const App: NextPage<ExtendedAppProps> = ({
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        {/*<title>Home | ModularHistory</title>*/}
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta httpEquiv="Content-Language" content="en" />
         <meta name="facebook-domain-verification" content="dfnrpkj6k5hhiqtxmtxsgw23xr8bfr" />
       </Head>
       <DefaultSeo
+        description={"History, modularized."}
         openGraph={{
           type: "website",
           url: "https://www.modularhistory.com/",
           site_name: "ModularHistory",
-          description: "History, modularized.",
+          // description: "History, modularized.",
+          // images: [
+          //   {
+          //     url: 'https://www.example.ie/og-image.jpg',
+          //     width: 800,
+          //     height: 600,
+          //     alt: 'Og Image Alt',
+          //   },
+          //   {
+          //     url: 'https://www.example.ie/og-image-2.jpg',
+          //     width: 800,
+          //     height: 600,
+          //     alt: 'Og Image Alt 2',
+          //   },
+          // ],
         }}
         twitter={{ handle: "@modularhistory" }}
+        facebook={{
+          appId: `${process.env.FACEBOOK_APP_ID}`,
+        }}
         titleTemplate="%s | ModularHistory" // https://github.com/garmeeh/next-seo#title-template
         defaultTitle="ModularHistory" // https://github.com/garmeeh/next-seo#default-title
+        additionalMetaTags={[
+          {
+            httpEquiv: "content-type",
+            content: "text/html; charset=utf-8",
+          },
+          {
+            name: "application-name",
+            content: "ModularHistory",
+          },
+        ]}
+        additionalLinkTags={
+          [
+            // {
+            //   rel: 'icon',
+            //   href: '/static/favicon.ico',
+            // }
+          ]
+        }
       />
       <noscript>
         <iframe

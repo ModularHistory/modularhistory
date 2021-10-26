@@ -87,7 +87,11 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
 
   return (
     <Layout>
-      <NextSeo title="Donate" />
+      <NextSeo
+        title="Donate"
+        canonical="/donations/make"
+        description={"Make a donation to support ModularHistory's educational mission."}
+      />
       <Container>
         {(!clientToken && <p className="lead">Loading...</p>) || (
           <div>

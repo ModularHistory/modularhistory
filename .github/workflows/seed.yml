@@ -33,6 +33,7 @@ jobs:
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -60,7 +61,7 @@ jobs:
       with:
         workflow: .github/workflows/seed.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
