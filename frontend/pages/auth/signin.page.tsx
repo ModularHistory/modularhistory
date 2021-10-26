@@ -127,7 +127,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   }
   return (
     <Layout>
-      <NextSeo title={"Sign in"} />
+      <NextSeo title={"Sign in"} canonical={"/auth/signin"} />
       <Container>
         <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
           {error && !redirecting && (

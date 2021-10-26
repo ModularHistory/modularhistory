@@ -31,7 +31,7 @@ interface EntityProps {
 const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
     <Layout>
-      <NextSeo title={entity.name} />
+      <NextSeo title={entity.name} canonical={entity.absoluteUrl} />
       <ModuleContainer>
         <ModuleDetail module={entity} />
         {entity.relatedQuotes && entity.relatedQuotes.length && (

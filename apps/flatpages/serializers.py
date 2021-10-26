@@ -7,3 +7,4 @@ class FlatPageSerializer(serpy.Serializer):
 
     title = serpy.Field()
     content = serpy.Field()
+    path = serpy.Field()

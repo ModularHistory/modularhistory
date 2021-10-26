@@ -21,7 +21,7 @@ interface PropositionsProps {
 const Propositions: FC<PropositionsProps> = ({ topics }: PropositionsProps) => {
   return (
     <Layout>
-      <NextSeo title={"Propositions"} />
+      <NextSeo title={"Propositions"} canonical={"/propositions"} />
       <Container>
         <PageHeader>Propositions</PageHeader>
         {topics &&
