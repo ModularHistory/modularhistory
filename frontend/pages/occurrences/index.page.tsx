@@ -32,7 +32,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
 
   return (
     <Layout>
-      <NextSeo title={"Occurrences"} />
+      <NextSeo title={"Occurrences"} canonical={"/occurrences"} />
       <Container>
         <PageHeader>Occurrences</PageHeader>
         <Pagination count={occurrencesData["totalPages"]} />

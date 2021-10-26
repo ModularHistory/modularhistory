@@ -67,7 +67,7 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
 
   return (
     <Layout>
-      <NextSeo title="Donate" />
+      <NextSeo title="Donate" canonical="/donations/make" />
       <Container
         sx={{
           height: "100%",

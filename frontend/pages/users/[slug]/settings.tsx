@@ -68,7 +68,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   if (session) {
     return (
       <Layout>
-        <NextSeo title={String(user.name || user.handle)} />
+        <NextSeo title={String(user.name || user.handle)} noindex />
         <Container
           sx={{
             paddingTop: "2rem",

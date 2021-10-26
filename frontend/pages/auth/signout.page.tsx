@@ -14,7 +14,7 @@ const SignOut: FunctionComponent = () => {
   }, [session]);
   return (
     <Layout>
-      <NextSeo title={"Sign out"} />
+      <NextSeo title={"Sign out"} noindex />
       <Container>
         <Box
           display="flex"

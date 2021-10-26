@@ -87,7 +87,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
 
   return (
     <Layout>
-      <NextSeo title="Donate" />
+      <NextSeo title="Donate" canonical="/donations/make" />
       <Container>
         {(!clientToken && <p className="lead">Loading...</p>) || (
           <div>
