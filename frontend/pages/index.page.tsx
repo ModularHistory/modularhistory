@@ -39,7 +39,7 @@ export default function Home() {
           size={"small"}
           style={{ minWidth: "280px" }}
           onKeyPress={search}
-          inputProps={{ "data-testid": "query" }}
+          inputProps={{ "data-testid": "query", "data-cy": "query" }}
         />
       </Grid>
       <Grid item>
