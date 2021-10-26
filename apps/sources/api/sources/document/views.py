@@ -26,5 +26,8 @@ class DocumentViewSet(SourceViewSet):
 
     prefetch_relations = SourceViewSet.prefetch_relations + [
         document_prefetch,
-        Prefetch('original_edition', queryset=Document.objects.all().prefetch_related('tags', document_prefetch)),
+        Prefetch(
+            'original_edition',
+            queryset=Document.objects.all().prefetch_related('tags', document_prefetch),
+        ),
     ]
