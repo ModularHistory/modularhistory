@@ -16,7 +16,6 @@ class TodayInHistoryViewSet(APIView):
     def get(self, request):
         today = datetime.now()
 
-        print('before entitites')
         todayinhistory_entity = Entity.objects.filter(
             Q(
                 birth_date__month=today.month,
@@ -27,19 +26,17 @@ class TodayInHistoryViewSet(APIView):
                 death_date__day=today.day,
             )
         )
-        print('after entitites')
+
         todayinhistory_occurrence = Occurrence.objects.filter(
             date__month=today.month, date__day=today.day
         )
-        print('after occurrences')
 
         todayinhistory_quote = Quote.objects.filter(
             date__month=today.month, date__day=today.day
         )
-        print('after quotes')
 
-        todayinhistory_result = chain(
+        todayinhistory_results = chain(
             todayinhistory_entity, todayinhistory_occurrence, todayinhistory_quote
         )
 
-        return Response([model.serialize() for model in todayinhistory_result])
+        return Response([instance.serialize() for instance in todayinhistory_results])
