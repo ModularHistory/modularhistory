@@ -8,7 +8,7 @@ type Option = Record<string, string>;
 
 export interface InstantSearchProps {
   label: string;
-  defaultValue: Option[] | Promise<Option[]>;
+  defaultValue: Option | Option[] | Promise<Option[]>;
   onChange: (value: string[]) => void;
   getDataForInput: (input: string, config: AxiosRequestConfig) => Option[] | Promise<Option[]>;
   labelKey: string;

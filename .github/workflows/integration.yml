@@ -93,7 +93,7 @@ jobs:
         fetch-depth: 0
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v9.3
+      uses: tj-actions/changed-files@v11
   setup-script:
     name: Test setup script
     needs: changed-files
@@ -116,7 +116,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -198,7 +198,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -329,7 +329,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -397,6 +397,21 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       run: poetry run invoke test --no-docker
+  jest:
+    name: Run frontend unit tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: npm install --prefix frontend/
+    - name: Run jest
+      run: npm run test --prefix frontend/
   e2e:
     name: Run e2e tests
     needs: [build]
@@ -417,7 +432,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -534,7 +549,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -653,7 +668,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -745,7 +760,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Checkout repository
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:

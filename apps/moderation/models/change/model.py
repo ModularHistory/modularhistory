@@ -209,7 +209,7 @@ class Change(AbstractChange):
             try:
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
-                    model_instance.save()
+                    model_instance.save(moderate=False)
                     self.merged_date = timezone.now()
                     self.save()
             except Exception as err:
@@ -240,6 +240,25 @@ class Change(AbstractChange):
         superuser and `force=True` is specified, the moderation status is
         immediately updated to APPROVED, and the change is applied.
         """
+        # If the moderator has already approved the change (in its current state),
+        # don't add another approval; instead, log an error and return the extant approval.
+        # This prevents a single moderator from approving a change multiple times and
+        # circumventing `n_required_approvals`. NOTE: A moderator can re-approve a change
+        # after it is updated; we exclude stale moderations from this check.
+        extant_approvals = self.moderations.filter(
+            moderator=moderator,
+            verdict=ModerationStatus.APPROVED,
+            stale=False,
+        )
+        if extant_approvals.exists():
+            if force:
+                # Still allow force-approval, but invalidate prior (presumably
+                # non-forced) approvals by the moderator so that there's only one
+                # effective approval by the moderator.
+                extant_approvals.update(stale=True)
+            else:
+                logging.error('Attempted to duplicate an approval.')
+                return extant_approvals.first()
         approval = self.moderate(
             verdict=ModerationStatus.APPROVED,
             moderator=moderator,
@@ -288,5 +307,27 @@ class Change(AbstractChange):
             reason=reason,
         )
         self.moderation_status = ModerationStatus.REJECTED
+        self.n_remaining_approvals_required = self.n_required_approvals
         self.save()
         return moderation
+
+    def update(self, changed_object: 'ModeratedModel') -> bool:
+        """
+        Update the change's changed object and reset the number of required approvals.
+
+        Returns a boolean reflecting whether the object was actually changed.
+        """
+        if self.changed_object == changed_object:
+            return False
+        # Update the changed object.
+        self.changed_object = changed_object
+        # Reset the number of remaining approvals required.
+        self.n_remaining_approvals_required = self.n_required_approvals
+        # Invalidate extant approvals by setting stale=True.
+        self.moderations.filter(stale=False, verdict=ModerationStatus.APPROVED).update(
+            stale=True
+        )
+        # Update the change status to "pending".
+        self.moderation_status = ModerationStatus.PENDING
+        self.save()
+        return True

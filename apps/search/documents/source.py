@@ -24,7 +24,6 @@ class SourceDocument(Document):
             'name': fields.TextField(),
             'aliases': fields.TextField(),
             'description': fields.TextField(analyzer=html_field_analyzer),
-            'path': fields.TextField(),
         },
     )
 

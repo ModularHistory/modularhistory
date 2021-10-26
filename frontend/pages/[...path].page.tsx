@@ -3,6 +3,7 @@ import { FlatPage as FlatPageType } from "@/types/modules";
 import { Container, useMediaQuery } from "@mui/material";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 export interface FlatPageProps {
@@ -14,7 +15,8 @@ const FlatPage: FC<FlatPageProps> = ({ page }: FlatPageProps) => {
   const isSmall = useMediaQuery("@media (max-width:36rem)");
 
   return (
-    <Layout title={page.title}>
+    <Layout>
+      <NextSeo title={page.title} />
       <Container style={{ padding: `1.25rem ${isSmall ? "1.25rem" : "5rem"}`, maxWidth: "50rem" }}>
         <h1>{page.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: page.content }} />

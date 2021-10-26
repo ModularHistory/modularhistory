@@ -8,6 +8,7 @@ from apps.moderation.models.change import Change
 from apps.moderation.tasks import handle_approval
 from apps.propositions.models import Proposition, TopicRelation
 from apps.topics.models import Topic
+from apps.users.factories import UserFactory
 from core.environment import TESTING
 
 
@@ -71,7 +72,8 @@ class TestModeration:
 
         # Test approving the change.
         for _ in range(change.n_required_approvals):
-            approval = change.approve()
+            moderator = UserFactory.create()
+            approval = change.approve(moderator=moderator)
             handle_approval(approval.pk)
         relation_approval = relation_change.moderations.first()
         handle_approval(relation_approval.pk)

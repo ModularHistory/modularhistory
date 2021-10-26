@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
@@ -33,6 +33,7 @@
     "jquery": "^3.6.0",
     "next": "^11.1.1",
     "next-auth": "^3.29.0",
+    "next-seo": "^4.28.1",
     "nookies": "^2.5.2",
     "npm": "^7.24.0",
     "prop-types": "^15.7.2",
@@ -61,6 +62,7 @@
     "@types/node": "^16.9.4",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.21",
+    "@types/react-dom": "^17.0.9",
     "@types/react-gtm-module": "^2.0.1",
     "@types/throttle-debounce": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
@@ -68,7 +70,9 @@
     "babel-jest": "^27.2.2",
     "eslint": "^7.32.0",
     "eslint-config-next": "^11.1.2",
+    "eslint-plugin-jest-dom": "^3.9.2",
     "eslint-plugin-react": "^7.26.0",
+    "eslint-plugin-testing-library": "^4.12.4",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.2.2",
     "lint-staged": "^11.1.2",

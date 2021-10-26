@@ -4,6 +4,7 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Source } from "@/types/modules";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface SourceProps {
@@ -15,7 +16,8 @@ interface SourceProps {
  */
 const SourceDetailPage: FC<SourceProps> = ({ source }: SourceProps) => {
   return (
-    <Layout title={source.title || source.citationString}>
+    <Layout>
+      <NextSeo title={source.title || source.citationString} />
       <ModuleContainer>
         <ModuleDetail module={source} />
       </ModuleContainer>

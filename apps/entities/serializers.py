@@ -47,10 +47,6 @@ class EntitySerializer(ModuleSerializer):
         many=True, attr='categorizations.all', call=True
     )
 
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return f'entities.{instance.__class__.__name__.lower()}'
-
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
         return instance.birth_date.serialize() if instance.birth_date else None

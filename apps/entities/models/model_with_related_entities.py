@@ -73,11 +73,11 @@ class ModelWithRelatedEntities(ExtendedModel):
     @property
     def related_entities(self) -> RelatedEntitiesField:
         """
-        Require implementation of a `tags` field on inheriting models.
+        Require implementation of a `entities` field on inheriting models.
 
         For example:
         ``
-        tags = TagsField(through=TopicRelation)
+        related_entities = RelatedEntitiesField(through=EntityRelation)
         ``
         """
         raise NotImplementedError

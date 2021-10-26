@@ -5,6 +5,7 @@ import { Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
 import Container from "@mui/material/Container";
 import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import React, {
   FormEventHandler,
@@ -125,7 +126,8 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
     return null;
   }
   return (
-    <Layout title={"Sign in"}>
+    <Layout>
+      <NextSeo title={"Sign in"} />
       <Container>
         <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
           {error && !redirecting && (

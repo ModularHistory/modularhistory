@@ -7,6 +7,7 @@ import { Image } from "@/types/modules";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -30,7 +31,8 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
   ));
 
   return (
-    <Layout title={"Images"}>
+    <Layout>
+      <NextSeo title={"Images"} />
       <Container>
         <PageHeader>Images</PageHeader>
         <Pagination count={imagesData.totalPages} />

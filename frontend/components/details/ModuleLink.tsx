@@ -97,7 +97,9 @@ const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
     <>
       <ModuleModal module={module} setOpen={setModalOpen} open={modalOpen} />
       <StyledSpan onMouseEnter={fetchModule} onClick={handleClick}>
-        <a onClick={(event) => event.preventDefault()}>{anchorChildren}</a>
+        <a {...anchorPropsWithoutTarget} onClick={(event) => event.preventDefault()}>
+          {anchorChildren}
+        </a>
       </StyledSpan>
     </>
   );
