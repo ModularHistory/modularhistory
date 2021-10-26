@@ -26,7 +26,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Sources"} />
+      <NextSeo title={"Sources"} canonical={"/sources"} />
       <Container>
         <PageHeader>Sources</PageHeader>
         <Pagination count={sourcesData.totalPages} />

@@ -17,7 +17,7 @@ interface QuoteProps {
 const QuoteDetailPage: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
     <Layout>
-      <NextSeo title={quote.title} />
+      <NextSeo title={quote.title} canonical={quote.absoluteUrl} />
       <ModuleContainer>
         <ModuleDetail module={quote} />
       </ModuleContainer>

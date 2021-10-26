@@ -12,7 +12,7 @@ const introduction = `
 const Donations: FC = () => {
   return (
     <Layout>
-      <NextSeo title="Donations" />
+      <NextSeo title="Donations" canonical={"/donations"} />
       <Container
         sx={{
           height: "100%",

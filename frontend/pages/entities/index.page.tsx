@@ -34,7 +34,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Entities"} />
+      <NextSeo title={"Entities"} canonical={"/entities"} />
       <Container>
         <PageHeader>Entities</PageHeader>
         <Pagination count={entitiesData["totalPages"]} />

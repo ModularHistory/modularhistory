@@ -35,7 +35,7 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
   })`;
   return (
     <Layout>
-      <NextSeo title={topic.name} />
+      <NextSeo title={topic.name} canonical={topic.absoluteUrl} />
       <ModuleContainer>
         <PageHeader>{topicHeader}</PageHeader>
         {topic.description && <p dangerouslySetInnerHTML={{ __html: topic.description }} />}

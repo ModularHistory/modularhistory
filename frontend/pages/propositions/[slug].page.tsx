@@ -17,7 +17,7 @@ interface PropositionProps {
 const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout>
-      <NextSeo title={proposition.summary} />
+      <NextSeo title={proposition.summary} canonical={proposition.absoluteUrl} />
       <Grid
         container
         direction="row"
