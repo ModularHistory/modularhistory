@@ -32,7 +32,11 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Images"} canonical={"/images"} />
+      <NextSeo
+        title={"Images"}
+        canonical={"/images"}
+        description={`Browse images of historical occurrences, places, and entities.`}
+      />
       <Container>
         <PageHeader>Images</PageHeader>
         <Pagination count={imagesData.totalPages} />
