@@ -32,7 +32,6 @@ export default function Home() {
     >
       <Grid item>
         <TextField
-          data-cy={"query"}
           inputRef={queryInputRef}
           id={"id_query"}
           name={"query"}
@@ -40,11 +39,15 @@ export default function Home() {
           size={"small"}
           style={{ minWidth: "280px" }}
           onKeyPress={search}
-          inputProps={{ "data-testid": "query" }}
+          inputProps={{ "data-testid": "query", "data-cy": "query" }}
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search as MouseEventHandler} data-testid={"searchButton"} />
+        <SearchButton
+          onClick={search as MouseEventHandler}
+          data-testid={"searchButton"}
+          data-cy={"searchButton"}
+        />
       </Grid>
     </Grid>
   );
