@@ -5,6 +5,6 @@ import serpy
 class FlatPageSerializer(serpy.Serializer):
     """Serializer for static pages."""
 
-    title = serpy.Field()
-    content = serpy.Field()
-    path = serpy.Field()
+    title = serpy.StrField()
+    content = serpy.StrField()
+    path = serpy.StrField()
