@@ -15,6 +15,6 @@ def process_relation_changes(
 
     if action == 'post_add':
         related_filter = Q(**{f'{related_field_name}__in': related_ids})
-        # re-save newly relations to trigger moderation
+        # re-save newly added relations to trigger moderation
         for relation in relations.filter(related_filter):
             relation.save()

@@ -11,6 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface SourcesProps {
@@ -24,7 +25,8 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
   const sources = sourcesData["results"] || [];
 
   return (
-    <Layout title={"Sources"}>
+    <Layout>
+      <NextSeo title={"Sources"} />
       <Container>
         <PageHeader>Sources</PageHeader>
         <Pagination count={sourcesData.totalPages} />

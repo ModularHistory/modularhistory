@@ -88,7 +88,7 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
 
     originalEdition = SerializableDrfField(read_only=True, source='original_edition')
     original_publication_date = HistoricDateTimeDrfField(write_only=True, required=False)
-    originalPublicationDate = serializers.SerializerMethodField(
+    original_publication_date_serialized = serializers.SerializerMethodField(
         'get_original_publication_date', read_only=True
     )
 
@@ -102,7 +102,7 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
             'original_edition',
             'originalEdition',
             'original_publication_date',
-            'originalPublicationDate',
+            'original_publication_date_serialized',
         ]
 
 

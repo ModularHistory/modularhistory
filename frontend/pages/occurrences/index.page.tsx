@@ -7,6 +7,7 @@ import { Occurrence } from "@/types/modules";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -30,7 +31,8 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
   ));
 
   return (
-    <Layout title={"Occurrences"}>
+    <Layout>
+      <NextSeo title={"Occurrences"} />
       <Container>
         <PageHeader>Occurrences</PageHeader>
         <Pagination count={occurrencesData["totalPages"]} />

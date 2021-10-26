@@ -1,14 +1,13 @@
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory from "@/components/TodayInHistory";
-import { Box } from "@mui/material";
+import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
-import { MouseEventHandler, useRef } from "react";
+import { FC, MouseEventHandler, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -50,32 +49,91 @@ export default function Home() {
   );
 
   return (
-    <Layout title={"Home"}>
-      <Box
-        sx={{
-          flex: "1 1",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "1.5rem 1rem 1.5rem 1rem",
-        }}
-      >
-        <Grid container spacing={5} justifyContent={"center"}>
-          <Grid item>
-            <Card elevation={5}>
-              <CardContent>
-                <Container>
-                  <p>Search modules by topic, entity, or keywords.</p>
-                  {searchForm}
-                </Container>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12}>
-            <TodayInHistory />
-          </Grid>
+    <Layout>
+      <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
+        <Grid item xs={8} alignItems="center" justifyContent="center">
+          <Container>
+            <AboutModularHistory />
+          </Container>
         </Grid>
-      </Box>
+        <Grid item xs={8}>
+          <Container>
+            <Box
+              sx={{
+                flex: "1 1",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "1.5rem 1rem 1.5rem 1rem",
+              }}
+            >
+              <Card elevation={5}>
+                <CardContent>
+                  <Container>
+                    <p>Search modules by topic, entity, or keywords.</p>
+                    {searchForm}
+                  </Container>
+                </CardContent>
+              </Card>
+            </Box>
+          </Container>
+        </Grid>
+        <Grid item xs={12}>
+          <TodayInHistory />
+        </Grid>
+      </Grid>
     </Layout>
   );
 }
+
+const AboutModularHistory: FC = () => {
+  return (
+    <Box
+      sx={{
+        flex: "1 1",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "1.5rem 1rem 1.5rem 1rem",
+        p: 4,
+      }}
+    >
+      <Card elevation={5}>
+        <Box sx={{ m: 3 }}>
+          <Grid container alignItems="center" justifyContent="center">
+            <Grid item>
+              <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+                About ModularHistory
+              </Typography>
+            </Grid>
+          </Grid>
+          <p>
+            ModularHistory is a nonprofit organization dedicated to helping people learn about and
+            understand the history of our world, our society, and issues of modern sociopolitical
+            discourse.
+          </p>
+          <Button variant="contained" href="/about/">
+            Learn More
+          </Button>
+        </Box>
+        <Divider variant="middle" />
+        <Box sx={{ m: 3 }}>
+          <Grid container alignItems="center">
+            <Grid item>
+              <p>
+                To support ModularHistory’s mission, you can{" "}
+                <Link href="/about/contributing" variant="body2">
+                  {"contribute content"}
+                </Link>{" "}
+                and/or{" "}
+                <Link href="/donations" variant="body2">
+                  {" donate."}
+                </Link>
+              </p>
+            </Grid>
+          </Grid>
+        </Box>
+      </Card>
+    </Box>
+  );
+};

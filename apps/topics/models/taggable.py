@@ -1,4 +1,5 @@
-from typing import Optional, TYPE_CHECKING, Union
+import logging
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.apps import apps
 from django.db import models
@@ -131,7 +132,6 @@ def cache_tags(model: str, instance_id: int, tags: list):
     """Save cached tags to a model instance."""
     if not tags:
         return
-    import logging
 
     Model = apps.get_model(model)  # noqa: N806
     if not hasattr(Model, 'cache'):

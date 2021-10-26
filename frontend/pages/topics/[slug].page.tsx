@@ -5,6 +5,7 @@ import PageHeader from "@/components/PageHeader";
 import { Topic } from "@/types/modules";
 import { Card, CardContent, CardHeader, styled } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
@@ -33,7 +34,8 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
     numberOfResults === 1 ? "" : "s"
   })`;
   return (
-    <Layout title={topic.name}>
+    <Layout>
+      <NextSeo title={topic.name} />
       <ModuleContainer>
         <PageHeader>{topicHeader}</PageHeader>
         {topic.description && <p dangerouslySetInnerHTML={{ __html: topic.description }} />}

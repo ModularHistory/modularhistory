@@ -7,6 +7,7 @@ import { Entity } from "@/types/modules";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -32,7 +33,8 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   ));
 
   return (
-    <Layout title={"Entities"}>
+    <Layout>
+      <NextSeo title={"Entities"} />
       <Container>
         <PageHeader>Entities</PageHeader>
         <Pagination count={entitiesData["totalPages"]} />

@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { Quote } from "@/types/modules";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC } from "react";
 
 interface QuoteProps {
@@ -15,7 +16,8 @@ interface QuoteProps {
  */
 const QuoteDetailPage: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
-    <Layout title={quote.title}>
+    <Layout>
+      <NextSeo title={quote.title} />
       <ModuleContainer>
         <ModuleDetail module={quote} />
       </ModuleContainer>

@@ -3,8 +3,10 @@ import { Alert, AlertTitle, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
+
 interface DonateProps {
   clientToken: string;
 }
@@ -64,7 +66,8 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
   };
 
   return (
-    <Layout title="Donate">
+    <Layout>
+      <NextSeo title="Donate" />
       <Container
         sx={{
           height: "100%",
