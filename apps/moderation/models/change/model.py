@@ -244,19 +244,18 @@ class Change(AbstractChange):
         # don't add another approval; instead, log an error and return the extant approval.
         # This prevents a single moderator from approving a change multiple times and
         # circumventing `n_required_approvals`. NOTE: A moderator can re-approve a change
-        # after it is updated; we use the `effective` field to exclude stale moderations
-        # from this check.
+        # after it is updated; we exclude stale moderations from this check.
         extant_approvals = self.moderations.filter(
             moderator=moderator,
             verdict=ModerationStatus.APPROVED,
-            effective=True,
+            stale=False,
         )
         if extant_approvals.exists():
             if force:
                 # Still allow force-approval, but invalidate prior (presumably
                 # non-forced) approvals by the moderator so that there's only one
                 # effective approval by the moderator.
-                extant_approvals.update(effective=False)
+                extant_approvals.update(stale=True)
             else:
                 logging.error('Attempted to duplicate an approval.')
                 return extant_approvals.first()
@@ -324,9 +323,9 @@ class Change(AbstractChange):
         self.changed_object = changed_object
         # Reset the number of remaining approvals required.
         self.n_remaining_approvals_required = self.n_required_approvals
-        # Invalidate extant approvals by setting effective=False.
-        self.moderations.filter(effective=True, verdict=ModerationStatus.APPROVED).update(
-            effective=False
+        # Invalidate extant approvals by setting stale=True.
+        self.moderations.filter(stale=False, verdict=ModerationStatus.APPROVED).update(
+            stale=True
         )
         # Update the change status to "pending".
         self.moderation_status = ModerationStatus.PENDING
