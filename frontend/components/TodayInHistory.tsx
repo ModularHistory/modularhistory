@@ -15,7 +15,7 @@ const TodayInHistory: FC = () => {
 
   useEffect(() => {
     axiosWithoutAuth
-      .get("/api/search/todayinhistory/")
+      .get("/api/home/todayinhistory/")
       .then((response) => {
         setCarouselData(response.data);
         setLoading(false);
