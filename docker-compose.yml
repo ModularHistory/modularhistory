@@ -315,8 +315,6 @@ services:
     depends_on:
       webserver:
         condition: service_healthy
-    environment:
-      - CYPRESS_baseUrl=https://www.modularhistory.com/
     working_dir: /e2e
     volumes:
       - ./frontend/cypress:/e2e/cypress

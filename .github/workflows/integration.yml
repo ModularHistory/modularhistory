@@ -140,7 +140,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -222,7 +222,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -353,7 +353,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -456,7 +456,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -573,7 +573,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -692,7 +692,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
