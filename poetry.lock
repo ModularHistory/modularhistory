@@ -113,7 +113,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 
 [[package]]
 name = "astroid"
-version = "2.8.3"
+version = "2.8.4"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -1273,7 +1273,7 @@ humanfriendly = ">=4.18,<10.0"
 
 [[package]]
 name = "docutils"
-version = "0.17.1"
+version = "0.18"
 description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
@@ -1370,7 +1370,7 @@ testing = ["pre-commit"]
 
 [[package]]
 name = "factory-boy"
-version = "3.2.0"
+version = "3.2.1"
 description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
 category = "dev"
 optional = false
@@ -1385,7 +1385,7 @@ doc = ["sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 
 [[package]]
 name = "faker"
-version = "9.5.2"
+version = "9.6.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "dev"
 optional = false
@@ -2906,7 +2906,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "pytype"
-version = "2021.10.18"
+version = "2021.10.25"
 description = "Python type inferencer"
 category = "dev"
 optional = false
@@ -3280,6 +3280,18 @@ python-versions = "*"
 
 [package.dependencies]
 nltk = ">=3.1"
+
+[[package]]
+name = "titlecase"
+version = "2.3"
+description = "Python Port of John Gruber's titlecase.pl"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+regex = ["regex (>=2020.4.4)"]
+tests = ["nose (>=1.0)"]
 
 [[package]]
 name = "toml"
@@ -3681,7 +3693,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "cc4a79865182be40c1281d09e6d362e9eb53a1e01b4ceb989902cbd0f708d46f"
+content-hash = "7637fca18ebca8ad35779fd27bc01db095cd4dddec5bbfc7ecee3a517af2ac55"
 
 [metadata.files]
 aenum = [
@@ -3761,8 +3773,8 @@ astor = [
     {file = "astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e"},
 ]
 astroid = [
-    {file = "astroid-2.8.3-py3-none-any.whl", hash = "sha256:f9d66e3a4a0e5b52819b2ff41ac2b179df9d180697db71c92beb33a60c661794"},
-    {file = "astroid-2.8.3.tar.gz", hash = "sha256:0e361da0744d5011d4f5d57e64473ba9b7ab4da1e2d45d6631ebd67dd28c3cce"},
+    {file = "astroid-2.8.4-py3-none-any.whl", hash = "sha256:0755c998e7117078dcb7d0bda621391dd2a85da48052d948c7411ab187325346"},
+    {file = "astroid-2.8.4.tar.gz", hash = "sha256:1e83a69fd51b013ebf5912d26b9338d6643a55fec2f20c787792680610eed4a2"},
 ]
 async-generator = [
     {file = "async_generator-1.10-py3-none-any.whl", hash = "sha256:01c7bf666359b4967d2cda0000cc2e4af16a0ae098cbffcb8472fb9e8ad6585b"},
@@ -4300,8 +4312,8 @@ docker-image-size-limit = [
     {file = "docker_image_size_limit-0.4.1-py3-none-any.whl", hash = "sha256:9da2097dc8ffc27b4092da8eec779969b49ed4437baed5eb455a06bfa9358461"},
 ]
 docutils = [
-    {file = "docutils-0.17.1-py2.py3-none-any.whl", hash = "sha256:cf316c8370a737a022b72b56874f6602acf974a37a9fba42ec2876387549fc61"},
-    {file = "docutils-0.17.1.tar.gz", hash = "sha256:686577d2e4c32380bb50cbb22f575ed742d58168cee37e99117a854bcd88f125"},
+    {file = "docutils-0.18-py2.py3-none-any.whl", hash = "sha256:a31688b2ea858517fa54293e5d5df06fbb875fb1f7e4c64529271b77781ca8fc"},
+    {file = "docutils-0.18.tar.gz", hash = "sha256:c1d5dab2b11d16397406a282e53953fe495a46d69ae329f55aa98a5c4e3c5fbb"},
 ]
 dparse = [
     {file = "dparse-0.5.1-py3-none-any.whl", hash = "sha256:e953a25e44ebb60a5c6efc2add4420c177f1d8404509da88da9729202f306994"},
@@ -4330,12 +4342,12 @@ execnet = [
     {file = "execnet-1.9.0.tar.gz", hash = "sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5"},
 ]
 factory-boy = [
-    {file = "factory_boy-3.2.0-py2.py3-none-any.whl", hash = "sha256:1d3db4b44b8c8c54cdd8b83ae4bdb9aeb121e464400035f1f03ae0e1eade56a4"},
-    {file = "factory_boy-3.2.0.tar.gz", hash = "sha256:401cc00ff339a022f84d64a4339503d1689e8263a4478d876e58a3295b155c5b"},
+    {file = "factory_boy-3.2.1-py2.py3-none-any.whl", hash = "sha256:eb02a7dd1b577ef606b75a253b9818e6f9eaf996d94449c9d5ebb124f90dc795"},
+    {file = "factory_boy-3.2.1.tar.gz", hash = "sha256:a98d277b0c047c75eb6e4ab8508a7f81fb03d2cb21986f627913546ef7a2a55e"},
 ]
 faker = [
-    {file = "Faker-9.5.2-py3-none-any.whl", hash = "sha256:449ab92ab9bd663095df251444b9e974862f81f0dfa479ba9c5ae7277ec85827"},
-    {file = "Faker-9.5.2.tar.gz", hash = "sha256:262d51b4e536adf58f09fdccc510b69a5a7348d9ca698402c0fccfaed93c60a7"},
+    {file = "Faker-9.6.0-py3-none-any.whl", hash = "sha256:8ffd1ca479364a2ea78fe23a5710d5f940c50576f45c3f62edf9f7f9242cec0b"},
+    {file = "Faker-9.6.0.tar.gz", hash = "sha256:072b61422be9da464b0bb40cdb44267dd584582056b77a2982d7c66c767f044c"},
 ]
 filemagic = [
     {file = "filemagic-1.6.tar.gz", hash = "sha256:e684359ef40820fe406f0ebc5bf8a78f89717bdb7fed688af68082d991d6dbf3"},
@@ -5421,15 +5433,15 @@ python-magic = [
     {file = "python_magic-0.4.24-py2.py3-none-any.whl", hash = "sha256:4fec8ee805fea30c07afccd1592c0f17977089895bdfaae5fec870a84e997626"},
 ]
 pytype = [
-    {file = "pytype-2021.10.18-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:70ec4664c458df62cd95bc04f7e38336780dc19d19d715972dbe8f7efb2d103d"},
-    {file = "pytype-2021.10.18-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88d502dc0f59d950e98446ec1eaee7a5642d915b12590e502b37b5da5714e2dd"},
-    {file = "pytype-2021.10.18-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:65ce9ef9d2fadf6072f29a48cf046e921473d8cf7a481733e240f39749e7ea22"},
-    {file = "pytype-2021.10.18-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:58667c15a5b846d4b898859b24df4080940d64fadbd253e3a493dfbeae3b1bf9"},
-    {file = "pytype-2021.10.18-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:f1a803efdf1cbe76843dcaabf220294d1af19541095c60f3f2ea84e1315d597e"},
-    {file = "pytype-2021.10.18-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b6d997c475fa1284129dd5c6a88ae018db43c60ec1e3ecdd6fb49c85098ee5f1"},
-    {file = "pytype-2021.10.18-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:813320a32514011c8343e926fd442a7d1fcb1662b96b9e8cbce4dd433062aca7"},
-    {file = "pytype-2021.10.18-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:118c6af47d8661d1a61eb2a442b49ece4e123460a2f0110db4be26db4fc735fe"},
-    {file = "pytype-2021.10.18.tar.gz", hash = "sha256:f29ff009acfd14cb2ee53134acf233834f9e51d090afd09e9dc7ed16323613b8"},
+    {file = "pytype-2021.10.25-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:d74ebae02019ba909007387ae47de9786c94bf1078f75cd1a6c11579303fa4cc"},
+    {file = "pytype-2021.10.25-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c663de83652989cd4dcb31f076b6f3c067935de9b5df49b279fdf4cf989e0426"},
+    {file = "pytype-2021.10.25-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:0240947100af19a9ba7d703b425fd74dc6fb97c0b72bee1b80383f0a1d82ca5d"},
+    {file = "pytype-2021.10.25-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:73a529dc3e43f876a1d824af27528e655c4d3a8947258e19004f393eaed9f5b6"},
+    {file = "pytype-2021.10.25-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:c10fb37f0098a9c308fa72d7e68344c0de0689fb2498303e4e7299fff495e822"},
+    {file = "pytype-2021.10.25-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f639ed7b9aa0404945d816893a1126c81a4c897a789c5b9890ef3c4520d9c721"},
+    {file = "pytype-2021.10.25-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:d39eb8260bf2d2a38e8ce9b6cad5170383473bfd90ef85d79b2eb8f126fe592d"},
+    {file = "pytype-2021.10.25-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:05e61d996bb1df318dcb6029a12e87adf97625a86302bde262fd51988ca97ebd"},
+    {file = "pytype-2021.10.25.tar.gz", hash = "sha256:c3542ea417e19010b5a3c96c77ee0912d9d21a0fd4f0be121be85f6f94d59d6c"},
 ]
 pytz = [
     {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},
@@ -5630,6 +5642,10 @@ text-unidecode = [
 textblob = [
     {file = "textblob-0.15.3-py2.py3-none-any.whl", hash = "sha256:b0eafd8b129c9b196c8128056caed891d64b7fa20ba570e1fcde438f4f7dd312"},
     {file = "textblob-0.15.3.tar.gz", hash = "sha256:7ff3c00cb5a85a30132ee6768b8c68cb2b9d76432fec18cd1b3ffe2f8594ec8c"},
+]
+titlecase = [
+    {file = "titlecase-2.3-py2.py3-none-any.whl", hash = "sha256:037be1a542634d5582735c949f3b247bfc878a4f21c76957ae42167a398c9dce"},
+    {file = "titlecase-2.3.tar.gz", hash = "sha256:9a1595ed9b88f3ce4362a7602ee63cf074e10ac80d1256b32ea1ec5ffa265fa0"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
