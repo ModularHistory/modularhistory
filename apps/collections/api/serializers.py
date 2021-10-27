@@ -5,7 +5,7 @@ from apps.entities.api.serializers import EntityDrfSerializer
 from apps.propositions.api.serializers import PropositionDrfSerializer
 from apps.quotes.api.serializers import QuoteDrfSerializer
 from apps.sources.api.serializers import SourceDrfSerializer
-from core.models.module import DrfTypedModuleSerializer
+from core.models.serializers import DrfTypedModuleSerializer
 
 
 class CollectionDrfSerializer(DrfTypedModuleSerializer):
@@ -25,4 +25,5 @@ class CollectionDrfSerializer(DrfTypedModuleSerializer):
             'sources',
             'propositions',
         ]
+        fields.remove('tags')
         read_only_fields = ['truncated_description']
