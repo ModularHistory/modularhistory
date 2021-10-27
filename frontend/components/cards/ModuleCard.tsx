@@ -3,7 +3,6 @@ import { Card } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CSSProperties } from "@mui/styles";
 import { FC, ReactNode } from "react";
-import { titleCase } from "title-case";
 
 const StyledCard = styled(Card)({
   quotes: '"“" "”" "‘" "’"',
@@ -172,7 +171,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
         </CardHeader>
       ) : (
         <CardHeader className={"text-center"}>
-          {module.title && <small>{titleCase(module.title)}</small>}
+          {module.title && <small>{module.title}</small>}
           {module.title && module.dateString && <br />}
           {module.dateString && <small dangerouslySetInnerHTML={{ __html: module.dateString }} />}
         </CardHeader>
