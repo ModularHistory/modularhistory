@@ -30,27 +30,23 @@ const TodayInHistory: FC = () => {
         </Typography>
       </div>
       <Grid container spacing={1} justifyContent="center" alignItems="center">
-        {!items.length && !loading ? null : (
-          <>
-            {loading ? (
-              <Grid item>
-                <Card>
-                  <CardContent>
-                    <Skeleton sx={{ minHeight: 200 }} />
-                  </CardContent>
-                </Card>
+        <>
+          {items.length ? (
+            items.map((module, index) => (
+              <Grid item key={index}>
+                <ModuleUnionCard module={module} key={index} />
               </Grid>
-            ) : (
-              <>
-                {items.map((module, index) => (
-                  <Grid item key={index}>
-                    <ModuleUnionCard module={module} key={index} />
-                  </Grid>
-                ))}
-              </>
-            )}
-          </>
-        )}
+            ))
+          ) : loading ? (
+            <Card>
+              <CardContent>
+                <Skeleton sx={{ minHeight: 200 }} />
+              </CardContent>
+            </Card>
+          ) : (
+            <p>There are no modules associated with this date.</p>
+          )}
+        </>
       </Grid>
     </>
   );
