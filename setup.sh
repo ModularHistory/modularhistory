@@ -194,7 +194,7 @@ fi
 if [[ "$os" == "$MAC_OS" ]]; then
   echo "Updating packages ..."
   # PostgreSQL
-  brew tap homebrew/services && brew_install postgresql@13
+  brew tap homebrew/services && brew_install postgresql@14
   # Other packages
   brew_install ctags
   brew_install fdupes
@@ -228,7 +228,7 @@ elif [[ "$os" == "$LINUX" ]]; then
   libsqlite3-dev \
   libncurses5-dev libncursesw5-dev \
   llvm \
-  postgresql-client-common postgresql-client-13 \
+  postgresql-client-common postgresql-client-14 \
   python-openssl \
   tk-dev \
   xz-utils \
