@@ -83,7 +83,11 @@ export default function Home() {
           </Container>
         </Grid>
         <Grid item xs={12}>
-          <TodayInHistory />
+          <Card elevation={5}>
+            <CardContent>
+              <TodayInHistory />
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Layout>

@@ -10,13 +10,14 @@ from apps.propositions.models import Occurrence
 from apps.quotes.models import Quote
 
 
-class TodayInHistoryViewSet(APIView):
+class TodayInHistoryView(APIView):
     """API endpoint for today in history."""
 
     def get(self, request):
         today = datetime.now()
+        today = datetime(2021, 7, 7)
 
-        todayinhistory_entity = Entity.objects.filter(
+        entities = Entity.objects.filter(
             Q(
                 birth_date__month=today.month,
                 birth_date__day=today.day,
@@ -27,16 +28,15 @@ class TodayInHistoryViewSet(APIView):
             )
         )
 
-        todayinhistory_occurrence = Occurrence.objects.filter(
-            date__month=today.month, date__day=today.day
-        )
+        occurrences = Occurrence.objects.filter(date__month=today.month, date__day=today.day)
 
-        todayinhistory_quote = Quote.objects.filter(
-            date__month=today.month, date__day=today.day
-        )
+        quotes = Quote.objects.filter(date__month=today.month, date__day=today.day)
 
-        todayinhistory_results = chain(
-            todayinhistory_entity, todayinhistory_occurrence, todayinhistory_quote
-        )
+        serialized_results = [
+            instance.serialize() for instance in chain(entities, occurrences, quotes)
+        ]
+        from pprint import pprint
 
-        return Response([instance.serialize() for instance in todayinhistory_results])
+        pprint(serialized_results)
+
+        return Response(serialized_results)
