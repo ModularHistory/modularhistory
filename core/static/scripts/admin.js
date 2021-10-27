@@ -19,40 +19,5 @@ window.addEventListener("load", function() {
                 });
             }
         });
-        // Initialize Trumbowyg editors for HTML fields.
-        $("textarea[trumbowyg]").trumbowyg({
-            resetCss: true,
-            autogrow: true,
-            autogrowOnEnter: true,
-            defaultLinkTarget: "_blank",
-            btnsDef: {
-                image: {
-                    dropdown: [
-                        "upload",
-                        "insertImage",
-                        "base64",
-                        "noembed"
-                    ],
-                    ico: "insertImage"
-                }
-            },
-            btns: [
-                ['viewHTML'],
-                ['formatting'],
-                ['strong', 'em', 'underline', 'del'],
-                ['superscript', 'subscript'],
-                ['removeformat'],
-                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-                ['unorderedList', 'orderedList'],
-                ['horizontalRule'],
-                ['table'],
-                ['link'],
-                ['image'],
-                ['undo', 'redo'], // Only supported in Blink browsers
-                ['fullscreen']
-            ],
-            plugins: {},
-            tagsToRemove: ['script', 'link']
-        });
     })(django.jQuery);
 });

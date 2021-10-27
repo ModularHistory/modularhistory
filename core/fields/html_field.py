@@ -111,8 +111,24 @@ def process(html: str) -> str:
     return html
 
 
+TRUMBOWYG_VERSION = '2.24.0'
+TRUMBOWYG_CDN_BASE_URL = f'//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/{TRUMBOWYG_VERSION}'
+
+
 class TrumbowygWidget(Textarea):
     """Trumbowyg widget for editing HTML fields."""
+
+    class Media:
+        css = {
+            'all': (
+                f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
+                f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
+            )
+        }
+        js = (
+            f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
+            f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
+        )
 
     def render(
         self,
@@ -123,7 +139,49 @@ class TrumbowygWidget(Textarea):
     ) -> SafeText:
         """Render the widget."""
         attrs['trumbowyg'] = True
-        return super().render(name, value, attrs)
+        rendered_widget = super().render(name, value, attrs)
+        # fmt: off
+        rendered_widget += '''
+            <script defer>
+                // Initialize Trumbowyg editors for HTML fields.
+                $('textarea[name="%s"]').trumbowyg({
+                    resetCss: true,
+                    autogrow: true,
+                    autogrowOnEnter: true,
+                    defaultLinkTarget: "_blank",
+                    btnsDef: {
+                        image: {
+                            dropdown: [
+                                "upload",
+                                "insertImage",
+                                "base64",
+                                "noembed"
+                            ],
+                            ico: "insertImage"
+                        }
+                    },
+                    btns: [
+                        ['viewHTML'],
+                        ['formatting'],
+                        ['strong', 'em', 'underline', 'del'],
+                        ['superscript', 'subscript'],
+                        ['removeformat'],
+                        ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                        ['unorderedList', 'orderedList'],
+                        ['horizontalRule'],
+                        ['table'],
+                        ['link'],
+                        ['image'],
+                        ['undo', 'redo'], // Only supported in Blink browsers
+                        ['fullscreen']
+                    ],
+                    plugins: {},
+                    tagsToRemove: ['script', 'link']
+                });
+            </script>
+        ''' % name
+        # fmt: on
+        return rendered_widget
 
 
 class HTMLField(TextField):
