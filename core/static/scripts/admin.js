@@ -12,7 +12,7 @@ window.addEventListener("load", function() {
                 let remainingLength = parseInt(maxLength) - currentLength;
                 const id = `${this.id}-count`;
                 $(this).parent().append(`
-                    <div id="${id}" style="margin-left: 1rem">
+                    <div id="${id}" style="margin-left: 160px; padding-left: 10px;">
                     <small>${currentLength} characters (${remainingLength} remaining)</small>
                     </div>
                 `);
