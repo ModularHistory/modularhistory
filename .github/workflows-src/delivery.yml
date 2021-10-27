@@ -72,8 +72,8 @@ jobs:
       matrix:
         image: [ django, next, webserver ]
     services:
-      postgres:postgres:14
-        image: postgres:12
+      postgres:
+        image: postgres:14
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -99,8 +99,8 @@ jobs:
     needs: [push-image]
     runs-on: ubuntu-latest
     services:
-      postgres:postgres:14
-        image: postgres:12
+      postgres:
+        image: postgres:14
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
