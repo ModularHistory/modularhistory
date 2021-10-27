@@ -8,9 +8,6 @@ from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
 from core.models.slugged import SluggedModel
 
-# Quotes, Sources
-
-
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
