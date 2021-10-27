@@ -117,8 +117,7 @@ const AboutModularHistory: FC = () => {
           </Grid>
           <p>
             ModularHistory is a nonprofit organization dedicated to helping people learn about and
-            understand the history of our world, our society, and issues of modern sociopolitical
-            discourse.
+            understand the history of issues of modern sociopolitical discourse.
           </p>
           <Button variant="contained" href="/about/">
             Learn More
