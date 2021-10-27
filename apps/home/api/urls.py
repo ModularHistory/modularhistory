@@ -5,5 +5,5 @@ from apps.home.api import views
 app_name = 'home'
 
 urlpatterns = [
-    path('todayinhistory/', views.TodayInHistoryViewSet.as_view()),
+    path('today_in_history/', views.TodayInHistoryViewSet.as_view()),
 ]
