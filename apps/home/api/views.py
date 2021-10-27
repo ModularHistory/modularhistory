@@ -15,8 +15,7 @@ class TodayInHistoryView(APIView):
 
     def get(self, request):
         today = datetime.now()
-        today = datetime(2021, 7, 7)
-
+        # today = datetime(2021, 7, 7)  # for testing
         entities = Entity.objects.filter(
             Q(
                 birth_date__month=today.month,
@@ -27,16 +26,9 @@ class TodayInHistoryView(APIView):
                 death_date__day=today.day,
             )
         )
-
         occurrences = Occurrence.objects.filter(date__month=today.month, date__day=today.day)
-
         quotes = Quote.objects.filter(date__month=today.month, date__day=today.day)
-
         serialized_results = [
             instance.serialize() for instance in chain(entities, occurrences, quotes)
         ]
-        from pprint import pprint
-
-        pprint(serialized_results)
-
         return Response(serialized_results)

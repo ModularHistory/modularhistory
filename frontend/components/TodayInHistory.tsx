@@ -24,13 +24,11 @@ const TodayInHistory: FC = () => {
 
   return (
     <>
-      {items.length && (
-        <div style={{ textAlign: "center" }}>
-          <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-            Today in History
-          </Typography>
-        </div>
-      )}
+      <div style={{ textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+          Today in History
+        </Typography>
+      </div>
       <Grid container spacing={1} justifyContent="center" alignItems="center">
         {!items.length && !loading ? null : (
           <>
