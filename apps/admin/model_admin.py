@@ -58,6 +58,21 @@ else:
     ADMIN_CSS = 'styles/admin.css'
 
 TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
+CSS = {
+    'all': (
+        'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
+        f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
+        f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
+        BASE_CSS,
+        ADMIN_CSS,
+    )
+}
+JS = (
+    '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+    f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
+    f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
+    'scripts/admin.js',
+)
 
 
 class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
@@ -68,21 +83,8 @@ class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     class Media:
-        css = {
-            'all': (
-                'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
-                f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
-                BASE_CSS,
-                ADMIN_CSS,
-            )
-        }
-        js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-            f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
-            f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
-            'scripts/admin.js',
-        )
+        css = CSS
+        js = JS
 
     def get_exclude(self, request: HttpRequest, obj: Optional['Model'] = None) -> list[str]:
         """Return the fields to exclude from admin forms."""
