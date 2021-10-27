@@ -11,7 +11,11 @@ window.addEventListener("load", function() {
                 let currentLength = $(this).val().length;
                 let remainingLength = parseInt(maxLength) - currentLength;
                 const id = `${this.id}-count`;
-                $(this).parent().append(`<span id="${id}">${currentLength} characters (${remainingLength} remaining)</span>`);
+                $(this).parent().append(`
+                    <div id="${id}" style="margin-left: 160px; padding-left: 10px;">
+                    <small>${currentLength} characters (${remainingLength} remaining)</small>
+                    </div>
+                `);
                 $(this).unbind('keyup').on('keyup', function (event) {
                     currentLength = $(this).val().length;
                     remainingLength = parseInt(maxLength) - currentLength;
@@ -19,42 +23,5 @@ window.addEventListener("load", function() {
                 });
             }
         });
-        if ($("textarea").length) {
-            // Initialize Trumbowyg editors for HTML fields.
-            $("textarea").trumbowyg({
-                resetCss: true,
-                autogrow: true,
-                autogrowOnEnter: true,
-                defaultLinkTarget: "_blank",
-                btnsDef: {
-                    image: {
-                        dropdown: [
-                            "upload",
-                            "insertImage",
-                            "base64",
-                            "noembed"
-                        ],
-                        ico: "insertImage"
-                    }
-                },
-                btns: [
-                    ['viewHTML'],
-                    ['formatting'],
-                    ['strong', 'em', 'underline', 'del'],
-                    ['superscript', 'subscript'],
-                    ['removeformat'],
-                    ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-                    ['unorderedList', 'orderedList'],
-                    ['horizontalRule'],
-                    ['table'],
-                    ['link'],
-                    ['image'],
-                    ['undo', 'redo'], // Only supported in Blink browsers
-                    ['fullscreen']
-                ],
-                plugins: {},
-                tagsToRemove: ['script', 'link']
-            });
-        }
     })(django.jQuery);
 });
