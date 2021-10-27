@@ -34,7 +34,7 @@ class PropositionType(ModuleType):
 
     arguments = graphene.List(PropositionArgumentType)
     cached_images = GenericScalar(source='cached_images')
-    summary = graphene.String()
+    title = graphene.String()
 
     class Meta:
         model = Proposition
@@ -52,8 +52,8 @@ class PropositionType(ModuleType):
         return 'propositions.proposition'
 
     @staticmethod
-    def resolve_summary(root: Proposition, *args) -> str:
-        return titlecase(root.summary)
+    def resolve_title(root: Proposition, *args) -> str:
+        return titlecase(root.title)
 
 
 class Query(graphene.ObjectType):
