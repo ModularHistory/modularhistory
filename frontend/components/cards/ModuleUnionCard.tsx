@@ -10,7 +10,7 @@ interface HighlightEllipsisProps {
 
 function applyHTMLFilter(unsafeHTML: string) {
   // TODO: Replace regex with more formal fix
-  return unsafeHTML.replace(
+  return `${unsafeHTML}`.replace(
     /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)|(<module[^>]*?>.*?<\/module>)|(<\/?blockquote[^>]*?>)/gi,
     ""
   );
@@ -63,7 +63,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "propositions.occurrence":
       content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
         <HTMLEllipsis
-          unsafeHTML={applyHTMLFilter(module.truncatedElaboration)}
+          unsafeHTML={applyHTMLFilter(module.truncatedElaboration ?? module.elaboration)}
           maxLine="2"
           basedOn="words"
         />

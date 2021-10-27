@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.db.models import Model
 from django.db.models.fields import Field
 from django.db.models.query import QuerySet
-from django.forms import CharField, TextInput, Widget
+from django.forms import Widget
 from django.http import HttpRequest
 from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
@@ -35,14 +35,7 @@ from core.models.manager import SearchableQuerySet
 
 AdminListFilter = Union[str, type[ListFilter]]
 
-char_counter_code = (
-    'if ($(this)).attr("maxLength")) {{ console.log("yes") }} else {{ console.log("no") }}'
-)
-
 FORM_FIELD_OVERRIDES: Mapping[type[Field], Mapping[str, type[Widget]]] = {
-    CharField: {
-        'widget': TextInput(attrs={'onClick': char_counter_code, 'style': 'width: 100%'})
-    },
     HistoricDateTimeField: {'widget': HistoricDateWidget},
     HTMLField: {'widget': TrumbowygWidget},
     JSONField: {'widget': JSONEditorWidget},
@@ -57,7 +50,14 @@ else:
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
 
-TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
+CSS = {
+    'all': (
+        'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
+        BASE_CSS,
+        ADMIN_CSS,
+    )
+}
+JS = ('scripts/admin.js',)
 
 
 class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
@@ -71,16 +71,12 @@ class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
-                f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
                 BASE_CSS,
                 ADMIN_CSS,
             )
         }
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-            f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
-            f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
             'scripts/admin.js',
         )
 
