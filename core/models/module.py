@@ -20,7 +20,7 @@ from apps.search.api.serializers import SearchableModelSerializer
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged import SluggedModel
-from core.models.titled import TitleCaseDrfField, TitleCaseField
+from core.models.titled import TitleCaseField
 from core.models.typed import TypedModel, TypedModelManager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
