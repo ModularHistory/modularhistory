@@ -1,11 +1,20 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
 import mockRouter from "next-router-mock";
 import Router from "next/router";
 import React from "react";
 import Home from "../index.page";
 
+const server = setupServer(
+  rest.get("/api/home/today_in_history/", (req, res, ctx) => res(ctx.json([])))
+);
+
 describe("Home", () => {
+  beforeAll(() => server.listen());
+  afterAll(() => server.close());
+
   it("renders without exceptions", () => {
     render(<Home />);
   });
