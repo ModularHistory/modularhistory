@@ -11,7 +11,11 @@ window.addEventListener("load", function() {
                 let currentLength = $(this).val().length;
                 let remainingLength = parseInt(maxLength) - currentLength;
                 const id = `${this.id}-count`;
-                $(this).parent().append(`<span id="${id}">${currentLength} characters (${remainingLength} remaining)</span>`);
+                $(this).parent().append(`
+                    <div id="${id}" style="margin-left: 1rem">
+                    <small>${currentLength} characters (${remainingLength} remaining)</small>
+                    </div>
+                `);
                 $(this).unbind('keyup').on('keyup', function (event) {
                     currentLength = $(this).val().length;
                     remainingLength = parseInt(maxLength) - currentLength;
