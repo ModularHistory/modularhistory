@@ -1,7 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Skeleton } from "@mui/lab";
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import { Card, CardContent, CardHeader, Grid, Skeleton } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
 
