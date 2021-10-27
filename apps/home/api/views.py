@@ -15,7 +15,7 @@ class TodayInHistoryView(APIView):
 
     def get(self, request):
         today = datetime.now()
-        today = datetime(2021, 7, 7)  # for testing
+        # today = datetime(2021, 7, 7)  # for testing
         entities = Entity.objects.filter(
             Q(
                 birth_date__month=today.month,
