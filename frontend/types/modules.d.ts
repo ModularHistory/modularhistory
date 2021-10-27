@@ -118,7 +118,9 @@ export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposi
 
 export interface FlatPage {
   title: string;
+  metaDescription: string;
   content: string;
+  path: string;
 }
 
 export interface Change {

@@ -12,7 +12,13 @@ const introduction = `
 const Donations: FC = () => {
   return (
     <Layout>
-      <NextSeo title="Donations" />
+      <NextSeo
+        title="Donations"
+        canonical={"/donations"}
+        description={
+          "Learn how you can support ModularHistory's educational mission through a small one-time or recurring donation."
+        }
+      />
       <Container
         sx={{
           height: "100%",

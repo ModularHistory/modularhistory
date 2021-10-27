@@ -32,7 +32,13 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Quotes"} />
+      <NextSeo
+        title={"Quotes"}
+        canonical={"/quotes"}
+        description={
+          "Search historical quotes from persons of interest, or search quotes related to a topic of interest."
+        }
+      />
       <Container>
         <PageHeader>Quotes</PageHeader>
         <Pagination count={quotesData["totalPages"]} />

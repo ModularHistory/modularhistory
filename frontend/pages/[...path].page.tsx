@@ -16,7 +16,7 @@ const FlatPage: FC<FlatPageProps> = ({ page }: FlatPageProps) => {
 
   return (
     <Layout>
-      <NextSeo title={page.title} />
+      <NextSeo title={page.title} canonical={page.path} description={page.metaDescription} />
       <Container style={{ padding: `1.25rem ${isSmall ? "1.25rem" : "5rem"}`, maxWidth: "50rem" }}>
         <h1>{page.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: page.content }} />
