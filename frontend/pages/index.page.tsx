@@ -91,7 +91,7 @@ export default function Home() {
     <Grid container>
       <Box sx={{ fontWeight: "100" }}>
         <Typography style={{ fontSize: "10pt" }}>
-          By entering your details, you are agreeing to ModularHistory{" "}
+          {"By entering your details, you are agreeing to ModularHistory's "}
           <Link href="/privacy">
             <a>privacy policy</a>
           </Link>{" "}
