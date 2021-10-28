@@ -163,6 +163,7 @@ INSTALLED_APPS = [
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
     'apps.graph.apps.GraphConfig',
+    'apps.home.apps.HomeConfig',
     'apps.images.apps.ImagesConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.moderation.apps.ModerationConfig',

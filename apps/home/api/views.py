@@ -1,23 +1,21 @@
-from itertools import chain
 
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.entities.models import Entity
-from apps.propositions.models import Occurrence
-from apps.quotes.models import Quote
+from apps.home.models import Feature
 
 
-class FeaturedContentViewSet(APIView):
+class FeatureAPIView(APIView):
     """API endpoint for featured contents."""
 
     def get(self, request):
         """Return the featured query"""
+        now = timezone.now()
 
-        featured_entity = Entity.objects.all()
-        featured_occurence = Occurrence.objects.all()
-        featured_quote = Quote.objects.all()
-
-        featured_contents = chain(featured_entity, featured_occurence, featured_quote)
-
-        return Response([instance.serialize() for instance in featured_contents])
+        results = Feature.objects.filter(
+            start_date__lte=timezone.now(), end_date__gte=timezone.now()
+        )
+        # results = Feature.objects.all()
+        return Response([result.content_object.serialize() for result in results])
+        # return Response([Feature.objects.count()])

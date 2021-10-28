@@ -40,4 +40,4 @@ class Feature(ExtendedModel):
     )
 
     def __str__(self):
-        return self.ct_field
+        return f'{self.content_object}'

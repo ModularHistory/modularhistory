@@ -5,5 +5,5 @@ from apps.home.api import views
 app_name = 'home'
 
 urlpatterns = [
-    path('featuredcontent/', views.FeaturedContentViewSet.as_view()),
+    path('feature/', views.FeatureAPIView.as_view()),
 ]
