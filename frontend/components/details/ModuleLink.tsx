@@ -54,14 +54,14 @@ const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
   const model = anchorProps.href?.split("/").filter(Boolean)[0] || "";
   const id = anchorProps["data-id"];
 
-  // under failure conditions, revert to rendering a normal anchor element
+  // Under failure conditions, revert to rendering a normal anchor element.
   if (!anchorProps.href || !allowedModels.has(model) || isFailure) {
     return <a {...anchorProps}>{anchorChildren}</a>;
   }
 
   const { target, ...anchorPropsWithoutTarget } = anchorProps;
 
-  // if we are not on the search page, use Next link instead of ModuleModal
+  // If we are not on the search page, use Next link instead of ModuleModal.
   if (router.pathname !== "/search") {
     return (
       <StyledSpan>

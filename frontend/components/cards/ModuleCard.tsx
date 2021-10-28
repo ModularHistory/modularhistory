@@ -11,7 +11,7 @@ const StyledCard = styled(Card)({
   textOverflow: "ellipsis",
   minHeight: "15rem",
   color: "black",
-  "&:first-child": {
+  "&:first-of-type": {
     marginTop: "0 !important",
   },
   "& .fa": {

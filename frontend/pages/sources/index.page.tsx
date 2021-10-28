@@ -2,6 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import Citation from "@/components/sources/Citation";
 import { Source } from "@/types/modules";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
@@ -45,7 +46,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
               {sources.map((source) => (
                 <TableRow key={source.slug}>
                   <TableCell scope="row">
-                    <span dangerouslySetInnerHTML={{ __html: source.citationHtml }} />
+                    <Citation html={source.citationHtml} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -68,6 +69,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/sources/", { params: context.query })
     .then((response) => {
       sourcesData = response.data;
+      console.log(">>>>>", sourcesData);
     });
 
   return {
