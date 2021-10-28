@@ -30,15 +30,13 @@ from graphene_django.views import GraphQLView
 from watchman.views import bare_status
 
 from apps.admin.model_admin import admin_site
-from apps.propositions.map import PropositionSitemap
 from apps.users.api.views import set_csrf_token
 from core import errors
 from core.environment import IS_DEV
+from core.sitemap import sitemaps
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
-
-sitemaps = {'propositions': PropositionSitemap}
 
 
 class ModelGraphView(TemplateView):
