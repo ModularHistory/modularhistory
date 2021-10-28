@@ -90,13 +90,18 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       break;
     }
     case "sources.source":
+    case "sources.article":
+    case "sources.book":
+    case "sources.correspondence":
+    case "sources.document":
+    case "sources.speech":
       content = (
         <div>{module.citationHtml && <HighlightEllipsis unsafeHTML={module.citationHtml} />}</div>
       );
       break;
+    case "entities.entity":
     case "entities.person":
     case "entities.organization":
-    case "entities.entity":
     case "entities.group":
       content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
         <HTMLEllipsis

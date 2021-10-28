@@ -70,7 +70,13 @@ export interface Occurrence extends Proposition {
 }
 
 export interface Source extends SearchableModule {
-  model: "sources.source";
+  model:
+    | "sources.source"
+    | "sources.article"
+    | "sources.book"
+    | "sources.correspondence"
+    | "sources.document"
+    | "sources.speech";
   citationHtml: string;
   citationString: string;
   meta?: Meta;
