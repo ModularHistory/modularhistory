@@ -1,8 +1,9 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Card, CardContent, Grid, Skeleton } from "@mui/material";
+import { Card, CardContent, CardHeader, Grid, Skeleton } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
 
@@ -39,12 +40,17 @@ const TodayInHistory: FC = () => {
         <>
           {items.length ? (
             items.map((module, index) => (
-              <Grid item key={index}>
-                <ModuleUnionCard module={module} key={index} />
-              </Grid>
+              <Link href={module.absoluteUrl} key={index}>
+                <a>
+                  <Grid item>
+                    <ModuleUnionCard module={module} key={index} />
+                  </Grid>
+                </a>
+              </Link>
             ))
           ) : loading ? (
             <Card>
+              <CardHeader title={"Fetching content"} />
               <CardContent>
                 <Skeleton sx={{ minHeight: 200 }} />
               </CardContent>
