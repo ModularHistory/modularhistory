@@ -59,6 +59,8 @@
         "nextjs",
         "nlevel",
         "noembed",
+        "nofollow",
+        "noindex",
         "noinput",
         "noqa",
         "OSSAR",

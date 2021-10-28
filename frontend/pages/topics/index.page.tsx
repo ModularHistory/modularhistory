@@ -29,7 +29,11 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Topics"} />
+      <NextSeo
+        title={"Topics"}
+        canonical={"/topics"}
+        description={"Browse and learn about the history of your topics of interest."}
+      />
       <Container>
         <PageHeader>Topics</PageHeader>
         <div style={{ marginBottom: "2rem", textAlign: "center" }}>

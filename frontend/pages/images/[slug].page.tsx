@@ -17,7 +17,11 @@ interface ImageProps {
 const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
     <Layout>
-      <NextSeo title={image.captionHtml} />
+      <NextSeo
+        title={image.captionHtml}
+        canonical={image.absoluteUrl}
+        description={image.captionHtml}
+      />
       <ModuleContainer>
         <ModuleDetail module={image} />
       </ModuleContainer>
