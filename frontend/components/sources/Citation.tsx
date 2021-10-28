@@ -34,8 +34,8 @@ const Citation: FC<CitationProps> = ({ html }: CitationProps) => {
             if (element.name === "a") {
               const { href } = element.attribs;
 
-              // Don't process non-PDF links.
-              if (!href?.includes(".pdf")) {
+              // Only process links for hosted PDFs.
+              if (!href?.includes(".pdf") || href?.includes("//")) {
                 return;
               }
 

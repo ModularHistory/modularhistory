@@ -69,7 +69,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/sources/", { params: context.query })
     .then((response) => {
       sourcesData = response.data;
-      console.log(">>>>>", sourcesData);
     });
 
   return {

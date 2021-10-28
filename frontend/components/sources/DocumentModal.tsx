@@ -12,8 +12,8 @@ import {
   styled,
   useMediaQuery,
 } from "@mui/material";
-import { Dispatch, FC, SetStateAction, useState } from "react";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import { Dispatch, FC, SetStateAction } from "react";
+import PdfViewer from "./PdfViewer";
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
@@ -25,46 +25,26 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 interface DocumentModalProps extends DialogProps {
   url: string | null;
   initialPageNumber: string | undefined;
+  header?: string | undefined;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const DocumentModal: FC<DocumentModalProps> = (props: DocumentModalProps) => {
-  const { url, initialPageNumber, open, setOpen, ...dialogProps } = props;
+  const { url, initialPageNumber, header, open, setOpen, ...dialogProps } = props;
   const close = () => setOpen(false);
-  const [pageNumber, setPageNumber] = useState(initialPageNumber ? parseInt(initialPageNumber) : 1);
-  const [numPages, setNumPages] = useState(null);
-
   // modal is fullscreen when the viewport is small
   const fullScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
-
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
-
   return (
     <Dialog open={open} onClose={close} fullScreen={fullScreen} {...dialogProps}>
       <DialogTitle>
-        {url ?? <Skeleton width={"80%"} />}
+        {header ?? url ?? <Skeleton width={"80%"} />}
         <CloseButton aria-label="close" onClick={close}>
           <CloseIcon />
         </CloseButton>
       </DialogTitle>
       <DialogContent dividers>
         {url ? (
-          <div>
-            <Document
-              file={url}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={<Skeleton width="100%" />}
-            >
-              <Page pageNumber={pageNumber} />
-            </Document>
-            {numPages && (
-              <p>
-                Page {pageNumber} of {numPages}
-              </p>
-            )}
-          </div>
+          <PdfViewer url={url} initialPageNumber={initialPageNumber} />
         ) : (
           <Skeleton
             variant={"rectangular"}

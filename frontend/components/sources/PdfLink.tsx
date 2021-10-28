@@ -41,6 +41,7 @@ const PdfLink: FC<PdfLinkProps> = ({ anchorProps, anchorChildren }) => {
     return <a {...anchorProps}>{anchorChildren}</a>;
   }
 
+  const title = anchorProps.title;
   const { target, ...anchorPropsWithoutTarget } = anchorProps;
 
   const fetchDocument = () => {
@@ -69,6 +70,7 @@ const PdfLink: FC<PdfLinkProps> = ({ anchorProps, anchorChildren }) => {
       <DocumentModal
         url={url}
         initialPageNumber={pageNumber}
+        header={title}
         setOpen={setModalOpen}
         open={modalOpen}
       />
