@@ -7,6 +7,7 @@ from apps.propositions.models import Argument, Citation, Occurrence, Proposition
 from apps.sources.api.serializers import CitationDrfSerializerMixin
 from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfTypedModuleSerializer
+from core.models.titled import TitleCaseDrfField
 
 
 class CitationDrfSerializer(CitationDrfSerializerMixin):
@@ -103,6 +104,8 @@ class PropositionDrfSerializer(_PropositionDrfSerializer):
 
 class OccurrenceDrfSerializer(PropositionDrfSerializer):
     """Serializer for occurrences."""
+
+    title = TitleCaseDrfField()
 
     class Meta(PropositionDrfSerializer.Meta):
         model = Occurrence
