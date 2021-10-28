@@ -38,7 +38,7 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
       />
       <ModuleContainer>
         <ModuleDetail module={entity} />
-        {entity.relatedQuotes && entity.relatedQuotes.length && (
+        {entity.relatedQuotes && entity.relatedQuotes.length > 0 && (
           <>
             <CardHeader
               title={`Quotes from ${entity.name}:`}
