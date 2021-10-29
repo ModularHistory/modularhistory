@@ -1,6 +1,5 @@
 """API views for the account app."""
 
-
 from typing import TYPE_CHECKING
 
 from dj_rest_auth.views import LoginView
@@ -10,8 +9,7 @@ from django.http import Http404, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import generics, permissions, serializers, status
-from rest_framework.response import Response
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 
 from apps.users.api.serializers import (

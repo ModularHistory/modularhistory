@@ -1,9 +1,14 @@
 """Serializers for the account app."""
 
+from typing import TYPE_CHECKING
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from apps.users.models import SocialAccount, User
+
+if TYPE_CHECKING:
+    from rest_framework.request import Request
 
 
 class SocialAccountSerializer(serializers.ModelSerializer):
@@ -20,7 +25,7 @@ class SocialLoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)
     id_token = serializers.CharField(required=False, allow_blank=True)
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict):
         request: 'Request' = self.context['request']
         provider = request.data['account']['provider']
         credentials = request.data['credentials']
@@ -56,7 +61,7 @@ class RegistrationSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
     password_confirmation = serializers.CharField(write_only=True)
 
-    def validate_email(self, email):
+    def validate_email(self, email: str):
         # email = get_adapter().clean_email(email)
         if email and User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
@@ -64,11 +69,11 @@ class RegistrationSerializer(serializers.Serializer):
             )
         return email
 
-    def validate_password(self, password):
+    def validate_password(self, password: str):
         return password
         # return get_adapter().clean_password(password)
 
-    def validate(self, data):
+    def validate(self, data: dict):
         if data['password'] != data['password_confirmation']:
             raise serializers.ValidationError(_("The two password fields didn't match."))
         return data
