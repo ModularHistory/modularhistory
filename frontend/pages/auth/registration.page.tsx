@@ -1,4 +1,5 @@
 import { handleLogout } from "@/auth";
+import axios from "@/axiosWithAuth";
 import Layout from "@/components/Layout";
 import { Alert, Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
 import Container from "@mui/material/Container";
@@ -46,8 +47,9 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const router = useRouter();
   const [session, loading] = useSession();
   const [redirecting, setRedirecting] = useState(false);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
   const callbackUrl = router.query?.callbackUrl;
   const redirectUrl = callbackUrl || process.env.BASE_URL;
@@ -59,6 +61,11 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   useEffect(() => {
     if (redirecting) {
       const url = redirectUrl ?? window.location.origin;
+      console.log(typeof url);
+      console.log(">>>>>window", window);
+      console.log(">>>>>location", window.location);
+      console.log(">>>>>origin", window.location.origin);
+      console.log(">>>>>url", url);
       // TODO: Refactor to centralize the regex test in some other module.
       // Use Next.js router to redirect to a React page,
       // or use window.location to redirect to a non-React page.
@@ -72,28 +79,37 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   }, [redirecting, router, redirectUrl]);
   const handleCredentialLogin: FormEventHandler = async (event) => {
     event.preventDefault();
-    if (!username || !password) {
-      setError("You must enter your username and password.");
+    if (!email) {
+      setError("You must enter your email address.");
+    } else if (!password) {
+      setError("You must enter a password.");
+    } else if (!passwordConfirmation) {
+      setError("You must confirm your new password.");
+    } else if (password != passwordConfirmation) {
+      setError("Your password and password confirmation do not match.");
     } else {
-      let response;
-      try {
-        response = await signIn("credentials", {
-          username,
+      await axios
+        .post("/api/users/auth/registration/", {
+          email,
           password,
-          callbackUrl: redirectUrl,
-          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-          redirect: false,
+          passwordConfirmation,
+        })
+        .then(function () {
+          signIn("credentials", {
+            username: email,
+            password: password,
+            callbackUrl: redirectUrl,
+            // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+            redirect: false,
+          });
+          console.log(">>>>>>>", redirectUrl);
+          setRedirecting(true);
+        })
+        .catch(function (error) {
+          // eslint-disable-next-line no-console
+          console.error(`${error}`);
+          setError("Invalid credentials.");
         });
-      } catch (error) {
-        response = { error: `${error}` };
-      }
-      if (response?.error) {
-        // Response contains `error`, `status`, and `url` (intended redirect url).
-        setError("Invalid credentials.");
-      } else {
-        // Response contains `ok` and `url` (intended redirect url).
-        setRedirecting(true);
-      }
     }
   };
   const handleSocialLogin = async (provider_id: string) => {
@@ -128,9 +144,9 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   return (
     <Layout>
       <NextSeo
-        title={"Sign in"}
-        canonical={"/auth/signin"}
-        description={"Sign in to your ModularHistory account, or create a free account now."}
+        title={"Sign up"}
+        canonical={"/auth/registration"}
+        description={"Register for a free ModularHistory account."}
       />
       <Container>
         <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
@@ -160,7 +176,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
             (!session?.user && (
               <div id="sign-in">
                 <h1 className="page-title text-center" style={{ margin: "1rem" }}>
-                  Sign in
+                  Sign up
                 </h1>
                 <form method="post" onSubmit={handleCredentialLogin}>
                   {csrfToken && <input type="hidden" name="csrfToken" value={csrfToken} />}
@@ -169,13 +185,13 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
                           <TextField
-                            id="username"
-                            name="username"
-                            label="Username or email address"
+                            id="email"
+                            name="email"
+                            label="Email address"
                             variant="outlined"
                             size="small"
                             fullWidth
-                            onChange={(event) => setUsername(event.target.value)}
+                            onChange={(event) => setEmail(event.target.value)}
                           />
                         </Grid>
                         <Grid item xs={12}>
@@ -190,17 +206,29 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                             onChange={(event) => setPassword(event.target.value)}
                           />
                         </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            id="password-confirmation"
+                            name="passwordConfirmation"
+                            label="Confirm password"
+                            variant="outlined"
+                            type="password"
+                            size="small"
+                            fullWidth
+                            onChange={(event) => setPasswordConfirmation(event.target.value)}
+                          />
+                        </Grid>
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
                       <Button fullWidth type="submit" variant="contained">
-                        Sign in
+                        Register
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
                       <p>
-                        {"Don't have an account? "}
-                        <Link href="/auth/registration">Register</Link> for a free account now.
+                        {"Already have an account? "}
+                        <Link href="/auth/registration">Sign in</Link>.
                       </p>
                     </Grid>
                   </Grid>
