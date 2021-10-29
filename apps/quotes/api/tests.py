@@ -1,4 +1,4 @@
-"""Tests for the quotes app."""
+"""Tests for the quotes api."""
 
 import pytest
 

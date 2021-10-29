@@ -1,5 +1,5 @@
 """Serializers for the entities app."""
-
+from apps.dates.fields import HistoricDateTimeDrfField
 from apps.images.models import Image, Video
 from apps.images.models.media_model import MediaModel
 from core.models.serializers import DrfModuleSerializer
@@ -8,9 +8,15 @@ from core.models.serializers import DrfModuleSerializer
 class MediaModelDrfSerializer(DrfModuleSerializer):
     """Serializer for media models."""
 
+    date = HistoricDateTimeDrfField(write_only=True, required=False)
+    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+
     class Meta(DrfModuleSerializer.Meta):
         model = MediaModel
         fields = DrfModuleSerializer.Meta.fields + [
+            'date',
+            'end_date',
+            'date_string',
             'caption',
             'description',
             'provider',
