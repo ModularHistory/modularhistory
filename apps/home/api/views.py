@@ -10,7 +10,6 @@ class FeatureAPIView(APIView):
 
     def get(self, request):
         """Return the featured query"""
-        now = timezone.now()
 
         results = Feature.objects.filter(
             start_date__lte=timezone.now(), end_date__gte=timezone.now()
