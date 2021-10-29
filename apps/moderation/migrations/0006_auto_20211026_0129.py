@@ -18,11 +18,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='moderation',
             name='date',
-            field=models.DateTimeField(auto_now_add=True, help_text='The date of the moderation'),
+            field=models.DateTimeField(
+                auto_now_add=True, help_text='The date of the moderation'
+            ),
         ),
         migrations.AlterField(
             model_name='moderation',
             name='reason',
-            field=models.TextField(blank=True, help_text='The reason for the moderation verdict (approval or rejection)', null=True),
+            field=models.TextField(
+                blank=True,
+                help_text='The reason for the moderation verdict (approval or rejection)',
+                null=True,
+            ),
         ),
     ]

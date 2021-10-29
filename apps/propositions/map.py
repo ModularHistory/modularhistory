@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
 
-class PropositionSitemap(Sitemap):
+class PropositionsMap(Sitemap):
     """Sitemap for propositions."""
 
     priority = 0.6

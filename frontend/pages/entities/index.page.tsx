@@ -34,7 +34,13 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
 
   return (
     <Layout>
-      <NextSeo title={"Entities"} canonical={"/entities"} />
+      <NextSeo
+        title={"Entities"}
+        canonical={"/entities"}
+        description={
+          "Browse historical persons and organizations, and learn how entities of interest have conducted themselves in the context of issues that matter to people today."
+        }
+      />
       <Container>
         <PageHeader>Entities</PageHeader>
         <Pagination count={entitiesData["totalPages"]} />

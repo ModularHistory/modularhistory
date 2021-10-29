@@ -17,7 +17,11 @@ interface SourceProps {
 const SourceDetailPage: FC<SourceProps> = ({ source }: SourceProps) => {
   return (
     <Layout>
-      <NextSeo title={source.title || source.citationString} canonical={source.absoluteUrl} />
+      <NextSeo
+        title={source.title || source.citationString}
+        canonical={source.absoluteUrl}
+        description={`View details regarding, and quotations from, ${source.citationString}`}
+      />
       <ModuleContainer>
         <ModuleDetail module={source} />
       </ModuleContainer>

@@ -247,7 +247,7 @@ services:
       - "data:/data"
 
   postgres:
-    image: postgres
+    image: postgres:14
     deploy:
       restart_policy:
         condition: any
@@ -316,7 +316,7 @@ services:
       webserver:
         condition: service_healthy
     environment:
-      - CYPRESS_baseUrl=https://www.modularhistory.com/
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
     working_dir: /e2e
     volumes:
       - ./frontend/cypress:/e2e/cypress

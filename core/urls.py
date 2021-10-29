@@ -30,15 +30,13 @@ from graphene_django.views import GraphQLView
 from watchman.views import bare_status
 
 from apps.admin.model_admin import admin_site
-from apps.propositions.map import PropositionSitemap
 from apps.users.api.views import set_csrf_token
 from core import errors
 from core.environment import IS_DEV
+from core.sitemap import sitemaps
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
-
-sitemaps = {'propositions': PropositionSitemap}
 
 
 class ModelGraphView(TemplateView):
@@ -70,16 +68,16 @@ urlpatterns = [
     # App URLs
     # ---------------------------------
     path('chat/', include('apps.chat.urls', namespace='chat')),
-    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
-    path('api/redirects/', include(_api('redirects'), namespace='redirects_api')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
+    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('api/home/', include(_api('home'), namespace='home_api')),
-    path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),
     path('api/images/', include(_api('images'), namespace='images_api')),
     path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('api/places/', include(_api('places'), namespace='places_api')),
+    path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),
     path('api/quotes/', include(_api('quotes'), namespace='quotes_api')),
+    path('api/redirects/', include(_api('redirects'), namespace='redirects_api')),
     path('api/search/', include(_api('search'), namespace='search_api')),
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('api/topics/', include(_api('topics'), namespace='topics_api')),

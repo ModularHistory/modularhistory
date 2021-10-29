@@ -51,6 +51,11 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
         title={title}
         // TODO: build canonical URL for search?
         // canonical={"/search"}
+        description={
+          query
+            ? `See occurrences, quotes, sources, etc. related to ${query}`
+            : `Browse historical occurrences, quotes, sources, and more.`
+        }
       />
       {props.results.length === 0 ? (
         <EmptySearchResults />
