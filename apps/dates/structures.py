@@ -98,7 +98,7 @@ class HistoricDateTime(datetime):
         second: int,
         microsecond: int,
         tzinfo: Optional[tzinfo] = None,
-    ):
+    ) -> 'HistoricDateTime':
         """Create an instance."""
         tzinfo = tzinfo or UTC
         return super().__new__(

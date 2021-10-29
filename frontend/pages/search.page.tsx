@@ -3,9 +3,21 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
+import { GlobalTheme } from "@/pages/_app.page";
 import { ModuleUnion, Topic } from "@/types/modules";
-import { Box, Container, Drawer, useMediaQuery } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Compress } from "@mui/icons-material";
+import {
+  Box,
+  Container,
+  Divider,
+  Drawer,
+  Slider,
+  SliderMark,
+  SliderProps,
+  Stack,
+  styled,
+  useMediaQuery,
+} from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -22,6 +34,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { InView } from "react-intersection-observer";
 
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
   ssr: false,
@@ -45,6 +58,76 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
   } = useRouter();
   const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
 
+  props.results.forEach((r, index) => {
+    r.ybp = 2021 - Number(r.dateString.match(/\d{4}/)[0]) + Number(`${index}e-3`);
+  });
+
+  const [viewState, setViewState] = useState(() =>
+    Object.fromEntries(props.results.map((r) => [r.model + "-" + r.slug, false]))
+  );
+
+  const marks: SliderProps["marks"] = [];
+  //   { value: 1e4 },
+  //   { value: 0 },
+  //   { value: 8000, label: "YBP" },
+  //   { value: 2021, label: "1 CE" },
+  // ];
+  const years = props.results.map((r) => r.ybp).sort((a, b) => a - b);
+  props.results.forEach((r) =>
+    marks.push({ value: r.ybp, label: viewState[r.model + "-" + r.slug] ? r.slug : null })
+  );
+  console.log({ years, marks });
+  const rangeEndIndex = years.findIndex((x) => x > (years[0] + years[years.length - 1]) / 2);
+  let range = [years[rangeEndIndex - 1], years[rangeEndIndex]];
+  range = [range[0] + (range[1] - range[0]) * 5e-2, range[1] - (range[1] - range[0]) * 5e-2].map(
+    Math.floor
+  );
+  console.log({ range, rangeEndIndex });
+  const scale = (n: number) => {
+    if (n > range[0]) return n - Math.floor(range[1] - range[0]);
+    return n;
+  };
+  const descale = (n: number) => {
+    if (n > range[0]) return n + Math.floor(range[1] - range[0]);
+    return n;
+  };
+  marks.forEach((mark) => (mark.value = scale(mark.value)));
+  marks.push({ value: range[0], label: `${2021 - range[1]} CE — ${2021 - range[0]} CE` });
+
+  const slider = (
+    <Slider
+      orientation={"vertical"}
+      // components={{Mark: (props) => <span {...props}><CloseIcon/></span>}}
+      valueLabelDisplay={"on"}
+      min={Math.floor(years[0])}
+      max={scale(Math.ceil(years[years.length - 1]))}
+      marks={marks}
+      defaultValue={[Math.floor(years[0]), Math.ceil(years[years.length - 1])].map(scale)}
+      valueLabelFormat={(value) => {
+        if (value === range[0]) return "break";
+        return `${2021 - descale(value)} CE`; // return `${2021 - value} CE`;
+      }}
+      sx={{
+        height: "80vh",
+        position: "fixed",
+        left: "40px",
+        "& .MuiSlider-mark": {
+          width: "12px",
+          backgroundColor: "#212529",
+        },
+      }}
+      components={{
+        Mark: (props) => (
+          <SliderMark {...props}>
+            {props["data-index"] === 20 && (
+              <Compress sx={{ transform: "translate(-25%, -50%)", backgroundColor: "white" }} />
+            )}
+          </SliderMark>
+        ),
+      }}
+    />
+  );
+
   return (
     <Layout>
       <NextSeo
@@ -66,7 +149,17 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
 
             <div className="results-container">
               <SearchPageHeader {...props} />
-              <SearchResultsPanes {...props} />
+              {/*<hr />*/}
+              {/*{slider}*/}
+              {/*<hr />*/}
+              <Stack
+                direction={"row"}
+                spacing={12}
+                divider={<Divider orientation="vertical" flexItem />}
+              >
+                {slider}
+                <SearchResultsPanes {...props} setViewState={setViewState} />
+              </Stack>
             </div>
           </div>
 
@@ -219,6 +312,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   setModuleIndexFromEvent,
   setModalOpen,
   initialUrlAnchor,
+  setViewState,
 }) => {
   const selectModule: MouseEventHandler = (event) => {
     setModuleIndexFromEvent(event);
@@ -243,18 +337,26 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
       }}
     >
       {modules.map((module, index) => (
-        <a
-          href={module.absoluteUrl}
-          className="result 2pane-result"
-          data-href={module.absoluteUrl}
-          data-key={module.slug}
-          key={module.slug}
-          data-index={index}
-          onClick={selectModule}
-          ref={initialUrlAnchor === module.slug && index !== 0 ? initialModuleRef : undefined}
+        <InView
+          as="div"
+          onChange={(inView) => {
+            console.log(`Inview: ${inView}`, module.slug);
+            setViewState((os) => ({ ...os, [module.model + "-" + module.slug]: inView }));
+          }}
         >
-          <ModuleUnionCard module={module} selected={index === moduleIndex} />
-        </a>
+          <a
+            href={module.absoluteUrl}
+            className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
+            data-href={module.absoluteUrl}
+            data-key={module.slug}
+            key={module.slug}
+            data-index={index}
+            onClick={selectModule}
+            ref={initialUrlAnchor === module.slug && index !== 0 ? initialModuleRef : undefined}
+          >
+            <ModuleUnionCard module={module} selected={index === moduleIndex} />
+          </a>
+        </InView>
       ))}
     </Box>
   );
@@ -278,7 +380,7 @@ const SearchResultsRightPane: FC<PaneProps> = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // media query value is based on /core/static/styles/serp.css
-  const smallScreen = useMediaQuery("(max-width: 660px)");
+  const smallScreen = useMediaQuery((theme: GlobalTheme) => theme.breakpoints.down("sm"));
   const selectedModule = modules[moduleIndex] || modules[0];
 
   if (smallScreen) {

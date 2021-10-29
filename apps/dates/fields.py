@@ -86,3 +86,8 @@ class HistoricDateTimeDrfField(DrfDateTimeField):
             tzinfo=value.tzinfo,
         )
         return value
+
+
+class HistoricDateTimeDrfMultiField(DrfDateTimeField):
+    def to_representation(self, value: HistoricDateTime):
+        return {'raw': value, 'ybp': value.year_bp}

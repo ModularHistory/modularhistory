@@ -8,6 +8,7 @@ class _PropositionSerializer(ModuleSerializer):
 
     summary = serpy.StrField()
     elaboration = serpy.StrField()
+    truncated_elaboration = serpy.StrField()
     certainty = serpy.IntField(required=False)
     date_string = serpy.StrField()
     cached_images = serpy.Field()
@@ -26,14 +27,6 @@ class ArgumentSerializer(serpy.Serializer):
 class PropositionSerializer(_PropositionSerializer):
     """Serializer for propositions."""
 
-    summary = serpy.StrField()
-    elaboration = serpy.StrField()
-    certainty = serpy.IntField(required=False)
-    date_string = serpy.StrField()
-    cached_images = serpy.Field()
-    primary_image = serpy.Field()
-    cached_citations = serpy.Field()
-    tags_html = serpy.StrField()
     arguments = ArgumentSerializer(many=True, attr='arguments.all', call=True)
 
 

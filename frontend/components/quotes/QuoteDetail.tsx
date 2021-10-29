@@ -13,6 +13,8 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
   const firstImage = quote.cachedImages?.[0];
   return (
     <>
+      <pre>{quote.dateMulti.raw}</pre>
+      <pre>{JSON.stringify(quote, null, 4)}</pre>
       <h2 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
 
       {firstImage && (
