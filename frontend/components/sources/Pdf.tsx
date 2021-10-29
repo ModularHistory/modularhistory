@@ -1,9 +1,11 @@
 import { Skeleton } from "@mui/material";
-import { FC, useState } from "react";
-import { pdfjs } from "react-pdf";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import { FC } from "react";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdfJsVersion must match the version of pdfjs-dist specified in frontend/package.json
+const pdfJsVersion = "2.10.377";
+const workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfJsVersion}/pdf.worker.js`;
 
 export interface PdfProps {
   url: string | null;
@@ -12,53 +14,19 @@ export interface PdfProps {
 
 const Pdf: FC<PdfProps> = (props: PdfProps) => {
   const { url, initialPageNumber } = props;
-  const [pageNumber, setPageNumber] = useState(initialPageNumber ? parseInt(initialPageNumber) : 1);
-  const [numPages, setNumPages] = useState<number | null>(null);
-
-  interface onDocumentLoadSuccessProps {
-    numPages: number;
-  }
-  function onDocumentLoadSuccess({ numPages }: onDocumentLoadSuccessProps) {
-    setNumPages(numPages);
-  }
-
-  function changePage(offset: number) {
-    setPageNumber((prevPageNumber) => prevPageNumber + offset);
-  }
-
-  function previousPage() {
-    changePage(-1);
-  }
-
-  function nextPage() {
-    changePage(1);
-  }
-
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
     <div>
       {url ? (
-        <div>
-          <Document
-            file={url}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={<Skeleton width="100%" />}
-          >
-            <Page pageNumber={pageNumber} />
-          </Document>
-          {numPages && (
-            <div>
-              <p>
-                Page {pageNumber} of {numPages}
-              </p>
-              <button type="button" disabled={pageNumber <= 1} onClick={previousPage}>
-                Previous
-              </button>
-              <button type="button" disabled={pageNumber >= numPages} onClick={nextPage}>
-                Next
-              </button>
-            </div>
-          )}
-        </div>
+        <Worker workerUrl={workerSrc}>
+          <div>
+            <Viewer
+              fileUrl={url}
+              initialPage={parseInt(initialPageNumber || "1")}
+              plugins={[defaultLayoutPluginInstance]}
+            />
+          </div>
+        </Worker>
       ) : (
         <Skeleton
           variant={"rectangular"}

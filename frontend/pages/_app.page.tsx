@@ -7,6 +7,8 @@ import "@/styles/globals.css";
 import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { DefaultSeo } from "next-seo";

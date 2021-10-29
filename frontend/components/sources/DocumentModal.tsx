@@ -13,7 +13,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Dispatch, FC, SetStateAction } from "react";
-import PdfViewer from "./PdfViewer";
+import Pdf from "./Pdf";
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
@@ -35,16 +35,25 @@ const DocumentModal: FC<DocumentModalProps> = (props: DocumentModalProps) => {
   // modal is fullscreen when the viewport is small
   const fullScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
   return (
-    <Dialog open={open} onClose={close} fullScreen={fullScreen} {...dialogProps}>
+    <Dialog
+      open={open}
+      onClose={close}
+      maxWidth="lg"
+      fullWidth={true}
+      fullScreen={fullScreen}
+      {...dialogProps}
+    >
       <DialogTitle>
-        {header ?? url ?? <Skeleton width={"80%"} />}
+        {header ?? (url ? url.replace("/media/sources/", "") : undefined) ?? (
+          <Skeleton width={"80%"} />
+        )}
         <CloseButton aria-label="close" onClick={close}>
           <CloseIcon />
         </CloseButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers style={{ padding: "0 1px 1px" }}>
         {url ? (
-          <PdfViewer url={url} initialPageNumber={initialPageNumber} />
+          <Pdf url={url} initialPageNumber={initialPageNumber} />
         ) : (
           <Skeleton
             variant={"rectangular"}
@@ -53,12 +62,7 @@ const DocumentModal: FC<DocumentModalProps> = (props: DocumentModalProps) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button
-          component={"a"}
-          // href={`${url}`}
-          target={"_blank"}
-          disabled={!url}
-        >
+        <Button component={"a"} href={`${url}`} target={"_blank"} disabled={!url}>
           Open in new tab
         </Button>
       </DialogActions>
