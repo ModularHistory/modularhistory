@@ -34,6 +34,7 @@ const redirectRegex = /(.+) (.+);/;
 module.exports = {
   // allow tests to be co-located with pages
   pageExtensions: ["page.tsx", "page.ts"],
+  swcMinify: true,
   async redirects() {
     const redirects = [];
     if (!fs.existsSync(redirectsMapPath)) {
