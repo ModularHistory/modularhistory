@@ -1,12 +1,16 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
+import { ModuleUnion, Topic } from "@/types/modules";
+import { Box, Button, Container, Divider, Grid, Link, Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useRef } from "react";
+import React, { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -49,13 +53,8 @@ export default function Home() {
 
   return (
     <Layout>
-      <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
-        <Grid item xs={8} alignItems="center" justifyContent="center">
-          <Container>
-            <AboutModularHistory />
-          </Container>
-        </Grid>
-        <Grid item xs={8}>
+      <Grid container spacing={2} sx={{ p: 4 }}>
+        <Grid item xs={12}>
           <Container>
             <Box
               sx={{
@@ -77,6 +76,20 @@ export default function Home() {
             </Box>
           </Container>
         </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 12 }}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <Grid item xs={12} sm={6} md={6} alignItems="center" justifyContent="center">
+          <Container>
+            <AboutModularHistory />
+          </Container>
+        </Grid>
+        <FeatureContent />
       </Grid>
     </Layout>
   );
@@ -131,5 +144,81 @@ const AboutModularHistory: FC = () => {
         </Box>
       </Card>
     </Box>
+  );
+};
+
+const FeatureContent: FC = () => {
+  const [items, setItems] = useState<Exclude<ModuleUnion, Topic>[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
+    axiosWithoutAuth
+      .get("/api/home/feature/", { cancelToken: cancelTokenSource.token })
+      .then((response) => {
+        setItems(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) return;
+        console.error(error);
+        setLoading(false);
+      });
+    return () => {
+      cancelTokenSource.cancel("component unmounted");
+    };
+  }, [loading]);
+
+  if (items.length === 0) return null;
+  return (
+    <Grid item xs={12} sm={6} md={6}>
+      <Container>
+        <Box
+          sx={{
+            flex: "1 1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "1.5rem 1rem 1.5rem 1rem",
+            p: 4,
+          }}
+        >
+          <Card elevation={5}>
+            <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
+              <Grid container alignItems="center" justifyContent="center">
+                <Grid item>
+                  <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+                    Featured Content
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container alignItems="center" justifyContent="center">
+                <>
+                  {items.length ? (
+                    items.map((module, index) => (
+                      <Link href={module.absoluteUrl} underline="none" key={index}>
+                        <a>
+                          <Grid item>
+                            <ModuleUnionCard module={module} key={index} />
+                          </Grid>
+                        </a>
+                      </Link>
+                    ))
+                  ) : loading ? (
+                    <Card>
+                      <CardContent>
+                        <Skeleton sx={{ minHeight: 200 }} />
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <p>There are no modules associated with this date.</p>
+                  )}
+                </>
+              </Grid>
+            </Box>
+          </Card>
+        </Box>
+      </Container>
+    </Grid>
   );
 };

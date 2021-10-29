@@ -1,4 +1,3 @@
-
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,6 +15,5 @@ class FeatureAPIView(APIView):
         results = Feature.objects.filter(
             start_date__lte=timezone.now(), end_date__gte=timezone.now()
         )
-        # results = Feature.objects.all()
+
         return Response([result.content_object.serialize() for result in results])
-        # return Response([Feature.objects.count()])
