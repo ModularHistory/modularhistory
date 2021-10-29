@@ -1,6 +1,7 @@
 import { Skeleton } from "@mui/material";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin, ToolbarProps, ToolbarSlot } from "@react-pdf-viewer/default-layout";
+import Head from "next/head";
 import { FC, ReactElement } from "react";
 
 // pdfJsVersion must match the version of pdfjs-dist specified in frontend/package.json
@@ -85,6 +86,9 @@ const Pdf: FC<PdfProps> = (props: PdfProps) => {
   });
   return (
     <div>
+      <Head>
+        <style></style>
+      </Head>
       {url ? (
         <Worker workerUrl={workerSrc}>
           <div>
