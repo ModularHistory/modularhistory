@@ -114,6 +114,6 @@ class DeletionView(generics.DestroyAPIView):
 
 
 @ensure_csrf_cookie
-def set_csrf_token(request):
+def set_csrf_token(request) -> JsonResponse:
     """Ensure the CSRF cookie is set correctly."""
     return JsonResponse({'details': 'CSRF cookie set'})
