@@ -29,41 +29,42 @@ const renderToolbar = (Toolbar: (props: ToolbarProps) => ReactElement) => (
         ZoomOut,
       } = slots;
       return (
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          <div style={{ padding: "0px 2px" }}>
-            <ShowSearchPopover />
+        <div className="rpv-toolbar" role="toolbar" aria-orientation="horizontal">
+          <div className="rpv-toolbar__left">
+            <div className="rpv-toolbar__item">
+              <ShowSearchPopover />
+            </div>
+            <div className="rpv-toolbar__item">
+              <GoToPreviousPage />
+            </div>
+            <div className="rpv-toolbar__item">
+              <CurrentPageInput /> / <NumberOfPages />
+            </div>
+            <div className="rpv-toolbar__item">
+              <GoToNextPage />
+            </div>
           </div>
-          <div style={{ padding: "0px 2px" }}>
-            <ZoomOut />
+          <div className="rpv-toolbar__center">
+            <div className="rpv-toolbar__item">
+              <ZoomOut />
+            </div>
+            <div className="rpv-toolbar__item">
+              <Zoom />
+            </div>
+            <div className="rpv-toolbar__item">
+              <ZoomIn />
+            </div>
           </div>
-          <div style={{ padding: "0px 2px" }}>
-            <Zoom />
-          </div>
-          <div style={{ padding: "0px 2px" }}>
-            <ZoomIn />
-          </div>
-          <div style={{ padding: "0px 2px", marginLeft: "auto" }}>
-            <GoToPreviousPage />
-          </div>
-          <div style={{ padding: "0px 2px" }}>
-            <CurrentPageInput /> / <NumberOfPages />
-          </div>
-          <div style={{ padding: "0px 2px" }}>
-            <GoToNextPage />
-          </div>
-          <div style={{ padding: "0px 2px", marginLeft: "auto" }}>
-            <EnterFullScreen />
-          </div>
-          <div style={{ padding: "0px 2px" }}>
-            <Download />
-          </div>
-          <div style={{ padding: "0px 2px" }}>
-            <Print />
+          <div className="rpv-toolbar__right">
+            <div className="rpv-toolbar__item">
+              <EnterFullScreen />
+            </div>
+            <div className="rpv-toolbar__item">
+              <Download />
+            </div>
+            <div className="rpv-toolbar__item">
+              <Print />
+            </div>
           </div>
         </div>
       );
@@ -74,6 +75,7 @@ const renderToolbar = (Toolbar: (props: ToolbarProps) => ReactElement) => (
 const Pdf: FC<PdfProps> = (props: PdfProps) => {
   const { url, initialPageNumber } = props;
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
+    // https://react-pdf-viewer.dev/examples/remove-a-tab-from-the-sidebar/
     sidebarTabs: (defaultTabs) => [
       // Remove the attachments tab (\`defaultTabs[2]\`)
       defaultTabs[0], // Bookmarks tab
