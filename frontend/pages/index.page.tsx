@@ -1,12 +1,25 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
+import { FieldsUnion } from "@/types/modules";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  Link,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useRef } from "react";
+import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -47,6 +60,12 @@ export default function Home() {
     </Grid>
   );
 
+  const [type, setType] = useState("");
+
+  const handleFormType = (event: { target: { name: FieldsUnion } }) => {
+    setType(event.target.name);
+  };
+
   return (
     <Layout>
       <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
@@ -75,7 +94,38 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Box>
+            <Card sx={{ display: "flex" }} hidden>
+              <FormControl variant="standard" sx={{ minWidth: "40rem" }}>
+                <InputLabel id="select-form-type">Type of Content</InputLabel>
+                <Select
+                  labelId="select-form-type"
+                  id="select-form"
+                  value={type}
+                  label="Type of Content"
+                  onChange={handleFormType}
+                >
+                  <MenuItem value={"quotes"}>Quote</MenuItem>
+                  <MenuItem value={"entities"}>Entity</MenuItem>
+                  <MenuItem value={"images"}>Image</MenuItem>
+                  <MenuItem value={"occurrences"}>Occurrence</MenuItem>
+                  <MenuItem value={"topics"}>Topic</MenuItem>
+                </Select>
+              </FormControl>
+            </Card>
           </Container>
+          <Box
+            sx={{
+              flex: "1 1",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "1.5rem 1rem 1.5rem 1rem",
+            }}
+          >
+            <Card elevation={5}>
+              <DyanmicForm type={"quotes"} />
+            </Card>
+          </Box>
         </Grid>
       </Grid>
     </Layout>
@@ -131,5 +181,50 @@ const AboutModularHistory: FC = () => {
         </Box>
       </Card>
     </Box>
+  );
+};
+
+interface DyanmicFormProps {
+  type: FieldsUnion;
+}
+
+//Dynamic fields:
+const DyanmicForm: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
+  const [formData, setFormData] = useState();
+  const getDyanmicFields = async (type: FieldsUnion) => {
+    //let data = {};
+    return await axiosWithoutAuth.get(`/api/${type}/fields/`).then((response) => {
+      return response.data;
+    });
+  };
+
+  useEffect(() => {
+    getDyanmicFields(type).then((result) => {
+      setFormData(result);
+    });
+  });
+
+  return (
+    <>
+      <Grid container spacing={3}>
+        {formData &&
+          formData.map((obj: any) => (
+            <>
+              {obj.editable && (
+                <Grid item key={obj.name} xs={4}>
+                  <TextField
+                    id={obj.name}
+                    label={obj.name}
+                    variant="outlined"
+                    helperText={obj.helpText}
+                    sx={{ minWidth: "5rem" }}
+                  />
+                </Grid>
+              )}
+            </>
+          ))}
+      </Grid>
+      <Button>Submit</Button>
+    </>
   );
 };
