@@ -50,7 +50,9 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const callbackUrl = router.query?.callbackUrl;
-  const redirectUrl = callbackUrl || process.env.BASE_URL;
+  const redirectUrl = Array.isArray(callbackUrl)
+    ? callbackUrl[0]
+    : callbackUrl || process.env.BASE_URL;
   useEffect(() => {
     if (router.query?.error) {
       setError(`${router.query?.error}`);

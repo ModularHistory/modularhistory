@@ -52,7 +52,9 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
   const callbackUrl = router.query?.callbackUrl;
-  const redirectUrl = callbackUrl || process.env.BASE_URL;
+  const redirectUrl = Array.isArray(callbackUrl)
+    ? callbackUrl[0]
+    : callbackUrl || process.env.BASE_URL;
   useEffect(() => {
     if (router.query?.error) {
       setError(`${router.query?.error}`);
@@ -61,11 +63,6 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   useEffect(() => {
     if (redirecting) {
       const url = redirectUrl ?? window.location.origin;
-      console.log(typeof url);
-      console.log(">>>>>window", window);
-      console.log(">>>>>location", window.location);
-      console.log(">>>>>origin", window.location.origin);
-      console.log(">>>>>url", url);
       // TODO: Refactor to centralize the regex test in some other module.
       // Use Next.js router to redirect to a React page,
       // or use window.location to redirect to a non-React page.
@@ -102,7 +99,6 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
             // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
             redirect: false,
           });
-          console.log(">>>>>>>", redirectUrl);
           setRedirecting(true);
         })
         .catch(function (error) {
