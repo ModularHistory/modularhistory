@@ -1,26 +1,54 @@
 """Tests for the quotes app."""
 
+import random
+
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
+from apps.entities.factories import EntityFactory
+from apps.images.factories import ImageFactory
 from apps.moderation.models import Change, ContentContribution
 from apps.quotes.factories import QuoteFactory
 from apps.quotes.models import Quote
+from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 from apps.users.models import User
 
 
-@pytest.fixture(scope='class')
-def quote_api_test_data(request):
-    request.cls.contributor = UserFactory.create()
-    request.cls.verified_quote = QuoteFactory.create(verified=True)
+def shuffled_copy(list, size=None):
+    copy = list.copy()
+    random.shuffle(copy)
+    if size:
+        return copy[:size]
+    return copy
 
+
+@pytest.fixture(scope='class')
+def quotes_api_test_data(request):
+    request.cls.contributor = UserFactory.create()
+
+    quote = QuoteFactory.create(verified=True)
+
+    verified_attributees = [EntityFactory.create(verified=True).id for _ in range(4)]
+    verified_images = [ImageFactory.create(verified=True).id for _ in range(4)]
+    verified_tags = [TopicFactory.create(verified=True).id for _ in range(4)]
+
+    quote.attributees.set(shuffled_copy(verified_attributees, size=2))
+    quote.images.set(shuffled_copy(verified_images, size=2))
+    quote.tags.set(shuffled_copy(verified_tags, size=2))
+
+    request.cls.verified_quote = quote
     request.cls.uncheckable_fields = ['date']
+    request.cls.relation_fields = ['attributees', 'images', 'tags']
     request.cls.test_data = {
         'title': 'Test Quote TITLE',
         'text': 'Test Quote TEXT',
+        'bite': 'Test Quote BITE',
         'date': '2001-01-01 01:01:20.086200',
+        'attributees': verified_attributees[:2],
+        'images': verified_images[:2],
+        'tags': verified_tags[:2],
     }
     request.cls.updated_test_data = {
         'title': 'UPDATED QUOTE TITLE',
@@ -28,10 +56,13 @@ def quote_api_test_data(request):
         'text': 'UPDATED Test Quote TEXT',
         'bite': 'UPDATED Test Quote BITE',
         'date': '2001-01-01 01:01:20.086200',
+        'attributees': verified_attributees[1:],
+        'images': verified_images[1:],
+        'tags': verified_tags[1:],
     }
 
 
-@pytest.mark.usefixtures('quote_api_test_data')
+@pytest.mark.usefixtures('quotes_api_test_data')
 class QuotesApiTest(APITestCase):
     """Test the quotes api."""
 
@@ -40,6 +71,7 @@ class QuotesApiTest(APITestCase):
 
     contributor: User
 
+    relation_fields: list
     uncheckable_fields: list
     test_data: dict
     updated_test_data: dict
@@ -49,7 +81,10 @@ class QuotesApiTest(APITestCase):
     def api_view_get_test(self, view, url_kwargs=None, status_code=200):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
         response = self.api_client.get(path)
-        assert response.status_code == status_code
+
+        self.assertEqual(
+            response.status_code, status_code, 'Response does not have expected status'
+        )
 
     def api_moderation_view_test(
         self,
@@ -106,12 +141,21 @@ class QuotesApiTest(APITestCase):
 
     def api_moderation_change_test(self, request_params):
         (response, change, contribution) = self.api_moderation_view_test(**request_params)
-        for key, value in request_params.get('data').items():
-            if key not in self.uncheckable_fields:
+        data_fields = request_params.get('data').items()
+        for field_name, value in data_fields:
+            if field_name in self.relation_fields:
+                relations = getattr(change.changed_object, field_name).values_list(
+                    'id', flat=True
+                )
+                for value_item in value:
+                    self.assertIn(
+                        value_item, relations, f'{field_name} does not contain {value_item}'
+                    )
+            elif field_name not in self.uncheckable_fields:
                 self.assertEqual(
-                    getattr(change.changed_object, key),
+                    getattr(change.changed_object, field_name),
                     value,
-                    f'{key} field was not updated correctly',
+                    f'{field_name} field was not updated correctly',
                 )
 
     def test_api_list(self):
