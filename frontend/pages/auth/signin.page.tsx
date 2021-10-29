@@ -127,7 +127,11 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   }
   return (
     <Layout>
-      <NextSeo title={"Sign in"} />
+      <NextSeo
+        title={"Sign in"}
+        canonical={"/auth/signin"}
+        description={"Sign in to your ModularHistory account, or create a free account now."}
+      />
       <Container>
         <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
           {error && !redirecting && (

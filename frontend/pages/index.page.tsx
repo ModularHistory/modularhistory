@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
+import TodayInHistory from "@/components/TodayInHistory";
 import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -38,11 +39,15 @@ export default function Home() {
           size={"small"}
           style={{ minWidth: "280px" }}
           onKeyPress={search}
-          inputProps={{ "data-testid": "query" }}
+          inputProps={{ "data-testid": "query", "data-cy": "query" }}
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search as MouseEventHandler} data-testid={"searchButton"} />
+        <SearchButton
+          onClick={search as MouseEventHandler}
+          data-testid={"searchButton"}
+          data-cy={"searchButton"}
+        />
       </Grid>
     </Grid>
   );
@@ -77,6 +82,13 @@ export default function Home() {
             </Box>
           </Container>
         </Grid>
+        <Grid item xs={12}>
+          <Card elevation={5}>
+            <CardContent>
+              <TodayInHistory />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </Layout>
   );
@@ -105,8 +117,7 @@ const AboutModularHistory: FC = () => {
           </Grid>
           <p>
             ModularHistory is a nonprofit organization dedicated to helping people learn about and
-            understand the history of our world, our society, and issues of modern sociopolitical
-            discourse.
+            understand the history of issues of modern sociopolitical discourse.
           </p>
           <Button variant="contained" href="/about/">
             Learn More

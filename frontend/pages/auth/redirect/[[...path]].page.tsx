@@ -40,7 +40,7 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
         </Head>
       )}
       <Layout>
-        <NextSeo title={"Redirect"} canonical="/redirect" />
+        <NextSeo title={"Redirect"} noindex />
         <Container>
           <Box
             display="flex"
