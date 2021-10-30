@@ -43,7 +43,6 @@ class RegistrationView(generics.CreateAPIView):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            print(f'>>>>>>>>>>> {serializer.errors}')
             return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     @sensitive_post_parameters_m
