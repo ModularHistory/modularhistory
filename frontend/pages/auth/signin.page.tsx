@@ -10,12 +10,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
 
-interface SignInProps {
+interface SignInPageProps {
   providers: Provider[];
   csrfToken: string;
 }
 
-const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignInProps) => {
+const SignInPage: FunctionComponent<SignInPageProps> = ({
+  providers,
+  csrfToken,
+}: SignInPageProps) => {
   const router = useRouter();
   const [session, loading] = useSession();
   const [redirecting, setRedirecting] = useState(false);
@@ -179,7 +182,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   );
 };
 
-export default SignIn;
+export default SignInPage;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
