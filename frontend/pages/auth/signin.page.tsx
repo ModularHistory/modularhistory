@@ -1,4 +1,5 @@
 import { handleLogout } from "@/auth";
+import SocialLogin, { Provider } from "@/components/account/SocialLogin";
 import Layout from "@/components/Layout";
 import { Alert, Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
 import Container from "@mui/material/Container";
@@ -7,35 +8,7 @@ import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, {
-  FormEventHandler,
-  FunctionComponent,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
-// https://www.npmjs.com/package/react-social-login-buttons
-import {
-  DiscordLoginButton,
-  FacebookLoginButton,
-  GithubLoginButton,
-  GoogleLoginButton,
-  TwitterLoginButton,
-} from "react-social-login-buttons";
-
-const CREDENTIALS_KEY = "credentials";
-const SOCIAL_LOGIN_BUTTONS = {
-  facebook: FacebookLoginButton,
-  discord: DiscordLoginButton,
-  google: GoogleLoginButton,
-  twitter: TwitterLoginButton,
-  github: GithubLoginButton,
-};
-
-interface Provider {
-  id: typeof CREDENTIALS_KEY | keyof typeof SOCIAL_LOGIN_BUTTONS;
-  name: string;
-}
+import React, { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
 
 interface SignInProps {
   providers: Provider[];
@@ -49,10 +22,10 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const callbackUrl = router.query?.callbackUrl;
-  const redirectUrl = Array.isArray(callbackUrl)
-    ? callbackUrl[0]
-    : callbackUrl || process.env.BASE_URL;
+  const callbackUrl = Array.isArray(router.query?.callbackUrl)
+    ? router.query.callbackUrl[0]
+    : router.query?.callbackUrl;
+  const redirectUrl = callbackUrl || process.env.BASE_URL || "";
   useEffect(() => {
     if (router.query?.error) {
       setError(`${router.query?.error}`);
@@ -98,32 +71,6 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       }
     }
   };
-  const handleSocialLogin = async (provider_id: string) => {
-    try {
-      signIn(provider_id, { callbackUrl });
-    } catch (error) {
-      setError(`${error}`);
-    }
-  };
-  const socialAuthLoginComponents: ReactElement[] = [];
-  let SocialLoginButton;
-  if (providers) {
-    Object.entries(providers).forEach(([, provider]) => {
-      if (provider.id === CREDENTIALS_KEY) {
-        return null;
-      }
-      SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
-      socialAuthLoginComponents.push(
-        <SocialLoginButton
-          key={provider.name}
-          style={{ minWidth: "245px", maxWidth: "245px" }}
-          onClick={() => handleSocialLogin(provider.id)}
-        >
-          Sign in with {provider.name}
-        </SocialLoginButton>
-      );
-    });
-  }
   if (loading) {
     return null;
   }
@@ -208,11 +155,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                   </Grid>
                 </form>
                 <Divider style={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }} />
-                {(!!socialAuthLoginComponents.length && (
-                  <Grid id="social-sign-in" container justifyContent="center">
-                    {socialAuthLoginComponents}
-                  </Grid>
-                )) || <p className="text-center">Other sign-in options are unavailable.</p>}
+                <SocialLogin providers={providers} callbackUrl={redirectUrl} onError={setError} />
               </div>
             ))}
         </Box>
