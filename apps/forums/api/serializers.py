@@ -9,7 +9,7 @@ class ThreadDrfSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Thread
-        fields = ['pk', 'updated_date']
+        fields = ['pk', 'updated_date', 'initial_post']
 
 
 class PostDrfSerializer(serializers.ModelSerializer):
