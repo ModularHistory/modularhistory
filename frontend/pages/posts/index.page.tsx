@@ -23,37 +23,11 @@ interface PostsProps {
 
 const Posts: FC<PostsProps> = ({ postsData }: PostsProps) => {
   const posts = postsData.results || [];
-  // const entityCards = entities.map((post) => (
-  //   <Grid item key={post.slug} xs={6} sm={4} md={3}>
-  //     <Link href={`/entities/${post.slug}`}>
-  //       <a>
-  //         <ModuleUnionCard module={post} />
-  //       </a>
-  //     </Link>
-  //   </Grid>
-  // ));
-  // const titleInputRef = useRef<HTMLInputElement>(null);
-  // const router = useRouter();
-  // const createNewPost = () => {
-  //   axiosWithoutAuth
-  //     .post("/api/forums/posts/", {
-  //       content: "New post from button",
-  //       title: titleInputRef.current?.value || "default title",
-  //       date: new Date().toISOString(),
-  //       author: 48,
-  //       parentThread: 1,
-  //     })
-  //     .then(router.reload)
-  //     .catch(console.error);
-  // };
-
   return (
     <Layout>
       <NextSeo title={"Posts"} />
       <Container>
         <PageHeader>Posts</PageHeader>
-        {/* <TextField inputRef={titleInputRef} /> */}
-        {/* <Button onClick={createNewPost} /> */}
         <Pagination count={postsData["totalPages"]} />
         <TableContainer component={Paper}>
           <Table
@@ -77,9 +51,6 @@ const Posts: FC<PostsProps> = ({ postsData }: PostsProps) => {
                   key={post.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  {/* <TableCell component="th" scope="row">
-                {post.name}
-              </TableCell> */}
                   <TableCell>{post.title}</TableCell>
                   <TableCell>{post.content}</TableCell>
                   <TableCell>{post.date}</TableCell>
