@@ -51,36 +51,26 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   }, [redirecting, router, redirectUrl]);
   const handleCredentialLogin: FormEventHandler = async (event) => {
     event.preventDefault();
-    if (!email) {
-      setErrors("You must enter your email address.");
-    } else if (!password) {
-      setErrors("You must enter a password.");
-    } else if (!passwordConfirmation) {
-      setErrors("You must confirm your new password.");
-    } else if (password != passwordConfirmation) {
-      setErrors("Your password and password confirmation do not match.");
-    } else {
-      await axios
-        .post("/api/users/auth/registration/", {
-          email,
-          password,
-          passwordConfirmation,
-        })
-        .then(function () {
-          signIn("credentials", {
-            username: email,
-            password: password,
-            callbackUrl: redirectUrl,
-            // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-            redirect: false,
-          });
-          setRedirecting(true);
-        })
-        .catch(function (error) {
-          // eslint-disable-next-line no-console
-          setErrors(error.response?.data?.error);
+    await axios
+      .post("/api/users/auth/registration/", {
+        email,
+        password,
+        passwordConfirmation,
+      })
+      .then(function () {
+        signIn("credentials", {
+          username: email,
+          password: password,
+          callbackUrl: redirectUrl,
+          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+          redirect: false,
         });
-    }
+        setRedirecting(true);
+      })
+      .catch(function (error) {
+        // eslint-disable-next-line no-console
+        setErrors(error.response?.data?.error);
+      });
   };
   if (loading) {
     return null;

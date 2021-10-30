@@ -63,7 +63,13 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
     }
     if (response?.error) {
       // Response contains `error`, `status`, and `url` (intended redirect url).
-      setErrors({ _: [`${response?.error}`] });
+      setErrors({
+        _: [
+          `${response?.error}` === "CredentialsSignin"
+            ? "Invalid credentials."
+            : `${response?.error}`,
+        ],
+      });
     } else {
       // Response contains `ok` and `url` (intended redirect url).
       setRedirecting(true);
