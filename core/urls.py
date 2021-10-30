@@ -110,7 +110,8 @@ urlpatterns = [
     path('errors/400', errors.bad_request),  # 400 trigger
     path('errors/403', errors.permission_denied),  # 403 trigger
     path('errors/404', errors.not_found),  # 404 trigger
-    path('errors/500', errors.error),  # 500 trigger
+    path('errors/500', errors.server_error),  # 500 trigger
+    re_path(r'api/errors/(?P<error_code>\d+)/?$', errors.error),  # API error trigger
     # https://github.com/jazzband/django-silk
     path('silk/', include('silk.urls', namespace='silk')),
     # Graphviz model graph
@@ -135,4 +136,4 @@ urlpatterns += staticfiles_urlpatterns()
 handler400 = 'core.errors.bad_request'
 handler403 = 'core.errors.permission_denied'
 handler404 = 'core.errors.not_found'
-handler500 = 'core.errors.error'
+handler500 = 'core.errors.server_error'

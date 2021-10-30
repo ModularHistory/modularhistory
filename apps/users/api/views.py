@@ -9,7 +9,8 @@ from django.http import Http404, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.users.api.serializers import (
@@ -34,6 +35,16 @@ class RegistrationView(generics.CreateAPIView):
     serializer_class = RegistrationSerializer
     permission_classes = [permissions.AllowAny]
     throttle_scope = 'dj_rest_auth'
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=False):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            print(f'>>>>>>>>>>> {serializer.errors}')
+            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     @sensitive_post_parameters_m
     def dispatch(self, *args, **kwargs):
