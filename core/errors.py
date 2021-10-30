@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.template.response import TemplateResponse
 from rest_framework import status
 
-
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
     from rest_framework.request import Request
@@ -64,7 +63,7 @@ def server_error(
     """Handle a 500 error."""
     _status = status.HTTP_500_INTERNAL_SERVER_ERROR
     if request.path.startswith('/api/'):
-        data = {'error': 'Server Error (500)'}
+        data = {'error': 'Server Error'}
         return JsonResponse(data, status=_status)
     return TemplateResponse(
         request,
