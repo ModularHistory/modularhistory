@@ -1,4 +1,5 @@
 import factory
+import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.images.factories import ImageFactory
@@ -9,6 +10,14 @@ from apps.topics.factories import TopicFactory
 class PropositionFactory(DjangoModelFactory):
     class Meta:
         model = models.Proposition
+
+    type = factory.fuzzy.FuzzyChoice(models.TYPE_CHOICES)
+    elaboration = factory.Faker('text')
+    summary = factory.Faker('text')
+    title = factory.Faker('sentence', nb_words=10)
+    slug = factory.Faker('slug')
+    date = factory.Faker('historic_datetime')
+    end_date = factory.Faker('historic_datetime')
 
 
 class TopicRelationFactory(DjangoModelFactory):
