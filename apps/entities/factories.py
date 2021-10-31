@@ -8,7 +8,7 @@ class EntityFactory(DjangoModelFactory):
     class Meta:
         model = models.Entity
 
-    type = factory.fuzzy.FuzzyChoice(models.Entity.typedmodels_registry.keys())
+    type = factory.fuzzy.FuzzyChoice(models.Entity._typedmodels_registry.keys())
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
     name = factory.Faker('name')

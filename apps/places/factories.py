@@ -8,7 +8,7 @@ class PlaceFactory(DjangoModelFactory):
     class Meta:
         model = models.Place
 
-    type = factory.fuzzy.FuzzyChoice(models.Place.typedmodels_registry.keys())
+    type = factory.fuzzy.FuzzyChoice(models.Place._typedmodels_registry.keys())
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
     name = factory.Faker('city')
