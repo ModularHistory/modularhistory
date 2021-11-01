@@ -71,7 +71,6 @@ urlpatterns = [
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('api/home/', include(_api('home'), namespace='home_api')),
-    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('api/images/', include(_api('images'), namespace='images_api')),
     path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('api/places/', include(_api('places'), namespace='places_api')),
@@ -82,6 +81,7 @@ urlpatterns = [
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('api/users/', include(_api('users'), namespace='users_api')),
+    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('users/', include('apps.users.urls', namespace='users')),
     re_path(r'api/csrf/set/?', set_csrf_token),
     # ---------------------------------

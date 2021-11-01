@@ -128,6 +128,7 @@ export default UserSettingsPage;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log('SSR .....');
   const session = await getSession(context);
   if (!session?.user) {
     return {
@@ -137,6 +138,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
+  console.log('SSR 2 .....');
   const _providers = await providers();
   const _csrfToken = await csrfToken(context);
   let socialAccounts = null;
