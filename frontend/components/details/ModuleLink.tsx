@@ -29,8 +29,8 @@ const allowedModels = new Set([
 ]);
 
 interface ModuleLinkProps {
-  anchorProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
-  anchorChildren: ReactNode;
+  elementProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
+  children: ReactNode | string;
 }
 
 /**
@@ -38,11 +38,11 @@ interface ModuleLinkProps {
  * Module data is fetched when ModuleLink is hovered/clicked, and a ModuleModal is
  * opened on click.
  *
- * @param anchorProps - attributes of the underlying anchor element.
- * @param anchorChildren - the text or react node inside the anchor element.
+ * @param elementProps - attributes of the underlying anchor element.
+ * @param children - the text or react node inside the anchor element.
  * @constructor
  */
-const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
+const ModuleLink: FC<ModuleLinkProps> = ({ elementProps, children }) => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -51,22 +51,22 @@ const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
   const [isFailure, setIsFailure] = useState(false);
 
   // TODO: add "data-model" attribute to anchor tags in our database HTML.
-  const model = anchorProps.href?.split("/").filter(Boolean)[0] || "";
-  const id = anchorProps["data-id"];
+  const model = elementProps.href?.split("/").filter(Boolean)[0] || "";
+  const id = elementProps["data-id"];
 
   // Under failure conditions, revert to rendering a normal anchor element.
-  if (!anchorProps.href || !allowedModels.has(model) || isFailure) {
-    return <a {...anchorProps}>{anchorChildren}</a>;
+  if (!elementProps.href || !allowedModels.has(model) || isFailure) {
+    return <a {...elementProps}>{children}</a>;
   }
 
-  const { target, ...anchorPropsWithoutTarget } = anchorProps;
+  const { target, ...elementPropsWithoutTarget } = elementProps;
 
   // If we are not on the search page, use Next link instead of ModuleModal.
   if (router.pathname !== "/search") {
     return (
       <StyledSpan>
-        <Link href={anchorProps.href}>
-          <a {...anchorPropsWithoutTarget}>{anchorChildren}</a>
+        <Link href={elementProps.href}>
+          <a {...elementPropsWithoutTarget}>{children}</a>
         </Link>
       </StyledSpan>
     );
@@ -97,8 +97,8 @@ const ModuleLink: FC<ModuleLinkProps> = ({ anchorProps, anchorChildren }) => {
     <>
       <ModuleModal module={module} setOpen={setModalOpen} open={modalOpen} />
       <StyledSpan onMouseEnter={fetchModule} onClick={handleClick}>
-        <a {...anchorPropsWithoutTarget} onClick={(event) => event.preventDefault()}>
-          {anchorChildren}
+        <a {...elementPropsWithoutTarget} onClick={(event) => event.preventDefault()}>
+          {children}
         </a>
       </StyledSpan>
     </>

@@ -16,8 +16,8 @@ const StyledSpan = styled("span")({
 });
 
 interface PdfLinkProps {
-  anchorProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
-  anchorChildren: ReactNode;
+  elementProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
+  children: ReactNode | string;
 }
 
 /**
@@ -25,16 +25,16 @@ interface PdfLinkProps {
  * Document data is fetched when PdfLink is hovered/clicked, and a DocumentModal is
  * opened on click.
  *
- * @param anchorProps - attributes of the underlying anchor element.
- * @param anchorChildren - the text or react node inside the anchor element.
+ * @param elementProps - attributes of the underlying anchor element.
+ * @param children - the text or react node inside the anchor element.
  * @constructor
  */
-const PdfLink: FC<PdfLinkProps> = ({ anchorProps, anchorChildren }) => {
-  const docHref = anchorProps.href || "";
+const PdfLink: FC<PdfLinkProps> = ({ elementProps, children }) => {
+  const docHref = elementProps.href || "";
   const [url, pageNumber] = docHref.split("#page=");
   const [modalOpen, setModalOpen] = useState(false);
-  const title = anchorProps.title;
-  const { target, ...anchorPropsWithoutTarget } = anchorProps;
+  const title = elementProps.title;
+  const { target, ...elementPropsWithoutTarget } = elementProps;
 
   const handleClick: MouseEventHandler = (event) => {
     event.preventDefault();
@@ -51,8 +51,8 @@ const PdfLink: FC<PdfLinkProps> = ({ anchorProps, anchorChildren }) => {
         open={modalOpen}
       />
       <StyledSpan onClick={handleClick}>
-        <a {...anchorPropsWithoutTarget} onClick={(event) => event.preventDefault()}>
-          {anchorChildren}
+        <a {...elementPropsWithoutTarget} onClick={(event) => event.preventDefault()}>
+          {children}
         </a>
       </StyledSpan>
     </>
