@@ -81,13 +81,6 @@ export default function Home() {
             </Box>
           </Container>
         </Grid>
-        <Grid item xs={12}>
-          <Card elevation={5}>
-            <CardContent>
-              <TodayInHistory />
-            </CardContent>
-          </Card>
-        </Grid>
       </Grid>
       <Grid
         container
@@ -105,6 +98,15 @@ export default function Home() {
           <Container>
             <FeaturedContent />
           </Container>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} sx={{ p: 4 }}>
+        <Grid item xs={12}>
+          <Card elevation={5}>
+            <CardContent>
+              <TodayInHistory />
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Layout>
@@ -220,7 +222,7 @@ const FeaturedContent: FC = () => {
                 ) : loading ? (
                   <Card>
                     <CardContent>
-                      <Skeleton sx={{ minHeight: 200 }} />
+                      <Skeleton sx={{ minHeight: 200, width: "100vw" }} />
                     </CardContent>
                   </Card>
                 ) : (
