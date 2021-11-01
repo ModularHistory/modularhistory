@@ -12,9 +12,6 @@ interface CollectionProps {
   collection: Collection;
 }
 
-/**
- * A page that renders the HTML of a single entity.
- */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   return (
     <Layout>
