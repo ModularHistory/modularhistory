@@ -50,7 +50,7 @@ const TodayInHistory: FC = () => {
             ))
           ) : loading ? (
             <Card>
-              <CardHeader title={"Fetching content"} />
+              <CardHeader title={"Fetching content"} hidden />
               <CardContent>
                 <Skeleton sx={{ minHeight: 200 }} />
               </CardContent>
