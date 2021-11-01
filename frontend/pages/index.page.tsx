@@ -101,7 +101,11 @@ export default function Home() {
             <AboutModularHistory />
           </Container>
         </Grid>
-        <FeatureContent />
+        <Grid item xs={12} sm={6} md={6}>
+          <Container>
+            <FeaturedContent />
+          </Container>
+        </Grid>
       </Grid>
     </Layout>
   );
@@ -158,7 +162,7 @@ const AboutModularHistory: FC = () => {
   );
 };
 
-const FeatureContent: FC = () => {
+const FeaturedContent: FC = () => {
   const [items, setItems] = useState<Exclude<ModuleUnion, Topic>[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -180,56 +184,53 @@ const FeatureContent: FC = () => {
     };
   }, [loading]);
 
-  if (items.length === 0) return null;
   return (
-    <Grid item xs={12} sm={6} md={6}>
-      <Container>
-        <Box
-          sx={{
-            flex: "1 1",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "1.5rem 1rem 1.5rem 1rem",
-            p: 4,
-          }}
-        >
-          <Card elevation={5}>
-            <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
-              <Grid container alignItems="center" justifyContent="center">
-                <Grid item>
-                  <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-                    Featured Content
-                  </Typography>
-                </Grid>
+    <>
+      <Box
+        sx={{
+          flex: "1 1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "1.5rem 1rem 1.5rem 1rem",
+          p: 4,
+        }}
+      >
+        <Card elevation={5}>
+          <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item>
+                <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+                  Featured Content
+                </Typography>
               </Grid>
-              <Grid container alignItems="center" justifyContent="center">
-                <>
-                  {items.length ? (
-                    items.map((module, index) => (
-                      <Link href={module.absoluteUrl} underline="none" key={index}>
-                        <a>
-                          <Grid item>
-                            <ModuleUnionCard module={module} key={index} />
-                          </Grid>
-                        </a>
-                      </Link>
-                    ))
-                  ) : loading ? (
-                    <Card>
-                      <CardContent>
-                        <Skeleton sx={{ minHeight: 200 }} />
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <p>There are no modules associated with this date.</p>
-                  )}
-                </>
-              </Grid>
-            </Box>
-          </Card>
-        </Box>
-      </Container>
-    </Grid>
+            </Grid>
+            <Grid container alignItems="center" justifyContent="center">
+              <>
+                {items.length ? (
+                  items.map((module, index) => (
+                    <Link href={module.absoluteUrl} underline="none" key={index}>
+                      <a>
+                        <Grid item>
+                          <ModuleUnionCard module={module} key={index} />
+                        </Grid>
+                      </a>
+                    </Link>
+                  ))
+                ) : loading ? (
+                  <Card>
+                    <CardContent>
+                      <Skeleton sx={{ minHeight: 200 }} />
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <p>Sorry, there are no featured contents to display. Please check back later!</p>
+                )}
+              </>
+            </Grid>
+          </Box>
+        </Card>
+      </Box>
+    </>
   );
 };
