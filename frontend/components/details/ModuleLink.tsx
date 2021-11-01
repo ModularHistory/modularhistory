@@ -2,7 +2,6 @@ import ModuleModal from "@/components/details/ModuleModal";
 import { ModuleUnion } from "@/types/modules";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { AnchorHTMLAttributes, FC, MouseEventHandler, ReactNode, useRef, useState } from "react";
 
@@ -60,17 +59,6 @@ const ModuleLink: FC<ModuleLinkProps> = ({ elementProps, children }) => {
   }
 
   const { target, ...elementPropsWithoutTarget } = elementProps;
-
-  // If we are not on the search page, use Next link instead of ModuleModal.
-  if (router.pathname !== "/search") {
-    return (
-      <StyledSpan>
-        <Link href={elementProps.href}>
-          <a {...elementPropsWithoutTarget}>{children}</a>
-        </Link>
-      </StyledSpan>
-    );
-  }
 
   const fetchModule = () => {
     // only send request if we have not already sent one

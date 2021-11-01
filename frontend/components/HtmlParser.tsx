@@ -16,14 +16,16 @@ interface HtmlParserProps {
  * indicating whether the element should be replaced with the designated React component.
  * @param component - the React component.
  */
-const HtmlParser: FC<HtmlParserProps> = ({ html, filterFunc, component }: HtmlParserProps) => {
+const HtmlParser: FC<HtmlParserProps> = ({
+  html,
+  filterFunc,
+  component: Component,
+}: HtmlParserProps) => {
   const [renderedHTML, setRenderedHTML] = useState(() => (
     <div dangerouslySetInnerHTML={{ __html: html }} />
   ));
-  const Component = component;
-
   useEffect(() => {
-    // asynchronously load parsing and rendering modules to improve performance
+    // Load the parsing module asynchronously to improve performance.
     Promise.all([import("html-react-parser")]).then(
       ([{ default: parse, domToReact, attributesToProps }]) => {
         const options: HTMLReactParserOptions = {
