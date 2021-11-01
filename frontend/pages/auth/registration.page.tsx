@@ -90,7 +90,6 @@ const RegistrationPage: FunctionComponent<RegistrationProps> = ({
           {!!Object.keys(errors).length && !redirecting && (
             <>
               <Alert severity="error">
-                {/* {Array.isArray(errors) ? errors.map((error) => <p key={error}>{error}</p>) : <p>{errors}</p>} */}
                 {Object.entries(errors || {}).map(([prop, value]) => {
                   return (
                     <p className="error-message" key={prop}>
