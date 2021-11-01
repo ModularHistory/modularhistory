@@ -405,7 +405,7 @@ redis = "*"
 
 [[package]]
 name = "celery-types"
-version = "0.8.3"
+version = "0.9.0"
 description = "Type stubs for Celery and its related packages"
 category = "dev"
 optional = false
@@ -3741,7 +3741,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "d7b20601eb8fed5010f7383a379b3b14b491a674c8daf265278d58b62c3f8546"
+content-hash = "b37bc06b0a9c3f3f5e51ad281acea1b3bb98943c1eb0ff94e46573e968e6126b"
 
 [metadata.files]
 aenum = [
@@ -4007,8 +4007,8 @@ celery-singleton = [
     {file = "celery_singleton-0.3.1-py3-none-any.whl", hash = "sha256:76b30a1bbe31d42030924b3eecfcaae2ab3ab99bf43e607cd46437f012434420"},
 ]
 celery-types = [
-    {file = "celery-types-0.8.3.tar.gz", hash = "sha256:353809d45198cf9fcf9fc3b5388a32f2b39b3aee276b01f8ef6c3bd5d35d50f9"},
-    {file = "celery_types-0.8.3-py3-none-any.whl", hash = "sha256:d65d41db245100b921ba80d2f62b1457820b1e9b1a92a1ad6445ea629acafcaf"},
+    {file = "celery-types-0.9.0.tar.gz", hash = "sha256:e3d52ff016d9c4af1afb5f4f4520cdc943713d85b4d2fd242d9772ef68b3f9d0"},
+    {file = "celery_types-0.9.0-py3-none-any.whl", hash = "sha256:4dba9bb7ac3b631988569ec36afdc1731a24edbdeb89a17b4c3d3ac1ac8d11e5"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
