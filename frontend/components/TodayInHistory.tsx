@@ -40,13 +40,13 @@ const TodayInHistory: FC = () => {
         <>
           {items.length ? (
             items.map((module, index) => (
-              <Link href={module.absoluteUrl} key={index}>
-                <a>
-                  <Grid item>
-                    <ModuleUnionCard module={module} key={index} />
-                  </Grid>
-                </a>
-              </Link>
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={index}>
+                <Link href={module.absoluteUrl}>
+                  <a>
+                    <ModuleUnionCard module={module} />
+                  </a>
+                </Link>
+              </Grid>
             ))
           ) : loading ? (
             <Card>
