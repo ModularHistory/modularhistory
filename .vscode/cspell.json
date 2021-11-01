@@ -13,6 +13,7 @@
         "chmod",
         "crontabschedule",
         "CSRF",
+        "csrftoken",
         "ctype",
         "datagrid",
         "dbbackup",

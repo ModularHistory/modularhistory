@@ -1,4 +1,5 @@
 import { handleLogout } from "@/auth";
+import axios from "@/axiosWithAuth";
 import SocialLogin, { Provider } from "@/components/account/SocialLogin";
 import Layout from "@/components/Layout";
 import { Alert, Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
@@ -10,24 +11,25 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
 
-interface SignInPageProps {
+interface RegistrationProps {
   providers: Provider[];
   csrfToken: string;
 }
 
-const SignInPage: FunctionComponent<SignInPageProps> = ({
+const RegistrationPage: FunctionComponent<RegistrationProps> = ({
   providers,
   csrfToken,
-}: SignInPageProps) => {
+}: RegistrationProps) => {
   const router = useRouter();
-  const [session, loading] = useSession();
-  const [redirecting, setRedirecting] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const callbackUrl = Array.isArray(router.query?.callbackUrl)
     ? router.query.callbackUrl[0]
     : router.query?.callbackUrl;
+  const [session, loading] = useSession();
+  const [redirecting, setRedirecting] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [redirectUrl, setRedirectUrl] = useState(callbackUrl || process.env.BASE_URL || "");
   useEffect(() => {
     if (router.query?.error) {
@@ -52,31 +54,26 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
   }, [redirecting, router, redirectUrl]);
   const handleCredentialLogin: FormEventHandler = async (event) => {
     event.preventDefault();
-    let response;
-    try {
-      response = await signIn("credentials", {
-        username,
+    await axios
+      .post("/api/users/auth/registration/", {
+        email,
         password,
-        callbackUrl: redirectUrl,
-        // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-        redirect: false,
+        passwordConfirmation,
+      })
+      .then(function () {
+        signIn("credentials", {
+          username: email,
+          password: password,
+          callbackUrl: redirectUrl,
+          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+          redirect: false,
+        });
+        setRedirecting(true);
+      })
+      .catch(function (error) {
+        // eslint-disable-next-line no-console
+        setErrors(error.response?.data?.error);
       });
-    } catch (error) {
-      setErrors({ _: [`${error}`] });
-    }
-    if (response?.error) {
-      // Response contains `error`, `status`, and `url` (intended redirect url).
-      setErrors({
-        _: [
-          `${response?.error}` === "CredentialsSignin"
-            ? "Invalid credentials."
-            : `${response?.error}`,
-        ],
-      });
-    } else {
-      // Response contains `ok` and `url` (intended redirect url).
-      setRedirecting(true);
-    }
   };
   if (loading) {
     return null;
@@ -84,16 +81,15 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
   return (
     <Layout>
       <NextSeo
-        title={"Sign in"}
-        canonical={"/auth/signin"}
-        description={"Sign in to your ModularHistory account, or create a free account now."}
+        title={"Sign up"}
+        canonical={"/auth/registration"}
+        description={"Register for a free ModularHistory account."}
       />
       <Container>
         <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
           {!!Object.keys(errors).length && !redirecting && (
             <>
               <Alert severity="error">
-                {/* {Array.isArray(errors) ? errors.map((error) => <p key={error}>{error}</p>) : <p>{errors}</p>} */}
                 {Object.entries(errors || {}).map(([prop, value]) => {
                   return (
                     <p className="error-message" key={prop}>
@@ -125,7 +121,7 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
             (!session?.user && (
               <div id="sign-in">
                 <h1 className="page-title text-center" style={{ margin: "1rem" }}>
-                  Sign in
+                  Sign up
                 </h1>
                 <form method="post" onSubmit={handleCredentialLogin}>
                   {csrfToken && <input type="hidden" name="csrfToken" value={csrfToken} />}
@@ -134,13 +130,13 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
                           <TextField
-                            id="username"
-                            name="username"
-                            label="Username or email address"
+                            id="email"
+                            name="email"
+                            label="Email address"
                             variant="outlined"
                             size="small"
                             fullWidth
-                            onChange={(event) => setUsername(event.target.value)}
+                            onChange={(event) => setEmail(event.target.value)}
                             required
                           />
                         </Grid>
@@ -157,17 +153,30 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
                             required
                           />
                         </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            id="password-confirmation"
+                            name="passwordConfirmation"
+                            label="Confirm password"
+                            variant="outlined"
+                            type="password"
+                            size="small"
+                            fullWidth
+                            onChange={(event) => setPasswordConfirmation(event.target.value)}
+                            required
+                          />
+                        </Grid>
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
                       <Button fullWidth type="submit" variant="contained">
-                        Sign in
+                        Register
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
                       <p>
-                        {"Don't have an account? "}
-                        <Link href="/auth/registration">Register</Link> for a free account now.
+                        {"Already have an account? "}
+                        <Link href="/auth/registration">Sign in</Link>.
                       </p>
                     </Grid>
                   </Grid>
@@ -182,7 +191,7 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
   );
 };
 
-export default SignInPage;
+export default RegistrationPage;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {

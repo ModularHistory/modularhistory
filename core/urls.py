@@ -71,7 +71,6 @@ urlpatterns = [
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('api/home/', include(_api('home'), namespace='home_api')),
-    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('api/images/', include(_api('images'), namespace='images_api')),
     path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('api/places/', include(_api('places'), namespace='places_api')),
@@ -82,6 +81,7 @@ urlpatterns = [
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('api/users/', include(_api('users'), namespace='users_api')),
+    path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('users/', include('apps.users.urls', namespace='users')),
     re_path(r'api/csrf/set/?', set_csrf_token),
     # ---------------------------------
@@ -110,7 +110,8 @@ urlpatterns = [
     path('errors/400', errors.bad_request),  # 400 trigger
     path('errors/403', errors.permission_denied),  # 403 trigger
     path('errors/404', errors.not_found),  # 404 trigger
-    path('errors/500', errors.error),  # 500 trigger
+    path('errors/500', errors.server_error),  # 500 trigger
+    re_path(r'api/errors/(?P<error_code>\d+)/?$', errors.error),  # API error trigger
     # https://github.com/jazzband/django-silk
     path('silk/', include('silk.urls', namespace='silk')),
     # Graphviz model graph
@@ -135,4 +136,4 @@ urlpatterns += staticfiles_urlpatterns()
 handler400 = 'core.errors.bad_request'
 handler403 = 'core.errors.permission_denied'
 handler404 = 'core.errors.not_found'
-handler500 = 'core.errors.error'
+handler500 = 'core.errors.server_error'
