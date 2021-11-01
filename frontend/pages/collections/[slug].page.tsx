@@ -19,10 +19,10 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
   return (
     <Layout>
       <NextSeo
-        title={"Occurrences"}
-        canonical={"/occurrences"}
+        title={"Collections"}
+        canonical={"/collections"}
         description={
-          "Browse historical occurrences related to your topics or entities of interest."
+          "Browse collections of historical occurrences, entities, sources, and more related to your topics of interest."
         }
       />
       <PageHeader>Collections</PageHeader>
