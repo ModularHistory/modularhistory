@@ -7,7 +7,7 @@
 [data-toggle="collapse"][aria-expanded="true"] .fa-chevron-circle-down {
   display: none; }
 
-.collapsed[data-toggle="collapse"] .fa-chevron-circle-up {
+[data-toggle="collapse"].collapsed .fa-chevron-circle-up {
   display: none; }
 
 .highlighted {
@@ -203,14 +203,14 @@ body,
     .serp-container .display-options label {
       margin: 0; }
 
-#slider.refinements-container {
+.refinements-container#slider {
   -webkit-transform: none;
   transform: none;
   transition: transform 70ms linear;
   will-change: transform;
   border-right: 2px solid black;
   z-index: 2; }
-  #slider.refinements-container.closed {
+  .refinements-container#slider.closed {
     min-width: 0;
     width: 0;
     -webkit-transform: translateX(-100%);
