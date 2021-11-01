@@ -1,13 +1,21 @@
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory from "@/components/TodayInHistory";
-import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Divider,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useRef } from "react";
+import React, { FC, MouseEventHandler, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -89,6 +97,9 @@ export default function Home() {
             </CardContent>
           </Card>
         </Grid>
+        <Grid item xs={12}>
+          <SubscriptionBox />
+        </Grid>
       </Grid>
     </Layout>
   );
@@ -140,6 +151,92 @@ const AboutModularHistory: FC = () => {
             </Grid>
           </Grid>
         </Box>
+      </Card>
+    </Box>
+  );
+};
+
+const SubscriptionBox: FC = () => {
+  const submitSubscription = () => {
+    return;
+  };
+
+  const subscriptionForm = (
+    <Grid
+      container
+      direction={"column"}
+      spacing={2}
+      alignItems={"center"}
+      justifyContent={"center"}
+      marginTop={"0rem"}
+      marginBottom={"1rem"}
+    >
+      <Grid item>
+        <TextField
+          id={"id_subscribeEmail"}
+          name={"subscribeEmail"}
+          variant={"outlined"}
+          size={"small"}
+          style={{ minWidth: "280px", marginRight: "1rem" }}
+          onKeyPress={submitSubscription}
+          label={"Email address"}
+        />
+        <Button variant="contained" sx={{ minHeight: "40px", height: "100%" }}>
+          Sign up!
+        </Button>
+      </Grid>
+    </Grid>
+  );
+
+  const subscribeDisclaimer = (
+    <Grid container>
+      <Box sx={{ fontWeight: "100" }}>
+        <Typography style={{ fontSize: "10pt" }}>
+          {"By entering your details, you are agreeing to ModularHistory's "}
+          <Link href="/privacy">
+            <a>privacy policy</a>
+          </Link>{" "}
+          and{" "}
+          <Link href="/terms">
+            <a>terms of use</a>
+          </Link>
+          . You can unsubscribe at any time.
+        </Typography>
+      </Box>
+    </Grid>
+  );
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "1.5rem 1rem 1.5rem 1rem",
+      }}
+      hidden
+    >
+      <Card elevation={5}>
+        <CardContent>
+          <Grid
+            item
+            sx={{
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography style={{ fontSize: "20pt", fontWeight: "bold" }}>
+              Sign up for the weekly ModularHistory newsletter
+            </Typography>
+            <Button>
+              <CloseIcon />
+            </Button>
+          </Grid>
+          <Typography>Sign up to recieve our newsletter!</Typography>
+          {subscriptionForm}
+          {subscribeDisclaimer}
+        </CardContent>
       </Card>
     </Box>
   );
