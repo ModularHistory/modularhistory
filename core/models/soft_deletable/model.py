@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Callable, Union
 
 from django.contrib.admin.utils import NestedObjects
 from django.db import models, router
@@ -73,9 +73,9 @@ class SoftDeletableModel(ExtendedModel):
         # https://github.com/makinacorpus/django-safedelete/issues/117.
         self._delete(on_save=self.save, **kwargs)
 
-    def _delete(self, on_save, **kwargs):
+    def _delete(self, on_save: Callable, **kwargs):
         """Soft-delete behavior."""
-        hard: bool = kwargs.pop('hard', self.deleted is not None)
+        hard: bool = bool(kwargs.pop('hard', self.deleted is not None))
         if hard:
             # Normally hard-delete the object.
             super().delete()
