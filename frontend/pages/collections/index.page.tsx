@@ -6,6 +6,7 @@ import { Collection } from "@/types/modules";
 import { CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
 import { Card, Container } from "react-bootstrap";
@@ -32,7 +33,14 @@ const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) 
     </Grid>
   ));
   return (
-    <Layout title={collections}>
+    <Layout>
+      <NextSeo
+        title={"Occurrences"}
+        canonical={"/occurrences"}
+        description={
+          "Browse historical occurrences related to your topics or entities of interest."
+        }
+      />
       <PageHeader>Collections</PageHeader>
       <Pagination count={collectionsData["totalPages"]} />
       <Container>
