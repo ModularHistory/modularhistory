@@ -42,7 +42,7 @@ const Donations: FC = () => {
                 Donate Now &nbsp;<i className="fa fa-dollar-sign"></i>
               </a>
             </Link>{" "}
-            <Link href={"/about/"}>
+            <Link href={"/about"}>
               <a className="col btn btn-primary ml-3" type="button">
                 About &nbsp;<i className="fa fa-info-circle"></i>
               </a>

@@ -138,6 +138,7 @@ class TrumbowygWidget(Textarea):
         renderer: Optional[BaseRenderer] = None,
     ) -> SafeText:
         """Render the widget."""
+        attrs = attrs or {}
         attrs['trumbowyg'] = True
         rendered_widget = super().render(name, value, attrs)
         # fmt: off
