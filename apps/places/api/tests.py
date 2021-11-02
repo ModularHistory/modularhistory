@@ -17,7 +17,6 @@ def places_api_test_data(request):
     place_country = PlaceFactory.create(verified=True, type='places.country').id
 
     request.cls.verified_place = place
-    request.cls.uncheckable_fields = ['date']
     request.cls.relation_fields = ['location']
     request.cls.test_data = {
         'type': 'places.country',
