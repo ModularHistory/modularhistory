@@ -12,7 +12,13 @@ const introduction = `
 const Donations: FC = () => {
   return (
     <Layout>
-      <NextSeo title="Donations" />
+      <NextSeo
+        title="Donations"
+        canonical={"/donations"}
+        description={
+          "Learn how you can support ModularHistory's educational mission through a small one-time or recurring donation."
+        }
+      />
       <Container
         sx={{
           height: "100%",
@@ -36,7 +42,7 @@ const Donations: FC = () => {
                 Donate Now &nbsp;<i className="fa fa-dollar-sign"></i>
               </a>
             </Link>{" "}
-            <Link href={"/about/"}>
+            <Link href={"/about"}>
               <a className="col btn btn-primary ml-3" type="button">
                 About &nbsp;<i className="fa fa-info-circle"></i>
               </a>

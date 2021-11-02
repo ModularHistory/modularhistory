@@ -42,6 +42,7 @@ env:
   EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
   EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
   ENVIRONMENT: prod
+  FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
   IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
@@ -77,7 +78,7 @@ jobs:
         image: [django, next, webserver]
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -116,7 +117,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
@@ -190,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -230,7 +231,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
-        hosts=("postgres" "redis" "elasticsearch")
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
         echo "Updating hosts file..."
         for host in "${hosts[@]}"; do
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts

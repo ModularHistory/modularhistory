@@ -39,6 +39,11 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
       details = <QuoteDetail quote={module} />;
       break;
     case "sources.source":
+    case "sources.article":
+    case "sources.book":
+    case "sources.correspondence":
+    case "sources.document":
+    case "sources.speech":
       details = <SourceDetail source={module} />;
       break;
     case "topics.topic":

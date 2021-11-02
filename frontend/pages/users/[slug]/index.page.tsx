@@ -17,7 +17,7 @@ const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
   if (!user || loading) return null;
   return (
     <Layout>
-      <NextSeo title={String(user.name || user.handle)} />
+      <NextSeo title={String(user.name || user.handle)} noindex />
       <Container style={{ paddingTop: "2rem" }}>
         <Grid container spacing={3} alignContent="center">
           <Grid item sm={4}>
@@ -72,6 +72,14 @@ export default UserDetailPage;
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
+  if (!session?.user) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       user: session?.user ?? null,

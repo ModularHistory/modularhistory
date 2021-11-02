@@ -3,7 +3,6 @@ import { Card } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CSSProperties } from "@mui/styles";
 import { FC, ReactNode } from "react";
-import { titleCase } from "title-case";
 
 const StyledCard = styled(Card)({
   quotes: '"“" "”" "‘" "’"',
@@ -12,11 +11,11 @@ const StyledCard = styled(Card)({
   textOverflow: "ellipsis",
   minHeight: "15rem",
   color: "black",
-  "&:first-child": {
+  "&:first-of-type": {
     marginTop: "0 !important",
   },
   "& .fa": {
-    "-webkit-text-stroke": "initial",
+    WebkitTextStroke: "initial",
     textShadow: "none",
   },
   "&.image-card": {
@@ -57,7 +56,7 @@ const CardHeader = styled("p")({
     "linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.7), rgba(0,0,0,0.6), rgba(0,0,0,0.5), rgba(0,0,0,0))",
   paddingBottom: "0.2rem",
   color: "white",
-  "-webkit-text-stroke": "1px white",
+  WebkitTextStroke: "1px white",
 });
 
 const CardBody = styled("div")({
@@ -73,7 +72,7 @@ const CardBody = styled("div")({
   right: 0,
   bottom: 0,
   fontSize: "0.8rem",
-  "-webkit-text-stroke": "1px white",
+  WebkitTextStroke: "1px white",
   textAlign: "center",
   "&:last-child": {
     padding: "0.5rem",
@@ -172,7 +171,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
         </CardHeader>
       ) : (
         <CardHeader className={"text-center"}>
-          {module.title && <small>{titleCase(module.title)}</small>}
+          {module.title && <small>{module.title}</small>}
           {module.title && module.dateString && <br />}
           {module.dateString && <small dangerouslySetInnerHTML={{ __html: module.dateString }} />}
         </CardHeader>
