@@ -87,30 +87,40 @@ class HistoricDateTime(datetime):
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
-    # TODO: this override somehow causes a crash when trying to delete a child model like Article
     def __new__(
         cls,
         year: int,
-        month: int,
-        day: int,
-        hour: int,
-        minute: int,
-        second: int,
-        microsecond: int,
+        month: Optional[int] = None,
+        day: Optional[int] = None,
+        hour: Optional[int] = 0,
+        minute: Optional[int] = 0,
+        second: Optional[int] = 0,
+        microsecond: Optional[int] = 0,
         tzinfo: Optional[tzinfo] = None,
+        *,
+        fold: int = 0,
     ):
         """Create an instance."""
         tzinfo = tzinfo or UTC
+        print(f'{year=}')
+        print(f'{month=}')
+        print(f'{day=}')
+        print(f'{hour=}')
+        print(f'{minute=}')
+        print(f'{second=}')
+        print(f'{microsecond=}')
+        print(f'{type(tzinfo)=} {tzinfo=}')
         return super().__new__(
             cls,
             year,
-            month,
-            day,
+            month=month,
+            day=day,
             hour=hour,
             minute=minute,
             second=second,
             microsecond=microsecond,
             tzinfo=tzinfo,
+            fold=fold,
         )
 
     def __str__(self) -> str:
