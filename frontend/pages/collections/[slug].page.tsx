@@ -8,6 +8,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import { FC } from "react";
 import { Container } from "react-bootstrap";
+
 interface CollectionProps {
   collection: Collection;
 }
@@ -20,13 +21,11 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
   return (
     <Layout>
       <NextSeo
-        title={"Collections"}
+        title={collection.title}
         canonical={"/collections"}
-        description={
-          "Browse collections of historical occurrences, entities, sources, and more related to your topics of interest."
-        }
+        description={`"${collection.title}", a collection of historical occurrences, entities, sources, and more.`}
       />
-      <PageHeader>Collections</PageHeader>
+      <PageHeader>{collection.title}</PageHeader>
       <Container>
         <Grid container spacing={2}>
           {collection.propositions.map((proposition: Proposition) => (
