@@ -102,14 +102,6 @@ class HistoricDateTime(datetime):
     ):
         """Create an instance."""
         tzinfo = tzinfo or UTC
-        print(f'{year=}')
-        print(f'{month=}')
-        print(f'{day=}')
-        print(f'{hour=}')
-        print(f'{minute=}')
-        print(f'{second=}')
-        print(f'{microsecond=}')
-        print(f'{type(tzinfo)=} {tzinfo=}')
         return super().__new__(
             cls,
             year,
