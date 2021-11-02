@@ -1,7 +1,7 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Collection } from "@/types/modules";
+import { Collection, Entity, Proposition, Quote, Source } from "@/types/modules";
 import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -13,37 +13,38 @@ interface CollectionProps {
 }
 
 /**
- * A page that renders the HTML of a single entity.
+ * The collections page:
+ * http://www.modularhistory.com/collections
  */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   return (
     <Layout>
       <NextSeo
-        title={"Occurrences"}
-        canonical={"/occurrences"}
+        title={"Collections"}
+        canonical={"/collections"}
         description={
-          "Browse historical occurrences related to your topics or entities of interest."
+          "Browse collections of historical occurrences, entities, sources, and more related to your topics of interest."
         }
       />
       <PageHeader>Collections</PageHeader>
       <Container>
         <Grid container spacing={2}>
-          {collection.propositions.map((proposition) => (
+          {collection.propositions.map((proposition: Proposition) => (
             <Grid item key={proposition.slug}>
               <ModuleUnionCard module={proposition} />
             </Grid>
           ))}
-          {collection.quotes.map((quote) => (
+          {collection.quotes.map((quote: Quote) => (
             <Grid item key={quote.slug}>
               <ModuleUnionCard module={quote} />
             </Grid>
           ))}
-          {collection.sources.map((source) => (
+          {collection.sources.map((source: Source) => (
             <Grid item key={source.slug}>
               <ModuleUnionCard module={source} />
             </Grid>
           ))}
-          {collection.propositions.map((entity) => (
+          {collection.propositions.map((entity: Entity) => (
             <Grid item key={entity.slug}>
               <ModuleUnionCard module={entity} />
             </Grid>
