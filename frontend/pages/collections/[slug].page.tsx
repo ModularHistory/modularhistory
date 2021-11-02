@@ -1,11 +1,12 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Collection, Entity, Proposition, Quote, Source } from "@/types/modules";
+import { Collection } from "@/types/modules";
 import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
+import Link from "next/link";
 import { FC } from "react";
 import { Container } from "react-bootstrap";
 
@@ -28,26 +29,17 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
       <PageHeader>{collection.title}</PageHeader>
       <Container>
         <Grid container spacing={2}>
-          {collection.propositions.map((proposition: Proposition) => (
-            <Grid item key={proposition.slug}>
-              <ModuleUnionCard module={proposition} />
-            </Grid>
-          ))}
-          {collection.quotes.map((quote: Quote) => (
-            <Grid item key={quote.slug}>
-              <ModuleUnionCard module={quote} />
-            </Grid>
-          ))}
-          {collection.sources.map((source: Source) => (
-            <Grid item key={source.slug}>
-              <ModuleUnionCard module={source} />
-            </Grid>
-          ))}
-          {collection.entities.map((entity: Entity) => (
-            <Grid item key={entity.slug}>
-              <ModuleUnionCard module={entity} />
-            </Grid>
-          ))}
+          {[collection.propositions, collection.entities, collection.quotes, collection.sources]
+            .flat()
+            .map((module) => (
+              <Grid item key={module.slug} xs={6} sm={4} md={3}>
+                <Link href={module.absoluteUrl}>
+                  <a>
+                    <ModuleUnionCard module={module} />
+                  </a>
+                </Link>
+              </Grid>
+            ))}
         </Grid>
       </Container>
     </Layout>
