@@ -1,7 +1,7 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Collection } from "@/types/modules";
+import { Collection, Entity, Proposition, Quote, Source } from "@/types/modules";
 import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -12,6 +12,10 @@ interface CollectionProps {
   collection: Collection;
 }
 
+/**
+ * The collections page:
+ * http://www.modularhistory.com/collections
+ */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   return (
     <Layout>
@@ -25,22 +29,22 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
       <PageHeader>Collections</PageHeader>
       <Container>
         <Grid container spacing={2}>
-          {collection.propositions.map((proposition) => (
+          {collection.propositions.map((proposition: Proposition) => (
             <Grid item key={proposition.slug}>
               <ModuleUnionCard module={proposition} />
             </Grid>
           ))}
-          {collection.quotes.map((quote) => (
+          {collection.quotes.map((quote: Quote) => (
             <Grid item key={quote.slug}>
               <ModuleUnionCard module={quote} />
             </Grid>
           ))}
-          {collection.sources.map((source) => (
+          {collection.sources.map((source: Source) => (
             <Grid item key={source.slug}>
               <ModuleUnionCard module={source} />
             </Grid>
           ))}
-          {collection.propositions.map((entity) => (
+          {collection.entities.map((entity: Entity) => (
             <Grid item key={entity.slug}>
               <ModuleUnionCard module={entity} />
             </Grid>
