@@ -69,14 +69,6 @@ describe("ModuleHTML", () => {
     );
   });
 
-  it("uses next/link when not on search page", async () => {
-    mockRouter.setCurrentUrl("/");
-    const { moduleHTML } = await doubleRender();
-
-    userEvent.click(moduleHTML.getByTestId(moduleLinkTestId));
-    expect(moduleLink.props.href).toStrictEqual(Router.asPath);
-  });
-
   it("does not use next/link when on search page", async () => {
     const Wrapper: FC<any> = (props) => <ThemeProvider theme={useTheme()} {...props} />;
     mockRouter.setCurrentUrl("/search");
