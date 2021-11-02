@@ -1,3 +1,4 @@
+import Citation from "@/components/sources/Citation";
 import { Source } from "@/types/modules";
 import { FC } from "react";
 import TagList from "../topics/TagList";
@@ -11,7 +12,7 @@ const SourceDetail: FC<SourceDetailProps> = ({ source }: SourceDetailProps) => {
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-      <div dangerouslySetInnerHTML={{ __html: source.citationHtml }} />
+      <Citation html={source.citationHtml} />
       {!!source.cachedTags?.length && <TagList topics={source.cachedTags} />}
     </>
   );
