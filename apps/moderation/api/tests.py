@@ -1,3 +1,4 @@
+import logging
 import random
 
 import pytest
@@ -47,6 +48,7 @@ class ModerationApiTest(APITestCase):
         url_kwargs=None,
         change_status_code=200,
         method='post',
+        format='json',
         object_id=None,
     ):
         if url_kwargs is None:
@@ -56,7 +58,7 @@ class ModerationApiTest(APITestCase):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
 
         self.assertEqual(
-            self.api_client.post(path, data).status_code,
+            self.api_client.post(path, data, format=format).status_code,
             401,
             'Deny creation without authentication',
         )
@@ -64,7 +66,10 @@ class ModerationApiTest(APITestCase):
         self.api_client.force_authenticate(self.contributor)
 
         api_request = getattr(self.api_client, method)
-        response = api_request(path, data)
+        response = api_request(path, data, format=format)
+
+        if response.status_code != change_status_code:
+            logging.error(f'{method} {path} returned: {response.data}')
 
         self.api_client.logout()
 
