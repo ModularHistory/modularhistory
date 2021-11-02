@@ -130,15 +130,7 @@ export interface Topic extends BaseModule {
   propositions: Proposition[];
 }
 
-export type ModuleUnion =
-  | Image
-  | Quote
-  | Occurrence
-  | Source
-  | Entity
-  | Proposition
-  | Topic
-  | Collection;
+export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
 
 export interface FlatPage {
   title: string;
