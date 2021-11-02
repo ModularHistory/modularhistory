@@ -250,7 +250,7 @@ services:
     image: postgres:14
     deploy:
       restart_policy:
-        condition: any
+        condition: 'always'
     env_file: .env
     expose:
       - "5432"

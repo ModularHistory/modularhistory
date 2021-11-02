@@ -258,6 +258,9 @@ ul.timeline > li:nth-of-type(odd) > .content {
   ul.timeline > li {
     width: calc(100% / 2);
   }
+  div.rpv-default-layout__sidebar.rpv-default-layout__sidebar--ltr {
+    display: hidden !important;
+  }
 }
 @media screen and (max-width: 767px) {
   ul.timeline {

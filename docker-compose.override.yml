@@ -34,7 +34,7 @@ services:
         ENVIRONMENT: dev
     deploy:
       restart_policy:
-        condition: none
+        condition: 'no'
     image: django:latest
     user: root
     ports:
