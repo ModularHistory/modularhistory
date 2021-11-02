@@ -1,7 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import { FieldsUnion } from "@/types/modules";
 import {
   Box,
   Button,
@@ -62,8 +61,8 @@ export default function Home() {
 
   const [type, setType] = useState("");
 
-  const handleFormType = (event: { target: { name: FieldsUnion } }) => {
-    setType(event.target.name);
+  const handleFormType = (event: { target: { value: string } }) => {
+    setType(event.target.value);
   };
 
   return (
@@ -94,8 +93,8 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Box>
-            <Card sx={{ display: "flex" }} hidden>
-              <FormControl variant="standard" sx={{ minWidth: "40rem" }}>
+            <Card sx={{ display: "flex" }}>
+              <FormControl sx={{ minWidth: "20rem", m: "1rem" }}>
                 <InputLabel id="select-form-type">Type of Content</InputLabel>
                 <Select
                   labelId="select-form-type"
@@ -104,6 +103,9 @@ export default function Home() {
                   label="Type of Content"
                   onChange={handleFormType}
                 >
+                  <MenuItem value={"none"}>
+                    <em>None</em>
+                  </MenuItem>
                   <MenuItem value={"quotes"}>Quote</MenuItem>
                   <MenuItem value={"entities"}>Entity</MenuItem>
                   <MenuItem value={"images"}>Image</MenuItem>
@@ -122,9 +124,11 @@ export default function Home() {
               margin: "1.5rem 1rem 1.5rem 1rem",
             }}
           >
-            <Card elevation={5}>
-              <DyanmicForm type={"quotes"} />
-            </Card>
+            {type && type != "none" && (
+              <Card elevation={5} sx={{ p: "1.5rem" }}>
+                <DyanmicForm type={type} />
+              </Card>
+            )}
           </Box>
         </Grid>
       </Grid>
@@ -185,13 +189,13 @@ const AboutModularHistory: FC = () => {
 };
 
 interface DyanmicFormProps {
-  type: FieldsUnion;
+  type: string;
 }
 
 //Dynamic fields:
 const DyanmicForm: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
-  const [formData, setFormData] = useState();
-  const getDyanmicFields = async (type: FieldsUnion) => {
+  const [formData, setFormData] = useState([]);
+  const getDyanmicFields = async (type: string) => {
     //let data = {};
     return await axiosWithoutAuth.get(`/api/${type}/fields/`).then((response) => {
       return response.data;
@@ -204,13 +208,17 @@ const DyanmicForm: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
     });
   });
 
+  const checkField = (obj: any) => {
+    return obj.editable && obj.type === "CharField" && !/url/.test(obj.name);
+  };
+
   return (
     <>
       <Grid container spacing={3}>
         {formData &&
           formData.map((obj: any) => (
             <>
-              {obj.editable && (
+              {checkField(obj) && (
                 <Grid item key={obj.name} xs={4}>
                   <TextField
                     id={obj.name}
@@ -224,7 +232,9 @@ const DyanmicForm: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
             </>
           ))}
       </Grid>
-      <Button>Submit</Button>
+      <Button variant="contained" sx={{ m: "1rem" }}>
+        Submit
+      </Button>
     </>
   );
 };

@@ -116,8 +116,6 @@ export interface Topic extends BaseModule {
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
 
-export type FieldsUnion = "images" | "occurrences" | "topics" | "quotes" | "entities";
-
 export interface FlatPage {
   title: string;
   metaDescription: string;
