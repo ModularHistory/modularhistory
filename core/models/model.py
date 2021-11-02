@@ -133,7 +133,11 @@ class ExtendedModel(Model):
         """Return the value of the field currently in the database."""
         if self._state.adding:
             return None
-        return self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)[0]
+        value = self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)
+        if value:
+            return value[0]
+        else:
+            return None
 
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""

@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from django.db.models import ForeignKey
 from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
@@ -26,8 +27,8 @@ class ModerationApiTest(APITestCase):
 
     contributor: User
 
-    relation_fields: list
-    uncheckable_fields: list
+    relation_fields = []
+    uncheckable_fields = []
     test_data: dict
     updated_test_data: dict
 
@@ -97,13 +98,25 @@ class ModerationApiTest(APITestCase):
         data_fields = request_params.get('data').items()
         for field_name, value in data_fields:
             if field_name in self.relation_fields:
-                relations = getattr(change.changed_object, field_name).values_list(
-                    'id', flat=True
+                changed_object_field = getattr(change.changed_object, field_name)
+
+                is_foreign_key = isinstance(
+                    change.changed_object._meta.get_field(field_name), ForeignKey
                 )
-                for value_item in value:
-                    self.assertIn(
-                        value_item, relations, f'{field_name} does not contain {value_item}'
+                if is_foreign_key:
+                    self.assertEqual(
+                        changed_object_field.id,
+                        value,
+                        f'{field_name} was not changed correctly',
                     )
+                else:
+                    relations = changed_object_field.values_list('id', flat=True)
+                    for value_item in value:
+                        self.assertIn(
+                            value_item,
+                            relations,
+                            f'{field_name} does not contain {value_item}',
+                        )
             elif field_name not in self.uncheckable_fields:
                 self.assertEqual(
                     getattr(change.changed_object, field_name),
