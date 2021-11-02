@@ -480,6 +480,7 @@ class Source(
                 href=self.href,
                 klass='source-title display-source',
                 target=NEW_TAB,
+                title=self.title,
             )
             if self.href
             else self.title
