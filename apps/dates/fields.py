@@ -3,6 +3,7 @@
 from datetime import datetime as DateTime  # noqa: N812
 from typing import Optional, Union
 
+import serpy
 from dateutil.parser import isoparse
 from django.db.models import DateTimeField
 from rest_framework.fields import DateTimeField as DrfDateTimeField
@@ -88,6 +89,11 @@ class HistoricDateTimeDrfField(DrfDateTimeField):
         return value
 
 
-class HistoricDateTimeDrfMultiField(DrfDateTimeField):
+class TimelinePositionField(serpy.Field):
+    def to_value(self, value: HistoricDateTime):
+        return value.timeline_position
+
+
+class TimelinePositionDrfField(HistoricDateTimeDrfField):
     def to_representation(self, value: HistoricDateTime):
-        return {'raw': value, 'ybp': value.year_bp}
+        return value.timeline_position

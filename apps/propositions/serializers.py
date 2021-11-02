@@ -1,5 +1,6 @@
 import serpy
 
+from apps.dates.fields import TimelinePositionField
 from core.models.module import ModuleSerializer
 
 
@@ -15,6 +16,7 @@ class _PropositionSerializer(ModuleSerializer):
     primary_image = serpy.Field()
     cached_citations = serpy.Field()
     tags_html = serpy.StrField()
+    timeline_position = TimelinePositionField(attr='date')
 
 
 class ArgumentSerializer(serpy.Serializer):

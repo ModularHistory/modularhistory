@@ -6,6 +6,7 @@ import Pagination from "@/components/Pagination";
 import { GlobalTheme } from "@/pages/_app.page";
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Compress } from "@mui/icons-material";
+import type { Mark } from "@mui/material";
 import {
   Box,
   Container,
@@ -13,7 +14,7 @@ import {
   Drawer,
   Slider,
   SliderMark,
-  SliderProps,
+  SliderMarkLabel,
   Stack,
   styled,
   useMediaQuery,
@@ -46,6 +47,8 @@ const SliderToggle = styled("button")({
   "&.open": { transform: "translateX(229px) !important" },
 });
 
+const getModuleUID = ({ model, id }: SearchProps["results"][number]) => `${model}-${id}`;
+
 interface SearchProps {
   count: number;
   totalPages: number;
@@ -58,59 +61,89 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
   } = useRouter();
   const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
 
-  props.results.forEach((r, index) => {
-    r.ybp = 2021 - Number(r.dateString.match(/\d{4}/)[0]) + Number(`${index}e-3`);
-  });
+  const [viewState, setViewState] = [
+    Object.fromEntries(props.results.map((module) => [getModuleUID(module), false])),
+    () => {},
+  ]; //useState(() =>
+  //Object.fromEntries(props.results.map((module) => [getModuleUID(module), false]))
+  //);
 
-  const [viewState, setViewState] = useState(() =>
-    Object.fromEntries(props.results.map((r) => [r.model + "-" + r.slug, false]))
+  const now = new Date().getFullYear();
+  const marks: Mark[] = [];
+  const years = props.results.map((r) => r.timelinePosition).sort((a, b) => a - b);
+  props.results.forEach((module, index) =>
+    marks.push({
+      value: module.timelinePosition + Number(`${index}e-5`),
+      label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
+    })
   );
 
-  const marks: SliderProps["marks"] = [];
-  //   { value: 1e4 },
-  //   { value: 0 },
-  //   { value: 8000, label: "YBP" },
-  //   { value: 2021, label: "1 CE" },
-  // ];
-  const years = props.results.map((r) => r.ybp).sort((a, b) => a - b);
-  props.results.forEach((r) =>
-    marks.push({ value: r.ybp, label: viewState[r.model + "-" + r.slug] ? r.slug : null })
-  );
-  console.log({ years, marks });
-  const rangeEndIndex = years.findIndex((x) => x > (years[0] + years[years.length - 1]) / 2);
-  let range = [years[rangeEndIndex - 1], years[rangeEndIndex]];
-  range = [range[0] + (range[1] - range[0]) * 5e-2, range[1] - (range[1] - range[0]) * 5e-2].map(
-    Math.floor
-  );
-  console.log({ range, rangeEndIndex });
+  const ranges = years.slice(0, -1).map((year, index) => years[index + 1] - year);
+
+  const averageDistance = (years[years.length - 1] - years[0]) / years.length;
+  const breaks: (Mark & { length: number })[] = [];
+
+  ranges.forEach((rangeLength, index) => {
+    if (rangeLength > averageDistance) {
+      const [start, end] = years.slice(index, index + 2).map(Math.round);
+      const length = end - start;
+      const buffer = Math.round(Math.min(averageDistance / 4, length * 0.1));
+      // if (length <= buffer * 3) return;
+
+      const break_ = {
+        value: start + buffer,
+        label: (
+          <Box color={"lightgray"}>
+            {now - (end - buffer)} CE — {now - (start + buffer)} CE
+          </Box>
+        ),
+        length: length - 2 * buffer,
+      };
+      breaks.push(break_);
+      marks.push({ ...break_ });
+    }
+  }, [] as number[]);
+  breaks.sort((a, b) => a.value - b.value);
+  const reverseBreaks = [...breaks].reverse();
+
   const scale = (n: number) => {
-    if (n > range[0]) return n - Math.floor(range[1] - range[0]);
+    for (const { value, length } of reverseBreaks) {
+      if (n > value) n -= length;
+    }
     return n;
   };
   const descale = (n: number) => {
-    if (n > range[0]) return n + Math.floor(range[1] - range[0]);
+    for (const { value, length } of breaks) {
+      if (n > value) n += length;
+    }
     return n;
   };
-  marks.forEach((mark) => (mark.value = scale(mark.value)));
-  marks.push({ value: range[0], label: `${2021 - range[1]} CE — ${2021 - range[0]} CE` });
 
+  console.log({ marks: [...marks] });
+  marks.forEach((mark) => {
+    mark.value = scale(mark.value);
+  });
+
+  const buffer = averageDistance / 4;
+  const min = Math.floor(years[0] - buffer);
+  const max = scale(Math.ceil(years[years.length - 1] + buffer));
+  console.log({ breaks, years, yearsCE: years.map((y) => 2021 - y), scale, descale });
   const slider = (
     <Slider
       orientation={"vertical"}
-      // components={{Mark: (props) => <span {...props}><CloseIcon/></span>}}
       valueLabelDisplay={"on"}
-      min={Math.floor(years[0])}
-      max={scale(Math.ceil(years[years.length - 1]))}
       marks={marks}
-      defaultValue={[Math.floor(years[0]), Math.ceil(years[years.length - 1])].map(scale)}
+      defaultValue={[min, max]}
+      min={min}
+      max={max}
       valueLabelFormat={(value) => {
-        if (value === range[0]) return "break";
-        return `${2021 - descale(value)} CE`; // return `${2021 - value} CE`;
+        // if (breaks.map(b => b.value).includes(descale(value))) return "break";
+        return `${now - descale(value)} CE`; // return `${2021 - value} CE`;
       }}
       sx={{
         height: "80vh",
         position: "fixed",
-        left: "40px",
+        left: "80px",
         "& .MuiSlider-mark": {
           width: "12px",
           backgroundColor: "#212529",
@@ -119,11 +152,15 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
       components={{
         Mark: (props) => (
           <SliderMark {...props}>
-            {props["data-index"] === 20 && (
+            {props["data-index"] >= years.length && (
               <Compress sx={{ transform: "translate(-25%, -50%)", backgroundColor: "white" }} />
             )}
           </SliderMark>
         ),
+        MarkLabel: (props) => {
+          // console.log(props)
+          return <SliderMarkLabel {...props} />;
+        },
       }}
     />
   );
@@ -340,8 +377,8 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
         <InView
           as="div"
           onChange={(inView) => {
-            console.log(`Inview: ${inView}`, module.slug);
-            setViewState((os) => ({ ...os, [module.model + "-" + module.slug]: inView }));
+            console.debug(`Inview: ${inView}`, module.slug);
+            setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
           }}
         >
           <a

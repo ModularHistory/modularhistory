@@ -253,3 +253,12 @@ class HistoricDateTime(datetime):
             # CE dates
             year_string = str(self.year)
         return year_string
+
+    @property
+    def timeline_position(self):
+        timeline_position = self.year_bp
+        if self.month_is_known:
+            timeline_position += (self.month - 1) / 12
+        if self.day_is_known:
+            timeline_position += (self.timetuple().tm_yday - 1) / 366
+        return timeline_position

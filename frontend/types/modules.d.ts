@@ -19,6 +19,7 @@ export interface BaseModule {
 export interface SearchableModule extends BaseModule {
   cachedTags: Topic[];
   verified: boolean;
+  timelinePosition: number;
 }
 
 export interface Citation {
@@ -48,6 +49,7 @@ export interface Text {
   description?: string[]; // for sources.source, entities.person
   elaboration?: string[]; // for occurances
 }
+
 export interface Meta {
   score: number;
   highlight: Text;
