@@ -1,5 +1,5 @@
 import ModuleHTML from "@/components/details/ModuleHTML";
-import { ThemeProvider, useTheme } from "@mui/material/styles";
+import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import { render, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";
@@ -33,7 +33,12 @@ describe("ModuleHTML", () => {
     moduleHTML: within(
       await waitFor(
         () =>
-          render(<ModuleHTML html={ReactDOMServer.renderToStaticMarkup(node)} />, options).container
+          render(
+            <ThemeProvider theme={createTheme({})}>
+              <ModuleHTML html={ReactDOMServer.renderToStaticMarkup(node)} />
+            </ThemeProvider>,
+            options
+          ).container
       )
     ),
     normal: within(render(node).container),
