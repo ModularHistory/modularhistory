@@ -13,5 +13,7 @@ class SourceViewSet(ExtendedModelViewSet):
     prefetch_relations = ExtendedModelViewSet.prefetch_relations + [
         'file',
         'tags',
-        'original_edition',
+        # TODO: http://modularhistory.dev.net/sources?page=3
+        # Intercepted Sentry event: {'exc_info': (<class 'AttributeError'>, AttributeError("'Speech' object has no attribute 'original_edition_id'"), <traceback object at 0x7fe620380980>), 'attachments': []}
+        # 'original_edition',
     ]
