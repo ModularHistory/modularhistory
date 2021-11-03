@@ -10,13 +10,13 @@ import type { Mark } from "@mui/material";
 import {
   Box,
   Container,
-  Divider,
   Drawer,
   Slider,
   SliderMark,
-  SliderMarkLabel,
-  Stack,
+  SliderThumb,
+  SliderValueLabel,
   styled,
+  Tooltip,
   useMediaQuery,
 } from "@mui/material";
 import axios from "axios";
@@ -29,13 +29,14 @@ import {
   Dispatch,
   FC,
   MouseEventHandler,
+  MutableRefObject,
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { InView } from "react-intersection-observer";
 
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
   ssr: false,
@@ -55,26 +56,19 @@ interface SearchProps {
   results: Exclude<ModuleUnion, Topic>[];
 }
 
-const Search: FC<SearchProps> = (props: SearchProps) => {
-  const {
-    query: { query },
-  } = useRouter();
-  const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
+type ElementRef<T extends HTMLElement = HTMLElement> = MutableRefObject<T | null>;
 
-  const [viewState, setViewState] = [
-    Object.fromEntries(props.results.map((module) => [getModuleUID(module), false])),
-    () => {},
-  ]; //useState(() =>
-  //Object.fromEntries(props.results.map((module) => [getModuleUID(module), false]))
-  //);
-
+const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }> = ({
+  modules,
+  moduleRefs,
+}) => {
   const now = new Date().getFullYear();
   const marks: Mark[] = [];
-  const years = props.results.map((r) => r.timelinePosition).sort((a, b) => a - b);
-  props.results.forEach((module, index) =>
+  const years = modules.map((r) => r.timelinePosition).sort((a, b) => a - b);
+  modules.forEach((module, index) =>
     marks.push({
       value: module.timelinePosition + Number(`${index}e-5`),
-      label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
+      // label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
     })
   );
 
@@ -127,9 +121,16 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
   const buffer = averageDistance / 4;
   const min = Math.floor(years[0] - buffer);
   const max = scale(Math.ceil(years[years.length - 1] + buffer));
-  console.log({ breaks, years, yearsCE: years.map((y) => 2021 - y), scale, descale });
-  const slider = (
+  // console.log({ breaks, years, yearsCE: years.map((y) => 2021 - y), scale, descale });
+  const thumbRefs: ElementRef[] = [...Array(2)].map(() => useRef(null));
+
+  return (
     <Slider
+      key={modules.length}
+      onMouseDownCapture={(event) => {
+        if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
+          event.stopPropagation();
+      }}
       orientation={"vertical"}
       valueLabelDisplay={"on"}
       marks={marks}
@@ -137,33 +138,79 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
       min={min}
       max={max}
       valueLabelFormat={(value) => {
-        // if (breaks.map(b => b.value).includes(descale(value))) return "break";
         return `${now - descale(value)} CE`; // return `${2021 - value} CE`;
       }}
       sx={{
         height: "80vh",
         position: "fixed",
-        left: "80px",
+        left: "40px",
         "& .MuiSlider-mark": {
           width: "12px",
           backgroundColor: "#212529",
         },
       }}
       components={{
-        Mark: (props) => (
-          <SliderMark {...props}>
-            {props["data-index"] >= years.length && (
-              <Compress sx={{ transform: "translate(-25%, -50%)", backgroundColor: "white" }} />
-            )}
-          </SliderMark>
-        ),
-        MarkLabel: (props) => {
-          // console.log(props)
-          return <SliderMarkLabel {...props} />;
+        Mark: (props) => {
+          const isBreak = props["data-index"] >= modules.length;
+          const sliderMark = (
+            <SliderMark {...props} onClick={console.log}>
+              {isBreak ? (
+                <Compress
+                  sx={{
+                    transform: "translate(-25%, -50%)",
+                    color: "gray",
+                    backgroundColor: "white",
+                  }}
+                />
+              ) : (
+                <Box
+                  position={"relative"}
+                  bottom={"3px"}
+                  padding={"5px"}
+                  onClick={() => {
+                    const moduleCard = moduleRefs[props["data-index"]].current;
+                    moduleCard?.scrollIntoView({ behavior: "smooth" });
+                    moduleCard?.click();
+                  }}
+                />
+              )}
+            </SliderMark>
+          );
+          return isBreak ? (
+            sliderMark
+          ) : (
+            <Tooltip title={modules[props["data-index"]].title} placement={"right"} arrow>
+              {sliderMark}
+            </Tooltip>
+          );
         },
+        // MarkLabel: (props) => {
+        //   return <SliderMarkLabel {...props} />;
+        // },
+        Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
+        ValueLabel: (props) => (
+          <SliderValueLabel
+            {...props}
+            sx={
+              props.index === 0
+                ? {
+                    top: 58,
+                    "&:before": { top: -8 },
+                  }
+                : {}
+            }
+          />
+        ),
       }}
     />
   );
+};
+
+const Search: FC<SearchProps> = (props: SearchProps) => {
+  const {
+    query: { query },
+  } = useRouter();
+  const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
 
   return (
     <Layout>
@@ -186,17 +233,7 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
 
             <div className="results-container">
               <SearchPageHeader {...props} />
-              {/*<hr />*/}
-              {/*{slider}*/}
-              {/*<hr />*/}
-              <Stack
-                direction={"row"}
-                spacing={12}
-                divider={<Divider orientation="vertical" flexItem />}
-              >
-                {slider}
-                <SearchResultsPanes {...props} setViewState={setViewState} />
-              </Stack>
+              <SearchResultsPanes {...props} />
             </div>
           </div>
 
@@ -349,38 +386,53 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   setModuleIndexFromEvent,
   setModalOpen,
   initialUrlAnchor,
-  setViewState,
 }) => {
+  const [viewState, setViewState] = useState(() =>
+    Object.fromEntries(modules.map((module) => [getModuleUID(module), false]))
+  );
+
+  const moduleRefs: ElementRef<HTMLAnchorElement>[] = [...Array(modules.length)].map(() =>
+    useRef(null)
+  );
+
   const selectModule: MouseEventHandler = (event) => {
     setModuleIndexFromEvent(event);
     setModalOpen(true);
   };
 
   // on initial load, scroll to the module card designated by the url anchor
-  const initialModuleRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     // non-delayed scrolls sometimes cause inconsistent behavior, so wait 100ms
-    setTimeout(() => initialModuleRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    setTimeout(() => {
+      const index = modules.findIndex(({ slug }) => slug === initialUrlAnchor);
+      if (index >= 0) moduleRefs[index].current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box
-      className={"results result-cards"}
-      sx={{
-        "& .selected": {
-          border: "3px solid black",
-          borderRight: "none",
-        },
-      }}
-    >
-      {modules.map((module, index) => (
-        <InView
-          as="div"
-          onChange={(inView) => {
-            console.debug(`Inview: ${inView}`, module.slug);
-            setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
-          }}
-        >
+    <>
+      {useMemo(
+        () => (
+          <Timeline modules={modules} moduleRefs={moduleRefs} />
+        ),
+        [modules]
+      )}
+      <Box
+        className={"results result-cards"}
+        sx={{
+          "& .selected": {
+            border: "3px solid black",
+            borderRight: "none",
+          },
+        }}
+      >
+        {modules.map((module, index) => (
+          // <InView
+          //   as="div"
+          //   onChange={(inView) => {
+          //     setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
+          //   }}
+          // >
           <a
             href={module.absoluteUrl}
             className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
@@ -389,13 +441,14 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
             key={module.slug}
             data-index={index}
             onClick={selectModule}
-            ref={initialUrlAnchor === module.slug && index !== 0 ? initialModuleRef : undefined}
+            ref={moduleRefs[index]}
           >
             <ModuleUnionCard module={module} selected={index === moduleIndex} />
           </a>
-        </InView>
-      ))}
-    </Box>
+          // </InView>
+        ))}
+      </Box>
+    </>
   );
 };
 
