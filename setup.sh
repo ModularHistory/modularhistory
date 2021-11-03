@@ -306,14 +306,15 @@ if [[ ! "$(pyenv versions)" =~ "$PYTHON_VERSION" ]]; then
 fi
 
 # Install and configure Poetry.
+export POETRY_HOME="$HOME/.poetry"
 # shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
-poetry --version &>/dev/null || {
+poetry -q || {
   echo "Installing Poetry ..."
   # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
   curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 -
   _append_to_sh_profile "$poetry_init"
-  poetry --version &>/dev/null || {
+  poetry -q || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
 }
