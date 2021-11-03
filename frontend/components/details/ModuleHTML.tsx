@@ -1,5 +1,7 @@
-import { Element, HTMLReactParserOptions } from "html-react-parser";
-import { FC, ReactElement, useEffect, useState } from "react";
+import ModuleLink from "@/components/details/ModuleLink";
+import HtmlParser from "@/components/HtmlParser";
+import { Element } from "html-react-parser";
+import { FC } from "react";
 
 interface ModuleHTMLProps {
   html: string;
@@ -12,55 +14,21 @@ interface ModuleHTMLProps {
  * @param html - the HTML string to render; unsafe if not cleaned before rendering.
  */
 const ModuleHTML: FC<ModuleHTMLProps> = ({ html }: ModuleHTMLProps) => {
-  const [renderedHTML, setRenderedHTML] = useState(() => (
-    <div dangerouslySetInnerHTML={{ __html: html }} />
-  ));
-
-  useEffect(() => {
-    // asynchronously load parsing and rendering modules to improve performance
-    Promise.all([import("html-react-parser"), import("@/components/details/ModuleLink")]).then(
-      ([{ default: parse, domToReact, attributesToProps }, { default: ModuleLink }]) => {
-        const options: HTMLReactParserOptions = {
-          replace: (domNode) => {
-            if (domNode.type !== "tag") {
-              return;
-            }
-
-            // The cast here is necessary to get around a weird bug when using this package with NextJS and TS.
-            // remarkablemark/html-react-parser#221
-            const element = domNode as Element;
-
-            if (element.name === "a") {
-              const { href } = element.attribs;
-
-              // don't format external links
-              if (!href?.startsWith("/")) {
-                return;
-              }
-
-              return (
-                <ModuleLink
-                  anchorProps={attributesToProps(element.attribs)}
-                  anchorChildren={domToReact(element.children)}
-                />
-              );
-            } else {
-              // casting to prevent TS error; we can cast safely because domNode.type is
-              // always "tag" here, so the rendered node will never be a string;
-              return domToReact(element.children, options) as Exclude<
-                ReturnType<typeof domToReact>,
-                string
-              >;
-            }
-          },
-        };
-
-        setRenderedHTML(parse(html, options) as ReactElement);
+  const htmlFilterFunc = (element: Element) => {
+    if (element.name === "a") {
+      const { href } = element.attribs;
+      // Only format internal links.
+      if (href?.startsWith("/")) {
+        return true;
       }
-    );
-  }, [html]);
-
-  return <div data-testid={"moduleHTML"}>{renderedHTML}</div>;
+    }
+    return false;
+  };
+  return (
+    <div data-testid={"moduleHTML"}>
+      <HtmlParser html={html} filterFunc={htmlFilterFunc} component={ModuleLink} />
+    </div>
+  );
 };
 
 export default ModuleHTML;

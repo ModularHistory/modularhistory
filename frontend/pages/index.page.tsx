@@ -1,13 +1,18 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory from "@/components/TodayInHistory";
-import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
+import { ModuleUnion, Topic } from "@/types/modules";
+import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Container, Divider, Grid, Link, Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useRef } from "react";
+import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -54,13 +59,8 @@ export default function Home() {
 
   return (
     <Layout>
-      <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
-        <Grid item xs={8} alignItems="center" justifyContent="center">
-          <Container>
-            <AboutModularHistory />
-          </Container>
-        </Grid>
-        <Grid item xs={8}>
+      <Grid container spacing={2} sx={{ p: 4 }}>
+        <Grid item xs={12}>
           <Container>
             <Box
               sx={{
@@ -82,12 +82,35 @@ export default function Home() {
             </Box>
           </Container>
         </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 12 }}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <Grid item xs={12} sm={6} md={6} alignItems="center" justifyContent="center">
+          <Container>
+            <AboutModularHistory />
+          </Container>
+        </Grid>
+        <Grid item xs={12} sm={6} md={6}>
+          <Container>
+            <FeaturedContent />
+          </Container>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} sx={{ p: 4 }}>
         <Grid item xs={12}>
           <Card elevation={5}>
             <CardContent>
               <TodayInHistory />
             </CardContent>
           </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <SubscriptionBox />
         </Grid>
       </Grid>
     </Layout>
@@ -119,7 +142,7 @@ const AboutModularHistory: FC = () => {
             ModularHistory is a nonprofit organization dedicated to helping people learn about and
             understand the history of issues of modern sociopolitical discourse.
           </p>
-          <Button variant="contained" href="/about/">
+          <Button variant="contained" href="/about">
             Learn More
           </Button>
         </Box>
@@ -140,6 +163,165 @@ const AboutModularHistory: FC = () => {
             </Grid>
           </Grid>
         </Box>
+      </Card>
+    </Box>
+  );
+};
+
+const FeaturedContent: FC = () => {
+  const [items, setItems] = useState<Exclude<ModuleUnion, Topic>[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
+    axiosWithoutAuth
+      .get("/api/home/features/", { cancelToken: cancelTokenSource.token })
+      .then((response) => {
+        setItems(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) return;
+        console.error(error);
+        setLoading(false);
+      });
+    return () => {
+      cancelTokenSource.cancel("component unmounted");
+    };
+  }, [loading]);
+
+  return (
+    <>
+      <Box
+        sx={{
+          flex: "1 1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "1.5rem 1rem 1.5rem 1rem",
+          p: 4,
+        }}
+      >
+        <Card elevation={5}>
+          <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item>
+                <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
+                  Featured Content
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container alignItems="center" justifyContent="center">
+              <>
+                {items.length ? (
+                  items.map((module, index) => (
+                    <Link href={module.absoluteUrl} underline="none" key={index}>
+                      <a>
+                        <Grid item>
+                          <ModuleUnionCard module={module} key={index} />
+                        </Grid>
+                      </a>
+                    </Link>
+                  ))
+                ) : loading ? (
+                  <Card>
+                    <CardContent>
+                      <Skeleton sx={{ minHeight: 200, width: "100vw" }} />
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <p>Sorry, there are no featured contents to display. Please check back later!</p>
+                )}
+              </>
+            </Grid>
+          </Box>
+        </Card>
+      </Box>
+    </>
+  );
+};
+
+const SubscriptionBox: FC = () => {
+  const submitSubscription = () => {
+    return;
+  };
+
+  const subscriptionForm = (
+    <Grid
+      container
+      direction={"column"}
+      spacing={2}
+      alignItems={"center"}
+      justifyContent={"center"}
+      marginTop={"0rem"}
+      marginBottom={"1rem"}
+    >
+      <Grid item>
+        <TextField
+          id={"id_subscribeEmail"}
+          name={"subscribeEmail"}
+          variant={"outlined"}
+          size={"small"}
+          style={{ minWidth: "280px", marginRight: "1rem" }}
+          onKeyPress={submitSubscription}
+          label={"Email address"}
+        />
+        <Button variant="contained" sx={{ minHeight: "40px", height: "100%" }}>
+          Sign up!
+        </Button>
+      </Grid>
+    </Grid>
+  );
+
+  const subscribeDisclaimer = (
+    <Grid container>
+      <Box sx={{ fontWeight: "100" }}>
+        <Typography style={{ fontSize: "10pt" }}>
+          {"By entering your details, you are agreeing to ModularHistory's "}
+          <Link href="/privacy">
+            <a>privacy policy</a>
+          </Link>{" "}
+          and{" "}
+          <Link href="/terms">
+            <a>terms of use</a>
+          </Link>
+          . You can unsubscribe at any time.
+        </Typography>
+      </Box>
+    </Grid>
+  );
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "1.5rem 1rem 1.5rem 1rem",
+      }}
+      hidden
+    >
+      <Card elevation={5}>
+        <CardContent>
+          <Grid
+            item
+            sx={{
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography style={{ fontSize: "20pt", fontWeight: "bold" }}>
+              Sign up for the weekly ModularHistory newsletter
+            </Typography>
+            <Button>
+              <CloseIcon />
+            </Button>
+          </Grid>
+          <Typography>Sign up to recieve our newsletter!</Typography>
+          {subscriptionForm}
+          {subscribeDisclaimer}
+        </CardContent>
       </Card>
     </Box>
   );

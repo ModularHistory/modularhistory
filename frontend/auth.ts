@@ -1,9 +1,9 @@
+import axios from "@/axiosWithAuth";
 import { AxiosResponse } from "axios";
 import { Account, Session, User } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { JWT } from "next-auth/jwt";
 import { NextRouter } from "next/router";
-import axios from "./axiosWithAuth";
 
 export const DJANGO_CSRF_COOKIE_NAME = "csrftoken";
 const ACCESS_TOKEN_COOKIE_NAME = "access-token";
