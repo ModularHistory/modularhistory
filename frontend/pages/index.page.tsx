@@ -1,25 +1,13 @@
-import axiosWithoutAuth from "@/axiosWithoutAuth";
+import DyanmicForm from "@/components/forms/DynamicForm";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  Link,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
+import { FC, MouseEventHandler, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -145,155 +133,5 @@ const AboutModularHistory: FC = () => {
         </Box>
       </Card>
     </Box>
-  );
-};
-
-const DyanmicForm: FC = () => {
-  const [type, setType] = useState("");
-
-  const handleFormType = (event: { target: { value: string } }) => {
-    setType(event.target.value);
-  };
-
-  return (
-    <>
-      <Card sx={{ display: "flex" }}>
-        <FormControl sx={{ minWidth: "20rem", m: "1rem" }}>
-          <InputLabel id="select-form-type">Type of Content</InputLabel>
-          <Select
-            labelId="select-form-type"
-            id="select-form"
-            value={type}
-            label="Type of Content"
-            onChange={handleFormType}
-          >
-            <MenuItem value={"none"}>
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={"quotes"}>Quote</MenuItem>
-            <MenuItem value={"entities"}>Entity</MenuItem>
-            <MenuItem value={"images"}>Image</MenuItem>
-            <MenuItem value={"occurrences"}>Occurrence</MenuItem>
-            <MenuItem value={"topics"}>Topic</MenuItem>
-          </Select>
-        </FormControl>
-      </Card>
-      <Box
-        sx={{
-          flex: "1 1",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "1.5rem 1rem 1.5rem 1rem",
-        }}
-      >
-        {type && type != "none" && (
-          <Card elevation={5} sx={{ p: "1.5rem" }}>
-            <DyanmicFormFields type={type} />
-          </Card>
-        )}
-      </Box>
-    </>
-  );
-};
-
-interface DyanmicFormProps {
-  type: string;
-}
-
-//Dynamic fields:
-const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
-  const [formData, setFormData] = useState([]);
-  const [choiceValue, setChoiceValue] = useState<string[]>([]);
-
-  const getDyanmicFields = async (type: string) => {
-    return await axiosWithoutAuth.get(`/api/${type}/fields/`).then((response) => {
-      return response.data;
-    });
-  };
-
-  const handleChoice = (event: { target: { value: string[] | string } }) => {
-    const value = event.target.value as string[] | string;
-    setChoiceValue(typeof value === "string" ? value.split(",") : value);
-  };
-
-  useEffect(() => {
-    getDyanmicFields(type).then((result) => {
-      setFormData(result);
-    });
-  });
-
-  /*useEffect(() => {
-    getDyanmicFields(choice).then((result) => {
-      setChoiceValue(result);
-    });
-  });*/
-
-  const checkField = (obj: any) => {
-    return obj.editable;
-  };
-
-  const createDisplayName = (str: string) => {
-    return str.replace(/_/g, " ");
-  };
-
-  const createChoiceValue = (str: string) => {
-    return str.replace(/<.*?>/g, "");
-  };
-
-  return (
-    <>
-      <FormControl>
-        <Grid container spacing={3}>
-          {formData &&
-            formData.map((field: any) => (
-              <>
-                {checkField(field) &&
-                  ((field.type === "CharField" && (
-                    <Grid item key={field.name} xs={4}>
-                      <TextField
-                        id={field.name}
-                        label={createDisplayName(field.name)}
-                        variant="outlined"
-                        helperText={field.helpText}
-                        required={field.required}
-                        sx={{ minWidth: "5rem" }}
-                      />
-                    </Grid>
-                  )) ||
-                    (field.type === "ManyRelatedField" && (
-                      <Grid item key={field.name} xs={4}>
-                        <FormControl>
-                          <InputLabel id={field.name}>{createDisplayName(field.name)}</InputLabel>
-                          <Select
-                            labelId={field.name}
-                            id={field.name}
-                            label={createDisplayName(field.name)}
-                            value={choiceValue}
-                            multiple
-                            variant="outlined"
-                            onChange={handleChoice}
-                            input={<OutlinedInput label={createDisplayName(field.name)} />}
-                            sx={{ width: "10rem" }}
-                          >
-                            {field.choices &&
-                              Object.values(field.choices).map((choice: any) => (
-                                <MenuItem key={choice} value={choice}>
-                                  {createChoiceValue(choice)}
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )))}
-              </>
-            ))}
-        </Grid>
-        <p>* = required field</p>
-        <Button variant="contained" sx={{ m: "1rem" }}>
-          Submit
-        </Button>
-      </FormControl>
-    </>
   );
 };
