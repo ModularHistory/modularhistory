@@ -60,12 +60,6 @@ export default function Home() {
     </Grid>
   );
 
-  const [type, setType] = useState("");
-
-  const handleFormType = (event: { target: { value: string } }) => {
-    setType(event.target.value);
-  };
-
   return (
     <Layout>
       <Grid container spacing={2} columns={16} alignItems={"center"} justifyContent={"center"}>
