@@ -1,18 +1,15 @@
-from django.utils import timezone
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from datetime import datetime
 from itertools import chain
 
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.entities.models import Entity
+from apps.home.models import Feature
 from apps.propositions.models import Occurrence
 from apps.quotes.models import Quote
-
-from apps.home.models import Feature
 
 
 class FeatureAPIView(APIView):

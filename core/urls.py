@@ -84,6 +84,7 @@ urlpatterns = [
     path('api/users/', include(_api('users'), namespace='users_api')),
     path('api/flatpages/', include(_api('flatpages'), namespace='flatpages_api')),
     path('users/', include('apps.users.urls', namespace='users')),
+    path('api/collections/', include(_api('collections'), namespace='collections_api')),
     re_path(r'api/csrf/set/?', set_csrf_token),
     # ---------------------------------
     # Auth URLs
