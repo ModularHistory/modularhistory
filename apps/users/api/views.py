@@ -16,12 +16,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.users.api.serializers import (
+    EmailVerificationSerializer,
     RegistrationSerializer,
     ResendEmailVerificationSerializer,
     SocialAccountSerializer,
     SocialLoginSerializer,
     UserSerializer,
-    VerifyEmailSerializer,
 )
 from apps.users.models import EmailAddress, EmailConfirmation, SocialAccount, User
 
@@ -66,17 +66,22 @@ class EmailVerificationView(APIView):
     allowed_methods = ('POST', 'OPTIONS', 'HEAD')
 
     def get_serializer(self, *args, **kwargs):
-        return VerifyEmailSerializer(*args, **kwargs)
+        return EmailVerificationSerializer(*args, **kwargs)
 
     def get(self, *args, **kwargs):
         raise MethodNotAllowed('GET')
 
     def post(self, request, *args, **kwargs):
+        print('>>>>> post')
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print('>>>>> valid')
         self.kwargs['key'] = serializer.validated_data['key']
+        print(f'>>>>> {self.kwargs["key"]=}')
         confirmation = self.get_object()
+        print('>>>>> confirming...')
         confirmation.confirm(self.request)
+        print('>>>>> confirmed')
         return Response({'detail': _('ok')}, status=status.HTTP_200_OK)
 
     def get_object(self, queryset=None):

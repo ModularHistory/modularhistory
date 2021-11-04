@@ -19,7 +19,7 @@ const EmailConfirmationPage: FC<EmailConfirmationPageProps> = ({
       <Container style={{ paddingTop: "2rem" }}>
         <Grid container spacing={3} alignContent="center">
           <Grid item sm={12}>
-            <p>{message}</p>
+            <p style={{ textAlign: "center" }}>{message}</p>
           </Grid>
         </Grid>
       </Container>
@@ -33,11 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { key } = context.params || {};
   let message = "Something went wrong.";
   await axios
-    .post("/api/users/auth/email-verification/", {
-      key,
-    })
+    .post("http://django:8000/api/users/auth/email-verification/", { key: key })
     .then(function () {
-      message = "Email address was verified successfully.";
+      message = "Your e-mail address was verified successfully.";
     })
     .catch(function (error) {
       message = `Failed to verify email address: ${error}`;
