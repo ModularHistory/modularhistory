@@ -68,7 +68,8 @@ interface DyanmicFormProps {
   type: string;
 }
 
-//Dynamic fields:
+//Dynamic fields form
+//Can be called using the DyanmicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
 const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
   const [formData, setFormData] = useState([]);
   const [choiceValue, setChoiceValue] = useState<string[]>([]);
@@ -90,12 +91,6 @@ const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => 
     });
   });
 
-  /*useEffect(() => {
-    getDyanmicFields(choice).then((result) => {
-    setChoiceValue(result);
-    });
-});*/
-
   const checkField = (obj: any) => {
     return obj.editable;
   };
@@ -106,6 +101,14 @@ const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => 
 
   const createChoiceValue = (str: string) => {
     return str.replace(/<.*?>/g, "");
+  };
+
+  const getRequiredFields = (fields: any) => {
+    return fields.map((field: any) => {
+      if (field.required === true) {
+        return field.name;
+      }
+    });
   };
 
   return (
