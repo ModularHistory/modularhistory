@@ -152,7 +152,7 @@ class EmailAddress(models.Model):
         verbose_name = _('email address')
         verbose_name_plural = _('email addresses')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
 
     def save(self, *args, **kwargs):
@@ -161,6 +161,7 @@ class EmailAddress(models.Model):
         super().save(*args, **kwargs)
 
     def set_as_primary(self):
+        """Set the email address as its user's primary email address."""
         old_primary: Optional[EmailAddress] = EmailAddress.objects.get_primary(self.user)
         if old_primary:
             old_primary.primary = False
@@ -178,9 +179,7 @@ class EmailAddress(models.Model):
         return confirmation
 
     def change(self, request, new_email, confirm=True):
-        """
-        Given a new email address, change self and re-confirm.
-        """
+        """Given a new email address, change self and re-confirm."""
         with transaction.atomic():
             user: User = self.user
             user.email = new_email
