@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.db import models
 
@@ -14,13 +14,10 @@ class EmailAddressManager(models.Manager):
     model: models.Model
 
     def can_add_email(self, user):
-        ret = True
-        if MAX_EMAIL_ADDRESSES:
-            count = self.filter(user=user).count()
-            ret = count < MAX_EMAIL_ADDRESSES
-        return ret
+        return self.filter(user=user).count() < MAX_EMAIL_ADDRESSES
 
     def add_email(self, request, user, email, confirm=False):
+        email_address: 'EmailAddress'
         email_address, created = self.get_or_create(
             user=user, email__iexact=email, defaults={'email': email}
         )
@@ -28,16 +25,11 @@ class EmailAddressManager(models.Manager):
             email_address.send_confirmation(request)
         return email_address
 
-    def get_primary(self, user):
+    def get_primary(self, user) -> Optional['EmailAddress']:
         try:
             return self.get(user=user, primary=True)
         except self.model.DoesNotExist:
             return None
-
-    def get_users_for(self, email):
-        # this is a list rather than a generator because we probably want to
-        # do a len() on it right away
-        return [address.user for address in self.filter(verified=True, email__iexact=email)]
 
     def fill_cache_for_user(self, user, addresses):
         """
