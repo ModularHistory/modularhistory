@@ -126,6 +126,9 @@ class SocialAccountListView(generics.ListAPIView):
         return SocialAccount.objects.filter(user=self.request.user)
 
 
+list_social_accounts = SocialAccountListView.as_view()
+
+
 class SocialConnectView(APIView):
     """API view for connecting a social account."""
 
@@ -142,6 +145,9 @@ class SocialDisconnectView(generics.DestroyAPIView):
 
     def post(self, request: 'Request', *args, **kwargs):
         """Disconnect the social media account."""
+
+
+disconnect_social_account = SocialDisconnectView.as_view()
 
 
 class SocialLoginView(LoginView):
