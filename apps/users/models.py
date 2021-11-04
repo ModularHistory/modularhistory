@@ -219,7 +219,6 @@ class EmailConfirmation:
         email_address: EmailAddress = self.email_address
         if not email_address.verified:
             email_address.verified = True
-            email_address.set_as_primary(conditional=True)
             email_address.save()
             return email_address
 
