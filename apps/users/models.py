@@ -1,5 +1,6 @@
 import logging
 from tempfile import NamedTemporaryFile
+from typing import Optional
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
@@ -136,6 +137,7 @@ class EmailAddress(models.Model):
         to=User,
         verbose_name=_('user'),
         on_delete=models.CASCADE,
+        related_name='email_addresses',
     )
     email = models.EmailField(
         unique=True,
@@ -144,7 +146,7 @@ class EmailAddress(models.Model):
     verified = models.BooleanField(verbose_name=_('verified'), default=False)
     primary = models.BooleanField(verbose_name=_('primary'), default=False)
 
-    objects = EmailAddressManager()
+    objects: EmailAddressManager = EmailAddressManager()
 
     class Meta:
         verbose_name = _('email address')
@@ -153,11 +155,14 @@ class EmailAddress(models.Model):
     def __str__(self):
         return self.email
 
-    def set_as_primary(self, conditional=False):
-        old_primary = EmailAddress.objects.get_primary(self.user)
+    def save(self, *args, **kwargs):
+        if not self.user.email_addresses.exclude(email=self.email).exists():
+            self.primary = True
+        super().save(*args, **kwargs)
+
+    def set_as_primary(self):
+        old_primary: Optional[EmailAddress] = EmailAddress.objects.get_primary(self.user)
         if old_primary:
-            if conditional:
-                return False
             old_primary.primary = False
             old_primary.save()
         self.primary = True
