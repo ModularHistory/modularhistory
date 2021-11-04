@@ -72,16 +72,11 @@ class EmailVerificationView(APIView):
         raise MethodNotAllowed('GET')
 
     def post(self, request, *args, **kwargs):
-        print('>>>>> post')
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print('>>>>> valid')
         self.kwargs['key'] = serializer.validated_data['key']
-        print(f'>>>>> {self.kwargs["key"]=}')
         confirmation = self.get_object()
-        print('>>>>> confirming...')
         confirmation.confirm(self.request)
-        print('>>>>> confirmed')
         return Response({'detail': _('ok')}, status=status.HTTP_200_OK)
 
     def get_object(self, queryset=None):
