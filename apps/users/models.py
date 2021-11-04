@@ -179,7 +179,7 @@ class EmailAddress(models.Model):
         return confirmation
 
     def change(self, request, new_email, confirm=True):
-        """Given a new email address, change self and re-confirm."""
+        """Change the email address and re-confirm if necessary."""
         with transaction.atomic():
             user: User = self.user
             user.email = new_email
