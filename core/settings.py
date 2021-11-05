@@ -58,12 +58,9 @@ ALLOWED_HOSTS = config(
 )
 HTTP_PROTOCOL = 'https' if IS_PROD else 'http'
 
-# Use the BASE_URL setting to build absolute URLs when necessary.
 DOMAIN = config('DOMAIN', default='localhost')
+# Use the BASE_URL setting to build absolute URLs when necessary.
 BASE_URL = config('BASE_URL', default=f'{HTTP_PROTOCOL}://{DOMAIN}')
-
-SERVER_LOCATION = 'unknown'  # TODO
-GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
 
 ADMINS = (
     config(

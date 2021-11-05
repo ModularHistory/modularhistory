@@ -171,9 +171,8 @@ class EmailAddress(models.Model):
         user: User = self.user
         user.email = self.email
         user.save()
-        return True
 
-    def send_confirmation(self, request=None):
+    def send_confirmation(self, request=None) -> 'EmailConfirmation':
         confirmation = EmailConfirmation(self)
         confirmation.send(request)
         return confirmation
