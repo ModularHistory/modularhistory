@@ -198,29 +198,28 @@ class EmailConfirmation:
         self.email_address = email_address
 
     @property
-    def key(self):
+    def key(self) -> str:
         return signing.dumps(obj=self.email_address.pk, salt=SALT)
 
     @classmethod
-    def from_key(cls, key):
+    def from_key(cls, key) -> Optional['EmailConfirmation']:
         try:
             max_age = 60 * 60 * 24 * EMAIL_CONFIRMATION_EXPIRE_DAYS
             pk = signing.loads(key, max_age=max_age, salt=SALT)
-            ret = EmailConfirmation(EmailAddress.objects.get(pk=pk))
+            return EmailConfirmation(EmailAddress.objects.get(pk=pk))
         except (
             signing.SignatureExpired,
             signing.BadSignature,
             EmailAddress.DoesNotExist,
         ):
-            ret = None
-        return ret
+            return None
 
     def confirm(self, request):
         email_address: EmailAddress = self.email_address
         if not email_address.verified:
             email_address.verified = True
             email_address.save()
-            return email_address
+        return email_address
 
     def send(self, request=None):
         site = get_current_site(request)
