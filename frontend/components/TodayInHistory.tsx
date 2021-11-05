@@ -40,7 +40,7 @@ const TodayInHistory: FC = () => {
         <>
           {items.length ? (
             items.map((module, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={index}>
+              <Grid item key={index}>
                 <Link href={module.absoluteUrl}>
                   <a>
                     <ModuleUnionCard module={module} />
@@ -49,12 +49,14 @@ const TodayInHistory: FC = () => {
               </Grid>
             ))
           ) : loading ? (
-            <Card>
-              <CardHeader title={"Fetching content"} hidden />
-              <CardContent>
-                <Skeleton sx={{ minHeight: 200 }} />
-              </CardContent>
-            </Card>
+            <Grid item>
+              <Card>
+                <CardHeader title={"Fetching content"} hidden />
+                <CardContent>
+                  <Skeleton sx={{ minHeight: 200, width: "100%" }} />
+                </CardContent>
+              </Card>
+            </Grid>
           ) : (
             <p>There are no modules associated with this date.</p>
           )}
