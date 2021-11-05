@@ -65,26 +65,26 @@ export default function Home() {
   return (
     <Layout>
       <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
-        <Grid item alignItems="center" justifyContent="center">
+        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <AboutModularHistory />
         </Grid>
-        <Grid item>
+        <Grid item md={12} lg={"auto"}>
           <StyledCard elevation={5}>
             <CardContent>
-              <p>Search modules by topic, entity, or keywords.</p>
+              <p style={{ textAlign: "center" }}>Search modules by topic, entity, or keywords.</p>
               {searchForm}
             </CardContent>
           </StyledCard>
         </Grid>
-        <Grid item alignItems="center" justifyContent="center">
+        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <FeaturedContent />
         </Grid>
-        <Grid item alignItems="center" justifyContent="center">
+        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
             <TodayInHistory />
           </StyledCard>
         </Grid>
-        <Grid item alignItems="center" justifyContent="center" hidden>
+        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" hidden>
           <SubscriptionBox />
         </Grid>
       </Grid>
