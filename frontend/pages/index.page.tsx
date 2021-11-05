@@ -93,7 +93,9 @@ export default function Home() {
         <GridItem>
           <StyledCard raised sx={{ maxWidth: { lg: "50rem" } }}>
             <StyledCardHeader title="About ModularHistory" />
-            <AboutModularHistory />
+            <CardContent>
+              <AboutModularHistory />
+            </CardContent>
           </StyledCard>
         </GridItem>
         <GridItem>
@@ -108,18 +110,24 @@ export default function Home() {
         <GridItem>
           <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
-            <FeaturedContent />
+            <CardContent>
+              <FeaturedContent />
+            </CardContent>
           </StyledCard>
         </GridItem>
         <GridItem>
           <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
-            <TodayInHistory />
+            <CardContent>
+              <TodayInHistory />
+            </CardContent>
           </StyledCard>
         </GridItem>
         <GridItem>
           <StyledCard raised hidden>
-            <SubscriptionBox />
+            <CardContent>
+              <SubscriptionBox />
+            </CardContent>
           </StyledCard>
         </GridItem>
       </Grid>
@@ -130,25 +138,21 @@ export default function Home() {
 const AboutModularHistory: FC = () => {
   return (
     <>
-      <Box sx={{ m: 3 }}>
-        <p>
-          ModularHistory is a nonprofit organization dedicated to helping people learn about and
-          understand the history of current issues of sociopolitical discourse.
-        </p>
-        <p style={{ textAlign: "center" }}>
-          <Button variant="contained" href="/about">
-            Learn More
-          </Button>
-        </p>
-      </Box>
+      <p style={{ padding: "0 2rem" }}>
+        ModularHistory is a nonprofit organization dedicated to helping people learn about and
+        understand the history of current issues of sociopolitical discourse.
+      </p>
+      <p style={{ textAlign: "center" }}>
+        <Button variant="contained" href="/about">
+          Learn More
+        </Button>
+      </p>
       <Divider variant="middle" />
-      <Box sx={{ m: 3 }}>
-        <p style={{ textAlign: "center" }}>
-          To support ModularHistory’s mission, you can{" "}
-          <Link href="/about/contributing">{"contribute content"}</Link> and/or{" "}
-          <Link href="/donations">{"donate"}</Link>.
-        </p>
-      </Box>
+      <p style={{ textAlign: "center", paddingTop: "1rem" }}>
+        To support ModularHistory’s mission, you can{" "}
+        <Link href="/about/contributing">{"contribute content"}</Link> and/or{" "}
+        <Link href="/donations">{"donate"}</Link>.
+      </p>
     </>
   );
 };
@@ -176,33 +180,31 @@ const FeaturedContent: FC = () => {
   }, [loading]);
 
   return (
-    <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
-      <Grid container alignItems="center" justifyContent="center">
-        <>
-          {items.length ? (
-            items.map((module, index) => (
-              <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
-                <Link href={module.absoluteUrl} underline="none">
-                  <a>
-                    <ModuleUnionCard module={module} />
-                  </a>
-                </Link>
-              </Grid>
-            ))
-          ) : loading ? (
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StyledCard>
-                <CardContent>
-                  <Skeleton sx={{ minHeight: 200, width: "100%" }} />
-                </CardContent>
-              </StyledCard>
+    <Grid container alignItems="center" justifyContent="center">
+      <>
+        {items.length ? (
+          items.map((module, index) => (
+            <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+              <Link href={module.absoluteUrl} underline="none">
+                <a>
+                  <ModuleUnionCard module={module} />
+                </a>
+              </Link>
             </Grid>
-          ) : (
-            <p>Sorry, there is no featured content to display. Please check back later!</p>
-          )}
-        </>
-      </Grid>
-    </Box>
+          ))
+        ) : loading ? (
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <StyledCard>
+              <CardContent>
+                <Skeleton sx={{ minHeight: 200, width: "100%" }} />
+              </CardContent>
+            </StyledCard>
+          </Grid>
+        ) : (
+          <p>Sorry, there is no featured content to display. Please check back later!</p>
+        )}
+      </>
+    </Grid>
   );
 };
 
@@ -239,21 +241,19 @@ const SubscriptionBox: FC = () => {
   );
 
   const subscribeDisclaimer = (
-    <Grid container>
-      <Box sx={{ fontWeight: "100" }}>
-        <Typography style={{ fontSize: "10pt" }}>
-          {"By entering your details, you are agreeing to ModularHistory's "}
-          <Link href="/privacy">
-            <a>privacy policy</a>
-          </Link>{" "}
-          and{" "}
-          <Link href="/terms">
-            <a>terms of use</a>
-          </Link>
-          . You can unsubscribe at any time.
-        </Typography>
-      </Box>
-    </Grid>
+    <Box sx={{ fontWeight: "100" }}>
+      <Typography style={{ fontSize: "10pt" }}>
+        {"By entering your details, you are agreeing to ModularHistory's "}
+        <Link href="/privacy">
+          <a>privacy policy</a>
+        </Link>{" "}
+        and{" "}
+        <Link href="/terms">
+          <a>terms of use</a>
+        </Link>
+        . You can unsubscribe at any time.
+      </Typography>
+    </Box>
   );
 
   return (
