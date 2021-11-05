@@ -135,21 +135,19 @@ const AboutModularHistory: FC = () => {
           ModularHistory is a nonprofit organization dedicated to helping people learn about and
           understand the history of current issues of sociopolitical discourse.
         </p>
-        <Button variant="contained" href="/about">
-          Learn More
-        </Button>
+        <p style={{ textAlign: "center" }}>
+          <Button variant="contained" href="/about">
+            Learn More
+          </Button>
+        </p>
       </Box>
       <Divider variant="middle" />
       <Box sx={{ m: 3 }}>
-        <Grid container alignItems="center">
-          <Grid item>
-            <p>
-              To support ModularHistory’s mission, you can{" "}
-              <Link href="/about/contributing">{"contribute content"}</Link> and/or{" "}
-              <Link href="/donations">{"donate"}</Link>.
-            </p>
-          </Grid>
-        </Grid>
+        <p style={{ textAlign: "center" }}>
+          To support ModularHistory’s mission, you can{" "}
+          <Link href="/about/contributing">{"contribute content"}</Link> and/or{" "}
+          <Link href="/donations">{"donate"}</Link>.
+        </p>
       </Box>
     </Box>
   );
