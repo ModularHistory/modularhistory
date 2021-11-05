@@ -28,10 +28,6 @@ DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Use the BASE_URL setting to build absolute URLs when necessary.
-DOMAIN = config('DOMAIN', default='localhost')
-BASE_URL = config('BASE_URL', default=f'http://{DOMAIN}')
-
 # --- URL MODIFICATION SETTINGS ---
 # Delegate URL modification to the Nginx reverse proxy server.
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-PREPEND_WWW
@@ -61,6 +57,10 @@ ALLOWED_HOSTS = config(
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 HTTP_PROTOCOL = 'https' if IS_PROD else 'http'
+
+# Use the BASE_URL setting to build absolute URLs when necessary.
+DOMAIN = config('DOMAIN', default='localhost')
+BASE_URL = config('BASE_URL', default=f'{HTTP_PROTOCOL}://{DOMAIN}')
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
