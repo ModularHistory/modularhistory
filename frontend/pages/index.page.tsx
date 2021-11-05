@@ -5,7 +5,7 @@ import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory from "@/components/TodayInHistory";
 import { ModuleUnion, Topic } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Divider, Grid, Link, Skeleton } from "@mui/material";
+import { Box, Button, CardHeader, Divider, Grid, Link, Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { styled } from "@mui/material/styles";
@@ -68,11 +68,29 @@ export default function Home() {
       <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
+            <CardHeader
+              title="About ModularHistory"
+              titleTypographyProps={{
+                variant: "h6",
+                gutterBottom: true,
+                fontWeight: "bold",
+                style: { textAlign: "center" },
+              }}
+            />
             <AboutModularHistory />
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"}>
           <StyledCard elevation={5}>
+            <CardHeader
+              title="Module Search"
+              titleTypographyProps={{
+                variant: "h6",
+                gutterBottom: true,
+                fontWeight: "bold",
+                style: { textAlign: "center" },
+              }}
+            />
             <CardContent>
               <p style={{ textAlign: "center" }}>Search modules by topic, entity, or keywords.</p>
               {searchForm}
@@ -81,11 +99,29 @@ export default function Home() {
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
+            <CardHeader
+              title="Featured Content"
+              titleTypographyProps={{
+                variant: "h6",
+                gutterBottom: true,
+                fontWeight: "bold",
+                style: { textAlign: "center" },
+              }}
+            />
             <FeaturedContent />
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
+            <CardHeader
+              title="Today in History"
+              titleTypographyProps={{
+                variant: "h6",
+                gutterBottom: true,
+                fontWeight: "bold",
+                style: { textAlign: "center" },
+              }}
+            />
             <TodayInHistory />
           </StyledCard>
         </Grid>
@@ -103,13 +139,6 @@ const AboutModularHistory: FC = () => {
   return (
     <Box>
       <Box sx={{ m: 3 }}>
-        <Grid container alignItems="center" justifyContent="center">
-          <Grid item>
-            <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-              About ModularHistory
-            </Typography>
-          </Grid>
-        </Grid>
         <p>
           ModularHistory is a nonprofit organization dedicated to helping people learn about and
           understand the history of issues of modern sociopolitical discourse.
@@ -159,13 +188,6 @@ const FeaturedContent: FC = () => {
   return (
     <Box>
       <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
-        <Grid container alignItems="center" justifyContent="center">
-          <Grid item>
-            <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-              Featured Content
-            </Typography>
-          </Grid>
-        </Grid>
         <Grid container alignItems="center" justifyContent="center">
           <>
             {items.length ? (

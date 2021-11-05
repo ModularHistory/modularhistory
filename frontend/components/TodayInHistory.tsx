@@ -1,7 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Card, CardContent, CardHeader, Grid, Skeleton } from "@mui/material";
-import Typography from "@mui/material/Typography";
 import axios from "axios";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
@@ -31,11 +30,6 @@ const TodayInHistory: FC = () => {
 
   return (
     <>
-      <div style={{ textAlign: "center" }}>
-        <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-          Today in History
-        </Typography>
-      </div>
       <Grid container spacing={1} justifyContent="center" alignItems="center">
         <>
           {items.length ? (
