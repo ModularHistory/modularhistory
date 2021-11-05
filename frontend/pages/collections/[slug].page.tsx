@@ -2,13 +2,22 @@ import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { Collection } from "@/types/modules";
+import { Box, Card, CardContent, Container } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
-import { Container } from "react-bootstrap";
+import {
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from "react-share";
 
 interface CollectionProps {
   collection: Collection;
@@ -27,6 +36,43 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
         description={`"${collection.title}", a collection of historical occurrences, entities, sources, and more.`}
       />
       <PageHeader>{collection.title}</PageHeader>
+      <Container>
+        <Box sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Card sx={{ maxWidth: 300, alignItems: "center", justifyContent: "center" }}>
+            <CardContent>
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom align="center">
+                Share the Collection
+              </Typography>
+              <Grid container spacing={2} alignItems="center" justifyContent="center">
+                <Grid item>
+                  <FacebookShareButton
+                    url={`https://modularhistory.com/collections/${collection.slug}`}
+                    quote={collection.title}
+                  >
+                    <FacebookIcon size={36} />
+                  </FacebookShareButton>
+                </Grid>
+                <Grid item>
+                  <TwitterShareButton
+                    url={`https://modularhistory.com/collections/${collection.slug}`}
+                    title={collection.title}
+                  >
+                    <TwitterIcon size={36} />
+                  </TwitterShareButton>
+                </Grid>
+                <Grid item>
+                  <EmailShareButton
+                    url={`https://modularhistory.com/collections/${collection.slug}`}
+                    subject={collection.title}
+                  >
+                    <EmailIcon size={36} />
+                  </EmailShareButton>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
       <Container>
         <Grid container spacing={2}>
           {[collection.propositions, collection.entities, collection.quotes, collection.sources]
