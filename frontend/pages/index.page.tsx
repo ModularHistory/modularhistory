@@ -17,6 +17,7 @@ import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
 
 const StyledCard = styled(Card)({
   padding: "1rem",
+  height: "100%",
 });
 
 export default function Home() {
@@ -66,7 +67,9 @@ export default function Home() {
     <Layout>
       <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
-          <AboutModularHistory />
+          <StyledCard elevation={5}>
+            <AboutModularHistory />
+          </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"}>
           <StyledCard elevation={5}>
@@ -77,7 +80,9 @@ export default function Home() {
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
-          <FeaturedContent />
+          <StyledCard elevation={5}>
+            <FeaturedContent />
+          </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
@@ -85,7 +90,9 @@ export default function Home() {
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" hidden>
-          <SubscriptionBox />
+          <StyledCard elevation={5}>
+            <SubscriptionBox />
+          </StyledCard>
         </Grid>
       </Grid>
     </Layout>
@@ -94,7 +101,7 @@ export default function Home() {
 
 const AboutModularHistory: FC = () => {
   return (
-    <StyledCard elevation={5}>
+    <Box>
       <Box sx={{ m: 3 }}>
         <Grid container alignItems="center" justifyContent="center">
           <Grid item>
@@ -123,7 +130,7 @@ const AboutModularHistory: FC = () => {
           </Grid>
         </Grid>
       </Box>
-    </StyledCard>
+    </Box>
   );
 };
 
@@ -150,7 +157,7 @@ const FeaturedContent: FC = () => {
   }, [loading]);
 
   return (
-    <StyledCard elevation={5}>
+    <Box>
       <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
         <Grid container alignItems="center" justifyContent="center">
           <Grid item>
@@ -185,7 +192,7 @@ const FeaturedContent: FC = () => {
           </>
         </Grid>
       </Box>
-    </StyledCard>
+    </Box>
   );
 };
 
