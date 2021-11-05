@@ -29,34 +29,32 @@ const TodayInHistory: FC = () => {
   }, [loading]);
 
   return (
-    <>
-      <Grid container spacing={1} justifyContent="center" alignItems="center">
-        <>
-          {items.length ? (
-            items.map((module, index) => (
-              <Grid item key={index}>
-                <Link href={module.absoluteUrl}>
-                  <a>
-                    <ModuleUnionCard module={module} />
-                  </a>
-                </Link>
-              </Grid>
-            ))
-          ) : loading ? (
-            <Grid item>
-              <Card sx={{ minWidth: "15rem" }}>
-                <CardHeader title={"Fetching content"} hidden />
-                <CardContent>
-                  <Skeleton sx={{ minHeight: 200, width: "100%" }} />
-                </CardContent>
-              </Card>
+    <Grid container spacing={1} justifyContent="center" alignItems="center">
+      <>
+        {items.length ? (
+          items.map((module, index) => (
+            <Grid item key={index}>
+              <Link href={module.absoluteUrl}>
+                <a>
+                  <ModuleUnionCard module={module} />
+                </a>
+              </Link>
             </Grid>
-          ) : (
-            <p>There are no modules associated with this date.</p>
-          )}
-        </>
-      </Grid>
-    </>
+          ))
+        ) : loading ? (
+          <Grid item>
+            <Card sx={{ minWidth: "15rem" }}>
+              <CardHeader title={"Fetching content"} hidden />
+              <CardContent>
+                <Skeleton sx={{ minHeight: 200, width: "100%" }} />
+              </CardContent>
+            </Card>
+          </Grid>
+        ) : (
+          <p>There are no modules associated with this date.</p>
+        )}
+      </>
+    </Grid>
   );
 };
 

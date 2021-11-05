@@ -106,7 +106,7 @@ export default function Home() {
           </StyledCard>
         </GridItem>
         <GridItem>
-          <StyledCard elevation={5}>
+          <StyledCard elevation={5} sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <TodayInHistory />
           </StyledCard>
