@@ -11,9 +11,10 @@ import CardContent from "@mui/material/CardContent";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { SxProps } from "@mui/system";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, useEffect, useRef, useState } from "react";
+import { FC, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
 
 const StyledCard = styled(Card)({
   padding: "1rem",
@@ -32,8 +33,13 @@ const StyledCardHeader: FC<{ title: string }> = ({ title }) => (
   />
 );
 
-const GridItem: FC = ({ children }) => (
-  <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
+interface GridItemProps {
+  children: ReactNode;
+  sx?: SxProps;
+}
+
+const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
+  <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" sx={sx}>
     {children}
   </Grid>
 );
@@ -85,7 +91,7 @@ export default function Home() {
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <GridItem>
-          <StyledCard elevation={5} sx={{ maxWidth: "50rem" }}>
+          <StyledCard elevation={5} sx={{ maxWidth: { lg: "50rem" } }}>
             <StyledCardHeader title="About ModularHistory" />
             <AboutModularHistory />
           </StyledCard>
