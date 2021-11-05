@@ -6,7 +6,6 @@ from apps.entities.factories import EntityFactory
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.quotes.factories import QuoteFactory
-from apps.quotes.models import Quote
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 
@@ -25,7 +24,7 @@ def quotes_api_test_data(request):
     quote.images.set(shuffled_copy(images, size=2))
     quote.tags.set(shuffled_copy(tags, size=2))
 
-    request.cls.verified_quote = quote
+    request.cls.verified_model = quote
     request.cls.uncheckable_fields = ['date']
     request.cls.relation_fields = ['attributees', 'images', 'tags']
     request.cls.test_data = {
@@ -53,57 +52,6 @@ def quotes_api_test_data(request):
 class QuotesApiTest(ModerationApiTest):
     """Test the quotes api."""
 
+    __test__ = True
     api_name = 'quotes_api'
-
-    verified_quote: Quote
-
-    def test_api_list(self):
-        """Test the quotes listing API."""
-        self.api_view_get_test('quote-list')
-
-    def test_api_detail(self):
-        """Test the quotes detail API."""
-        self.api_view_get_test(
-            'quote-detail', url_kwargs={'pk_or_slug': self.verified_quote.id}
-        )
-
-    def test_api_create(self):
-        """Test the quotes creation API."""
-        request_params = {'data': self.test_data, 'change_status_code': 201}
-        self.api_moderation_change_test(request_params)
-
-    def test_api_update(self):
-        """Test the quotes update API."""
-        request_params = {
-            'data': self.updated_test_data,
-            'object_id': self.verified_quote.id,
-            'view': 'quote-detail',
-            'method': 'put',
-        }
-
-        self.api_moderation_change_test(request_params)
-
-    def test_api_patch(self):
-        """Test the quotes patch API."""
-        request_params = {
-            'data': self.updated_test_data,
-            'object_id': self.verified_quote.id,
-            'view': 'quote-detail',
-            'method': 'patch',
-        }
-
-        self.api_moderation_change_test(request_params)
-
-    def test_api_delete(self):
-        """Test the quotes delete API."""
-        request_params = {
-            'data': {},
-            'view': 'quote-detail',
-            'object_id': self.verified_quote.id,
-            'method': 'delete',
-            'change_status_code': 204,
-        }
-
-        (response, change, contribution) = self.api_moderation_view_test(**request_params)
-
-        self.assertIsNotNone(change.changed_object.deleted, 'Deletion change was not created')
+    api_prefix = 'quote'

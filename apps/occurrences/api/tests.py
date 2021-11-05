@@ -5,7 +5,6 @@ import pytest
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.occurrences.factories import OccurrenceFactory
-from apps.occurrences.models import Occurrence
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 
@@ -22,7 +21,7 @@ def occurrences_api_test_data(request):
     occurrence.images.set(shuffled_copy(images, size=2))
     occurrence.tags.set(shuffled_copy(tags, size=2))
 
-    request.cls.verified_occurrence = occurrence
+    request.cls.verified_model = occurrence
     request.cls.uncheckable_fields = ['date']
     request.cls.relation_fields = ['images', 'tags']
     request.cls.test_data = {
@@ -55,57 +54,6 @@ def occurrences_api_test_data(request):
 class OccurrencesApiTest(ModerationApiTest):
     """Test the occurrences api."""
 
+    __test__ = True
     api_name = 'occurrences_api'
-
-    verified_occurrence: Occurrence
-
-    def test_api_list(self):
-        """Test the occurrences listing API."""
-        self.api_view_get_test('occurrence-list')
-
-    def test_api_detail(self):
-        """Test the occurrences detail API."""
-        self.api_view_get_test(
-            'occurrence-detail', url_kwargs={'pk_or_slug': self.verified_occurrence.id}
-        )
-
-    def test_api_create(self):
-        """Test the occurrences creation API."""
-        request_params = {'data': self.test_data, 'change_status_code': 201}
-        self.api_moderation_change_test(request_params)
-
-    def test_api_update(self):
-        """Test the occurrences update API."""
-        request_params = {
-            'data': self.updated_test_data,
-            'object_id': self.verified_occurrence.id,
-            'view': 'occurrence-detail',
-            'method': 'put',
-        }
-
-        self.api_moderation_change_test(request_params)
-
-    def test_api_patch(self):
-        """Test the occurrences patch API."""
-        request_params = {
-            'data': self.updated_test_data,
-            'object_id': self.verified_occurrence.id,
-            'view': 'occurrence-detail',
-            'method': 'patch',
-        }
-
-        self.api_moderation_change_test(request_params)
-
-    def test_api_delete(self):
-        """Test the occurrences delete API."""
-        request_params = {
-            'data': {},
-            'view': 'occurrence-detail',
-            'object_id': self.verified_occurrence.id,
-            'method': 'delete',
-            'change_status_code': 204,
-        }
-
-        (response, change, contribution) = self.api_moderation_view_test(**request_params)
-
-        self.assertIsNotNone(change.changed_object.deleted, 'Deletion change was not created')
+    api_prefix = 'occurrence'

@@ -1,12 +1,11 @@
 import logging
 import random
 
-import pytest
 from django.db.models import ForeignKey
 from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
-from apps.moderation.models import Change, ContentContribution
+from apps.moderation.models import Change, ContentContribution, ModeratedModel
 from apps.users.models import User
 
 
@@ -21,17 +20,31 @@ def shuffled_copy(data, size=None):
 class ModerationApiTest(APITestCase):
     """Base moderation api test case."""
 
-    api_client = APIClient()
+    # only inheriting classes should publish tests
+    __test__ = False
 
-    # api namespace
-    api_name: str
+    api_client = APIClient()
 
     contributor: User
 
+    # api namespace, ex: quotes_api, entities_api
+    api_name: str
+    # api prefix, ex: quote, entity
+    api_prefix: str
+
+    # verified moderated model to be used update/patch/delete tests
+    verified_model: ModeratedModel
+
+    # fields to be treated as relation fields TODO: could be improved to detect relation fields automatically via model._meta.get_field
     relation_fields = []
+    # fields that won't be verified after creation/update/patch
     uncheckable_fields = []
+    # test data to be used for creation and update/patch respectively
     test_data: dict
     updated_test_data: dict
+
+    # extra args to be passed to the APIClient.post/put/patch methods in #api_moderation_view_test
+    moderation_api_request_extra_kwargs = {}
 
     def api_view_get_test(self, view, url_kwargs=None, status_code=200):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
@@ -48,7 +61,6 @@ class ModerationApiTest(APITestCase):
         url_kwargs=None,
         change_status_code=200,
         method='post',
-        format='json',
         object_id=None,
     ):
         if url_kwargs is None:
@@ -58,7 +70,9 @@ class ModerationApiTest(APITestCase):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
 
         self.assertEqual(
-            self.api_client.post(path, data, format=format).status_code,
+            self.api_client.post(
+                path, data, **self.moderation_api_request_extra_kwargs
+            ).status_code,
             401,
             'Deny creation without authentication',
         )
@@ -66,7 +80,7 @@ class ModerationApiTest(APITestCase):
         self.api_client.force_authenticate(self.contributor)
 
         api_request = getattr(self.api_client, method)
-        response = api_request(path, data, format=format)
+        response = api_request(path, data, **self.moderation_api_request_extra_kwargs)
 
         if response.status_code != change_status_code:
             logging.error(f'{method} {path} returned: {response.data}')
@@ -128,3 +142,54 @@ class ModerationApiTest(APITestCase):
                     value,
                     f'{field_name} field was not updated correctly',
                 )
+
+    def test_api_list(self):
+        """Test the moderated listing API."""
+        self.api_view_get_test(f'{self.api_prefix}-list')
+
+    def test_api_detail(self):
+        """Test the moderated detail API."""
+        self.api_view_get_test(
+            f'{self.api_prefix}-detail', url_kwargs={'pk_or_slug': self.verified_model.id}
+        )
+
+    def test_api_create(self):
+        """Test the moderated creation API."""
+        request_params = {'data': self.test_data, 'change_status_code': 201}
+        self.api_moderation_change_test(request_params)
+
+    def test_api_update(self):
+        """Test the moderated update API."""
+        request_params = {
+            'data': self.updated_test_data,
+            'object_id': self.verified_model.id,
+            'view': f'{self.api_prefix}-detail',
+            'method': 'put',
+        }
+
+        self.api_moderation_change_test(request_params)
+
+    def test_api_patch(self):
+        """Test the moderated patch API."""
+        request_params = {
+            'data': self.updated_test_data,
+            'object_id': self.verified_model.id,
+            'view': f'{self.api_prefix}-detail',
+            'method': 'patch',
+        }
+
+        self.api_moderation_change_test(request_params)
+
+    def test_api_delete(self):
+        """Test the quotes delete API."""
+        request_params = {
+            'data': {},
+            'view': f'{self.api_prefix}-detail',
+            'object_id': self.verified_model.id,
+            'method': 'delete',
+            'change_status_code': 204,
+        }
+
+        (response, change, contribution) = self.api_moderation_view_test(**request_params)
+
+        self.assertIsNotNone(change.changed_object.deleted, 'Deletion change was not created')
