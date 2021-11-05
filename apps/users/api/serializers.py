@@ -99,7 +99,7 @@ class RegistrationSerializer(serializers.Serializer):
         return user
 
 
-class VerifyEmailSerializer(serializers.Serializer):
+class EmailVerificationSerializer(serializers.Serializer):
     key = serializers.CharField()
 
 
