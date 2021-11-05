@@ -11,11 +11,11 @@ class PropositionFactory(DjangoModelFactory):
     class Meta:
         model = models.Proposition
 
-    type = factory.fuzzy.FuzzyChoice(models.TYPE_CHOICES)
-    elaboration = factory.Faker('text')
-    summary = factory.Faker('text')
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
+    type = factory.fuzzy.FuzzyChoice(x[0] for x in models.TYPE_CHOICES)
+    elaboration = factory.Faker('text')
+    summary = factory.Faker('text')
     date = factory.Faker('historic_datetime')
     end_date = factory.Faker('historic_datetime')
 
