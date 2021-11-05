@@ -32,6 +32,12 @@ const StyledCardHeader: FC<{ title: string }> = ({ title }) => (
   />
 );
 
+const GridItem: FC = ({ children }) => (
+  <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
+    {children}
+  </Grid>
+);
+
 export default function Home() {
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
@@ -78,13 +84,13 @@ export default function Home() {
   return (
     <Layout>
       <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
-        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
+        <GridItem>
           <StyledCard elevation={5}>
             <StyledCardHeader title="About ModularHistory" />
             <AboutModularHistory />
           </StyledCard>
-        </Grid>
-        <Grid item md={12} lg={"auto"}>
+        </GridItem>
+        <GridItem>
           <StyledCard elevation={5}>
             <StyledCardHeader title="Module Search" />
             <CardContent>
@@ -92,24 +98,24 @@ export default function Home() {
               {searchForm}
             </CardContent>
           </StyledCard>
-        </Grid>
-        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
+        </GridItem>
+        <GridItem>
           <StyledCard elevation={5}>
             <StyledCardHeader title="Featured Content" />
             <FeaturedContent />
           </StyledCard>
-        </Grid>
-        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
+        </GridItem>
+        <GridItem>
           <StyledCard elevation={5}>
             <StyledCardHeader title="Today in History" />
             <TodayInHistory />
           </StyledCard>
-        </Grid>
-        <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" hidden>
-          <StyledCard elevation={5}>
+        </GridItem>
+        <GridItem>
+          <StyledCard elevation={5} hidden>
             <SubscriptionBox />
           </StyledCard>
-        </Grid>
+        </GridItem>
       </Grid>
     </Layout>
   );

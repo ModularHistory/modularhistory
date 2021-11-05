@@ -44,7 +44,7 @@ const TodayInHistory: FC = () => {
             ))
           ) : loading ? (
             <Grid item>
-              <Card>
+              <Card sx={{ minWidth: "15rem" }}>
                 <CardHeader title={"Fetching content"} hidden />
                 <CardContent>
                   <Skeleton sx={{ minHeight: 200, width: "100%" }} />
