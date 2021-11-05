@@ -91,6 +91,16 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   meta?: Meta;
   relatedQuotes?: Quote[];
 }
+export interface Collection {
+  model: "collections.collection";
+  slug: string;
+  title: string;
+  creator: User;
+  quotes: Quote[];
+  entities: Entity[];
+  propositions: Proposition[];
+  sources: Source[];
+}
 
 export interface Argument extends BaseModule {
   type: string;
