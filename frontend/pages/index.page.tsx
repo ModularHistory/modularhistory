@@ -91,13 +91,13 @@ export default function Home() {
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <GridItem>
-          <StyledCard elevation={5} sx={{ maxWidth: { lg: "50rem" } }}>
+          <StyledCard raised sx={{ maxWidth: { lg: "50rem" } }}>
             <StyledCardHeader title="About ModularHistory" />
             <AboutModularHistory />
           </StyledCard>
         </GridItem>
         <GridItem>
-          <StyledCard elevation={5}>
+          <StyledCard raised>
             <StyledCardHeader title="Module Search" />
             <CardContent>
               <p style={{ textAlign: "center" }}>Search modules by topic, entity, or keywords.</p>
@@ -106,19 +106,19 @@ export default function Home() {
           </StyledCard>
         </GridItem>
         <GridItem>
-          <StyledCard elevation={5}>
+          <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
             <FeaturedContent />
           </StyledCard>
         </GridItem>
         <GridItem>
-          <StyledCard elevation={5} sx={{ minWidth: "20rem" }}>
+          <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <TodayInHistory />
           </StyledCard>
         </GridItem>
         <GridItem>
-          <StyledCard elevation={5} hidden>
+          <StyledCard raised hidden>
             <SubscriptionBox />
           </StyledCard>
         </GridItem>
@@ -129,7 +129,7 @@ export default function Home() {
 
 const AboutModularHistory: FC = () => {
   return (
-    <Box>
+    <>
       <Box sx={{ m: 3 }}>
         <p>
           ModularHistory is a nonprofit organization dedicated to helping people learn about and
@@ -149,7 +149,7 @@ const AboutModularHistory: FC = () => {
           <Link href="/donations">{"donate"}</Link>.
         </p>
       </Box>
-    </Box>
+    </>
   );
 };
 
@@ -176,34 +176,32 @@ const FeaturedContent: FC = () => {
   }, [loading]);
 
   return (
-    <Box>
-      <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
-        <Grid container alignItems="center" justifyContent="center">
-          <>
-            {items.length ? (
-              items.map((module, index) => (
-                <Grid item key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
-                  <Link href={module.absoluteUrl} underline="none">
-                    <a>
-                      <ModuleUnionCard module={module} />
-                    </a>
-                  </Link>
-                </Grid>
-              ))
-            ) : loading ? (
-              <Grid item xs={12} sm={6} md={4} lg={3} xl={3}>
-                <StyledCard>
-                  <CardContent>
-                    <Skeleton sx={{ minHeight: 200, width: "100%" }} />
-                  </CardContent>
-                </StyledCard>
+    <Box sx={{ m: 3, alignItems: "center", justifyContent: "center" }}>
+      <Grid container alignItems="center" justifyContent="center">
+        <>
+          {items.length ? (
+            items.map((module, index) => (
+              <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                <Link href={module.absoluteUrl} underline="none">
+                  <a>
+                    <ModuleUnionCard module={module} />
+                  </a>
+                </Link>
               </Grid>
-            ) : (
-              <p>Sorry, there are no featured contents to display. Please check back later!</p>
-            )}
-          </>
-        </Grid>
-      </Box>
+            ))
+          ) : loading ? (
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <StyledCard>
+                <CardContent>
+                  <Skeleton sx={{ minHeight: 200, width: "100%" }} />
+                </CardContent>
+              </StyledCard>
+            </Grid>
+          ) : (
+            <p>Sorry, there is no featured content to display. Please check back later!</p>
+          )}
+        </>
+      </Grid>
     </Box>
   );
 };
