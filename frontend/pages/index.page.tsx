@@ -20,6 +20,18 @@ const StyledCard = styled(Card)({
   height: "100%",
 });
 
+const StyledCardHeader: FC<{ title: string }> = ({ title }) => (
+  <CardHeader
+    title={title}
+    titleTypographyProps={{
+      variant: "h6",
+      gutterBottom: true,
+      fontWeight: "bold",
+      style: { textAlign: "center" },
+    }}
+  />
+);
+
 export default function Home() {
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
@@ -68,29 +80,13 @@ export default function Home() {
       <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
-            <CardHeader
-              title="About ModularHistory"
-              titleTypographyProps={{
-                variant: "h6",
-                gutterBottom: true,
-                fontWeight: "bold",
-                style: { textAlign: "center" },
-              }}
-            />
+            <StyledCardHeader title="About ModularHistory" />
             <AboutModularHistory />
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"}>
           <StyledCard elevation={5}>
-            <CardHeader
-              title="Module Search"
-              titleTypographyProps={{
-                variant: "h6",
-                gutterBottom: true,
-                fontWeight: "bold",
-                style: { textAlign: "center" },
-              }}
-            />
+            <StyledCardHeader title="Module Search" />
             <CardContent>
               <p style={{ textAlign: "center" }}>Search modules by topic, entity, or keywords.</p>
               {searchForm}
@@ -99,29 +95,13 @@ export default function Home() {
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
-            <CardHeader
-              title="Featured Content"
-              titleTypographyProps={{
-                variant: "h6",
-                gutterBottom: true,
-                fontWeight: "bold",
-                style: { textAlign: "center" },
-              }}
-            />
+            <StyledCardHeader title="Featured Content" />
             <FeaturedContent />
           </StyledCard>
         </Grid>
         <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center">
           <StyledCard elevation={5}>
-            <CardHeader
-              title="Today in History"
-              titleTypographyProps={{
-                variant: "h6",
-                gutterBottom: true,
-                fontWeight: "bold",
-                style: { textAlign: "center" },
-              }}
-            />
+            <StyledCardHeader title="Today in History" />
             <TodayInHistory />
           </StyledCard>
         </Grid>
