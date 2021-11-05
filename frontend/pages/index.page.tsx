@@ -1,4 +1,4 @@
-import DyanmicForm from "@/components/forms/DynamicForm";
+import DynamicForm from "@/components/forms/DynamicForm";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import { Box, Button, Container, Divider, Grid, Link } from "@mui/material";
@@ -76,7 +76,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Box>
-            <DyanmicForm />
+            <DynamicForm />
           </Container>
         </Grid>
       </Grid>

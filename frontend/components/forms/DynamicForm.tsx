@@ -14,7 +14,7 @@ import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import { FC, useEffect, useState } from "react";
 
-const DyanmicForm: FC = () => {
+const DynamicForm: FC = () => {
   const [type, setType] = useState("");
 
   const handleFormType = (event: { target: { value: string } }) => {
@@ -55,7 +55,7 @@ const DyanmicForm: FC = () => {
             }}
           >
             <Box>
-              <DyanmicFormFields type={type} />
+              <DynamicFormFields type={type} />
             </Box>
           </Box>
         </>
@@ -64,17 +64,17 @@ const DyanmicForm: FC = () => {
   );
 };
 
-interface DyanmicFormProps {
+interface DynamicFormProps {
   type: string;
 }
 
 //Dynamic fields form
-//Can be called using the DyanmicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
-const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => {
+//Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
+const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => {
   const [formData, setFormData] = useState([]);
   const [choiceValue, setChoiceValue] = useState<string[]>([]);
 
-  const getDyanmicFields = async (type: string) => {
+  const getDynamicFields = async (type: string) => {
     return await axiosWithoutAuth.get(`/api/${type}/fields/`).then((response) => {
       return response.data;
     });
@@ -86,7 +86,7 @@ const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => 
   };
 
   useEffect(() => {
-    getDyanmicFields(type).then((result) => {
+    getDynamicFields(type).then((result) => {
       setFormData(result);
     });
   });
@@ -168,4 +168,4 @@ const DyanmicFormFields: FC<DyanmicFormProps> = ({ type }: DyanmicFormProps) => 
   );
 };
 
-export default DyanmicForm;
+export default DynamicForm;
