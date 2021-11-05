@@ -127,7 +127,7 @@ const AboutModularHistory: FC = () => {
       <Box sx={{ m: 3 }}>
         <p>
           ModularHistory is a nonprofit organization dedicated to helping people learn about and
-          understand the history of issues of modern sociopolitical discourse.
+          understand the history of current issues of sociopolitical discourse.
         </p>
         <Button variant="contained" href="/about">
           Learn More
