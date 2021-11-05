@@ -83,9 +83,9 @@ export default function Home() {
 
   return (
     <Layout>
-      <Grid container spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
+      <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
         <GridItem>
-          <StyledCard elevation={5}>
+          <StyledCard elevation={5} sx={{ maxWidth: "50rem" }}>
             <StyledCardHeader title="About ModularHistory" />
             <AboutModularHistory />
           </StyledCard>
