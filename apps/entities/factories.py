@@ -1,4 +1,5 @@
-import factory.fuzzy
+import factory
+from factory import fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.entities import models
@@ -8,7 +9,9 @@ class EntityFactory(DjangoModelFactory):
     class Meta:
         model = models.Entity
 
-    type = factory.fuzzy.FuzzyChoice(models.Entity._typedmodels_registry.keys())
+    type = fuzzy.FuzzyChoice(
+        [key for key in models.Entity._typedmodels_registry.keys() if key != 'entities.deity']
+    )
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
     name = factory.Faker('name')

@@ -7,12 +7,6 @@ from apps.flatpages.models import FlatPage
 from apps.redirects.models import Redirect
 
 
-@pytest.fixture()
-def api_client():
-    """Return an API client to be used in a test."""
-    return APIClient()
-
-
 @pytest.mark.django_db()
 class TestFlatPages:
     """Test the flatpages app."""

@@ -48,25 +48,25 @@ class ModeratedModel(SoftDeletableModel):
         ]
 
     def delete(self, **kwargs):
-        """Override saving after deletion to use moderation"""
+        """Override saving after deletion to use moderation."""
         super()._delete(on_save=self.save, **kwargs)
 
     def undelete(self, **kwargs):
-        """Override saving after un-deletion to use moderation"""
+        """Override saving after un-deletion to use moderation."""
         super()._undelete(on_save=self.save, **kwargs)
 
     def save(self, *args, **kwargs):
+        """Override save behavior to use moderation."""
         moderate = kwargs.pop('moderate', True)
         contributor = kwargs.pop('contributor', get_current_authenticated_user())
-        if moderate and contributor:
-            self.save_change(contributor=contributor)
-        else:
-            # if contributor is None, but moderate=True, content moderation is skipped to avoid unintentional save_change calls
-            if moderate:
-                logging.error(
-                    'No contributor available to use to save a contribution, falling back to super().save'
-                )
-            super().save(*args, **kwargs)
+        # Allow creation of pre-verified model instances.
+        if self._state.adding and self.verified:
+            return super().save(*args, **kwargs)
+        if moderate:
+            if contributor:
+                return self.save_change(contributor=contributor)
+            logging.error('Contributor is required when saving a moderated change.')
+        super().save(*args, **kwargs)
 
     def save_change(
         self,
