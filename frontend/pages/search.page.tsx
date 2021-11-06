@@ -23,7 +23,7 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter, withRouter } from "next/router";
 import qs from "qs";
 import React, {
   ComponentProps,
@@ -34,7 +34,6 @@ import React, {
   MutableRefObject,
   RefObject,
   SetStateAction,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -147,20 +146,23 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
 );
 SliderMark.displayName = "SliderMark";
 
-const Timeline: FC<
-  {
-    modules: SearchProps["results"];
-    moduleRefs: ElementRef[];
-  } & Pick<SliderMarkProps, "viewStateRegistry">
-> = ({ modules, moduleRefs, viewStateRegistry }) => {
+type TimelineProps = {
+  modules: SearchProps["results"];
+  moduleRefs: RefObject<any>[];
+} & Pick<SliderMarkProps, "viewStateRegistry">;
+
+const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry }) => {
   const calculations = useMemo(() => {
     const now = new Date().getFullYear();
     const marks: Mark[] = [];
-    const years = modules.map((r) => r.timelinePosition).sort((a, b) => a - b);
+    const years = modules
+      .map((m) => m.timelinePosition)
+      .filter((n) => !Number.isNaN(n))
+      .sort((a, b) => a - b);
     modules.forEach((module, index) =>
       marks.push({
+        // add a tiny incremental value to eliminate duplicate keys
         value: module.timelinePosition + Number(`${index}e-5`),
-        // label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
       })
     );
 
@@ -277,7 +279,7 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
             <div className="results-container">
               <SearchPageHeader {...props} />
               {/* force re-mount when results change because a variable number of hooks are used */}
-              <SearchResultsPanes {...props} />
+              <SearchResultsPanes modules={props.results} />
             </div>
           </div>
 
@@ -359,99 +361,89 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
   );
 };
 
-interface TwoPaneState {
-  moduleIndex: number;
-  setModuleIndex: Dispatch<SetStateAction<number>>;
-  setModuleIndexFromEvent: MouseEventHandler;
-}
+const SearchResultsPanes = withRouter(
+  React.memo(
+    ({ modules, router }: { modules: SearchProps["results"]; router: NextRouter }) => {
+      // currently selected module
+      const [moduleIndex, setModuleIndex] = useState(0);
 
-function useTwoPaneState(): TwoPaneState {
-  // This hook is used to track which card in the left pane
-  // should have its details displayed in the right pane.
-  const router = useRouter();
-  const [moduleIndex, setModuleIndex] = useState(0);
+      // Reset the selected module to 0 when a page transition occurs.
+      useEffect(() => {
+        const handle = () => setModuleIndex(0);
+        router.events.on("routeChangeComplete", handle);
+        return () => router.events.off("routeChangeComplete", handle);
+      }, [router.events]);
 
-  // event handler for when the user clicks on a module card
-  const setModuleIndexFromEvent = useCallback(
-    (e) => {
-      // This condition allows ctrl-clicking to open details in a new tab.
-      if (e.ctrlKey || e.metaKey) return;
-      e.preventDefault();
+      // controls whether the modal is open (conditional based on screen size)
+      const [isModalOpen, setModalOpen] = useState(false);
 
-      const { index, key } = e.currentTarget.dataset;
-      setModuleIndex(index);
-      router.replace({ hash: key });
+      console.log("outer render");
+      return (
+        <div className="two-pane-container">
+          {useMemo(
+            () => (
+              <SearchResultsLeftPane {...{ modules, setModuleIndex, setModalOpen, router }} />
+            ),
+            [modules]
+          )}
+          <SearchResultsRightPane
+            {...{ module: modules[moduleIndex] ?? modules[0], isModalOpen, setModalOpen }}
+          />
+        </div>
+      );
     },
-    [router.replace]
-  );
+    (prevProps, nextProps) => {
+      // prevent re-render when router updates.
+      return prevProps.modules === nextProps.modules;
+    }
+  )
+);
+SearchResultsPanes.displayName = "SearchResultsPanes";
 
-  // Reset the selected module to 0 when a page transition occurs.
-  useEffect(() => {
-    const handle = () => setModuleIndex(0);
-    router.events.on("routeChangeComplete", handle);
-    return () => router.events.off("routeChangeComplete", handle);
-  }, [router.events]);
-
-  return { moduleIndex, setModuleIndex, setModuleIndexFromEvent };
-}
-
-interface PaneProps extends SearchProps, TwoPaneState {
-  isModalOpen: boolean;
+interface LeftPaneProps {
+  modules: SearchProps["results"];
   setModalOpen: Dispatch<SetStateAction<boolean>>;
-  initialUrlAnchor: string;
+  setModuleIndex: Dispatch<SetStateAction<number>>;
+  router: NextRouter;
 }
 
-const SearchResultsPanes: FC<SearchProps> = (props: SearchProps) => {
-  const twoPaneState = useTwoPaneState();
-
-  // controls whether the modal is open (conditional based on screen size)
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const paneProps: PaneProps = {
-    ...props,
-    ...twoPaneState,
-    isModalOpen,
-    setModalOpen,
-    // useRef here guarantees the initial value is retained when the hash is updated
-    initialUrlAnchor: useRef(useRouter().asPath.split("#")[1]).current,
-  };
-
-  return (
-    <div className="two-pane-container">
-      <SearchResultsLeftPane {...paneProps} />
-      <SearchResultsRightPane {...paneProps} />
-    </div>
-  );
-};
-
-const SearchResultsLeftPane: FC<PaneProps> = ({
-  results: modules,
-  moduleIndex,
-  setModuleIndexFromEvent,
+const SearchResultsLeftPane: FC<LeftPaneProps> = ({
+  modules,
+  setModuleIndex,
   setModalOpen,
-  initialUrlAnchor,
+  router,
 }) => {
-  const viewStateRegistry = new Map<string, Dispatch<SetStateAction<boolean>>>();
+  // we are unable to obtain the url anchor during SSR,
+  // so we must update the selected module after rendering.
+  useEffect(() => {
+    const urlAnchor = router.asPath.split("#")[1];
+    const initialIndex = urlAnchor ? modules.findIndex((module) => module.slug === urlAnchor) : 0;
+    if (initialIndex > 0) {
+      setModuleIndex(initialIndex);
+      setTimeout(
+        () => moduleRefs[initialIndex].current?.scrollIntoView({ behavior: "smooth" }),
+        100
+      );
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // const moduleRefsRef = useRef<RefObject<HTMLAnchorElement>[]>([]);
+  const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
+
   const moduleRefs: RefObject<HTMLAnchorElement>[] = useMemo(
     () => [...Array(modules.length)].map(() => createRef()),
     [modules]
   );
 
-  const selectModule: MouseEventHandler = (event) => {
-    setModuleIndexFromEvent(event);
+  const selectModule: MouseEventHandler = (e) => {
+    // This condition allows ctrl-clicking to open details in a new tab.
+    if (e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+
+    const { index } = (e.currentTarget as any).dataset;
+    setModuleIndex(index);
+    router.replace({ hash: modules[index].slug });
     setModalOpen(true);
   };
-
-  // on initial load, scroll to the module card designated by the url anchor
-  useEffect(() => {
-    // non-delayed scrolls sometimes cause inconsistent behavior, so wait 100ms
-    setTimeout(() => {
-      const index = modules.findIndex(({ slug }) => slug === initialUrlAnchor);
-      if (index >= 0) moduleRefs[index].current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -475,15 +467,13 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           >
             <a
               href={module.absoluteUrl}
-              className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
-              data-href={module.absoluteUrl}
-              data-key={module.slug}
-              key={module.slug}
+              className={`result 2pane-result`}
+              key={module.absoluteUrl}
               data-index={index}
               onClick={selectModule}
               ref={moduleRefs[index]}
             >
-              <ModuleUnionCard module={module} selected={index === moduleIndex} />
+              <ModuleUnionCard module={module} />
             </a>
           </InView>
         ))}
@@ -492,33 +482,22 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   );
 };
 
-const SearchResultsRightPane: FC<PaneProps> = ({
-  results: modules,
-  moduleIndex,
-  isModalOpen,
-  setModalOpen,
-  setModuleIndex,
-  initialUrlAnchor,
-}) => {
-  // we are unable to obtain the url anchor during SSR,
-  // so we must update the selected module after rendering.
-  useEffect(() => {
-    const initialIndex = initialUrlAnchor
-      ? modules.findIndex((module) => module.slug === initialUrlAnchor)
-      : 0;
-    setModuleIndex(initialIndex);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+interface RightPaneProps {
+  module: SearchProps["results"][number];
+  isModalOpen: boolean;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+}
 
+const SearchResultsRightPane: FC<RightPaneProps> = ({ module, isModalOpen, setModalOpen }) => {
   // media query value is based on /core/static/styles/serp.css
   const smallScreen = useMediaQuery((theme: GlobalTheme) => theme.breakpoints.down("sm"));
-  const selectedModule = modules[moduleIndex] || modules[0];
 
   if (smallScreen) {
-    return <ModuleModal module={selectedModule} open={isModalOpen} setOpen={setModalOpen} />;
+    return <ModuleModal module={module} open={isModalOpen} setOpen={setModalOpen} />;
   } else {
     return (
       <div className="card view-detail sticky">
-        <ModuleDetail module={selectedModule} key={selectedModule.absoluteUrl} />
+        <ModuleDetail module={module} key={module.absoluteUrl} />
       </div>
     );
   }
