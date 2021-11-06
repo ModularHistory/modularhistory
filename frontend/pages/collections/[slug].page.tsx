@@ -1,15 +1,15 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import PageHeader from "@/components/PageHeader";
 import { Collection } from "@/types/modules";
-import { Box, Card, CardContent, Container } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import { Box, Button, Container, useMediaQuery } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import { FC } from "react";
+import React, { FC, useState } from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -18,6 +18,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
+import { GlobalTheme } from "../_app.page";
 
 interface CollectionProps {
   collection: Collection;
@@ -28,6 +29,7 @@ interface CollectionProps {
  * http://www.modularhistory.com/collections
  */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  const smallScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
   return (
     <Layout>
       <NextSeo
@@ -35,44 +37,21 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
         canonical={"/collections"}
         description={`"${collection.title}", a collection of historical occurrences, entities, sources, and more.`}
       />
-      <PageHeader>{collection.title}</PageHeader>
-      <Container>
-        <Box sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Card sx={{ maxWidth: 300, alignItems: "center", justifyContent: "center" }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom align="center">
-                Share the Collection
-              </Typography>
-              <Grid container spacing={2} alignItems="center" justifyContent="center">
-                <Grid item>
-                  <FacebookShareButton
-                    url={`https://modularhistory.com/collections/${collection.slug}`}
-                    quote={collection.title}
-                  >
-                    <FacebookIcon size={36} />
-                  </FacebookShareButton>
-                </Grid>
-                <Grid item>
-                  <TwitterShareButton
-                    url={`https://modularhistory.com/collections/${collection.slug}`}
-                    title={collection.title}
-                  >
-                    <TwitterIcon size={36} />
-                  </TwitterShareButton>
-                </Grid>
-                <Grid item>
-                  <EmailShareButton
-                    url={`https://modularhistory.com/collections/${collection.slug}`}
-                    subject={collection.title}
-                  >
-                    <EmailIcon size={36} />
-                  </EmailShareButton>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
+      <Box sx={{ m: 2 }}>
+        <Typography
+          sx={{ fontFamily: "Segoe UI", fontWeight: 500, fontSize: 40 }}
+          variant="h4"
+          align="center"
+        >
+          {collection.title}
+        </Typography>
+      </Box>
+      {smallScreen ? (
+        <MobileViewComponent collection={collection} />
+      ) : (
+        <DesktopViewComponent collection={collection} />
+      )}
+      ;
       <Container>
         <Grid container spacing={2}>
           {[collection.propositions, collection.entities, collection.quotes, collection.sources]
@@ -123,4 +102,112 @@ export const getStaticPaths: GetStaticPaths = async () => {
     paths: [],
     fallback: "blocking",
   };
+};
+
+const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  const [showIcons, setShowIcons] = useState(false);
+  const onClick = () => setShowIcons(true);
+  return (
+    <>
+      <Container>
+        <Grid sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+          <Grid sx={{ maxWidth: 250, alignItems: "center", justifyContent: "center" }}>
+            <Grid
+              sx={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {/* <Button startIcon={<ShareIcon />} variant="outlined" onClick={onClick} sx={{ my: 1 }}>
+                Share the Collection
+              </Button> */}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onClick}
+                sx={{ borderRadius: 8 }}
+              >
+                <ShareIcon />
+              </Button>
+              <>
+                {showIcons ? (
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent="center"
+                    sx={{ my: 1 }}
+                  >
+                    <Grid item>
+                      <FacebookShareButton
+                        url={`https://modularhistory.com/collections/${collection.slug}`}
+                        quote={collection.title}
+                      >
+                        <FacebookIcon size={36} />
+                      </FacebookShareButton>
+                    </Grid>
+                    <Grid item>
+                      <TwitterShareButton
+                        url={`https://modularhistory.com/collections/${collection.slug}`}
+                        title={collection.title}
+                      >
+                        <TwitterIcon size={36} />
+                      </TwitterShareButton>
+                    </Grid>
+                    <Grid item>
+                      <EmailShareButton
+                        url={`https://modularhistory.com/collections/${collection.slug}`}
+                        subject={collection.title}
+                      >
+                        <EmailIcon size={36} />
+                      </EmailShareButton>
+                    </Grid>
+                  </Grid>
+                ) : null}
+              </>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Container>
+    </>
+  );
+};
+
+const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  return (
+    <Container>
+      <Grid sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+        <Grid sx={{ maxWidth: 250, alignItems: "center", justifyContent: "center" }}>
+          <Grid container spacing={2} alignItems="center" justifyContent="center">
+            <Grid item>
+              <FacebookShareButton
+                url={`https://modularhistory.com/collections/${collection.slug}`}
+                quote={collection.title}
+              >
+                <FacebookIcon size={36} />
+              </FacebookShareButton>
+            </Grid>
+            <Grid item>
+              <TwitterShareButton
+                url={`https://modularhistory.com/collections/${collection.slug}`}
+                title={collection.title}
+              >
+                <TwitterIcon size={36} />
+              </TwitterShareButton>
+            </Grid>
+            <Grid item>
+              <EmailShareButton
+                url={`https://modularhistory.com/collections/${collection.slug}`}
+                subject={collection.title}
+              >
+                <EmailIcon size={36} />
+              </EmailShareButton>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Container>
+  );
 };
