@@ -1,10 +1,14 @@
+from typing import TYPE_CHECKING
+
 import pytest
-from pytest import FixtureRequest
 from rest_framework.test import APIClient
+
+if TYPE_CHECKING:
+    from pytest import FixtureRequest
 
 
 @pytest.fixture()
-def api_client(request: FixtureRequest) -> APIClient:
+def api_client(request: 'FixtureRequest') -> APIClient:
     """Return an API client to be used in a test."""
     client = APIClient()
     if request.instance:
