@@ -16,7 +16,7 @@ class ImagesApiTest(ModerationApiTest):
     api_prefix = 'image'
 
     @pytest.fixture(autouse=True)
-    def images_api_test_data(self, db):
+    def data(self, db):
         self.contributor = UserFactory.create()
         image = ImageFactory.create(verified=True)
         tags = [TopicFactory.create(verified=True).id for _ in range(4)]

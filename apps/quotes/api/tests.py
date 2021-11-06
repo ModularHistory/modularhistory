@@ -18,7 +18,7 @@ class QuotesApiTest(ModerationApiTest):
     api_prefix = 'quote'
 
     @pytest.fixture(autouse=True)
-    def quotes_api_test_data(self, db):
+    def data(self, db):
         self.contributor = UserFactory.create()
 
         quote = QuoteFactory.create(verified=True)

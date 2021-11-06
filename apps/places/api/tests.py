@@ -15,7 +15,7 @@ class PlacesApiTest(ModerationApiTest):
     api_prefix = 'place'
 
     @pytest.fixture(autouse=True)
-    def places_api_test_data(self, db):
+    def data(self, db):
         self.contributor = UserFactory.create()
         place = PlaceFactory.create(verified=True)
         place_continent = PlaceFactory.create(verified=True, type='places.continent').id

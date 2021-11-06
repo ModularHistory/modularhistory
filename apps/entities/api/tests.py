@@ -17,7 +17,7 @@ class EntitiesApiTest(ModerationApiTest):
     api_prefix = 'entity'
 
     @pytest.fixture(autouse=True)
-    def entities_api_test_data(self, db):
+    def data(self, db):
         self.contributor = UserFactory.create()
         entity = EntityFactory.create(verified=True)
         images = [ImageFactory.create(verified=True).id for _ in range(4)]

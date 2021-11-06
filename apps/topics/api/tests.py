@@ -15,7 +15,7 @@ class TopicsApiTest(ModerationApiTest):
     api_prefix = 'topic'
 
     @pytest.fixture(autouse=True)
-    def topics_api_test_data(self, db):
+    def data(self, db):
         self.contributor = UserFactory.create()
 
         topic = TopicFactory.create(verified=True)
