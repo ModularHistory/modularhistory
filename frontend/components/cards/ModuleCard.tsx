@@ -10,6 +10,7 @@ const StyledCard = styled(Card)({
   position: "relative",
   textOverflow: "ellipsis",
   minHeight: "15rem",
+  minWidth: "15rem",
   color: "black",
   "&:first-of-type": {
     marginTop: "0 !important",

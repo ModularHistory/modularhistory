@@ -48,6 +48,6 @@ def test(context: 'Context', docker: bool = True, fail_fast: bool = False):
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
     if docker:
-        context.run('docker-compose up -d webserver')
+        context.run('docker compose up -d webserver')
     context.run(command)
     context.run('coverage combine')

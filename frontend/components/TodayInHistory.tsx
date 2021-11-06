@@ -1,7 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Card, CardContent, CardHeader, Grid, Skeleton } from "@mui/material";
-import Typography from "@mui/material/Typography";
 import axios from "axios";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
@@ -30,37 +29,32 @@ const TodayInHistory: FC = () => {
   }, [loading]);
 
   return (
-    <>
-      <div style={{ textAlign: "center" }}>
-        <Typography variant="h6" gutterBottom component="div" fontWeight="bold">
-          Today in History
-        </Typography>
-      </div>
-      <Grid container spacing={1} justifyContent="center" alignItems="center">
-        <>
-          {items.length ? (
-            items.map((module, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={index}>
-                <Link href={module.absoluteUrl}>
-                  <a>
-                    <ModuleUnionCard module={module} />
-                  </a>
-                </Link>
-              </Grid>
-            ))
-          ) : loading ? (
-            <Card>
+    <Grid container spacing={1} justifyContent="center" alignItems="center">
+      <>
+        {items.length ? (
+          items.map((module, index) => (
+            <Grid item key={index}>
+              <Link href={module.absoluteUrl}>
+                <a>
+                  <ModuleUnionCard module={module} />
+                </a>
+              </Link>
+            </Grid>
+          ))
+        ) : loading ? (
+          <Grid item>
+            <Card sx={{ minWidth: "15rem" }}>
               <CardHeader title={"Fetching content"} hidden />
               <CardContent>
-                <Skeleton sx={{ minHeight: 200 }} />
+                <Skeleton sx={{ minHeight: 200, width: "100%" }} />
               </CardContent>
             </Card>
-          ) : (
-            <p>There are no modules associated with this date.</p>
-          )}
-        </>
-      </Grid>
-    </>
+          </Grid>
+        ) : (
+          <p>There are no modules associated with this date.</p>
+        )}
+      </>
+    </Grid>
   );
 };
 
