@@ -18,4 +18,4 @@ class QuoteSerializer(ModuleSerializer):
     cached_images = serpy.Field()
     primary_image = serpy.Field()
     cached_citations = serpy.Field()
-    timeline_position = TimelinePositionField(attr='date')
+    timeline_position = TimelinePositionField(attr='date', required=False)

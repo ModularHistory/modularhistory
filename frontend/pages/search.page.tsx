@@ -6,15 +6,15 @@ import Pagination from "@/components/Pagination";
 import { GlobalTheme } from "@/pages/_app.page";
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Compress } from "@mui/icons-material";
-import type { Mark } from "@mui/material";
+import type { Mark, SliderProps } from "@mui/material";
 import {
   Box,
   Container,
   Drawer,
-  Slider,
-  SliderMark,
+  Slider as MuiSlider,
+  sliderClasses,
+  SliderMark as MuiSliderMark,
   SliderThumb,
-  SliderValueLabel,
   styled,
   Tooltip,
   useMediaQuery,
@@ -25,11 +25,14 @@ import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import qs from "qs";
-import {
+import React, {
+  ComponentProps,
+  createRef,
   Dispatch,
   FC,
   MouseEventHandler,
   MutableRefObject,
+  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
@@ -37,6 +40,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { InView } from "react-intersection-observer";
 
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
   ssr: false,
@@ -58,10 +62,89 @@ interface SearchProps {
 
 type ElementRef<T extends HTMLElement = HTMLElement> = MutableRefObject<T | null>;
 
-const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }> = ({
-  modules,
-  moduleRefs,
-}) => {
+const Slider: FC<SliderProps<"span", { componentsProps: { mark: any } }>> = styled(MuiSlider)({
+  height: "80vh",
+  position: "fixed",
+  left: "40px",
+  "& .MuiSlider-mark": {
+    width: "12px",
+    backgroundColor: "#212529",
+  },
+  [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
+    top: 58,
+    "&:before": { top: -8 },
+  },
+});
+
+const BreakIcon = styled(Compress)({
+  transform: "translate(-25%, -50%)",
+  color: "gray",
+  backgroundColor: "white",
+});
+
+interface SliderMarkProps extends ComponentProps<typeof MuiSliderMark> {
+  modules: any;
+  moduleRefs: any;
+  viewState: any;
+}
+
+const SliderMark: FC<SliderMarkProps> = React.memo(
+  ({ modules, moduleRefs, viewState, ...markProps }) => {
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    // Mui passes this prop but doesn't type it.
+    const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
+    const isBreak = moduleIndex >= modules.length;
+
+    const handleClick = () => {
+      const moduleCard = moduleRefs[moduleIndex].current;
+      moduleCard?.scrollIntoView({ behavior: "smooth" });
+      moduleCard?.click();
+    };
+
+    const sliderMark = (
+      <MuiSliderMark {...markProps}>
+        {isBreak ? (
+          <BreakIcon />
+        ) : (
+          <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
+        )}
+      </MuiSliderMark>
+    );
+    return isBreak ? (
+      sliderMark
+    ) : (
+      <Tooltip
+        title={
+          <Box whiteSpace={"nowrap"} onClick={handleClick}>
+            {modules[moduleIndex].title}
+          </Box>
+        }
+        arrow
+        placement={"right"}
+        open={viewState[getModuleUID(modules[moduleIndex])] || tooltipOpen}
+        onOpen={() => setTooltipOpen(true)}
+        onClose={() => setTooltipOpen(false)}
+        // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
+        componentsProps={{ popper: { disablePortal: true } as any }}
+      >
+        {sliderMark}
+      </Tooltip>
+    );
+  },
+  (prevProps, nextProps) => {
+    const keys: Array<keyof SliderMarkProps> = ["modules", "moduleRefs", "viewState"];
+    for (const key of keys) {
+      if (prevProps[key] !== nextProps[key]) return false;
+    }
+    return true;
+  }
+);
+
+const Timeline: FC<{
+  modules: SearchProps["results"];
+  moduleRefs: ElementRef[];
+  viewState: Record<string, boolean>;
+}> = ({ modules, moduleRefs, viewState }) => {
   const now = new Date().getFullYear();
   const marks: Mark[] = [];
   const years = modules.map((r) => r.timelinePosition).sort((a, b) => a - b);
@@ -94,6 +177,7 @@ const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }
         length: length - 2 * buffer,
       };
       breaks.push(break_);
+      // we scale marks but don't scale breaks, so create a new object
       marks.push({ ...break_ });
     }
   }, [] as number[]);
@@ -113,7 +197,6 @@ const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }
     return n;
   };
 
-  console.log({ marks: [...marks] });
   marks.forEach((mark) => {
     mark.value = scale(mark.value);
   });
@@ -126,7 +209,6 @@ const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }
 
   return (
     <Slider
-      key={modules.length}
       onMouseDownCapture={(event) => {
         if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
           event.stopPropagation();
@@ -140,67 +222,13 @@ const Timeline: FC<{ modules: SearchProps["results"]; moduleRefs: ElementRef[] }
       valueLabelFormat={(value) => {
         return `${now - descale(value)} CE`; // return `${2021 - value} CE`;
       }}
-      sx={{
-        height: "80vh",
-        position: "fixed",
-        left: "40px",
-        "& .MuiSlider-mark": {
-          width: "12px",
-          backgroundColor: "#212529",
-        },
-      }}
+      componentsProps={{ mark: { modules, moduleRefs, viewState } }}
       components={{
-        Mark: (props) => {
-          const isBreak = props["data-index"] >= modules.length;
-          const sliderMark = (
-            <SliderMark {...props} onClick={console.log}>
-              {isBreak ? (
-                <Compress
-                  sx={{
-                    transform: "translate(-25%, -50%)",
-                    color: "gray",
-                    backgroundColor: "white",
-                  }}
-                />
-              ) : (
-                <Box
-                  position={"relative"}
-                  bottom={"3px"}
-                  padding={"5px"}
-                  onClick={() => {
-                    const moduleCard = moduleRefs[props["data-index"]].current;
-                    moduleCard?.scrollIntoView({ behavior: "smooth" });
-                    moduleCard?.click();
-                  }}
-                />
-              )}
-            </SliderMark>
-          );
-          return isBreak ? (
-            sliderMark
-          ) : (
-            <Tooltip title={modules[props["data-index"]].title} placement={"right"} arrow>
-              {sliderMark}
-            </Tooltip>
-          );
-        },
+        Mark: SliderMark,
         // MarkLabel: (props) => {
         //   return <SliderMarkLabel {...props} />;
         // },
         Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
-        ValueLabel: (props) => (
-          <SliderValueLabel
-            {...props}
-            sx={
-              props.index === 0
-                ? {
-                    top: 58,
-                    "&:before": { top: -8 },
-                  }
-                : {}
-            }
-          />
-        ),
       }}
     />
   );
@@ -233,6 +261,7 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
 
             <div className="results-container">
               <SearchPageHeader {...props} />
+              {/* force re-mount when results change because a variable number of hooks are used */}
               <SearchResultsPanes {...props} />
             </div>
           </div>
@@ -391,8 +420,10 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
     Object.fromEntries(modules.map((module) => [getModuleUID(module), false]))
   );
 
-  const moduleRefs: ElementRef<HTMLAnchorElement>[] = [...Array(modules.length)].map(() =>
-    useRef(null)
+  // const moduleRefsRef = useRef<RefObject<HTMLAnchorElement>[]>([]);
+  const moduleRefs: RefObject<HTMLAnchorElement>[] = useMemo(
+    () => [...Array(modules.length)].map(() => createRef()),
+    [modules]
   );
 
   const selectModule: MouseEventHandler = (event) => {
@@ -413,9 +444,9 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
     <>
       {useMemo(
         () => (
-          <Timeline modules={modules} moduleRefs={moduleRefs} />
+          <Timeline {...{ modules, moduleRefs, viewState }} />
         ),
-        [modules]
+        [modules, viewState]
       )}
       <Box
         className={"results result-cards"}
@@ -426,27 +457,31 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           },
         }}
       >
-        {modules.map((module, index) => (
-          // <InView
-          //   as="div"
-          //   onChange={(inView) => {
-          //     setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
-          //   }}
-          // >
-          <a
-            href={module.absoluteUrl}
-            className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
-            data-href={module.absoluteUrl}
-            data-key={module.slug}
-            key={module.slug}
-            data-index={index}
-            onClick={selectModule}
-            ref={moduleRefs[index]}
-          >
-            <ModuleUnionCard module={module} selected={index === moduleIndex} />
-          </a>
-          // </InView>
-        ))}
+        {useMemo(
+          () =>
+            modules.map((module, index) => (
+              <InView
+                as="div"
+                onChange={(inView) => {
+                  setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
+                }}
+              >
+                <a
+                  href={module.absoluteUrl}
+                  className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
+                  data-href={module.absoluteUrl}
+                  data-key={module.slug}
+                  key={module.slug}
+                  data-index={index}
+                  onClick={selectModule}
+                  ref={moduleRefs[index]}
+                >
+                  <ModuleUnionCard module={module} selected={index === moduleIndex} />
+                </a>
+              </InView>
+            )),
+          [modules]
+        )}
       </Box>
     </>
   );

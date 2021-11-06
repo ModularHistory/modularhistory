@@ -16,7 +16,7 @@ class _PropositionSerializer(ModuleSerializer):
     primary_image = serpy.Field()
     cached_citations = serpy.Field()
     tags_html = serpy.StrField()
-    timeline_position = TimelinePositionField(attr='date')
+    timeline_position = TimelinePositionField(attr='date', required=False)
 
 
 class ArgumentSerializer(serpy.Serializer):
