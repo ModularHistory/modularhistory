@@ -78,17 +78,17 @@ def respond_to_source_tags_changes(
 
 
 @receiver(m2m_changed, sender=models.EntityRelation)
-def respond_to_quote_attributions_changes(
-    sender: models.SourceAttribution, instance: models.Source, **kwargs
+def respond_to_source_related_entities_changes(
+    sender: models.EntityRelation, instance: models.Source, **kwargs
 ):
-    """Respond to creation/modification of a source-attributees relationship."""
+    """Respond to creation/modification of a source-related_entities relationship."""
     process_relation_changes(
         sender, instance, 'entity', instance.entity_relations.all(), **kwargs
     )
 
 
 @receiver(m2m_changed, sender=models.SourceAttribution)
-def respond_to_quote_attributions_changes(
+def respond_to_source_attributions_changes(
     sender: models.SourceAttribution, instance: models.Source, **kwargs
 ):
     """Respond to creation/modification of a source-attributees relationship."""
