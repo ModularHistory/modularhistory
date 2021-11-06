@@ -26,7 +26,8 @@ type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void
 
 const StyledTextField = styled(TextField)({
   backgroundColor: "white",
-  minWidth: "30rem",
+  minWidth: "20rem",
+  maxWidth: "20rem",
 
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
@@ -239,7 +240,12 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
             )
           )}
         </Nav>
-        <Box sx={{ paddingRight: "1.5rem" }}>
+        <Box
+          sx={{
+            paddingRight: "1.5rem",
+            display: { xs: "none", sm: "none", md: "none", lg: "block" },
+          }}
+        >
           <StyledTextField
             defaultValue={fieldsRef.current.query}
             onChange={(e) => fieldCallbacks.query(e.target.value)}
