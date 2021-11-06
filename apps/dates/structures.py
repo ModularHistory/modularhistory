@@ -19,8 +19,8 @@ SEASONS = (
     ('fall', 'Fall'),
 )
 
-TEN_THOUSAND = 10000
-ONE_MILLION = 1000000
+TEN_THOUSAND = 10_000
+ONE_MILLION = 1_000_000
 
 SIGNIFICANT_FIGURES = 4
 
@@ -29,7 +29,7 @@ APPROXIMATE_PRESENT_YEAR = 2000
 # https://en.wikipedia.org/wiki/Before_Present
 BP_REFERENCE_YEAR = 1950
 
-YBP_LOWER_LIMIT = 29999  # 30000 with rounding error protection
+YBP_LOWER_LIMIT = 29_999  # 30000 with rounding error protection
 
 BCE_THRESHOLD = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
 
@@ -46,7 +46,7 @@ MILLIFICATION_FLOOR = ONE_MILLION
 PRETTIFICATION_FLOOR = TEN_THOUSAND
 
 EXPONENT_INVERSION_BASIS = 30  # --> 20 for the Big Bang
-DECIMAL_INVERSION_BASIS = 100000  # --> 986200 for the Big Bang
+DECIMAL_INVERSION_BASIS = 100_000  # --> 986200 for the Big Bang
 
 
 def get_season_from_month(month: int) -> str:

@@ -62,11 +62,13 @@ interface SearchProps {
 
 type ElementRef<T extends HTMLElement = HTMLElement> = MutableRefObject<T | null>;
 
-const Slider: FC<SliderProps<"span", { componentsProps: { mark: any } }>> = styled(MuiSlider)({
+const Slider: FC<SliderProps<"span", { componentsProps: { mark: SliderMarkProps } }>> = styled(
+  MuiSlider
+)({
   height: "80vh",
   position: "fixed",
   left: "40px",
-  "& .MuiSlider-mark": {
+  [`& .${sliderClasses.mark}`]: {
     width: "12px",
     backgroundColor: "#212529",
   },
@@ -83,17 +85,21 @@ const BreakIcon = styled(Compress)({
 });
 
 interface SliderMarkProps extends ComponentProps<typeof MuiSliderMark> {
-  modules: any;
-  moduleRefs: any;
-  viewState: any;
+  modules: SearchProps["results"];
+  moduleRefs: RefObject<any>[];
+  viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
 }
 
 const SliderMark: FC<SliderMarkProps> = React.memo(
-  ({ modules, moduleRefs, viewState, ...markProps }) => {
-    const [tooltipOpen, setTooltipOpen] = useState(false);
+  ({ modules, moduleRefs, viewStateRegistry, ...markProps }) => {
     // Mui passes this prop but doesn't type it.
     const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
     const isBreak = moduleIndex >= modules.length;
+    const module = isBreak ? undefined : modules[moduleIndex];
+
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [inView, setInView] = useState(false);
+    if (module) viewStateRegistry.set(getModuleUID(module), setInView);
 
     const handleClick = () => {
       const moduleCard = moduleRefs[moduleIndex].current;
@@ -121,7 +127,7 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
         }
         arrow
         placement={"right"}
-        open={viewState[getModuleUID(modules[moduleIndex])] || tooltipOpen}
+        open={inView || tooltipOpen}
         onOpen={() => setTooltipOpen(true)}
         onClose={() => setTooltipOpen(false)}
         // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
@@ -132,80 +138,89 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    const keys: Array<keyof SliderMarkProps> = ["modules", "moduleRefs", "viewState"];
+    const keys: Array<keyof SliderMarkProps> = ["modules", "moduleRefs", "viewStateRegistry"];
     for (const key of keys) {
       if (prevProps[key] !== nextProps[key]) return false;
     }
     return true;
   }
 );
+SliderMark.displayName = "SliderMark";
 
-const Timeline: FC<{
-  modules: SearchProps["results"];
-  moduleRefs: ElementRef[];
-  viewState: Record<string, boolean>;
-}> = ({ modules, moduleRefs, viewState }) => {
-  const now = new Date().getFullYear();
-  const marks: Mark[] = [];
-  const years = modules.map((r) => r.timelinePosition).sort((a, b) => a - b);
-  modules.forEach((module, index) =>
-    marks.push({
-      value: module.timelinePosition + Number(`${index}e-5`),
-      // label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
-    })
-  );
+const Timeline: FC<
+  {
+    modules: SearchProps["results"];
+    moduleRefs: ElementRef[];
+  } & Pick<SliderMarkProps, "viewStateRegistry">
+> = ({ modules, moduleRefs, viewStateRegistry }) => {
+  const calculations = useMemo(() => {
+    const now = new Date().getFullYear();
+    const marks: Mark[] = [];
+    const years = modules.map((r) => r.timelinePosition).sort((a, b) => a - b);
+    modules.forEach((module, index) =>
+      marks.push({
+        value: module.timelinePosition + Number(`${index}e-5`),
+        // label: module.slug, //viewState[getModuleUID(module)] ? module.slug : null,
+      })
+    );
 
-  const ranges = years.slice(0, -1).map((year, index) => years[index + 1] - year);
+    const ranges = years.slice(0, -1).map((year, index) => years[index + 1] - year);
 
-  const averageDistance = (years[years.length - 1] - years[0]) / years.length;
-  const breaks: (Mark & { length: number })[] = [];
+    const averageDistance = (years[years.length - 1] - years[0]) / years.length;
+    const breaks: (Mark & { length: number })[] = [];
 
-  ranges.forEach((rangeLength, index) => {
-    if (rangeLength > averageDistance) {
-      const [start, end] = years.slice(index, index + 2).map(Math.round);
-      const length = end - start;
-      const buffer = Math.round(Math.min(averageDistance / 4, length * 0.1));
-      // if (length <= buffer * 3) return;
+    ranges.forEach((rangeLength, index) => {
+      if (rangeLength > averageDistance) {
+        const [start, end] = years.slice(index, index + 2).map(Math.round);
+        const length = end - start;
+        const buffer = Math.round(Math.min(averageDistance / 4, length * 0.1));
+        // if (length <= buffer * 3) return;
 
-      const break_ = {
-        value: start + buffer,
-        label: (
-          <Box color={"lightgray"}>
-            {now - (end - buffer)} CE — {now - (start + buffer)} CE
-          </Box>
-        ),
-        length: length - 2 * buffer,
-      };
-      breaks.push(break_);
-      // we scale marks but don't scale breaks, so create a new object
-      marks.push({ ...break_ });
-    }
-  }, [] as number[]);
-  breaks.sort((a, b) => a.value - b.value);
-  const reverseBreaks = [...breaks].reverse();
+        const break_ = {
+          value: start + buffer,
+          label: (
+            <Box color={"lightgray"}>
+              {now - (end - buffer)} CE — {now - (start + buffer)} CE
+            </Box>
+          ),
+          length: length - 2 * buffer,
+        };
+        breaks.push(break_);
+        // we scale marks but don't scale breaks, so create a new object
+        marks.push({ ...break_ });
+      }
+    }, [] as number[]);
+    breaks.sort((a, b) => a.value - b.value);
+    const reverseBreaks = [...breaks].reverse();
 
-  const scale = (n: number) => {
-    for (const { value, length } of reverseBreaks) {
-      if (n > value) n -= length;
-    }
-    return n;
-  };
-  const descale = (n: number) => {
-    for (const { value, length } of breaks) {
-      if (n > value) n += length;
-    }
-    return n;
-  };
+    const scale = (n: number) => {
+      for (const { value, length } of reverseBreaks) {
+        if (n > value) n -= length;
+      }
+      return n;
+    };
 
-  marks.forEach((mark) => {
-    mark.value = scale(mark.value);
-  });
+    const descale = (n: number) => {
+      for (const { value, length } of breaks) {
+        if (n > value) n += length;
+      }
+      return n;
+    };
 
-  const buffer = averageDistance / 4;
-  const min = Math.floor(years[0] - buffer);
-  const max = scale(Math.ceil(years[years.length - 1] + buffer));
-  // console.log({ breaks, years, yearsCE: years.map((y) => 2021 - y), scale, descale });
-  const thumbRefs: ElementRef[] = [...Array(2)].map(() => useRef(null));
+    marks.forEach((mark) => {
+      mark.value = scale(mark.value);
+    });
+
+    const buffer = averageDistance / 4;
+    const min = Math.floor(years[0] - buffer);
+    const max = scale(Math.ceil(years[years.length - 1] + buffer));
+
+    return { now, marks, min, max, scale, descale };
+  }, [modules]);
+
+  const { now, marks, min, max, scale, descale } = calculations;
+
+  const thumbRefs: ElementRef[] = [useRef(null), useRef(null)];
 
   return (
     <Slider
@@ -222,7 +237,7 @@ const Timeline: FC<{
       valueLabelFormat={(value) => {
         return `${now - descale(value)} CE`; // return `${2021 - value} CE`;
       }}
-      componentsProps={{ mark: { modules, moduleRefs, viewState } }}
+      componentsProps={{ mark: { modules, moduleRefs, viewStateRegistry } }}
       components={{
         Mark: SliderMark,
         // MarkLabel: (props) => {
@@ -416,9 +431,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
   setModalOpen,
   initialUrlAnchor,
 }) => {
-  const [viewState, setViewState] = useState(() =>
-    Object.fromEntries(modules.map((module) => [getModuleUID(module), false]))
-  );
+  const viewStateRegistry = new Map<string, Dispatch<SetStateAction<boolean>>>();
 
   // const moduleRefsRef = useRef<RefObject<HTMLAnchorElement>[]>([]);
   const moduleRefs: RefObject<HTMLAnchorElement>[] = useMemo(
@@ -442,12 +455,7 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
 
   return (
     <>
-      {useMemo(
-        () => (
-          <Timeline {...{ modules, moduleRefs, viewState }} />
-        ),
-        [modules, viewState]
-      )}
+      <Timeline {...{ modules, moduleRefs, viewStateRegistry }} />
       <Box
         className={"results result-cards"}
         sx={{
@@ -457,31 +465,28 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
           },
         }}
       >
-        {useMemo(
-          () =>
-            modules.map((module, index) => (
-              <InView
-                as="div"
-                onChange={(inView) => {
-                  setViewState((os) => ({ ...os, [getModuleUID(module)]: inView }));
-                }}
-              >
-                <a
-                  href={module.absoluteUrl}
-                  className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
-                  data-href={module.absoluteUrl}
-                  data-key={module.slug}
-                  key={module.slug}
-                  data-index={index}
-                  onClick={selectModule}
-                  ref={moduleRefs[index]}
-                >
-                  <ModuleUnionCard module={module} selected={index === moduleIndex} />
-                </a>
-              </InView>
-            )),
-          [modules]
-        )}
+        {modules.map((module, index) => (
+          <InView
+            as="div"
+            onChange={(inView) => {
+              viewStateRegistry.get(getModuleUID(module))?.(inView);
+            }}
+            key={getModuleUID(module)}
+          >
+            <a
+              href={module.absoluteUrl}
+              className={`result 2pane-result ${index == moduleIndex ? "selected" : ""}`}
+              data-href={module.absoluteUrl}
+              data-key={module.slug}
+              key={module.slug}
+              data-index={index}
+              onClick={selectModule}
+              ref={moduleRefs[index]}
+            >
+              <ModuleUnionCard module={module} selected={index === moduleIndex} />
+            </a>
+          </InView>
+        ))}
       </Box>
     </>
   );
