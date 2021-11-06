@@ -65,3 +65,33 @@ def respond_to_proposition_argument_changes(
     process_relation_changes(
         sender, instance, 'source', instance.source_containments.all(), **kwargs
     )
+
+
+@receiver(m2m_changed, sender=models.TopicRelation)
+def respond_to_source_tags_changes(
+    sender: models.TopicRelation, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-tags/topics relationship."""
+    process_relation_changes(
+        sender, instance, 'topic', instance.topic_relations.all(), **kwargs
+    )
+
+
+@receiver(m2m_changed, sender=models.EntityRelation)
+def respond_to_source_related_entities_changes(
+    sender: models.EntityRelation, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-related_entities relationship."""
+    process_relation_changes(
+        sender, instance, 'entity', instance.entity_relations.all(), **kwargs
+    )
+
+
+@receiver(m2m_changed, sender=models.SourceAttribution)
+def respond_to_source_attributions_changes(
+    sender: models.SourceAttribution, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-attributees relationship."""
+    process_relation_changes(
+        sender, instance, 'attributee', instance.attributions.all(), **kwargs
+    )

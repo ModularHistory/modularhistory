@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import ForeignKey
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -31,14 +32,19 @@ class ModerationApiTest:
     api_name: str
     # api prefix, ex: quote, entity
     api_prefix: str
+    # api path suffix for nested endpoints like Sources, ex: articles
+    # reverse urls will be rewritten to include this suffix if it doesn't contain already
+    api_path_suffix: str = None
 
     contributor: User
     # verified moderated model to be used update/patch/delete tests
     verified_model: ModeratedModel
 
-    # fields to be treated as relation fields TODO: could be improved to detect relation fields automatically via model._meta.get_field
+    # fields to be treated as relation fields
+    # TODO: could be improved to detect relation fields automatically via model._meta.get_field
     relation_fields = []
     # fields that won't be verified after creation/update/patch
+    # TODO: usually date fields are not checkable, find a way to check them or detect them automatically
     uncheckable_fields = []
     # test data to be used for creation and update/patch respectively
     test_data: dict
@@ -66,6 +72,9 @@ class ModerationApiTest:
         if object_id:
             url_kwargs.update({'pk_or_slug': object_id})
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
+        # Force request path to include API path suffix.
+        if self.api_path_suffix and self.api_path_suffix not in path:
+            path += self.api_path_suffix + '/'
         response = self.api_client.post(
             path, data, **self.moderation_api_request_extra_kwargs
         )
@@ -82,6 +91,7 @@ class ModerationApiTest:
         created_change = Change.objects.get(
             initiator=self.contributor,
             object_id=object_id,
+            content_type=ContentType.objects.get_for_model(self.verified_model),
         )
         contributions = ContentContribution.objects.filter(
             contributor=self.contributor, change_id=created_change
