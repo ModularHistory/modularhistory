@@ -1,4 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import InstantSearch from "@/components/search/InstantSearch";
 import {
   Box,
   Button,
@@ -9,10 +10,14 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Typography,
 } from "@mui/material";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
-import { FC, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { ParsedUrlQueryInput } from "querystring";
+import { FC, MutableRefObject, useContext, useEffect, useRef, useState } from "react";
+import PageTransitionContext from "../PageTransitionContext";
 
 const DynamicForm: FC = () => {
   const [type, setType] = useState("");
@@ -68,6 +73,11 @@ interface DynamicFormProps {
   type: string;
 }
 
+const fields = ["topics"] as const;
+type Field = typeof fields[number];
+type FieldsRef = MutableRefObject<Record<Field, any>>;
+type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
+
 //Dynamic fields form
 //Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
 const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => {
@@ -80,10 +90,20 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
     });
   };
 
+  const router = useRouter();
+  const isLoading = useContext(PageTransitionContext);
+
   const handleChoice = (event: { target: { value: string[] | string } }) => {
     const value = event.target.value as string[] | string;
     setChoiceValue(typeof value === "string" ? value.split(",") : value);
   };
+
+  const fieldsRef = useRef(
+    Object.fromEntries(fields.map((name) => [name, router.query[name]]))
+  ) as FieldsRef;
+  const fieldCallbacks = Object.fromEntries(
+    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
+  ) as FieldCallbacks;
 
   useEffect(() => {
     getDynamicFields(type).then((result) => {
@@ -119,18 +139,47 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
             formData.map((field: any) => (
               <>
                 {checkField(field) &&
-                  ((field.type === "CharField" && (
+                  ((field.name === "tags" && (
                     <Grid item key={field.name} xs={4}>
-                      <TextField
-                        id={field.name}
-                        label={createDisplayName(field.name)}
-                        variant="outlined"
-                        helperText={field.helpText}
-                        required={field.required}
-                        sx={{ minWidth: "5rem" }}
+                      <InstantSearch
+                        label={"tags"}
+                        labelKey={"name"}
+                        onChange={fieldCallbacks.topics}
+                        disabled={isLoading}
+                        defaultValue={
+                          fieldsRef.current.topics
+                            ? axiosWithoutAuth
+                                .get("/graphql/", {
+                                  params: {
+                                    query: `{ topics(ids: [${fieldsRef.current.topics}]) { id name } }`,
+                                  },
+                                })
+                                .then(({ data: { data } }) => data.topics)
+                            : []
+                        }
+                        getDataForInput={(input, config) =>
+                          axiosWithoutAuth
+                            .get("/api/topics/instant_search/", {
+                              params: { query: input },
+                              ...config,
+                            })
+                            .then(({ data }) => data)
+                        }
                       />
                     </Grid>
                   )) ||
+                    (field.type === "CharField" && (
+                      <Grid item key={field.name} xs={4}>
+                        <TextField
+                          id={field.name}
+                          label={createDisplayName(field.name)}
+                          variant="outlined"
+                          helperText={field.helpText}
+                          required={field.required}
+                          sx={{ minWidth: "5rem" }}
+                        />
+                      </Grid>
+                    )) ||
                     (field.type === "ManyRelatedField" && (
                       <Grid item key={field.name} xs={4}>
                         <FormControl>
@@ -140,16 +189,22 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
                             id={field.name}
                             label={createDisplayName(field.name)}
                             value={choiceValue}
+                            required={field.required}
                             multiple
+                            autoWidth
                             variant="outlined"
                             onChange={handleChoice}
                             input={<OutlinedInput label={createDisplayName(field.name)} />}
                             sx={{ width: "10rem" }}
+                            MenuProps={{
+                              anchorOrigin: { vertical: "bottom", horizontal: "center" },
+                              style: { width: "30rem" },
+                            }}
                           >
                             {field.choices &&
                               Object.values(field.choices).map((choice: any) => (
-                                <MenuItem key={choice} value={choice}>
-                                  {createChoiceValue(choice)}
+                                <MenuItem key={choice} value={choice} dense divider>
+                                  <Typography noWrap>{createChoiceValue(choice)}</Typography>
                                 </MenuItem>
                               ))}
                           </Select>
