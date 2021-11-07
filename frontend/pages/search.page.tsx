@@ -13,12 +13,12 @@ import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
 import { NextRouter, useRouter, withRouter } from "next/router";
 import qs from "qs";
-import React, {
+import {
   createRef,
   Dispatch,
   FC,
+  memo,
   MouseEventHandler,
-  RefObject,
   SetStateAction,
   useEffect,
   useMemo,
@@ -155,7 +155,7 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
 };
 
 const SearchResultsPanes = withRouter(
-  React.memo(
+  memo(
     function SearchResultsPanes({
       modules,
       router,
@@ -218,7 +218,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
     if (initialIndex > 0) {
       setModuleIndex(initialIndex);
       setTimeout(
-        () => moduleRefs[initialIndex].current?.scrollIntoView({ behavior: "smooth" }),
+        () => modulesWithRefs[initialIndex].ref.current?.scrollIntoView({ behavior: "smooth" }),
         100
       );
     }
@@ -226,8 +226,8 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
 
   const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
 
-  const moduleRefs: RefObject<HTMLAnchorElement>[] = useMemo(
-    () => [...Array(modules.length)].map(() => createRef()),
+  const modulesWithRefs: TimelineProps<HTMLAnchorElement>["modules"] = useMemo(
+    () => modules.map((module) => ({ ...module, ref: createRef() })),
     [modules]
   );
 
@@ -244,7 +244,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
 
   return (
     <>
-      <Timeline {...{ modules, moduleRefs, viewStateRegistry }} />
+      <Timeline modules={modulesWithRefs} viewStateRegistry={viewStateRegistry} />
       <Box
         className={"results result-cards"}
         sx={{
@@ -268,7 +268,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
               key={module.absoluteUrl}
               data-index={index}
               onClick={selectModule}
-              ref={moduleRefs[index]}
+              ref={modulesWithRefs[index].ref}
             >
               <ModuleUnionCard module={module} />
             </a>

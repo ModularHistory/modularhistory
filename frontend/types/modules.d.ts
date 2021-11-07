@@ -19,7 +19,7 @@ export interface BaseModule {
 export interface SearchableModule extends BaseModule {
   cachedTags: Topic[];
   verified: boolean;
-  timelinePosition: number;
+  timelinePosition?: number;
 }
 
 export interface Citation {

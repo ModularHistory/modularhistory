@@ -11,19 +11,20 @@ import {
   styled,
   Tooltip,
 } from "@mui/material";
-import React, {
+import {
   ComponentProps,
   Dispatch,
   FC,
+  memo,
   MutableRefObject,
   RefObject,
   SetStateAction,
+  useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-
-type ElementRef<T extends HTMLElement = HTMLElement> = MutableRefObject<T | null>;
 
 const Slider: FC<SliderProps<"span", { componentsProps?: { mark: SliderMarkProps } }>> = styled(
   MuiSlider
@@ -47,25 +48,31 @@ const BreakIcon = styled(Compress)({
   backgroundColor: "white",
 });
 
+type DatedSerpModule = TimelineProps["modules"][number] &
+  Required<Pick<SerpModule, "timelinePosition">>;
+
+function datedModuleTypeGuard(module: TimelineProps["modules"][number]): module is DatedSerpModule {
+  return Boolean(module.timelinePosition);
+}
+
 interface SliderMarkProps extends ComponentProps<typeof MuiSliderMark> {
-  modules: SerpModule[];
-  moduleRefs: RefObject<any>[];
+  modules: DatedSerpModule[];
   viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
 }
 
-const SliderMark: FC<SliderMarkProps> = React.memo(
-  function SliderMark({ modules, moduleRefs, viewStateRegistry, ...markProps }) {
+const SliderMark: FC<SliderMarkProps> = memo(
+  function SliderMark({ modules, viewStateRegistry, ...markProps }) {
     // Mui passes this prop but doesn't type it.
     const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
     const isBreak = moduleIndex >= modules.length;
     const module = isBreak ? undefined : modules[moduleIndex];
 
     const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [inView, setInView] = useState(false);
+    const [inView, setInView] = useState(module ? isElementInViewport(module.ref.current) : false);
     if (module) viewStateRegistry.set(module.absoluteUrl, setInView);
 
     const handleClick = () => {
-      const moduleCard = moduleRefs[moduleIndex].current;
+      const moduleCard = module?.ref.current;
       moduleCard?.scrollIntoView({ behavior: "smooth" });
       moduleCard?.click();
     };
@@ -85,7 +92,7 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
       <Tooltip
         title={
           <Box whiteSpace={"nowrap"} onClick={handleClick}>
-            {modules[moduleIndex].title}
+            {module?.title}
           </Box>
         }
         arrow
@@ -101,7 +108,7 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    const keys: Array<keyof SliderMarkProps> = ["modules", "moduleRefs", "viewStateRegistry"];
+    const keys: Array<keyof SliderMarkProps> = ["modules", "viewStateRegistry"];
     for (const key of keys) {
       if (prevProps[key] !== nextProps[key]) return false;
     }
@@ -109,9 +116,8 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
   }
 );
 
-export type TimelineProps = {
-  modules: SerpModule[];
-  moduleRefs: RefObject<any>[];
+export type TimelineProps<T extends HTMLElement = HTMLElement> = {
+  modules: Array<SerpModule & { ref: RefObject<T | null> }>;
 } & Pick<SliderMarkProps, "viewStateRegistry">;
 
 type TimelineCalculations = {
@@ -120,16 +126,21 @@ type TimelineCalculations = {
   descale: (n: number) => number;
 } & Required<Pick<SliderProps, "marks" | "min" | "max">>;
 
-const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry }) => {
+const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
+  // Some modules will possibly not have dates. Since we rely on the indexes of
+  // marks and modules aligning, we must filter out undated modules.
+  const datedModules = useMemo(() => modules.filter(datedModuleTypeGuard), [modules]);
+
+  // Performing calculations asynchronously does not improve performance much currently,
+  // but will improve both CSR and SSR when `modules.length` increases in the future.
   const [calculations, setCalculations] = useState<TimelineCalculations | null>(null);
   useEffect(() => {
+    setCalculations(null);
     const now = new Date().getFullYear();
     const marks: Mark[] = [];
-    const years = modules
-      .map((m) => m.timelinePosition)
-      .filter((n) => !Number.isNaN(n))
-      .sort((a, b) => a - b);
-    modules.forEach((module, index) =>
+
+    const years = datedModules.map((m) => m.timelinePosition).sort((a, b) => a - b);
+    datedModules.forEach((module, index) =>
       marks.push({
         // add a tiny incremental value to eliminate duplicate keys
         value: module.timelinePosition + Number(`${index}e-5`),
@@ -137,6 +148,7 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
     );
 
     const ranges = years.slice(0, -1).map((year, index) => years[index + 1] - year);
+    console.log(ranges);
 
     const averageDistance = (years[years.length - 1] - years[0]) / years.length;
     const breaks: (Mark & { length: number })[] = [];
@@ -145,6 +157,7 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
       if (rangeLength > averageDistance) {
         const [start, end] = years.slice(index, index + 2).map(Math.round);
         const length = end - start;
+        // TODO: rounding causes bugs when modules are less than a year apart
         const buffer = Math.round(Math.min(averageDistance / 4, length * 0.1));
         // if (length <= buffer * 3) return;
 
@@ -157,7 +170,7 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
           ),
           length: length - 2 * buffer,
         };
-        breaks.push(break_);
+        // breaks.push(break_);
         // we scale marks but don't scale breaks, so create a new object
         marks.push({ ...break_ });
       }
@@ -188,19 +201,21 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
     const max = scale(Math.ceil(years[years.length - 1] + buffer));
 
     setCalculations({ now, marks, min, max, scale, descale });
+    setValue([min, max]);
   }, [modules]);
 
-  const thumbRefs: ElementRef[] = [useRef(null), useRef(null)];
+  const thumbRefs: MutableRefObject<HTMLElement | null>[] = [useRef(null), useRef(null)];
+  const [value, setValue] = useState([0, 100]);
+  const handleChange = useCallback((_, value) => setValue(value), []);
 
   if (calculations === null) {
-    return <Slider key={0} orientation={"vertical"} defaultValue={[0, 100]} disabled />;
+    return <Slider orientation={"vertical"} value={[0, 100]} disabled />;
   }
 
   const { now, marks, min, max, descale } = calculations;
 
   return (
     <Slider
-      key={1}
       onMouseDownCapture={(event) => {
         if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
           event.stopPropagation();
@@ -208,11 +223,12 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
       orientation={"vertical"}
       valueLabelDisplay={"on"}
       marks={marks}
-      defaultValue={[min, max]}
+      onChange={handleChange}
+      value={value}
       min={min}
       max={max}
       valueLabelFormat={(ybp) => formatYbp(descale(ybp), now)}
-      componentsProps={{ mark: { modules, moduleRefs, viewStateRegistry } }}
+      componentsProps={{ mark: { modules: datedModules, viewStateRegistry } }}
       components={{
         Mark: SliderMark,
         Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
@@ -239,28 +255,39 @@ function formatYbp(ybp: number, thisYear: number) {
   if (diff > 0) {
     year = diff;
     type = "CE";
-  } else if (bce <= 1e4) {
+  } else if (bce <= TEN_THOUSAND) {
     year = bce;
     type = "BCE";
   } else {
     year = ybp;
     type = "YBP";
   }
-  if (type != "CE") {
-    if (year >= TEN_THOUSAND) {
-      const digits = Math.floor(Math.log10(year)) + 1;
-      const divisor = 10 ** (digits - 3);
-      year = Math.round(year / divisor) * divisor;
-    }
 
-    if (year >= BILLION) {
-      year /= BILLION;
-      multiplier = "B";
-    } else if (year >= MILLION) {
-      year /= MILLION;
-      multiplier = "M";
-    }
+  if (year >= TEN_THOUSAND) {
+    const digits = Math.floor(Math.log10(year)) + 1;
+    const divisor = 10 ** (digits - 3);
+    year = Math.round(year / divisor) * divisor;
   }
+
+  if (year >= BILLION) {
+    year /= BILLION;
+    multiplier = "B";
+  } else if (year >= MILLION) {
+    year /= MILLION;
+    multiplier = "M";
+  }
+
   const yearStr = multiplier ? year.toPrecision(3) : year.toString().replace(commaRegex, "$1,");
   return `${yearStr}${multiplier} ${type}`;
+}
+
+function isElementInViewport(el: HTMLElement | null) {
+  if (el === null) return false;
+  const { top, bottom, left, right } = el.getBoundingClientRect();
+  return (
+    top < (window.innerHeight || document.documentElement.clientHeight) &&
+    bottom > 0 &&
+    left < (window.innerWidth || document.documentElement.clientWidth) &&
+    right > 0
+  );
 }
