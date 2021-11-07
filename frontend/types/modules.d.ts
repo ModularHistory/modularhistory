@@ -93,6 +93,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   meta?: Meta;
   relatedQuotes?: Quote[];
 }
+
 export interface Collection {
   model: "collections.collection";
   slug: string;
@@ -133,6 +134,7 @@ export interface Topic extends BaseModule {
 }
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
+export type SerpModule = Exclude<ModuleUnion, Topic>;
 
 export interface FlatPage {
   title: string;
