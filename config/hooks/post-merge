@@ -12,6 +12,14 @@ setup_sha_file=".venv/.setup.sha"
 poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
+
+docker system info &>/dev/null || {
+  open --background -a Docker && {
+    while ! docker system info &>/dev/null; do 
+      echo "Waiting for Docker to start up..."; sleep 5
+    done
+  }
+}
 docker-compose ps | grep "webserver" | grep --quiet "Up" && up=true || up=false
 
 # Determine whether to prompt to (re)run the setup script.
