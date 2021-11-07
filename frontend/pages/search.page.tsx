@@ -41,6 +41,50 @@ import React, {
 } from "react";
 import { InView } from "react-intersection-observer";
 
+const commaRegex = new RegExp(/(\d)(?=(\d{3})+$)/g);
+
+function formatYbp(ybp: number, thisYear: number) {
+  const TEN_THOUSAND = 1e4;
+  const MILLION = 1e6;
+  const BILLION = 1e9;
+  const diff = thisYear - ybp;
+  const bce = -diff - 1;
+
+  let year: number;
+  let type: "CE" | "BCE" | "YBP";
+  let multiplier: "M" | "B" | "" = "";
+
+  if (diff > 0) {
+    year = diff;
+    type = "CE";
+  } else if (bce <= 1e4) {
+    year = bce;
+    type = "BCE";
+  } else {
+    year = ybp;
+    type = "YBP";
+  }
+  if (type != "CE") {
+    if (year >= TEN_THOUSAND) {
+      const digits = Math.floor(Math.log10(year)) + 1;
+      const divisor = 10 ** (digits - 3);
+      year = Math.round(year / divisor) * divisor;
+    }
+
+    if (year >= BILLION) {
+      year /= BILLION;
+      multiplier = "B";
+    } else if (year >= MILLION) {
+      year /= MILLION;
+      multiplier = "M";
+    }
+  }
+  const yearStr = multiplier ? year.toPrecision(3) : year.toString().replace(commaRegex, "$1,");
+  return `${yearStr}${multiplier} ${type}`;
+}
+
+console.log(formatYbp);
+
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
   ssr: false,
 });
@@ -51,8 +95,6 @@ const SliderToggle = styled("button")({
   "&.open": { transform: "translateX(229px) !important" },
 });
 
-const getModuleUID = ({ model, id }: SearchProps["results"][number]) => `${model}-${id}`;
-
 interface SearchProps {
   count: number;
   totalPages: number;
@@ -61,7 +103,7 @@ interface SearchProps {
 
 type ElementRef<T extends HTMLElement = HTMLElement> = MutableRefObject<T | null>;
 
-const Slider: FC<SliderProps<"span", { componentsProps: { mark: SliderMarkProps } }>> = styled(
+const Slider: FC<SliderProps<"span", { componentsProps?: { mark: SliderMarkProps } }>> = styled(
   MuiSlider
 )({
   height: "80vh",
@@ -98,7 +140,7 @@ const SliderMark: FC<SliderMarkProps> = React.memo(
 
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [inView, setInView] = useState(false);
-    if (module) viewStateRegistry.set(getModuleUID(module), setInView);
+    if (module) viewStateRegistry.set(module.absoluteUrl, setInView);
 
     const handleClick = () => {
       const moduleCard = moduleRefs[moduleIndex].current;
@@ -151,8 +193,15 @@ type TimelineProps = {
   moduleRefs: RefObject<any>[];
 } & Pick<SliderMarkProps, "viewStateRegistry">;
 
+type TimelineCalculations = {
+  now: number;
+  scale: (n: number) => number;
+  descale: (n: number) => number;
+} & Required<Pick<SliderProps, "marks" | "min" | "max">>;
+
 const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry }) => {
-  const calculations = useMemo(() => {
+  const [calculations, setCalculations] = useState<TimelineCalculations | null>(null);
+  useEffect(() => {
     const now = new Date().getFullYear();
     const marks: Mark[] = [];
     const years = modules
@@ -182,7 +231,7 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
           value: start + buffer,
           label: (
             <Box color={"lightgray"}>
-              {now - (end - buffer)} CE — {now - (start + buffer)} CE
+              {formatYbp(end - buffer, now)} — {formatYbp(start + buffer, now)}
             </Box>
           ),
           length: length - 2 * buffer,
@@ -217,15 +266,20 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
     const min = Math.floor(years[0] - buffer);
     const max = scale(Math.ceil(years[years.length - 1] + buffer));
 
-    return { now, marks, min, max, scale, descale };
+    setCalculations({ now, marks, min, max, scale, descale });
   }, [modules]);
-
-  const { now, marks, min, max, scale, descale } = calculations;
 
   const thumbRefs: ElementRef[] = [useRef(null), useRef(null)];
 
+  if (calculations === null) {
+    return <Slider key={0} orientation={"vertical"} defaultValue={[0, 100]} disabled />;
+  }
+
+  const { now, marks, min, max, descale } = calculations;
+
   return (
     <Slider
+      key={1}
       onMouseDownCapture={(event) => {
         if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
           event.stopPropagation();
@@ -236,15 +290,10 @@ const Timeline: FC<TimelineProps> = ({ modules, moduleRefs, viewStateRegistry })
       defaultValue={[min, max]}
       min={min}
       max={max}
-      valueLabelFormat={(value) => {
-        return `${now - descale(value)} CE`; // return `${2021 - value} CE`;
-      }}
+      valueLabelFormat={(ybp) => formatYbp(descale(ybp), now)}
       componentsProps={{ mark: { modules, moduleRefs, viewStateRegistry } }}
       components={{
         Mark: SliderMark,
-        // MarkLabel: (props) => {
-        //   return <SliderMarkLabel {...props} />;
-        // },
         Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
       }}
     />
@@ -363,7 +412,13 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
 
 const SearchResultsPanes = withRouter(
   React.memo(
-    ({ modules, router }: { modules: SearchProps["results"]; router: NextRouter }) => {
+    function SearchResultsPanes({
+      modules,
+      router,
+    }: {
+      modules: SearchProps["results"];
+      router: NextRouter;
+    }) {
       // currently selected module
       const [moduleIndex, setModuleIndex] = useState(0);
 
@@ -398,7 +453,6 @@ const SearchResultsPanes = withRouter(
     }
   )
 );
-SearchResultsPanes.displayName = "SearchResultsPanes";
 
 interface LeftPaneProps {
   modules: SearchProps["results"];
@@ -461,9 +515,9 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
           <InView
             as="div"
             onChange={(inView) => {
-              viewStateRegistry.get(getModuleUID(module))?.(inView);
+              viewStateRegistry.get(module.absoluteUrl)?.(inView);
             }}
-            key={getModuleUID(module)}
+            key={module.absoluteUrl}
           >
             <a
               href={module.absoluteUrl}
