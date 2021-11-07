@@ -1,3 +1,5 @@
+import os
+import shutil
 from typing import TYPE_CHECKING
 
 import pytest
@@ -14,3 +16,16 @@ def api_client(request: 'FixtureRequest') -> APIClient:
     if request.instance:
         request.instance.api_client = client
     return client
+
+
+@pytest.fixture(autouse=True)
+def temporary_media(request: 'FixtureRequest', settings):
+    """Create a temporary media directory for testing."""
+    settings.MEDIA_ROOT = os.path.join(
+        settings.MEDIA_ROOT,
+        '.tmp',
+        f'{request.cls.__name__}_{request.node.name}' if request.cls else request.node.name,
+    )
+    yield settings
+    if os.path.exists(settings.MEDIA_ROOT):
+        shutil.rmtree(settings.MEDIA_ROOT)

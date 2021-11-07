@@ -1,4 +1,5 @@
 """Serializers for the entities app."""
+
 from apps.dates.fields import HistoricDateTimeDrfField
 from apps.images.models import Image, Video
 from apps.images.models.media_model import MediaModel

@@ -277,12 +277,10 @@ class DrfModelSerializer(serializers.ModelSerializer):
         if requested_fields:
             # Drop any fields that are not specified in the `fields` argument.
             defined_fields = set(self.fields)
-
             if requested_fields - defined_fields:
                 raise ValueError(
                     f'Fields {requested_fields - defined_fields} do not exist on serializer {self.__class__}'
                 )
-
             for field_name in defined_fields - requested_fields:
                 del self.fields[field_name]
 

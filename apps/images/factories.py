@@ -1,3 +1,5 @@
+import base64
+
 import factory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from factory import fuzzy
@@ -6,19 +8,22 @@ from factory.django import DjangoModelFactory, ImageField
 from apps.images import models
 
 
-def fake_image():
-    return SimpleUploadedFile(
+def generate_temporary_image():
+    file = SimpleUploadedFile(
         'test.png',
-        content=ImageField()._make_data({'width': 1024, 'height': 768}),
+        content=base64.b64decode(
+            b'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+        ),
         content_type='image/png',
     )
+    return file
 
 
 class ImageFactory(DjangoModelFactory):
     class Meta:
         model = models.Image
 
-    image = ImageField(from_func=fake_image)
+    image = ImageField(from_func=generate_temporary_image)
     width = fuzzy.FuzzyInteger(500, 1000)
     height = fuzzy.FuzzyInteger(500, 1000)
     title = factory.Faker('sentence', nb_words=10)

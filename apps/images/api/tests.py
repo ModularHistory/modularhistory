@@ -2,7 +2,7 @@
 
 import pytest
 
-from apps.images.factories import ImageFactory, fake_image
+from apps.images.factories import ImageFactory, generate_temporary_image
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
@@ -24,14 +24,14 @@ class ImagesApiTest(ModerationApiTest):
         self.verified_model = image
         self.uncheckable_fields = ['date', 'end_date', 'image']
         self.test_data = {
-            'image': fake_image(),
+            'image': generate_temporary_image(),
             'description': 'Image 1 Description',
             'caption': 'Image 1 Caption',
             'provider': 'Image 1 Provider',
             'date': '2001-01-01T01:01:20',
         }
         self.updated_test_data = {
-            'image': fake_image(),
+            'image': generate_temporary_image(),
             'description': 'UPDATED Image 1 Description',
             'caption': 'UPDATED Image 1 Caption',
             'provider': 'UPDATED Image 1 Provider',

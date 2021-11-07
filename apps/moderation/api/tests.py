@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
@@ -60,12 +61,12 @@ class ModerationApiTest:
 
     def _test_api_moderation_view(
         self,
-        data,
-        view='api-root',
+        data: dict,
+        view: str = 'api-root',
         url_kwargs=None,
-        change_status_code=200,
-        method='post',
-        object_id=None,
+        change_status_code: int = 200,
+        method: str = 'post',
+        object_id: Optional[int] = None,
     ):
         if url_kwargs is None:
             url_kwargs = {}
@@ -76,16 +77,17 @@ class ModerationApiTest:
         if self.api_path_suffix and self.api_path_suffix not in path:
             path += self.api_path_suffix + '/'
         response = self.api_client.post(
-            path, data, **self.moderation_api_request_extra_kwargs
+            path,
+            data,
+            content_type='multipart/form-data',
+            **self.moderation_api_request_extra_kwargs,
         )
         assert response.status_code == 401, 'Deny creation without authentication'
         self.api_client.force_authenticate(self.contributor)
         api_request = getattr(self.api_client, method)
         response = api_request(path, data, **self.moderation_api_request_extra_kwargs)
         self.api_client.logout()
-        assert (
-            response.status_code == change_status_code
-        ), f'Incorrect change status code. {method} {path} returned: {response.data}'
+        assert response.status_code == change_status_code, f'Incorrect change status code.'
         if response.data and 'id' in response.data:
             object_id = response.data.get('id')
         created_change = Change.objects.get(
@@ -100,7 +102,7 @@ class ModerationApiTest:
         assert contributions.count() > 0, 'No contributions were created for a change'
         return response.data, created_change, contributions
 
-    def _test_api_moderation_change(self, request_params):
+    def _test_api_moderation_change(self, request_params: dict):
         response, change, contribution = self._test_api_moderation_view(**request_params)
         data_fields = request_params.get('data').items()
         for field_name, value in data_fields:
