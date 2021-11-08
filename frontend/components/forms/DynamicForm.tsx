@@ -3,6 +3,7 @@ import InstantSearch from "@/components/search/InstantSearch";
 import {
   Box,
   Button,
+  Card,
   Divider,
   FormControl,
   Grid,
@@ -10,10 +11,9 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  TextField,
   Typography,
 } from "@mui/material";
-import Card from "@mui/material/Card";
-import TextField from "@mui/material/TextField";
 import { useRouter } from "next/router";
 import { ParsedUrlQueryInput } from "querystring";
 import { FC, MutableRefObject, useContext, useEffect, useRef, useState } from "react";
@@ -98,9 +98,7 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
     setChoiceValue(typeof value === "string" ? value.split(",") : value);
   };
 
-  const fieldsRef = useRef(
-    Object.fromEntries(fields.map((name) => [name, router.query[name]]))
-  ) as FieldsRef;
+  const fieldsRef = useRef({}) as FieldsRef;
   const fieldCallbacks = Object.fromEntries(
     fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
   ) as FieldCallbacks;
@@ -109,7 +107,7 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
     getDynamicFields(type).then((result) => {
       setFormData(result);
     });
-  });
+  }, [type]);
 
   const checkField = (obj: any) => {
     return obj.editable;
@@ -121,14 +119,6 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
 
   const createChoiceValue = (str: string) => {
     return str.replace(/<.*?>/g, "");
-  };
-
-  const getRequiredFields = (fields: any) => {
-    return fields.map((field: any) => {
-      if (field.required === true) {
-        return field.name;
-      }
-    });
   };
 
   return (
