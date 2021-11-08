@@ -14,7 +14,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/router";
 import { ParsedUrlQueryInput } from "querystring";
 import { FC, MutableRefObject, useContext, useEffect, useRef, useState } from "react";
 import PageTransitionContext from "../PageTransitionContext";
@@ -90,7 +89,6 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
     });
   };
 
-  const router = useRouter();
   const isLoading = useContext(PageTransitionContext);
 
   const handleChoice = (event: { target: { value: string[] | string } }) => {
