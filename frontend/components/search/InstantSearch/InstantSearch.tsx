@@ -9,7 +9,7 @@ type Option = Record<string, string>;
 export interface InstantSearchProps {
   label: string;
   defaultValue: Option | Option[] | Promise<Option[]>;
-  onChange: (value: string[]) => void;
+  onChange?: (value: string[]) => void;
   getDataForInput: (input: string, config: AxiosRequestConfig) => Option[] | Promise<Option[]>;
   labelKey: string;
   disabled?: boolean;
@@ -55,7 +55,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleValueChange = (event: SyntheticEvent, values: Option[]) => {
-    onChange(values.map((value) => value[idKey]));
+    onChange?.(values.map((value) => value[idKey]));
     setSelectedOptions(values);
   };
 
