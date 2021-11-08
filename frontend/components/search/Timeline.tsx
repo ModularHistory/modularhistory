@@ -170,7 +170,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
           ),
           length: length - 2 * buffer,
         };
-        // breaks.push(break_);
+        breaks.push(break_);
         // we scale marks but don't scale breaks, so create a new object
         marks.push({ ...break_ });
       }
