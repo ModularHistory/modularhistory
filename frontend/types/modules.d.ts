@@ -70,7 +70,13 @@ export interface Occurrence extends Proposition {
 }
 
 export interface Source extends SearchableModule {
-  model: "sources.source";
+  model:
+    | "sources.source"
+    | "sources.article"
+    | "sources.book"
+    | "sources.correspondence"
+    | "sources.document"
+    | "sources.speech";
   citationHtml: string;
   citationString: string;
   meta?: Meta;
@@ -84,6 +90,16 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   truncatedDescription: string;
   meta?: Meta;
   relatedQuotes?: Quote[];
+}
+export interface Collection {
+  model: "collections.collection";
+  slug: string;
+  title: string;
+  creator: User;
+  quotes: Quote[];
+  entities: Entity[];
+  propositions: Proposition[];
+  sources: Source[];
 }
 
 export interface Argument extends BaseModule {

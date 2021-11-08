@@ -11,3 +11,11 @@ services:
       - django
       - celery
       - celery_beat
+
+  django:
+    environment:
+      DOMAIN: "modularhistory.com"
+
+  cypress:
+    environment:
+      - CYPRESS_baseUrl=https://www.modularhistory.com/

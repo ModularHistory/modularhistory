@@ -54,6 +54,18 @@ class Collection(SearchableModel, SluggedModel):
         related_name='collections',
         blank=True,
     )
+    quotes = models.ManyToManyField(
+        to='quotes.Quote',
+        through='quotes.CollectionInclusion',
+        related_name='collections',
+        blank=True,
+    )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        through='sources.CollectionInclusion',
+        related_name='collections',
+        blank=True,
+    )
 
     objects = CollectionManager()
     searchable_fields = ['title', 'creator__name']
