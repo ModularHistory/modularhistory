@@ -28,9 +28,6 @@ DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Use the BASE_URL setting to build absolute URLs when necessary.
-BASE_URL = config('BASE_URL', default='http://localhost')
-
 # --- URL MODIFICATION SETTINGS ---
 # Delegate URL modification to the Nginx reverse proxy server.
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-PREPEND_WWW
@@ -59,9 +56,11 @@ ALLOWED_HOSTS = config(
     default='localhost, 127.0.0.1, 0.0.0.0, django',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
+HTTP_PROTOCOL = 'https' if IS_PROD else 'http'
 
-SERVER_LOCATION = 'unknown'  # TODO
-GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
+DOMAIN = config('DOMAIN', default='localhost')
+# Use the BASE_URL setting to build absolute URLs when necessary.
+BASE_URL = config('BASE_URL', default=f'{HTTP_PROTOCOL}://{DOMAIN}')
 
 ADMINS = (
     config(
@@ -163,6 +162,7 @@ INSTALLED_APPS = [
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
     'apps.graph.apps.GraphConfig',
+    'apps.home.apps.HomeConfig',
     'apps.images.apps.ImagesConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.moderation.apps.ModerationConfig',
@@ -263,28 +263,6 @@ if DEBUG:
         'ACCESS_TOKEN_LIFETIME': timedelta(minutes=7 * 24 * 60),
     }
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PAGINATION_CLASS': 'core.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_RENDERER_CLASSES': (
-        # https://github.com/vbabiy/djangorestframework-camel-case
-        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
-        'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
-        'rest_framework.renderers.JSONRenderer',
-    ),
-    'DEFAULT_PARSER_CLASSES': (
-        # https://github.com/vbabiy/djangorestframework-camel-case
-        'djangorestframework_camel_case.parser.CamelCaseFormParser',
-        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
-        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
-    ),
-}
-
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
@@ -316,13 +294,29 @@ GRAPH_MODELS = {
 # Email addresses to which moderation emails will be sent
 MODERATORS = ()
 
-# Internationalization
+# Internationalization settings
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+# Email settings
+DEFAULT_EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = f'do.not.reply@{DOMAIN}'
+# https://docs.djangoproject.com/en/dev/topics/email/
+# https://docs.djangoproject.com/en/dev/ref/settings#s-email-backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+EMAIL_PORT = config(
+    'EMAIL_PORT',
+    default=DEFAULT_EMAIL_PORT,
+    cast=lambda port: int(port) if port else DEFAULT_EMAIL_PORT,
+)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = True
 
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)

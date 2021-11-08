@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import InstantSearch from "@/components/search/InstantSearch";
+import { TopicsInstantSearch } from "@/components/search/InstantSearch";
 import {
   Box,
   Button,
@@ -131,30 +131,11 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
                 {checkField(field) &&
                   ((field.name === "tags" && (
                     <Grid item key={field.name} xs={4}>
-                      <InstantSearch
+                      <TopicsInstantSearch
                         label={"tags"}
-                        labelKey={"name"}
                         onChange={fieldCallbacks.topics}
                         disabled={isLoading}
-                        defaultValue={
-                          fieldsRef.current.topics
-                            ? axiosWithoutAuth
-                                .get("/graphql/", {
-                                  params: {
-                                    query: `{ topics(ids: [${fieldsRef.current.topics}]) { id name } }`,
-                                  },
-                                })
-                                .then(({ data: { data } }) => data.topics)
-                            : []
-                        }
-                        getDataForInput={(input, config) =>
-                          axiosWithoutAuth
-                            .get("/api/topics/instant_search/", {
-                              params: { query: input },
-                              ...config,
-                            })
-                            .then(({ data }) => data)
-                        }
+                        defaultValue={fieldsRef.current.topics}
                       />
                     </Grid>
                   )) ||

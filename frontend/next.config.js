@@ -61,7 +61,6 @@ module.exports = {
       });
       for await (const line of redirectsInterface) {
         const redirect = line.match(redirectRegex);
-        console.log(redirect);
         redirects.push({
           source: redirect[1],
           destination: redirect[2],
