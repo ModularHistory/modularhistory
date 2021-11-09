@@ -16,9 +16,9 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
 
     title = serializers.CharField(required=False, allow_blank=True)
     slug = serializers.CharField(required=False)
-    absolute_url = serializers.CharField(required=False)
-    admin_url = serializers.CharField(required=False)
-    cached_tags = serializers.JSONField(required=False)
+    absolute_url = serializers.CharField(required=False, read_only=True)
+    admin_url = serializers.CharField(required=False, read_only=True)
+    cached_tags = serializers.JSONField(required=False, read_only=True)
 
     class Meta(DrfSearchableModelSerializer.Meta):
         model: type['Module']

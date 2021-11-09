@@ -267,6 +267,8 @@ class DrfModelSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
 
+    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
+
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
         requested_fields = kwargs.pop('fields', set())
@@ -298,16 +300,19 @@ class DrfModelSerializer(serializers.ModelSerializer):
         field: serializers.Field
 
         for field_name, field in self.get_fields().items():
-            fields.append(
-                {
-                    'name': field_name,
-                    'editable': not getattr(field, 'read_only', False),
-                    'verbose_name': getattr(field, 'verbose_name', None),
-                    'choices': getattr(field, 'choices', None),
-                    'help_text': getattr(field, 'help_text', None),
-                    'type': field.__class__.__name__,
-                }
-            )
+            if field_name not in self.moderated_fields_excludes:
+                fields.append(
+                    {
+                        'name': field_name,
+                        'editable': not getattr(field, 'read_only', False),
+                        'required': not getattr(field, 'required', False),
+                        'allow_blank': not getattr(field, 'allow_blank', False),
+                        'verbose_name': getattr(field, 'verbose_name', None),
+                        'choices': getattr(field, 'choices', None),
+                        'help_text': getattr(field, 'help_text', None),
+                        'type': field.__class__.__name__,
+                    }
+                )
         return fields
 
     class Meta:
