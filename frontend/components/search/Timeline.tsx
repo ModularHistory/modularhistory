@@ -117,7 +117,7 @@ const SliderMark: FC<SliderMarkProps> = memo(
 );
 
 export type TimelineProps<T extends HTMLElement = HTMLElement> = {
-  modules: Array<SerpModule & { ref: RefObject<T | null> }>;
+  modules: Array<SerpModule & { ref: RefObject<T> }>;
 } & Pick<SliderMarkProps, "viewStateRegistry">;
 
 type TimelineCalculations = {
@@ -139,26 +139,38 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
     const now = new Date().getFullYear();
     const marks: Mark[] = [];
 
-    const years = datedModules.map((m) => m.timelinePosition).sort((a, b) => a - b);
-    datedModules.forEach((module, index) =>
+    const positions = datedModules.map((m) => m.timelinePosition);
+    // Note: modules and marks ordering must be identical to allow
+    //       accessing the corresponding module from each mark
+    positions.forEach((position, index) =>
       marks.push({
         // add a tiny incremental value to eliminate duplicate keys
-        value: module.timelinePosition + Number(`${index}e-5`),
+        value: position + Number(`${index}e-5`),
       })
     );
 
-    const ranges = years.slice(0, -1).map((year, index) => years[index + 1] - year);
-    console.log(ranges);
+    positions.sort((a, b) => a - b);
 
-    const averageDistance = (years[years.length - 1] - years[0]) / years.length;
+    // normalize timeline positions so modules in the same year
+    const baseMultiplier = (1 << 10) / (positions[positions.length - 1] - positions[0]);
+    positions.forEach((position, index) => (positions[index] = position * baseMultiplier));
+    marks.forEach((mark) => {
+      mark.value *= baseMultiplier;
+    });
+    console.log(baseMultiplier);
+
+    const averageDistance = (positions[positions.length - 1] - positions[0]) / positions.length;
+    // scale to at least 100 points to pre
+
+    const ranges = positions.slice(0, -1).map((position, index) => positions[index + 1] - position);
     const breaks: (Mark & { length: number })[] = [];
 
     ranges.forEach((rangeLength, index) => {
       if (rangeLength > averageDistance) {
-        const [start, end] = years.slice(index, index + 2).map(Math.round);
+        const [start, end] = positions.slice(index, index + 2).map(Math.round);
         const length = end - start;
         // TODO: rounding causes bugs when modules are less than a year apart
-        const buffer = Math.round(Math.min(averageDistance / 4, length * 0.1));
+        const buffer = Math.round(Math.min(averageDistance / 4, length / 10));
         // if (length <= buffer * 3) return;
 
         const break_ = {
@@ -189,6 +201,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
       for (const { value, length } of breaks) {
         if (n > value) n += length;
       }
+
       return n;
     };
 
@@ -197,8 +210,8 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
     });
 
     const buffer = averageDistance / 4;
-    const min = Math.floor(years[0] - buffer);
-    const max = scale(Math.ceil(years[years.length - 1] + buffer));
+    const min = Math.floor(positions[0] - buffer);
+    const max = scale(Math.ceil(positions[positions.length - 1] + buffer));
 
     setCalculations({ now, marks, min, max, scale, descale });
     setValue([min, max]);
