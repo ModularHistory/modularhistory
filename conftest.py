@@ -35,3 +35,8 @@ def unique_factory():
     yield
     for l, _v in factory.Faker._FAKER_REGISTRY.items():
         factory.Faker._get_faker(locale=l).unique.clear()
+
+
+@pytest.fixture()
+def debug():
+    print('\n>>>>>>>>>>>>>>>>>>> no!!!!!!!!!\n')

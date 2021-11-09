@@ -1,9 +1,11 @@
 """Tests for the topics api."""
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
 
 from apps.moderation.api.tests import ModerationApiTest
 from apps.topics.factories import TopicFactory
+from apps.topics.models import Topic
 from apps.users.factories import UserFactory
 
 
@@ -17,13 +19,18 @@ class TopicsApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db):
         self.contributor = UserFactory.create()
-
-        topic = TopicFactory.create(verified=True)
-
+        self.content_type = ContentType.objects.get_for_model(Topic)
+        topic: Topic = TopicFactory.create(verified=True)
         self.verified_model = topic
         self.relation_fields = ['location']
-        self.test_data = {'name': 'Topic 1', 'title': 'Topic 1 Title'}
-        self.updated_test_data = {
+
+    @pytest.fixture()
+    def data_for_creation(self, db, data):
+        return {'name': 'Topic 1', 'title': 'Topic 1 Title'}
+
+    @pytest.fixture()
+    def data_for_update(self, db, data):
+        return {
             'name': 'UPDATED  Topic 1',
             'title': 'UPDATED Topic 1 Title',
         }

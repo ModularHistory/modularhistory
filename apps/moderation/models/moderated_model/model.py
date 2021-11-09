@@ -100,7 +100,14 @@ class ModeratedModel(SoftDeletableModel):
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
                 initiator=contributor,
-                content_type=ContentType.objects.get_for_model(self.__class__),
+                content_type=ContentType.objects.get_for_model(
+                    # Ensure TypedModel subclasses use the content type of their base model.
+                    getattr(
+                        self.__class__,
+                        'base_class',
+                        self.__class__,
+                    )
+                ),
                 object_id=self.pk,
                 moderation_status=ModerationStatus.PENDING,
                 changed_object=self,

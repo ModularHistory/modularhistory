@@ -13,7 +13,7 @@ from apps.users.models import User
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
-
+    from rest_framework.response import Response
 
 
 def shuffled_copy(data, size=None):
@@ -45,6 +45,7 @@ class ModerationApiTest:
     contributor: User
     # verified moderated model to be used update/patch/delete tests
     verified_model: ModeratedModel
+    content_type: ContentType
 
     # fields to be treated as relation fields
     # TODO: could be improved to detect relation fields automatically via model._meta.get_field
@@ -85,10 +86,9 @@ class ModerationApiTest:
             'content_type': 'application/json',
         }
         api_request: Callable = getattr(self.api_client, method)
-        response = self.api_client.post(**request_kwargs)
+        response: 'Response' = self.api_client.post(**request_kwargs)
         assert response.status_code == 401, 'Deny creation without authentication'
         self.api_client.force_authenticate(self.contributor)
-        print(f'\n\n{method=} {path=} {json_data=}\n\n')
         response = api_request(**request_kwargs)
         self.api_client.logout()
         if response.status_code != change_status_code:
@@ -96,13 +96,15 @@ class ModerationApiTest:
         assert (
             response.status_code == change_status_code
         ), f'Incorrect change status code: {response.data}'
-        if response.data and 'id' in response.data:
-            object_id = response.data['id']
-        content_type = ContentType.objects.get_for_model(self.verified_model)
+        if response.data and 'pk' in response.data:
+            object_id = response.data['pk']
+        assert Change.objects.filter(
+            object_id=object_id, content_type=self.content_type
+        ).exists(), f'No change for {self.content_type} with {object_id=} was found: {Change.objects.all()}'
         created_change = Change.objects.get(
             initiator=self.contributor,
             object_id=object_id,
-            content_type=content_type,
+            content_type=self.content_type,
         )
         contributions = ContentContribution.objects.filter(
             contributor=self.contributor, change_id=created_change
@@ -162,28 +164,31 @@ class ModerationApiTest:
     def test_api_detail(self):
         """Test the moderated detail API."""
         self._test_api_view_get(
-            f'{self.api_prefix}-detail', url_kwargs={'pk_or_slug': self.verified_model.id}
+            f'{self.api_prefix}-detail', url_kwargs={'pk_or_slug': self.verified_model.pk}
         )
 
-    def test_api_create(self):
+    def test_api_create(self, data_for_creation: dict):
         """Test the moderated creation API."""
-        self._test_api_moderation_change(data=self.test_data, change_status_code=201)
+        self._test_api_moderation_change(
+            data=data_for_creation,
+            change_status_code=201,
+        )
 
-    def test_api_update(self):
+    def test_api_update(self, data_for_update: dict):
         """Test the moderated update API."""
         self._test_api_moderation_change(
-            data=self.updated_test_data,
+            data=data_for_update,
             view=f'{self.api_prefix}-detail',
-            object_id=self.verified_model.id,
+            object_id=self.verified_model.pk,
             method='put',
         )
 
-    def test_api_patch(self):
+    def test_api_patch(self, data_for_update: dict):
         """Test the moderated patch API."""
         self._test_api_moderation_change(
-            data=self.updated_test_data,
+            data=data_for_update,
             view=f'{self.api_prefix}-detail',
-            object_id=self.verified_model.id,
+            object_id=self.verified_model.pk,
             method='patch',
         )
 
@@ -192,7 +197,7 @@ class ModerationApiTest:
         response, change, contribution = self._test_api_moderation_view(
             data={},
             view=f'{self.api_prefix}-detail',
-            object_id=self.verified_model.id,
+            object_id=self.verified_model.pk,
             method='delete',
             change_status_code=204,
         )

@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 class DrfModuleSerializer(DrfSearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
-    id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
 
     title = serializers.CharField(required=False, allow_blank=True)
@@ -26,7 +25,7 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
     class Meta(DrfSearchableModelSerializer.Meta):
         model: type['Module']
         fields = [
-            'id',
+            'pk',
             'model',
             'title',
             'slug',

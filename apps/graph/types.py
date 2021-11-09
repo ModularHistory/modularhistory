@@ -13,7 +13,7 @@ class AbstractModuleType(graphene.ObjectType):
     """Base GraphQL type for model instances."""
 
     model = graphene.String()
-    id = graphene.Int()
+    pk = graphene.Int()
     admin_url = graphene.String(source='admin_url')
     absolute_url = graphene.String(source='absolute_url')
     changes = graphene.List(ChangeType)

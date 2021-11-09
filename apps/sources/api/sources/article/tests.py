@@ -1,6 +1,7 @@
 """Tests for the articles api."""
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest
@@ -23,18 +24,19 @@ class ArticleApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db):
         self.contributor = UserFactory.create()
-        verified_article: 'Article' = ArticleFactory.create(verified=True)
-        attributee_ids = [EntityFactory.create().id for _ in range(4)]
-        topic_ids = [TopicFactory.create().id for _ in range(4)]
-        publications = [PublicationFactory.create() for _ in range(2)]
+        self.content_type = ContentType.objects.get_for_model(Article)
+        verified_article: Article = ArticleFactory.create(verified=True)
+        self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
+        self.topic_ids = [TopicFactory.create().id for _ in range(4)]
+        self.publications = [PublicationFactory.create() for _ in range(2)]
         Article.attributees.through.objects.create(
             source=verified_article,
-            attributee_id=attributee_ids[3],
+            attributee_id=self.attributee_ids[3],
             verified=True,
         )
         Article.tags.through.objects.create(
             content_object=verified_article,
-            topic_id=topic_ids[3],
+            topic_id=self.topic_ids[3],
             verified=True,
         )
         self.verified_model = verified_article
@@ -44,7 +46,10 @@ class ArticleApiTest(ModerationApiTest):
             'original_publication_date',
         ]
         self.relation_fields = ['publication', 'attributions', 'source_containments', 'tags']
-        self.test_data = {
+
+    @pytest.fixture()
+    def data_for_creation(self, db, data):
+        return {
             'title': 'Test article',
             'page_number': 23,
             'end_page_number': 1,
@@ -54,18 +59,21 @@ class ArticleApiTest(ModerationApiTest):
             'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'date': '2017-01-01 01:01:20.086202',
             'end_date': '2020-01-01 01:01:20.086202',
-            'publication': PublicationDrfSerializer(publications[0]).data,
+            'publication': PublicationDrfSerializer(self.publications[0]).data,
             'attributions': [
                 SourceAttributionDrfSerializer(
                     Article.attributees.through(
                         attributee_id=id,
                     )
                 ).data
-                for id in attributee_ids[:2]
+                for id in self.attributee_ids[:2]
             ],
-            'tags': topic_ids[:2],
+            'tags': self.topic_ids[:2],
         }
-        self.updated_test_data = {
+
+    @pytest.fixture()
+    def data_for_update(self, db, data):
+        return {
             'title': 'UPDATED Test article',
             'page_number': 25,
             'end_page_number': 12,
@@ -74,14 +82,14 @@ class ArticleApiTest(ModerationApiTest):
             'volume': 20,
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'date': '2027-01-01 01:01:20',
-            'publication': PublicationDrfSerializer(publications[1]).data,
+            'publication': PublicationDrfSerializer(self.publications[1]).data,
             'attributions': [
                 SourceAttributionDrfSerializer(
                     Article.attributees.through(
                         attributee_id=id,
                     )
                 ).data
-                for id in attributee_ids[1:]
+                for id in self.attributee_ids[1:]
             ],
-            'tags': topic_ids[1:],
+            'tags': self.topic_ids[1:],
         }
