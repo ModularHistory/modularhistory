@@ -26,7 +26,7 @@ class OccurrencesApiTest(ModerationApiTest):
     api_prefix = 'occurrence'
 
     @pytest.fixture(autouse=True, scope='function')
-    def data(self, db):
+    def data(self, db: None):
         self.contributor: 'User' = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Proposition)
         occurrence: 'Occurrence' = OccurrenceFactory.create(verified=True)
@@ -41,7 +41,7 @@ class OccurrencesApiTest(ModerationApiTest):
         self.relation_fields = ['images', 'tags']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         return {
             'type': 'propositions.occurrence',
             'title': 'Some title',
@@ -56,7 +56,7 @@ class OccurrencesApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         return {
             'type': 'propositions.occurrence',
             'title': 'UPDATED Some title',

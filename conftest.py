@@ -33,10 +33,5 @@ def temporary_media(request: 'FixtureRequest', settings):
 def unique_factory():
     """Clean up the faker registry."""
     yield
-    for l, _v in factory.Faker._FAKER_REGISTRY.items():
-        factory.Faker._get_faker(locale=l).unique.clear()
-
-
-@pytest.fixture()
-def debug():
-    print('\n>>>>>>>>>>>>>>>>>>> no!!!!!!!!!\n')
+    for locale, _v in factory.Faker._FAKER_REGISTRY.items():
+        factory.Faker._get_faker(locale=locale).unique.clear()

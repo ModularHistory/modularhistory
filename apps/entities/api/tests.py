@@ -19,10 +19,10 @@ class EntitiesApiTest(ModerationApiTest):
     api_prefix = 'entity'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Entity)
-        entity = EntityFactory.create()
+        entity: Entity = EntityFactory.create()
         self.images = [ImageFactory.create().id for _ in range(4)]
         self.tags = [TopicFactory.create().id for _ in range(4)]
         entity.images.set(shuffled_copy(self.images, size=2))
@@ -32,7 +32,7 @@ class EntitiesApiTest(ModerationApiTest):
         self.relation_fields = ['images', 'tags']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         """Data for creating an entity."""
         return {
             'type': 'entities.person',
@@ -47,7 +47,7 @@ class EntitiesApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         """Data for updating an entity."""
         return {
             'type': 'entities.person',

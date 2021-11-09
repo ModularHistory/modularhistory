@@ -22,7 +22,7 @@ class ArticleApiTest(ModerationApiTest):
     api_path_suffix = 'articles'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Article)
         verified_article: Article = ArticleFactory.create(verified=True)
@@ -48,7 +48,7 @@ class ArticleApiTest(ModerationApiTest):
         self.relation_fields = ['publication', 'attributions', 'source_containments', 'tags']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         return {
             'title': 'Test article',
             'page_number': 23,
@@ -72,7 +72,7 @@ class ArticleApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         return {
             'title': 'UPDATED Test article',
             'page_number': 25,

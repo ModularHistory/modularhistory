@@ -21,7 +21,7 @@ class ImagesApiTest(ModerationApiTest):
     extra_api_request_kwargs = {'content_type': 'multipart/form-data'}  # TODO
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Image)
         image = ImageFactory.create(verified=True)
@@ -31,7 +31,7 @@ class ImagesApiTest(ModerationApiTest):
         self.uncheckable_fields = ['date', 'end_date', 'image']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         return {
             'image': base64.b64encode(generate_temporary_image().read()).decode('ascii'),
             'description': 'Image 1 Description',
@@ -41,7 +41,7 @@ class ImagesApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         return {
             'image': base64.b64encode(generate_temporary_image().read()).decode('ascii'),
             'description': 'UPDATED Image 1 Description',

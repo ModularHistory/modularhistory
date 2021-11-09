@@ -20,7 +20,7 @@ class QuotesApiTest(ModerationApiTest):
     api_prefix = 'quote'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Quote)
         quote: Quote = QuoteFactory.create(verified=True)
@@ -35,7 +35,7 @@ class QuotesApiTest(ModerationApiTest):
         self.relation_fields = ['attributees', 'images', 'tags']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         return {
             'title': 'Test Quote TITLE',
             'text': 'Test Quote TEXT',
@@ -47,7 +47,7 @@ class QuotesApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         return {
             'title': 'UPDATED QUOTE TITLE',
             'slug': 'updated-slug',

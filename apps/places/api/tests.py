@@ -17,14 +17,14 @@ class PlacesApiTest(ModerationApiTest):
     api_prefix = 'place'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Place)
         self.verified_model = PlaceFactory.create(verified=True)
         self.relation_fields = ['location']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         place_continent = PlaceFactory.create(verified=True, type='places.continent').id
         return {
             'type': 'places.country',
@@ -34,7 +34,7 @@ class PlacesApiTest(ModerationApiTest):
         }
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         place_country = PlaceFactory.create(verified=True, type='places.country').id
         return {
             'type': 'places.city',

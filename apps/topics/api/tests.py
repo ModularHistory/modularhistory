@@ -17,7 +17,7 @@ class TopicsApiTest(ModerationApiTest):
     api_prefix = 'topic'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Topic)
         topic: Topic = TopicFactory.create(verified=True)
@@ -25,11 +25,11 @@ class TopicsApiTest(ModerationApiTest):
         self.relation_fields = ['location']
 
     @pytest.fixture()
-    def data_for_creation(self, db, data):
+    def data_for_creation(self, db: None, data: None):
         return {'name': 'Topic 1', 'title': 'Topic 1 Title'}
 
     @pytest.fixture()
-    def data_for_update(self, db, data):
+    def data_for_update(self, db: None, data: None):
         return {
             'name': 'UPDATED  Topic 1',
             'title': 'UPDATED Topic 1 Title',
