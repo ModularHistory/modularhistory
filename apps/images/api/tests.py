@@ -18,7 +18,6 @@ class ImagesApiTest(ModerationApiTest):
     __test__ = True
     api_name = 'images_api'
     api_prefix = 'image'
-    extra_api_request_kwargs = {'content_type': 'multipart/form-data'}  # TODO
 
     @pytest.fixture(autouse=True)
     def data(self, db: None):

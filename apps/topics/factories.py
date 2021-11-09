@@ -11,6 +11,6 @@ class TopicFactory(ModeratedModelFactory):
 
     title = factory.Faker('sentence', nb_words=3)
     slug = factory.Faker('slug')
-    name = UniqueFaker('sentence', nb_words=1)
+    name = factory.Sequence(lambda n: f'Topic{n}')
     aliases = factory.List([factory.Faker('sentence', nb_words=1) for _ in range(3)])
     description = factory.Faker('text')
