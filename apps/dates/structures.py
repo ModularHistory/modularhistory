@@ -5,6 +5,7 @@ from decimal import Decimal, getcontext
 from typing import Optional
 
 import sigfig
+from dateutil.parser import isoparse
 from millify import millify, prettify
 from pytz import UTC
 
@@ -119,9 +120,24 @@ class HistoricDateTime(datetime):
         """Return the datetime's string representation."""
         return self.string
 
-    def serialize(self) -> str:
-        """Serialize the datetime to a JSON-compatible string value."""
-        return self.isoformat()
+    @classmethod
+    def from_datetime(cls, datetime: datetime) -> 'HistoricDateTime':
+        return cls(
+            datetime.year,
+            month=datetime.month,
+            day=datetime.day,
+            hour=datetime.hour,
+            minute=datetime.minute,
+            second=datetime.second,
+            microsecond=datetime.microsecond,
+            tzinfo=datetime.tzinfo,
+            fold=datetime.fold,
+        )
+
+    @classmethod
+    def from_iso(cls, iso_string: str) -> 'HistoricDateTime':
+        """Create an instance from an ISO-formatted string."""
+        return cls.from_datetime(isoparse(iso_string))
 
     @property
     def is_bce(self) -> bool:
@@ -255,3 +271,7 @@ class HistoricDateTime(datetime):
             # CE dates
             year_string = str(self.year)
         return year_string
+
+    def serialize(self) -> str:
+        """Serialize the datetime to a JSON-compatible string value."""
+        return self.isoformat()

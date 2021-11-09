@@ -62,10 +62,10 @@ class ModeratedModel(SoftDeletableModel):
         # Allow creation of pre-verified model instances.
         if self._state.adding and self.verified:
             return super().save(*args, **kwargs)
-        if moderate:
+        elif moderate:
             if contributor:
                 return self.save_change(contributor=contributor)
-            logging.error('Contributor is required when saving a moderated change.')
+            raise Exception('Contributor is required when saving a moderated change.')
         super().save(*args, **kwargs)
 
     def save_change(

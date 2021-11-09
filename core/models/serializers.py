@@ -14,6 +14,9 @@ if TYPE_CHECKING:
 class DrfModuleSerializer(DrfSearchableModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
+    id = serializers.ReadOnlyField()
+    model = serializers.SerializerMethodField()
+
     title = serializers.CharField(required=False, allow_blank=True)
     slug = serializers.CharField(required=False)
     absolute_url = serializers.CharField(required=False)
@@ -22,14 +25,16 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
 
     class Meta(DrfSearchableModelSerializer.Meta):
         model: type['Module']
-        fields = DrfSearchableModelSerializer.Meta.fields + [
+        fields = [
+            'id',
+            'model',
             'title',
             'slug',
             'absolute_url',
             'admin_url',
             'tags',
             'cached_tags',
-        ]
+        ] + DrfSearchableModelSerializer.Meta.fields
         extra_kwargs = {
             'tags': {
                 'write_only': True,
@@ -43,7 +48,7 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
 class DrfTypedModuleSerializer(DrfModuleSerializer):
     """Base serializer for ModularHistory's typed modules."""
 
-    type = serializers.CharField(write_only=True, required=True)
+    type = serializers.CharField(required=True)
 
     def validate_type(self, value):
         return validate_model_type(self, value)

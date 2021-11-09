@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 from dateutil.parser import isoparse
 from django.db.models import DateTimeField
-from rest_framework.fields import DateTimeField as DrfDateTimeField
 
 from apps.dates.structures import HistoricDateTime
 
@@ -70,19 +69,3 @@ class HistoricDateTimeField(DateTimeField):
         if preprep_value:
             return super().get_prep_value(preprep_value)
         return None
-
-
-class HistoricDateTimeDrfField(DrfDateTimeField):
-    def to_internal_value(self, value):
-        value = super().to_internal_value(value)
-        value = HistoricDateTime(
-            value.year,
-            value.month,
-            value.day,
-            value.hour,
-            value.minute,
-            value.second,
-            value.microsecond,
-            tzinfo=value.tzinfo,
-        )
-        return value

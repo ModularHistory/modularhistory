@@ -2,6 +2,7 @@ import os
 import shutil
 from typing import TYPE_CHECKING
 
+import factory
 import pytest
 from rest_framework.test import APIClient
 
@@ -26,3 +27,11 @@ def temporary_media(request: 'FixtureRequest', settings):
     yield settings
     if os.path.exists(settings.MEDIA_ROOT):
         shutil.rmtree(settings.MEDIA_ROOT)
+
+
+@pytest.fixture(autouse=True)
+def unique_factory():
+    """Clean up the faker registry."""
+    yield
+    for l, _v in factory.Faker._FAKER_REGISTRY.items():
+        factory.Faker._get_faker(locale=l).unique.clear()

@@ -1,5 +1,7 @@
 """Tests for the images api."""
 
+import base64
+
 import pytest
 
 from apps.images.factories import ImageFactory, generate_temporary_image
@@ -14,6 +16,7 @@ class ImagesApiTest(ModerationApiTest):
     __test__ = True
     api_name = 'images_api'
     api_prefix = 'image'
+    extra_api_request_kwargs = {'content_type': 'multipart/form-data'}  # TODO
 
     @pytest.fixture(autouse=True)
     def data(self, db):
@@ -24,14 +27,14 @@ class ImagesApiTest(ModerationApiTest):
         self.verified_model = image
         self.uncheckable_fields = ['date', 'end_date', 'image']
         self.test_data = {
-            'image': generate_temporary_image(),
+            'image': base64.b64encode(generate_temporary_image().read()).decode('ascii'),
             'description': 'Image 1 Description',
             'caption': 'Image 1 Caption',
             'provider': 'Image 1 Provider',
             'date': '2001-01-01T01:01:20',
         }
         self.updated_test_data = {
-            'image': generate_temporary_image(),
+            'image': base64.b64encode(generate_temporary_image().read()).decode('ascii'),
             'description': 'UPDATED Image 1 Description',
             'caption': 'UPDATED Image 1 Caption',
             'provider': 'UPDATED Image 1 Provider',

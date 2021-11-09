@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from factory.django import DjangoModelFactory
 
 from apps.flatpages import models
+from apps.moderation.factories import ModeratedModelFactory
 
 
 class SiteFactory(DjangoModelFactory):
@@ -11,7 +12,7 @@ class SiteFactory(DjangoModelFactory):
         model = Site
 
 
-class FlatPageFactory(DjangoModelFactory):
+class FlatPageFactory(ModeratedModelFactory):
     class Meta:
         model = models.FlatPage
 

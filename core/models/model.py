@@ -264,8 +264,8 @@ class ModelSerializer(serpy.Serializer):
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
-    id = serializers.ReadOnlyField()
-    model = serializers.SerializerMethodField()
+    class Meta:
+        fields = ['pk']
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -310,19 +310,16 @@ class DrfModelSerializer(serializers.ModelSerializer):
             )
         return fields
 
-    class Meta:
-        fields = ['id', 'model']
-
 
 class DrfTypedModelSerializer(DrfModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
-    type = serializers.CharField(write_only=True, required=True)
+    type = serializers.CharField(required=True)
 
     def validate_type(self, value):
         return validate_model_type(self, value)
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         fields = DrfModelSerializer.Meta.fields + ['type']
 
 

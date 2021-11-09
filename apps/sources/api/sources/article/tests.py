@@ -4,18 +4,12 @@ import pytest
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest
+from apps.sources.api.serializers import SourceAttributionDrfSerializer
+from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
 from apps.sources.factories import ArticleFactory, PublicationFactory
+from apps.sources.models import Article
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
-
-# TODO: something weird is going on with relation tests
-# after creating test entities with ids = [1, 2, 3, 4]
-# we set self.test_data.attributees to ids = [3, 4]
-# and expect to changed_object.attributees == [3, 4] in #ModerationApiTest.api_moderation_change_test
-# it actually returns [2, 1] or [1]
-# expected [3, 4] attributees are actually inserted into db, confirmed by:
-# from apps.sources.models import SourceAttribution
-# print(f"All SourceAttributions: {SourceAttribution.objects.values('source_id', 'attributee_id', 'pk')}")
 
 
 class ArticleApiTest(ModerationApiTest):
@@ -29,20 +23,27 @@ class ArticleApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db):
         self.contributor = UserFactory.create()
-        article = ArticleFactory.create(verified=True)
-        attributees = [EntityFactory.create(verified=True).id for _ in range(4)]
-        tags = [TopicFactory.create(verified=True).id for _ in range(4)]
-        publications = [PublicationFactory.create(verified=True).id for _ in range(2)]
-
-        # article.attributees.set(attributees, size=2)
-        # article.tags.set(shuffled_copy(tags, size=2))
-
-        article.attributees.set([attributees[3]])
-        article.tags.set([tags[3]])
-
-        self.verified_model = article
-        self.uncheckable_fields = ['date', 'end_date', 'original_publication_date']
-        self.relation_fields = ['publication', 'attributees', 'tags']
+        verified_article: 'Article' = ArticleFactory.create(verified=True)
+        attributee_ids = [EntityFactory.create().id for _ in range(4)]
+        topic_ids = [TopicFactory.create().id for _ in range(4)]
+        publications = [PublicationFactory.create() for _ in range(2)]
+        Article.attributees.through.objects.create(
+            source=verified_article,
+            attributee_id=attributee_ids[3],
+            verified=True,
+        )
+        Article.tags.through.objects.create(
+            content_object=verified_article,
+            topic_id=topic_ids[3],
+            verified=True,
+        )
+        self.verified_model = verified_article
+        self.uncheckable_fields = [
+            'date',
+            'end_date',
+            'original_publication_date',
+        ]
+        self.relation_fields = ['publication', 'attributions', 'source_containments', 'tags']
         self.test_data = {
             'title': 'Test article',
             'page_number': 23,
@@ -53,10 +54,16 @@ class ArticleApiTest(ModerationApiTest):
             'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'date': '2017-01-01 01:01:20.086202',
             'end_date': '2020-01-01 01:01:20.086202',
-            'publication': publications[0],
-            'attributees': attributees[:2],
-            'tags': tags[:2],
-            # 'attributees': [3, 4],
+            'publication': PublicationDrfSerializer(publications[0]).data,
+            'attributions': [
+                SourceAttributionDrfSerializer(
+                    Article.attributees.through(
+                        attributee_id=id,
+                    )
+                ).data
+                for id in attributee_ids[:2]
+            ],
+            'tags': topic_ids[:2],
         }
         self.updated_test_data = {
             'title': 'UPDATED Test article',
@@ -67,7 +74,14 @@ class ArticleApiTest(ModerationApiTest):
             'volume': 20,
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'date': '2027-01-01 01:01:20',
-            'publication': publications[1],
-            'attributees': attributees[1:],
-            'tags': tags[1:],
+            'publication': PublicationDrfSerializer(publications[1]).data,
+            'attributions': [
+                SourceAttributionDrfSerializer(
+                    Article.attributees.through(
+                        attributee_id=id,
+                    )
+                ).data
+                for id in attributee_ids[1:]
+            ],
+            'tags': topic_ids[1:],
         }
