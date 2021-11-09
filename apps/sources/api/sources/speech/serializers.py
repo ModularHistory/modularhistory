@@ -8,8 +8,7 @@ class SpeechDrfSerializer(SourceDrfSerializer):
 
     utterance_serialized = PropositionDrfSerializer(read_only=True, source='utterance')
 
-    def get_choices_for_field(self, field_name: str):
-        return (x[0] for x in SPEECH_TYPES) if field_name == 'type' else None
+    type_field_choices = SPEECH_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Speech

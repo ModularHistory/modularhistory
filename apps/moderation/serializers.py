@@ -6,8 +6,15 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
 
     moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
 
+    type_field_name = 'type'
+    type_field_choices: list[tuple] = []
+
     def get_choices_for_field(self, field_name: str):
-        return None
+        return (
+            (x[0] for x in self.type_field_choices)
+            if field_name == self.type_field_name
+            else None
+        )
 
     def get_moderated_fields(self) -> list[dict]:
         """

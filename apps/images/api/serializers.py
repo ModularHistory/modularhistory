@@ -34,8 +34,8 @@ class MediaModelDrfSerializer(DrfModuleSerializer):
 class ImageDrfSerializer(MediaModelDrfSerializer):
     """Serializer for images."""
 
-    def get_choices_for_field(self, field_name: str):
-        return (x[0] for x in IMAGE_TYPES) if field_name == 'image_type' else None
+    type_field_name = 'image_type'
+    type_field_choices = IMAGE_TYPES
 
     class Meta(MediaModelDrfSerializer.Meta):
         model = Image

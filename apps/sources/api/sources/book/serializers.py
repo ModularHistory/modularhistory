@@ -31,8 +31,7 @@ class BookDrfSerializer(_BookDrfSerializer):
 class SectionDrfSerializer(SourceDrfSerializer):
     """Serializer for book section sources."""
 
-    def get_choices_for_field(self, field_name):
-        return (x[0] for x in SECTION_TYPES) if field_name == 'type' else None
+    type_field_choices = SECTION_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Section

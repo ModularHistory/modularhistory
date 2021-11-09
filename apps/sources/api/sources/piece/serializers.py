@@ -6,8 +6,7 @@ from apps.sources.models.sources.piece import PIECE_TYPES
 class _PieceDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
     """Serializer for piece sources."""
 
-    def get_choices_for_field(self, field_name: str):
-        return (x[0] for x in PIECE_TYPES) if field_name == 'type' else None
+    type_field_choices = PIECE_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Piece

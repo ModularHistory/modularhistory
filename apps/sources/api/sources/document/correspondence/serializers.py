@@ -8,8 +8,7 @@ class _CorrespondenceDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMix
 
     date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    def get_choices_for_field(self, field_name):
-        return (x[0] for x in CORRESPONDENCE_TYPES) if field_name == 'type' else None
+    type_field_choices = CORRESPONDENCE_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Correspondence
