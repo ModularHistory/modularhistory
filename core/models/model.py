@@ -289,17 +289,23 @@ class DrfModelSerializer(ModeratedModelSerializer):
         """Return the model name of the instance."""
         return get_model_name(instance)
 
-    class Meta:
+    class Meta(ModeratedModelSerializer.Meta):
         fields = ['id', 'model']
 
 
-class DrfTypedModelSerializer(DrfModelSerializer):
-    """Base serializer for ModularHistory's typed models."""
+class DrfTypedModelSerializerMixin(serializers.ModelSerializer):
 
     type = serializers.CharField(write_only=True, required=True)
 
+    def get_choices_for_field(self, field_name):
+        return get_types_for_model(self) if field_name == 'type' else None
+
     def validate_type(self, value):
         return validate_model_type(self, value)
+
+
+class DrfTypedModelSerializer(DrfTypedModelSerializerMixin, DrfModelSerializer):
+    """Base serializer for ModularHistory's typed models."""
 
     class Meta(DrfModelSerializer.Meta):
         fields = DrfModelSerializer.Meta.fields + ['type']
@@ -323,14 +329,18 @@ def get_model_name(instance: ExtendedModel) -> str:
     return f'{app_label}.{model_type}'
 
 
-def validate_model_type(serializer: serializers.ModelSerializer, value):
+def get_types_for_model(serializer: DrfModelSerializer):
     model = serializer.Meta.model
-    if hasattr(serializer.Meta, 'allowed_types'):
-        types = getattr(serializer.Meta, 'allowed_types')
+    if hasattr(serializer, 'allowed_types'):
+        return getattr(serializer, 'allowed_types')
     elif hasattr(model, 'typed_model_marker'):
-        types = model._typedmodels_registry.keys()
+        return model._typedmodels_registry.keys()
     else:
-        types = list(map(lambda x: x[0], model._meta.get_field('type').choices))
+        return list(map(lambda x: x[0], model._meta.get_field('type').choices))
+
+
+def validate_model_type(serializer: serializers.ModelSerializer, value):
+    types = get_types_for_model(serializer)
 
     if value not in types:
         raise serializers.ValidationError(

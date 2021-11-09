@@ -37,7 +37,6 @@ class OccurrencesApiTest(ModerationApiTest):
         self.uncheckable_fields = ['date']
         self.relation_fields = ['images', 'tags']
         self.test_data = {
-            'type': 'propositions.occurrence',
             'title': 'Some title',
             'slug': 'some-slug',
             'summary': 'Some summary',
@@ -49,7 +48,6 @@ class OccurrencesApiTest(ModerationApiTest):
             'tags': topic_ids[:2],
         }
         self.updated_test_data = {
-            'type': 'propositions.occurrence',
             'title': 'UPDATED Some title',
             'slug': 'UPDATED some-slug',
             'summary': 'UPDATED Some summary',

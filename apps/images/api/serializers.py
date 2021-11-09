@@ -1,7 +1,7 @@
 """Serializers for the entities app."""
 
 from apps.dates.fields import HistoricDateTimeDrfField
-from apps.images.models import Image, Video
+from apps.images.models import IMAGE_TYPES, Image, Video
 from apps.images.models.media_model import MediaModel
 from core.models.serializers import DrfModuleSerializer
 
@@ -34,11 +34,15 @@ class MediaModelDrfSerializer(DrfModuleSerializer):
 class ImageDrfSerializer(MediaModelDrfSerializer):
     """Serializer for images."""
 
+    def get_choices_for_field(self, field_name: str):
+        return (x[0] for x in IMAGE_TYPES) if field_name == 'image_type' else None
+
     class Meta(MediaModelDrfSerializer.Meta):
         model = Image
         fields = MediaModelDrfSerializer.Meta.fields + [
             'provider_string',
             'image',
+            'image_type',
             'src_url',
             'width',
             'height',

@@ -1,4 +1,5 @@
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.fields import HistoricDateTimeDrfField
@@ -106,8 +107,9 @@ class OccurrenceDrfSerializer(PropositionDrfSerializer):
     """Serializer for occurrences."""
 
     title = TitleCaseDrfField()
+    type = serializers.HiddenField(default='propositions.occurrence')
+    allowed_types = ['propositions.occurrence']
 
     class Meta(PropositionDrfSerializer.Meta):
         model = Occurrence
         fields = PropositionDrfSerializer.Meta.fields + ['postscript']
-        allowed_types = ['propositions.occurrence']

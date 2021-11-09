@@ -6,6 +6,9 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
 
     moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
 
+    def get_choices_for_field(self, field_name: str):
+        return None
+
     def get_moderated_fields(self) -> list[dict]:
         """
         Return a serialized list of the model's moderated fields.
@@ -24,12 +27,16 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                         'required': not getattr(field, 'required', False),
                         'allow_blank': not getattr(field, 'allow_blank', False),
                         'verbose_name': getattr(field, 'verbose_name', None),
-                        'choices': getattr(field, 'choices', None),
+                        'choices': self.get_choices_for_field(field_name)
+                        or getattr(field, 'choices', None),
                         'help_text': getattr(field, 'help_text', None),
                         'type': field.__class__.__name__,
                     }
                 )
         return fields
+
+    class Meta:
+        pass
 
 
 class PythonSerializer(Serializer):
