@@ -106,7 +106,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   const [showIcons, setShowIcons] = useState(false);
-  const onClick = () => setShowIcons(true);
+  const onClick = () => {
+    setShowIcons(true);
+    if (showIcons) {
+      setShowIcons(false);
+    }
+  };
   return (
     <>
       <Container>
@@ -120,14 +125,11 @@ const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProp
                 justifyContent: "center",
               }}
             >
-              {/* <Button startIcon={<ShareIcon />} variant="outlined" onClick={onClick} sx={{ my: 1 }}>
-                Share the Collection
-              </Button> */}
               <Button
                 variant="contained"
                 color="primary"
                 onClick={onClick}
-                sx={{ borderRadius: 8 }}
+                sx={{ borderRadius: "50%" }}
               >
                 <ShareIcon />
               </Button>
@@ -145,7 +147,7 @@ const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProp
                         url={`https://modularhistory.com/collections/${collection.slug}`}
                         quote={collection.title}
                       >
-                        <FacebookIcon size={36} />
+                        <FacebookIcon size={36} round={true} />
                       </FacebookShareButton>
                     </Grid>
                     <Grid item>
@@ -153,7 +155,7 @@ const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProp
                         url={`https://modularhistory.com/collections/${collection.slug}`}
                         title={collection.title}
                       >
-                        <TwitterIcon size={36} />
+                        <TwitterIcon size={36} round={true} />
                       </TwitterShareButton>
                     </Grid>
                     <Grid item>
@@ -161,7 +163,7 @@ const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProp
                         url={`https://modularhistory.com/collections/${collection.slug}`}
                         subject={collection.title}
                       >
-                        <EmailIcon size={36} />
+                        <EmailIcon size={36} round={true} />
                       </EmailShareButton>
                     </Grid>
                   </Grid>
@@ -186,7 +188,7 @@ const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionPro
                 url={`https://modularhistory.com/collections/${collection.slug}`}
                 quote={collection.title}
               >
-                <FacebookIcon size={36} />
+                <FacebookIcon size={36} round={true} />
               </FacebookShareButton>
             </Grid>
             <Grid item>
@@ -194,7 +196,7 @@ const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionPro
                 url={`https://modularhistory.com/collections/${collection.slug}`}
                 title={collection.title}
               >
-                <TwitterIcon size={36} />
+                <TwitterIcon size={36} round={true} />
               </TwitterShareButton>
             </Grid>
             <Grid item>
@@ -202,7 +204,7 @@ const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionPro
                 url={`https://modularhistory.com/collections/${collection.slug}`}
                 subject={collection.title}
               >
-                <EmailIcon size={36} />
+                <EmailIcon size={36} round={true} />
               </EmailShareButton>
             </Grid>
           </Grid>
