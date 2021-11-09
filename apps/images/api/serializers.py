@@ -1,6 +1,6 @@
 """Serializers for the entities app."""
 
-from drf_extra_fields.fields import Base64ImageField, HybridImageField
+from drf_extra_fields.fields import HybridImageField
 
 from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.images.models import Image, Video
