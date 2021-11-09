@@ -9,6 +9,5 @@ router.register('', views.PropositionViewSet)
 app_name = 'propositions'
 
 urlpatterns = [
-    path('<slug:slug>/moderation/', views.PropositionModerationAPIView.as_view()),
     path('', include(router.urls)),
 ]

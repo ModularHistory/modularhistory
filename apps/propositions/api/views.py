@@ -1,6 +1,3 @@
-from rest_framework.generics import RetrieveAPIView
-
-from apps.moderation.serializers import get_moderated_model_serializer
 from apps.propositions.api.serializers import PropositionDrfSerializer
 from apps.propositions.models import Proposition
 from core.api.views import ExtendedModelViewSet
@@ -18,11 +15,3 @@ class PropositionViewSet(ExtendedModelViewSet):
         # of occurrences through the propositions API, but listing should exclude occurrences.
         self.queryset = self.queryset.filter(type='propositions.conclusions')
         return super().list(request, **kwargs)
-
-
-class PropositionModerationAPIView(RetrieveAPIView):
-    """API view for retrieving a proposition for moderation."""
-
-    queryset = Proposition.objects.all()
-    serializer_class = get_moderated_model_serializer(PropositionDrfSerializer)
-    lookup_field = 'slug'

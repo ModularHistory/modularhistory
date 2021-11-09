@@ -15,6 +15,7 @@ from django.utils.safestring import SafeString
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
+from apps.moderation.serializers import ModeratedModelSerializer
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.models import get_html_for_view as get_html_for_view_
@@ -261,13 +262,11 @@ class ModelSerializer(serpy.Serializer):
         return get_model_name(instance)
 
 
-class DrfModelSerializer(serializers.ModelSerializer):
+class DrfModelSerializer(ModeratedModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     id = serializers.ReadOnlyField()
     model = serializers.SerializerMethodField()
-
-    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -289,31 +288,6 @@ class DrfModelSerializer(serializers.ModelSerializer):
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
         return get_model_name(instance)
-
-    def get_moderated_fields(self) -> list[dict]:
-        """
-        Return a serialized list of the model's moderated fields.
-
-        This can be used to construct forms intelligently in front-end code.
-        """
-        fields = []
-        field: serializers.Field
-
-        for field_name, field in self.get_fields().items():
-            if field_name not in self.moderated_fields_excludes:
-                fields.append(
-                    {
-                        'name': field_name,
-                        'editable': not getattr(field, 'read_only', False),
-                        'required': not getattr(field, 'required', False),
-                        'allow_blank': not getattr(field, 'allow_blank', False),
-                        'verbose_name': getattr(field, 'verbose_name', None),
-                        'choices': getattr(field, 'choices', None),
-                        'help_text': getattr(field, 'help_text', None),
-                        'type': field.__class__.__name__,
-                    }
-                )
-        return fields
 
     class Meta:
         fields = ['id', 'model']

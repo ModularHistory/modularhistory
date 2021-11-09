@@ -1,22 +1,35 @@
 from django.core.serializers.python import Serializer
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
 
 
-def get_moderated_model_serializer(
-    model_serializer: type[ModelSerializer],
-) -> type[ModelSerializer]:
-    """Return the serializer to be used for moderation of a moderated model.
-    Adds 'fields' field to given model_serializer.
-    """
+class ModeratedModelSerializer(serializers.ModelSerializer):
 
-    class ModeratedModelSerializer(model_serializer):
-        fields = serializers.ReadOnlyField(source='get_moderated_fields')
+    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
 
-        class Meta(model_serializer.Meta):
-            fields = model_serializer.Meta.fields + ['fields']
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
 
-    return ModeratedModelSerializer
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: serializers.Field
+
+        for field_name, field in self.get_fields().items():
+            if field_name not in self.moderated_fields_excludes:
+                fields.append(
+                    {
+                        'name': field_name,
+                        'editable': not getattr(field, 'read_only', False),
+                        'required': not getattr(field, 'required', False),
+                        'allow_blank': not getattr(field, 'allow_blank', False),
+                        'verbose_name': getattr(field, 'verbose_name', None),
+                        'choices': getattr(field, 'choices', None),
+                        'help_text': getattr(field, 'help_text', None),
+                        'type': field.__class__.__name__,
+                    }
+                )
+        return fields
 
 
 class PythonSerializer(Serializer):
