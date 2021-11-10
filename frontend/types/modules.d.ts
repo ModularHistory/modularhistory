@@ -10,7 +10,6 @@ export interface BaseModule {
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
-  title?: string;
   name?: string;
   changes?: Change[];
   issues?: Issue[];

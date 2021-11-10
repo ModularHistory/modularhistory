@@ -26,7 +26,7 @@ import {
   useState,
 } from "react";
 
-const Slider: FC<SliderProps<"span", { componentsProps?: { mark: SliderMarkProps } }>> = styled(
+const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
   MuiSlider
 )({
   height: "80vh",
@@ -48,20 +48,26 @@ const BreakIcon = styled(Compress)({
   backgroundColor: "white",
 });
 
-type DatedSerpModule = TimelineProps["modules"][number] &
-  Required<Pick<SerpModule, "timelinePosition">>;
+type PositionedModule<T extends Partial<SerpModule>> = T & Required<Pick<T, "timelinePosition">>;
 
-function datedModuleTypeGuard(module: TimelineProps["modules"][number]): module is DatedSerpModule {
+function positionedModuleTypeGuard<T extends Partial<SerpModule>>(
+  module: T
+): module is PositionedModule<T> {
   return Boolean(module.timelinePosition);
 }
 
-interface SliderMarkProps extends ComponentProps<typeof MuiSliderMark> {
-  modules: DatedSerpModule[];
+type TimelineMarkModule<T extends HTMLElement> = Required<
+  Pick<SerpModule, "timelinePosition" | "title" | "absoluteUrl">
+> & { ref: RefObject<T> };
+
+interface TimelineMarkProps<T extends HTMLElement = HTMLElement>
+  extends ComponentProps<typeof MuiSliderMark> {
+  modules: Array<TimelineMarkModule<T>>;
   viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
 }
 
-const SliderMark: FC<SliderMarkProps> = memo(
-  function SliderMark({ modules, viewStateRegistry, ...markProps }) {
+const TimelineMark: FC<TimelineMarkProps> = memo(
+  function TimelineMark({ modules, viewStateRegistry, ...markProps }) {
     // Mui passes this prop but doesn't type it.
     const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
     const isBreak = moduleIndex >= modules.length;
@@ -69,30 +75,28 @@ const SliderMark: FC<SliderMarkProps> = memo(
 
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [inView, setInView] = useState(module ? isElementInViewport(module.ref.current) : false);
-    if (module) viewStateRegistry.set(module.absoluteUrl, setInView);
+
+    if (!module) {
+      return (
+        <MuiSliderMark {...markProps}>
+          <BreakIcon />
+        </MuiSliderMark>
+      );
+    }
+
+    viewStateRegistry.set(module.absoluteUrl, setInView);
 
     const handleClick = () => {
-      const moduleCard = module?.ref.current;
+      const moduleCard = module.ref.current;
       moduleCard?.scrollIntoView({ behavior: "smooth" });
       moduleCard?.click();
     };
 
-    const sliderMark = (
-      <MuiSliderMark {...markProps}>
-        {isBreak ? (
-          <BreakIcon />
-        ) : (
-          <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
-        )}
-      </MuiSliderMark>
-    );
-    return isBreak ? (
-      sliderMark
-    ) : (
+    return (
       <Tooltip
         title={
           <Box whiteSpace={"nowrap"} onClick={handleClick}>
-            {module?.title}
+            {module.title}
           </Box>
         }
         arrow
@@ -103,12 +107,14 @@ const SliderMark: FC<SliderMarkProps> = memo(
         // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
         componentsProps={{ popper: { disablePortal: true } as any }}
       >
-        {sliderMark}
+        <MuiSliderMark {...markProps}>
+          <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
+        </MuiSliderMark>
       </Tooltip>
     );
   },
   (prevProps, nextProps) => {
-    const keys: Array<keyof SliderMarkProps> = ["modules", "viewStateRegistry"];
+    const keys: Array<keyof TimelineMarkProps> = ["modules", "viewStateRegistry"];
     for (const key of keys) {
       if (prevProps[key] !== nextProps[key]) return false;
     }
@@ -117,8 +123,11 @@ const SliderMark: FC<SliderMarkProps> = memo(
 );
 
 export type TimelineProps<T extends HTMLElement = HTMLElement> = {
-  modules: Array<SerpModule & { ref: RefObject<T> }>;
-} & Pick<SliderMarkProps, "viewStateRegistry">;
+  modules: Array<
+    Omit<TimelineMarkModule<T>, "timelinePosition"> &
+      Partial<Pick<TimelineMarkModule<T>, "timelinePosition">>
+  >;
+} & Pick<TimelineMarkProps, "viewStateRegistry">;
 
 type TimelineCalculations = {
   now: number;
@@ -129,7 +138,7 @@ type TimelineCalculations = {
 const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
   // Some modules will possibly not have dates. Since we rely on the indexes of
   // marks and modules aligning, we must filter out undated modules.
-  const datedModules = useMemo(() => modules.filter(datedModuleTypeGuard), [modules]);
+  const datedModules = useMemo(() => modules.filter(positionedModuleTypeGuard), [modules]);
 
   // Performing calculations asynchronously does not improve performance much currently,
   // but will improve both CSR and SSR when `modules.length` increases in the future.
@@ -224,6 +233,8 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
   return (
     <Slider
       onMouseDownCapture={(event) => {
+        // by default the slider will move thumbs to click locations anywhere on the rail,
+        // so we block clicks that are not directly on the thumbs.
         if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
           event.stopPropagation();
       }}
@@ -235,9 +246,12 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
       min={min}
       max={max}
       valueLabelFormat={(ybp) => formatYbp(descale(ybp), now)}
-      componentsProps={{ mark: { modules: datedModules, viewStateRegistry } }}
+      componentsProps={{
+        mark: { modules: datedModules, viewStateRegistry },
+        thumb: { disabled: true },
+      }}
       components={{
-        Mark: SliderMark,
+        Mark: TimelineMark,
         Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
       }}
     />
@@ -246,7 +260,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
 
 export default Timeline;
 
-const commaRegex = new RegExp(/(\d)(?=(\d{3})+$)/g);
+const commaRegex = new RegExp(/(?!^\d{4}$)(\d)(?=(\d{3})+$)/g);
 
 function formatYbp(ybp: number, thisYear: number) {
   const TEN_THOUSAND = 1e4;
@@ -268,12 +282,6 @@ function formatYbp(ybp: number, thisYear: number) {
   } else {
     year = ybp;
     type = "YBP";
-  }
-
-  if (year >= TEN_THOUSAND) {
-    const digits = Math.floor(Math.log10(year)) + 1;
-    const divisor = 10 ** (digits - 3);
-    year = Math.round(year / divisor) * divisor;
   }
 
   if (year >= BILLION) {
