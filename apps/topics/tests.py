@@ -24,15 +24,15 @@ def test_children():
     """Test accessing a topic's direct children."""
     top: Topic = create_topic(name='Top')
     science = create_topic(name='Science')
-    science.add_parent(top)
+    science.add_parent(top, verified=True)
     assert isinstance(science, Topic)
     assert top in science.parents.all()
     sport = create_topic(name='Sport')
-    sport.add_parent(top)
+    sport.add_parent(top, verified=True)
     news = create_topic(name='News')
-    news.add_parent(top)
+    news.add_parent(top, verified=True)
     politics = create_topic(name='Politics')
-    politics.add_parent(news)
+    politics.add_parent(news, verified=True)
     children = top.children.all()
     assert children.exists(), f'{top} has no children: {type(children)}: {children}'
     assert list(children.order_by('name')) == [news, science, sport]
@@ -42,34 +42,34 @@ def test_descendants():
     """Test accessing a topic's descendants."""
     top = create_topic(name='Top')
     science = create_topic(name='Science')
-    science.add_parent(top)
+    science.add_parent(top, verified=True)
     maths = create_topic(name='Maths')
-    maths.add_parent(science)
+    maths.add_parent(science, verified=True)
     assert list(top.self_and_descendants.values_list('name', flat=True).order_by('name')) == [
         'Maths',
         'Science',
         'Top',
     ]
     biology = create_topic(name='Biology')
-    biology.add_parent(science)
+    biology.add_parent(science, verified=True)
     genetics = create_topic(name='Genetics')
-    genetics.add_parent(biology)
+    genetics.add_parent(biology, verified=True)
     neuroscience = create_topic(name='Neuroscience')
-    neuroscience.add_parent(biology)
+    neuroscience.add_parent(biology, verified=True)
     assert list(biology.descendants.values_list('name', flat=True).order_by('name')) == [
         'Genetics',
         'Neuroscience',
     ]
     sport = create_topic(name='Sport')
-    sport.add_parent(top)
+    sport.add_parent(top, verified=True)
     rugby = create_topic(name='Rugby')
-    rugby.add_parent(sport)
+    rugby.add_parent(sport, verified=True)
     football = create_topic(name='Football')
-    football.add_parent(sport)
+    football.add_parent(sport, verified=True)
     champions_league = create_topic(name='Champions League')
-    champions_league.add_parent(football)
+    champions_league.add_parent(football, verified=True)
     world_cup = create_topic(name='World Cup')
-    world_cup.add_parent(football)
+    world_cup.add_parent(football, verified=True)
     assert list(top.self_and_descendants.values_list('name', flat=True).order_by('name')) == [
         'Biology',
         'Champions League',
