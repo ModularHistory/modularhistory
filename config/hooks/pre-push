@@ -20,7 +20,8 @@ echo "$committed_filepaths" | grep --quiet "models" && {
             docker compose run django python manage.py migrate
         "; exit 1
     }
-    docker compose run django python manage.py graph_models -o core/static/model_graph.png
+    # TODO: fix this...
+    # docker compose run django python manage.py graph_models -o core/static/model_graph.png
 }
 
 echo "Finished pre-push tasks."
