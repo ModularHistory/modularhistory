@@ -137,71 +137,65 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
   useEffect(() => {
     setCalculations(null);
     const now = new Date().getFullYear();
-    const marks: Mark[] = [];
 
     const positions = datedModules.map((m) => m.timelinePosition);
-    // Note: modules and marks ordering must be identical to allow
-    //       accessing the corresponding module from each mark
-    positions.forEach((position, index) =>
-      marks.push({
-        // add a tiny incremental value to eliminate duplicate keys
-        value: position + Number(`${index}e-5`),
-      })
-    );
+    const marks: Mark[] = positions.map((position, index) => ({
+      // add a tiny incremental value to eliminate duplicate keys
+      value: position + index * 10 ** -5,
+    }));
 
+    // mark & module indexes must correspond, so we can only sort after creating marks
     positions.sort((a, b) => a - b);
 
-    // normalize timeline positions so modules in the same year
-    const baseMultiplier = (1 << 10) / (positions[positions.length - 1] - positions[0]);
-    positions.forEach((position, index) => (positions[index] = position * baseMultiplier));
-    marks.forEach((mark) => {
-      mark.value *= baseMultiplier;
-    });
-    console.log(baseMultiplier);
+    // lengths of time between consecutive timeline marks
+    const ranges = positions.slice(1).map((position, index) => position - positions[index]);
+    // total time spanned by timeline marks
+    const totalRange = positions[positions.length - 1] - positions[0];
 
-    const averageDistance = (positions[positions.length - 1] - positions[0]) / positions.length;
-    // scale to at least 100 points to pre
-
-    const ranges = positions.slice(0, -1).map((position, index) => positions[index + 1] - position);
-    const breaks: (Mark & { length: number })[] = [];
+    const averageRange = totalRange / positions.length;
+    const baseMultiplier = 1e3 / totalRange;
+    const breaks: (Pick<Mark, "value"> & { length: number })[] = [];
 
     ranges.forEach((rangeLength, index) => {
-      if (rangeLength > averageDistance) {
-        const [start, end] = positions.slice(index, index + 2).map(Math.round);
-        const length = end - start;
-        // TODO: rounding causes bugs when modules are less than a year apart
-        const buffer = Math.round(Math.min(averageDistance / 4, length / 10));
-        // if (length <= buffer * 3) return;
+      if (rangeLength > averageRange) {
+        const [start, end] = positions.slice(index, index + 2);
+        const buffer = Math.min(averageRange / 4, rangeLength / 10);
 
         const break_ = {
           value: start + buffer,
+          length: rangeLength - 2 * buffer,
+        };
+
+        // we scale marks but don't scale breaks, so we track them separately
+        breaks.push(break_);
+        marks.push({
+          value: break_.value,
           label: (
             <Box color={"lightgray"}>
               {formatYbp(end - buffer, now)} — {formatYbp(start + buffer, now)}
             </Box>
           ),
-          length: length - 2 * buffer,
-        };
-        breaks.push(break_);
-        // we scale marks but don't scale breaks, so create a new object
-        marks.push({ ...break_ });
+        });
       }
-    }, [] as number[]);
+    });
+
     breaks.sort((a, b) => a.value - b.value);
     const reverseBreaks = [...breaks].reverse();
 
+    // each timeline mark is scaled down by the breaks before it
     const scale = (n: number) => {
       for (const { value, length } of reverseBreaks) {
         if (n > value) n -= length;
       }
-      return n;
+      return n * baseMultiplier;
     };
 
+    // we must scale back up to calculate correct labels and input positions
     const descale = (n: number) => {
+      n /= baseMultiplier;
       for (const { value, length } of breaks) {
         if (n > value) n += length;
       }
-
       return n;
     };
 
@@ -209,8 +203,8 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
       mark.value = scale(mark.value);
     });
 
-    const buffer = averageDistance / 4;
-    const min = Math.floor(positions[0] - buffer);
+    const buffer = averageRange / 4;
+    const min = scale(Math.floor(positions[0] - buffer));
     const max = scale(Math.ceil(positions[positions.length - 1] + buffer));
 
     setCalculations({ now, marks, min, max, scale, descale });
@@ -290,7 +284,9 @@ function formatYbp(ybp: number, thisYear: number) {
     multiplier = "M";
   }
 
-  const yearStr = multiplier ? year.toPrecision(3) : year.toString().replace(commaRegex, "$1,");
+  const yearStr = multiplier
+    ? year.toPrecision(3)
+    : Math.round(year).toString().replace(commaRegex, "$1,");
   return `${yearStr}${multiplier} ${type}`;
 }
 
