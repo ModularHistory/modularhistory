@@ -27,7 +27,7 @@ class EntitiesTestSuite(TestSuite):
     def test_entity_query(self, client_query):
         """Verify pages have 200 status."""
         name = 'Albert Einstein'
-        entity: Entity = EntityFactory(name=name)
+        entity: Entity = EntityFactory.create(name=name)
         # fmt: off
         query = '''
         {
