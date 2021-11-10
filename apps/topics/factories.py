@@ -2,7 +2,6 @@ import factory
 
 from apps.moderation.factories import ModeratedModelFactory
 from apps.topics import models
-from core.factories import UniqueFaker
 
 
 class TopicFactory(ModeratedModelFactory):
