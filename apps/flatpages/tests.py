@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 
 from apps.flatpages.factories import FlatPageFactory
 from apps.flatpages.models import FlatPage
+from apps.moderation.models import Change
 from apps.redirects.models import Redirect
 
 
@@ -19,6 +20,7 @@ class TestFlatPages:
         from the page's prior path to its new path.
         """
         flatpage: FlatPage = FlatPageFactory.create()
+        assert not Change.objects.exists()
         original_path = flatpage.path
         original_url = reverse('flatpages_api:flatpage', kwargs={'path': original_path})
         # Confirm the flatpage can be retrieved by its path.
@@ -31,6 +33,7 @@ class TestFlatPages:
         new_url = reverse('flatpages_api:flatpage', kwargs={'path': new_path})
         flatpage.path = new_path
         flatpage.save(moderate=False)
+        assert not Change.objects.exists()
 
         # Confirm the flatpage can be retrieved by its new path.
         response = api_client.get(new_url)

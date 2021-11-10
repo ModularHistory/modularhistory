@@ -78,7 +78,7 @@ class ModeratedModel(SoftDeletableModel):
         object_is_new = self._state.adding
         self.clean()
         logging.info(
-            f'Saving a change: pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
+            f'Saving a change: model={self.__class__.__name__} pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
         )
         if object_is_new:
             self.verified = False

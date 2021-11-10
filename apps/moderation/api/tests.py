@@ -109,8 +109,9 @@ class ModerationApiTest:
         contributions = ContentContribution.objects.filter(
             contributor=self.contributor, change_id=created_change
         )
+        assert contributions.exists(), 'No contribution was created for a change.'
         # TODO: find out why multiple contributions are created
-        assert contributions.count() > 0, 'No contributions were created for a change'
+        assert contributions.count() == 1, 'Multiple contributions were created for a change.'
         return response.data, created_change, contributions
 
     def _test_api_moderation_change(self, data: dict, **request_params):
