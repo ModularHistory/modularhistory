@@ -1,10 +1,10 @@
 import factory
-from factory.django import DjangoModelFactory
 
+from apps.moderation.factories import ModeratedModelFactory
 from apps.quotes import models
 
 
-class QuoteFactory(DjangoModelFactory):
+class QuoteFactory(ModeratedModelFactory):
     class Meta:
         model = models.Quote
 

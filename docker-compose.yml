@@ -248,9 +248,9 @@ services:
 
   postgres:
     image: postgres:14
-    deploy:
-      restart_policy:
-        condition: 'always'
+    # deploy:
+    #   restart_policy:
+    #     condition: 'always'
     env_file: .env
     expose:
       - "5432"

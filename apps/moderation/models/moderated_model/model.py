@@ -61,10 +61,10 @@ class ModeratedModel(SoftDeletableModel):
         # Allow creation of pre-verified model instances.
         if self._state.adding and self.verified:
             return super().save(*args, **kwargs)
-        if moderate:
+        elif moderate:
             if contributor:
                 return self.save_change(contributor=contributor)
-            logging.error('Contributor is required when saving a moderated change.')
+            raise Exception('Contributor is required when saving a moderated change.')
         super().save(*args, **kwargs)
 
     def save_change(
@@ -77,7 +77,7 @@ class ModeratedModel(SoftDeletableModel):
         object_is_new = self._state.adding
         self.clean()
         logging.info(
-            f'Saving a change: pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
+            f'Saving a change: model={self.__class__.__name__} pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
         )
         if object_is_new:
             self.verified = False
@@ -99,7 +99,14 @@ class ModeratedModel(SoftDeletableModel):
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
                 initiator=contributor,
-                content_type=ContentType.objects.get_for_model(self.__class__),
+                content_type=ContentType.objects.get_for_model(
+                    # Ensure TypedModel subclasses use the content type of their base model.
+                    getattr(
+                        self.__class__,
+                        'base_class',
+                        self.__class__,
+                    )
+                ),
                 object_id=self.pk,
                 moderation_status=ModerationStatus.PENDING,
                 changed_object=self,

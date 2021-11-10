@@ -3,12 +3,13 @@ import base64
 import factory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from factory import fuzzy
-from factory.django import DjangoModelFactory, ImageField
+from factory.django import ImageField
 
 from apps.images import models
+from apps.moderation.factories import ModeratedModelFactory
 
 
-def generate_temporary_image():
+def generate_temporary_image() -> SimpleUploadedFile:
     file = SimpleUploadedFile(
         'test.png',
         content=base64.b64decode(
@@ -16,10 +17,11 @@ def generate_temporary_image():
         ),
         content_type='image/png',
     )
+    file.seek(0)
     return file
 
 
-class ImageFactory(DjangoModelFactory):
+class ImageFactory(ModeratedModelFactory):
     class Meta:
         model = models.Image
 

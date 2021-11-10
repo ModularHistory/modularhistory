@@ -1,11 +1,13 @@
 """Tests for the quotes api."""
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.quotes.factories import QuoteFactory
+from apps.quotes.models import Quote
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 
@@ -18,38 +20,41 @@ class QuotesApiTest(ModerationApiTest):
     api_prefix = 'quote'
 
     @pytest.fixture(autouse=True)
-    def data(self, db):
+    def data(self, db: None):
         self.contributor = UserFactory.create()
-
-        quote = QuoteFactory.create(verified=True)
-
-        attributees = [EntityFactory.create(verified=True).id for _ in range(4)]
-        images = [ImageFactory.create(verified=True).id for _ in range(4)]
-        tags = [TopicFactory.create(verified=True).id for _ in range(4)]
-
-        quote.attributees.set(shuffled_copy(attributees, size=2))
-        quote.images.set(shuffled_copy(images, size=2))
-        quote.tags.set(shuffled_copy(tags, size=2))
-
+        self.content_type = ContentType.objects.get_for_model(Quote)
+        quote: Quote = QuoteFactory.create(verified=True)
+        self.attributees = [EntityFactory.create(verified=True).id for _ in range(4)]
+        self.images = [ImageFactory.create(verified=True).id for _ in range(4)]
+        self.tags = [TopicFactory.create(verified=True).id for _ in range(4)]
+        quote.attributees.set(shuffled_copy(self.attributees, size=2))
+        quote.images.set(shuffled_copy(self.images, size=2))
+        quote.tags.set(shuffled_copy(self.tags, size=2))
         self.verified_model = quote
         self.uncheckable_fields = ['date']
         self.relation_fields = ['attributees', 'images', 'tags']
-        self.test_data = {
+
+    @pytest.fixture()
+    def data_for_creation(self, db: None, data: None):
+        return {
             'title': 'Test Quote TITLE',
             'text': 'Test Quote TEXT',
             'bite': 'Test Quote BITE',
             'date': '2001-01-01 01:01:20.086200',
-            'attributees': attributees[:2],
-            'images': images[:2],
-            'tags': tags[:2],
+            'attributees': self.attributees[:2],
+            'images': self.images[:2],
+            'tags': self.tags[:2],
         }
-        self.updated_test_data = {
+
+    @pytest.fixture()
+    def data_for_update(self, db: None, data: None):
+        return {
             'title': 'UPDATED QUOTE TITLE',
             'slug': 'updated-slug',
             'text': 'UPDATED Test Quote TEXT',
             'bite': 'UPDATED Test Quote BITE',
             'date': '2001-01-01 01:01:20.086200',
-            'attributees': attributees[1:],
-            'images': images[1:],
-            'tags': tags[1:],
+            'attributees': self.attributees[1:],
+            'images': self.images[1:],
+            'tags': self.tags[1:],
         }

@@ -1,11 +1,12 @@
 import factory
 from factory import fuzzy
-from factory.django import DjangoModelFactory
 
 from apps.entities import models
+from apps.moderation.factories import ModeratedModelFactory
+from core.factories import UniqueFaker
 
 
-class EntityFactory(DjangoModelFactory):
+class EntityFactory(ModeratedModelFactory):
     class Meta:
         model = models.Entity
 
@@ -14,9 +15,9 @@ class EntityFactory(DjangoModelFactory):
     )
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
-    name = factory.Faker('name')
-    unabbreviated_name = factory.Faker('name')
-    aliases = factory.List([factory.Faker('name') for _ in range(3)])
+    name = UniqueFaker('name')
+    unabbreviated_name = UniqueFaker('name')
+    aliases = factory.List([UniqueFaker('name') for _ in range(3)])
     birth_date = factory.Faker('historic_datetime')
     death_date = factory.Faker('historic_datetime')
     description = factory.Faker('text')

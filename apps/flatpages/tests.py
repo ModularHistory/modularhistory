@@ -18,7 +18,7 @@ class TestFlatPages:
         When the flatpage's path is changed, a redirect should be created
         from the page's prior path to its new path.
         """
-        flatpage = FlatPageFactory.create(verified=True)
+        flatpage: FlatPage = FlatPageFactory.create()
         original_path = flatpage.path
         original_url = reverse('flatpages_api:flatpage', kwargs={'path': original_path})
         # Confirm the flatpage can be retrieved by its path.
@@ -30,7 +30,7 @@ class TestFlatPages:
         new_path = '/new/path'
         new_url = reverse('flatpages_api:flatpage', kwargs={'path': new_path})
         flatpage.path = new_path
-        flatpage.save()
+        flatpage.save(moderate=False)
 
         # Confirm the flatpage can be retrieved by its new path.
         response = api_client.get(new_url)

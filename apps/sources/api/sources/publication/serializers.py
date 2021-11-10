@@ -1,6 +1,7 @@
+from drf_writable_nested import UniqueFieldsMixin
 from rest_framework import serializers
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializerMixin
 from apps.sources.models import Webpage, Website
 from apps.sources.models.publication import AbstractPublication, Publication
@@ -15,7 +16,11 @@ class PublicationDrfMixinSerializer(serializers.ModelSerializer):
         fields = ['name', 'aliases', 'description']
 
 
-class PublicationDrfSerializer(DrfTypedModelSerializer, PublicationDrfMixinSerializer):
+class PublicationDrfSerializer(
+    UniqueFieldsMixin,
+    DrfTypedModelSerializer,
+    PublicationDrfMixinSerializer,
+):
     """Serializer for publication sources."""
 
     class Meta(SourceDrfSerializer.Meta):
@@ -58,10 +63,6 @@ class WebpageDrfSerializer(_WebpageDrfSerializer):
 class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
     """Serializer for website sources."""
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = Website
-        fields = (
-            DrfModelSerializer.Meta.fields
-            + PublicationDrfMixinSerializer.Meta.fields
-            + ['owner']
-        )
+        fields = PublicationDrfMixinSerializer.Meta.fields + ['owner']

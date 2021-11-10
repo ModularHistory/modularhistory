@@ -1,6 +1,8 @@
 """Serializers for the entities app."""
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from drf_extra_fields.fields import HybridImageField
+
+from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.images.models import IMAGE_TYPES, Image, Video
 from apps.images.models.media_model import MediaModel
 from core.models.serializers import DrfModuleSerializer
@@ -36,6 +38,7 @@ class ImageDrfSerializer(MediaModelDrfSerializer):
 
     type_field_name = 'image_type'
     type_field_choices = IMAGE_TYPES
+    image = HybridImageField()
 
     class Meta(MediaModelDrfSerializer.Meta):
         model = Image

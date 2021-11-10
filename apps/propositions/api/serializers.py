@@ -2,7 +2,7 @@ from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.images.models import Image
 from apps.propositions.models import Argument, Citation, Occurrence, Proposition
 from apps.sources.api.serializers import CitationDrfSerializerMixin
@@ -67,7 +67,7 @@ class ArgumentDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
         many=True, read_only=True, source='premises.all'
     )
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = Argument
         fields = DrfModelSerializer.Meta.fields + [
             'conclusion',

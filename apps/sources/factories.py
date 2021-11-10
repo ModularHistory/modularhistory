@@ -1,36 +1,36 @@
 import factory
-import factory.fuzzy
-from factory.django import DjangoModelFactory
+from factory import fuzzy
 
+from apps.moderation.factories import ModeratedModelFactory
 from apps.places.factories import PlaceFactory
 from apps.propositions.factories import PropositionFactory
 from apps.sources import models
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from apps.sources.models.mixins.textual import TextualMixin
+from core.factories import UniqueFaker
 
 
-class SourceFileFactory(DjangoModelFactory):
+class SourceFileFactory(ModeratedModelFactory):
     class Meta:
         model = models.SourceFile
 
     file = factory.django.FileField()
-    name = factory.Faker('file_name')
-    page_offset = factory.fuzzy.FuzzyInteger(1, 500)
-    first_page_number = factory.fuzzy.FuzzyInteger(1, 250)
+    name = UniqueFaker('file_name')
+    page_offset = fuzzy.FuzzyInteger(1, 500)
+    first_page_number = fuzzy.FuzzyInteger(1, 250)
     uploaded_at = factory.Faker('date_time_this_month')
 
 
-class SourceFactory(DjangoModelFactory):
+class SourceFactory(ModeratedModelFactory):
     class Meta:
         model = models.Source
 
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
     date = factory.Faker('historic_datetime')
-
+    end_date = factory.Faker('historic_datetime')
     url = factory.Faker('url')
     href = factory.Faker('url')
-
     location = factory.SubFactory(PlaceFactory)
     file = factory.SubFactory(SourceFileFactory)
 
@@ -48,25 +48,25 @@ class PageNumberedSourceFactory(TextualSourceFactory):
         model = PageNumbersMixin
 
     editors = factory.Faker('name')
-    page_number = factory.fuzzy.FuzzyInteger(1, 500)
-    end_page_number = factory.fuzzy.FuzzyInteger(500, 1000)
+    page_number = fuzzy.FuzzyInteger(1, 500)
+    end_page_number = fuzzy.FuzzyInteger(500, 1000)
 
 
-class SourceContainmentFactory(DjangoModelFactory):
+class SourceContainmentFactory(ModeratedModelFactory):
     class Meta:
         model = models.SourceContainment
 
     source = factory.SubFactory(SourceFactory)
     container = factory.SubFactory(SourceFactory)
-    phrase = factory.fuzzy.FuzzyChoice(
+    phrase = fuzzy.FuzzyChoice(
         x for x, y in models.SourceContainment.ContainmentPhrase.choices
     )
-    page_number = factory.fuzzy.FuzzyInteger(1, 500)
-    end_page_number = factory.fuzzy.FuzzyInteger(500, 1000)
-    position = factory.fuzzy.FuzzyInteger(1, 50)
+    page_number = fuzzy.FuzzyInteger(1, 500)
+    end_page_number = fuzzy.FuzzyInteger(500, 1000)
+    position = fuzzy.FuzzyInteger(1, 50)
 
 
-class PublicationMixinFactory(DjangoModelFactory):
+class PublicationMixinFactory(ModeratedModelFactory):
     class Meta:
         model = models.AbstractPublication
 
@@ -79,15 +79,15 @@ class PublicationFactory(PublicationMixinFactory):
     class Meta:
         model = models.Publication
 
-    type = factory.fuzzy.FuzzyChoice(models.Publication._typedmodels_registry.keys())
+    type = fuzzy.FuzzyChoice(models.Publication._typedmodels_registry.keys())
 
 
 class ArticleFactory(PageNumberedSourceFactory):
     class Meta:
         model = models.Article
 
-    number = factory.fuzzy.FuzzyInteger(1, 20)
-    volume = factory.fuzzy.FuzzyInteger(1, 10)
+    number = fuzzy.FuzzyInteger(1, 20)
+    volume = fuzzy.FuzzyInteger(1, 10)
     publication = factory.SubFactory(PublicationFactory)
 
 
@@ -97,21 +97,21 @@ class BookFactory(TextualSourceFactory):
 
     publisher = factory.Faker('company')
     translator = factory.Faker('name')
-    edition_year = factory.fuzzy.FuzzyInteger(1920, 2021)
-    edition_number = factory.fuzzy.FuzzyInteger(1, 20)
-    volume_number = factory.fuzzy.FuzzyInteger(1, 10)
+    edition_year = fuzzy.FuzzyInteger(1920, 2021)
+    edition_number = fuzzy.FuzzyInteger(1, 20)
+    volume_number = fuzzy.FuzzyInteger(1, 10)
 
 
-class RepositoryFactory(DjangoModelFactory):
+class RepositoryFactory(ModeratedModelFactory):
     class Meta:
         model = models.Repository
 
-    name = factory.Faker('word')
+    name = UniqueFaker('word')
     owner = factory.Faker('name')
     location = factory.SubFactory(PlaceFactory)
 
 
-class CollectionFactory(DjangoModelFactory):
+class CollectionFactory(ModeratedModelFactory):
     class Meta:
         model = models.Collection
 
@@ -126,7 +126,7 @@ class DocumentFactory(PageNumberedSourceFactory):
 
     location_info = factory.Faker('address')
     collection = factory.SubFactory(CollectionFactory)
-    collection_number = factory.fuzzy.FuzzyInteger(1, 20)
+    collection_number = fuzzy.FuzzyInteger(1, 20)
     descriptive_phrase = factory.Faker('sentence', nb_words=10)
     information_url = factory.Faker('url')
 
@@ -142,7 +142,7 @@ class CorrespondenceFactory(DocumentFactory):
     class Meta:
         model = models.Correspondence
 
-    type = factory.fuzzy.FuzzyChoice(x[0] for x in models.CORRESPONDENCE_TYPES)
+    type = fuzzy.FuzzyChoice(x[0] for x in models.CORRESPONDENCE_TYPES)
     recipient = factory.Faker('word')
 
 
@@ -155,7 +155,7 @@ class FilmFactory(SourceFactory):
     class Meta:
         model = models.Film
 
-    type = factory.fuzzy.FuzzyChoice(x[0] for x in models.FILM_TYPES)
+    type = fuzzy.FuzzyChoice(x[0] for x in models.FILM_TYPES)
 
 
 class InterviewFactory(SourceFactory):
@@ -190,13 +190,13 @@ class ReportFactory(TextualSourceFactory):
         model = models.Report
 
     publisher = factory.Faker('company')
-    number = factory.fuzzy.FuzzyInteger(1, 20)
+    number = fuzzy.FuzzyInteger(1, 20)
 
 
 class SpeechFactory(SourceFactory):
     class Meta:
         model = models.Speech
 
-    type = factory.fuzzy.FuzzyChoice(x[0] for x in models.SPEECH_TYPES)
+    type = fuzzy.FuzzyChoice(x[0] for x in models.SPEECH_TYPES)
     audience = factory.Faker('name')
     utterance = factory.SubFactory(PropositionFactory, type='speech')

@@ -27,7 +27,8 @@ class AbstractImageRelation(ModeratedPositionedRelation):
     """
 
     image = ManyToManyForeignKey(
-        to='images.Image', related_name='%(app_label)s_%(class)s_set'
+        to='images.Image',
+        related_name='%(app_label)s_%(class)s_set',
     )
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
@@ -110,7 +111,7 @@ class ModelWithImages(ExtendedModel):
         delay(
             cache_images,
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
-            self.id,
+            self.pk,
             images,
         )
         return images

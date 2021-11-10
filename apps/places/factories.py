@@ -1,17 +1,17 @@
-import factory.fuzzy
-from factory.django import DjangoModelFactory
+import factory
+from factory import fuzzy
 
+from apps.moderation.factories import ModeratedModelFactory
 from apps.places import models
+from core.factories import UniqueFaker
 
 
-class PlaceFactory(DjangoModelFactory):
+class PlaceFactory(ModeratedModelFactory):
     class Meta:
         model = models.Place
 
-    type = factory.fuzzy.FuzzyChoice(models.Place._typedmodels_registry.keys())
+    type = fuzzy.FuzzyChoice(models.Place._typedmodels_registry.keys())
     title = factory.Faker('sentence', nb_words=10)
     slug = factory.Faker('slug')
-    name = factory.Faker('city')
-    preposition = factory.fuzzy.FuzzyChoice(
-        models.base.PREPOSITION_CHOICES, getter=lambda c: c[0]
-    )
+    name = UniqueFaker('city')
+    preposition = fuzzy.FuzzyChoice(models.base.PREPOSITION_CHOICES, getter=lambda c: c[0])

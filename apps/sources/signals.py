@@ -18,7 +18,7 @@ from apps.sources.tasks import update_source
 def process_post_save(source: models.Source):
     """Respond to the saving of a source m2m relationship."""
     source.update_calculated_fields()
-    source.save()
+    source.save(moderate=False)  # TODO: is this OK?
 
 
 def process_pre_delete(source: models.Source):
@@ -58,7 +58,7 @@ def respond_to_source_containment_deletion(
 
 
 @receiver(m2m_changed, sender=models.SourceContainment)
-def respond_to_proposition_argument_changes(
+def respond_to_source_containment_changes(
     sender: models.SourceContainment, instance: models.Source, **kwargs
 ):
     """Respond to creation/modification of a source-source_containment relationship."""
