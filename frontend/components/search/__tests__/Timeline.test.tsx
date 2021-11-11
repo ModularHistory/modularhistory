@@ -19,10 +19,7 @@ describe("Timeline", () => {
     return render(<Timeline modules={[]} viewStateRegistry={new Map()} {...props} />);
   }
 
-  function createModules(
-    n: number,
-    multiplier: number = 1
-  ): Required<TimelineProps["modules"][number]>[] {
+  function createModules(n: number, multiplier = 1): Required<TimelineProps["modules"][number]>[] {
     return [...Array(n)].map((_, i) => ({
       timelinePosition: i * multiplier,
       title: `title${i}`,

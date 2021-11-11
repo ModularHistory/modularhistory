@@ -90,10 +90,14 @@ class HistoricDateTimeDrfField(DrfDateTimeField):
 
 
 class TimelinePositionField(serpy.Field):
+    """Represents dates on a continuous floating point scale."""
+
     def to_value(self, value: HistoricDateTime):
         return value.timeline_position
 
 
 class TimelinePositionDrfField(HistoricDateTimeDrfField):
+    """Represents dates on a continuous floating point scale."""
+
     def to_representation(self, value: HistoricDateTime):
         return value.timeline_position

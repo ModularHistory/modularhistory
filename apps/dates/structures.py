@@ -256,9 +256,11 @@ class HistoricDateTime(datetime):
 
     @property
     def timeline_position(self):
+        """Return a representation of a date on a continuous floating-point scale."""
         timeline_position = self.year_bp
         if self.month_is_known:
             timeline_position += (self.month - 1) / 12
         if self.day_is_known:
+            # 366 accounts for leap years, and the offset is otherwise insignificant
             timeline_position += (self.timetuple().tm_yday - 1) / 366
         return timeline_position
