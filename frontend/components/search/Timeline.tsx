@@ -53,7 +53,7 @@ type PositionedModule<T extends Partial<SerpModule>> = T & Required<Pick<T, "tim
 function positionedModuleTypeGuard<T extends Partial<SerpModule>>(
   module: T
 ): module is PositionedModule<T> {
-  return Boolean(module.timelinePosition);
+  return !(module.timelinePosition == null);
 }
 
 type TimelineMarkModule<T extends HTMLElement> = Required<
@@ -78,7 +78,7 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
 
     if (!module) {
       return (
-        <MuiSliderMark {...markProps}>
+        <MuiSliderMark {...markProps} data-testid={"timelineBreak"}>
           <BreakIcon />
         </MuiSliderMark>
       );
@@ -95,7 +95,7 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
     return (
       <Tooltip
         title={
-          <Box whiteSpace={"nowrap"} onClick={handleClick}>
+          <Box whiteSpace={"nowrap"} onClick={handleClick} data-testid={"timelineTooltip"}>
             {module.title}
           </Box>
         }
@@ -107,7 +107,7 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
         // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
         componentsProps={{ popper: { disablePortal: true } as any }}
       >
-        <MuiSliderMark {...markProps}>
+        <MuiSliderMark {...markProps} data-testid={"timelineMark"}>
           <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
         </MuiSliderMark>
       </Tooltip>
@@ -145,6 +145,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
   const [calculations, setCalculations] = useState<TimelineCalculations | null>(null);
   useEffect(() => {
     setCalculations(null);
+    if (datedModules.length < 2) return;
     const now = new Date().getFullYear();
 
     const positions = datedModules.map((m) => m.timelinePosition);

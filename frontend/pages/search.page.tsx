@@ -185,6 +185,8 @@ const SearchResultsPanes = withRouter(
             [modules]
           )}
           <SearchResultsRightPane
+            // set key to prevent new details from retaining previous scroll position
+            key={moduleIndex}
             {...{ module: modules[moduleIndex] ?? modules[0], isModalOpen, setModalOpen }}
           />
         </div>
