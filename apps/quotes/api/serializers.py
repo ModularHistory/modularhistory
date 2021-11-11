@@ -4,7 +4,7 @@ from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
@@ -33,6 +33,7 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeDrfField(write_only=True, required=False)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')
 
     def validate_text(self, value):
         if len(value) < TEXT_MIN_LENGTH:
@@ -62,6 +63,7 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'attributees',
             'related_quotes',
             'related_entities',
+            'timeline',
         ]
         extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
             'text': {'write_only': True},
