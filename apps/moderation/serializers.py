@@ -1,12 +1,44 @@
 from django.core.serializers.python import Serializer
+from django.urls import reverse
 from rest_framework import serializers
+
+from apps.search.api.instant_search import (
+    INSTANT_SEARCH_ENTITIES,
+    INSTANT_SEARCH_TOPICS,
+)
+
+common_instant_search_fields = {
+    'attributees': {'module': INSTANT_SEARCH_ENTITIES},
+    'related_entities': {'module': INSTANT_SEARCH_ENTITIES},
+    'tags': {'module': INSTANT_SEARCH_TOPICS},
+    'location': {'module': INSTANT_SEARCH_TOPICS},  # TODO
+    'file': {'module': INSTANT_SEARCH_TOPICS},  # TODO
+    'images': {'module': INSTANT_SEARCH_TOPICS},  # TODO
+}
 
 
 class ModeratedModelSerializer(serializers.ModelSerializer):
-
     moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
+    instant_search_fields = {}
+
+    def get_instant_search_fields(self) -> dict:
+        return common_instant_search_fields | self.instant_search_fields
+
+    def get_instant_search_field(self, field, field_name: str):
+        field_info = self.get_instant_search_fields().get(field_name)
+        if field_info:
+            module = field_info['module']
+            return {
+                'module': module,
+                'path': reverse(f'{module}:instant_search'),
+                'filters': field_info.get('filters', {}),
+            }
+        return None
+
     def get_choices_for_field(self, field, field_name: str):
+        if field_name in self.get_instant_search_fields():
+            return None
         return getattr(field, 'choices', None)
 
     def get_moderated_fields(self) -> list[dict]:
@@ -20,18 +52,20 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
 
         for field_name, field in self.get_fields().items():
             if field_name not in self.moderated_fields_excludes:
-                fields.append(
-                    {
-                        'name': field_name,
-                        'editable': not getattr(field, 'read_only', False),
-                        'required': not getattr(field, 'required', False),
-                        'allow_blank': not getattr(field, 'allow_blank', False),
-                        'verbose_name': getattr(field, 'verbose_name', None),
-                        'choices': self.get_choices_for_field(field, field_name),
-                        'help_text': getattr(field, 'help_text', None),
-                        'type': field.__class__.__name__,
-                    }
-                )
+                data = {
+                    'name': field_name,
+                    'type': field.__class__.__name__,
+                    'editable': not getattr(field, 'read_only', False),
+                    'required': not getattr(field, 'required', False),
+                    'allow_blank': not getattr(field, 'allow_blank', False),
+                    'verbose_name': getattr(field, 'verbose_name', None),
+                    'help_text': getattr(field, 'help_text', None),
+                    'choices': self.get_choices_for_field(field, field_name),
+                }
+                instant_search_field = self.get_instant_search_field(field, field_name)
+                if instant_search_field:
+                    data.update(data | {'instant_search': instant_search_field})
+                fields.append(data)
         return fields
 
     class Meta:
@@ -54,7 +88,7 @@ class PythonSerializer(Serializer):
         use_natural_primary_keys=False,
         progress_output=None,
         object_count=0,
-        **options
+        **options,
     ):
         """
         Serialize a queryset.
