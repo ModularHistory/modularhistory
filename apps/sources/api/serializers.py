@@ -1,4 +1,5 @@
 """Serializers for the entities app."""
+
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 

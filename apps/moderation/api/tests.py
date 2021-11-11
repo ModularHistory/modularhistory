@@ -86,10 +86,17 @@ class ModerationApiTest:
             'content_type': 'application/json',
         }
         api_request: Callable = getattr(self.api_client, method)
-        response: 'Response' = self.api_client.post(**request_kwargs)
-        assert response.status_code == 401, 'Deny creation without authentication'
+        response: 'Response' = api_request(**request_kwargs)
+        assert (
+            response.status_code == 401
+        ), 'Request without authentication should have been denied.'
         self.api_client.force_authenticate(self.contributor)
-        response = api_request(**request_kwargs)
+        from pprint import pformat
+
+        try:
+            response = api_request(**request_kwargs)
+        except Exception as err:
+            raise Exception(pformat(data.get('attributions')) + '\n' + str(err))
         self.api_client.logout()
         if response.status_code != change_status_code:
             raise Exception(f'Incorrect change status code: {response.data}')
@@ -110,7 +117,6 @@ class ModerationApiTest:
             contributor=self.contributor, change_id=created_change
         )
         assert contributions.exists(), 'No contribution was created for a change.'
-        # TODO: find out why multiple contributions are created
         assert contributions.count() == 1, 'Multiple contributions were created for a change.'
         return response.data, created_change, contributions
 
