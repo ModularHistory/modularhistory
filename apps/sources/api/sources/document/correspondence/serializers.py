@@ -1,14 +1,12 @@
 from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.sources.api.serializers import DocumentDrfSerializerMixin, SourceDrfSerializer
-from apps.sources.models import CORRESPONDENCE_TYPES, Correspondence
+from apps.sources.models import Correspondence
 
 
 class _CorrespondenceDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
     """Serializer for correspondence document sources."""
 
     date = HistoricDateTimeDrfField(write_only=True, required=False)
-
-    type_field_choices = CORRESPONDENCE_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Correspondence

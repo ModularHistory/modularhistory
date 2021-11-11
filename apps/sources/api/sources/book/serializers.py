@@ -1,6 +1,5 @@
 from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializerMixin
 from apps.sources.models import Book, Section
-from apps.sources.models.sources.book import SECTION_TYPES
 
 
 class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
@@ -30,8 +29,6 @@ class BookDrfSerializer(_BookDrfSerializer):
 
 class SectionDrfSerializer(SourceDrfSerializer):
     """Serializer for book section sources."""
-
-    type_field_choices = SECTION_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Section

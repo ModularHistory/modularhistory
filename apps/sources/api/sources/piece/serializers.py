@@ -1,12 +1,9 @@
 from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDrfSerializer
 from apps.sources.models import Piece
-from apps.sources.models.sources.piece import PIECE_TYPES
 
 
 class _PieceDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
     """Serializer for piece sources."""
-
-    type_field_choices = PIECE_TYPES
 
     class Meta(SourceDrfSerializer.Meta):
         model = Piece

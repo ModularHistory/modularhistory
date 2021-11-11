@@ -4,17 +4,10 @@ from rest_framework import serializers
 
 class ModeratedModelSerializer(serializers.ModelSerializer):
 
-    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
+    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
-    type_field_name = 'type'
-    type_field_choices: list[tuple] = []
-
-    def get_choices_for_field(self, field_name: str):
-        return (
-            (x[0] for x in self.type_field_choices)
-            if field_name == self.type_field_name
-            else None
-        )
+    def get_choices_for_field(self, field, field_name: str):
+        return getattr(field, 'choices', None)
 
     def get_moderated_fields(self) -> list[dict]:
         """
@@ -34,8 +27,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                         'required': not getattr(field, 'required', False),
                         'allow_blank': not getattr(field, 'allow_blank', False),
                         'verbose_name': getattr(field, 'verbose_name', None),
-                        'choices': self.get_choices_for_field(field_name)
-                        or getattr(field, 'choices', None),
+                        'choices': self.get_choices_for_field(field, field_name),
                         'help_text': getattr(field, 'help_text', None),
                         'type': field.__class__.__name__,
                     }

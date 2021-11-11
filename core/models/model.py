@@ -294,8 +294,8 @@ class DrfTypedModelSerializerMixin(serializers.ModelSerializer):
 
     type = serializers.CharField(required=True)
 
-    def get_choices_for_field(self, field_name):
-        return get_types_for_model(self) if field_name == 'type' else None
+    def get_type_field_choices(self, field):
+        return get_types_for_model(self)
 
     def validate_type(self, value):
         return validate_model_type(self, value)
@@ -326,7 +326,7 @@ def get_model_name(instance: ExtendedModel) -> str:
     return f'{app_label}.{model_type}'
 
 
-def get_types_for_model(serializer: DrfModelSerializer):
+def get_types_for_model(serializer: serializers.ModelSerializer):
     model = serializer.Meta.model
     if hasattr(serializer, 'allowed_types'):
         return getattr(serializer, 'allowed_types')
