@@ -38,7 +38,7 @@ const SliderToggle = styled("button")({
   "&.open": { transform: "translateX(229px) !important" },
 });
 
-interface SearchProps {
+export interface SearchProps {
   count: number;
   totalPages: number;
   results: SerpModule[];
