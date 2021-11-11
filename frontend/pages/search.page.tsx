@@ -245,39 +245,36 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <>
-      <Timeline modules={modulesWithRefs} viewStateRegistry={viewStateRegistry} />
-      <Box
-        className={"results result-cards"}
-        sx={{
-          "& .selected": {
-            border: "3px solid black",
-            borderRight: "none",
-          },
-        }}
-      >
-        {modules.map((module, index) => (
-          <InView
-            as="div"
-            onChange={(inView) => {
-              viewStateRegistry.get(module.absoluteUrl)?.(inView);
-            }}
+    <Box
+      className={"results result-cards"}
+      sx={{
+        "& .selected": {
+          border: "3px solid black",
+          borderRight: "none",
+        },
+      }}
+    >
+      {modules.map((module, index) => (
+        <InView
+          as="div"
+          onChange={(inView) => {
+            viewStateRegistry.get(module.absoluteUrl)?.(inView);
+          }}
+          key={module.absoluteUrl}
+        >
+          <a
+            href={module.absoluteUrl}
+            className={`result 2pane-result`}
             key={module.absoluteUrl}
+            data-index={index}
+            onClick={selectModule}
+            ref={modulesWithRefs[index].ref}
           >
-            <a
-              href={module.absoluteUrl}
-              className={`result 2pane-result`}
-              key={module.absoluteUrl}
-              data-index={index}
-              onClick={selectModule}
-              ref={modulesWithRefs[index].ref}
-            >
-              <ModuleUnionCard module={module} />
-            </a>
-          </InView>
-        ))}
-      </Box>
-    </>
+            <ModuleUnionCard module={module} />
+          </a>
+        </InView>
+      ))}
+    </Box>
   );
 };
 
