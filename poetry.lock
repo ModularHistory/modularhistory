@@ -1,6 +1,6 @@
 [[package]]
 name = "aenum"
-version = "3.1.1"
+version = "3.1.3"
 description = "Advanced Enumerations (compatible with Python's stdlib Enum), NamedTuples, and NamedConstants"
 category = "main"
 optional = false
@@ -3811,13 +3811,13 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "1828f606d37bf2b94b74206d9102c194cc92dd6ce812ba06b876ee2ad06a84f2"
+content-hash = "c50c056672c1343ee102fc3e32328d5700acdadef221273be818230eb8c9cab4"
 
 [metadata.files]
 aenum = [
-    {file = "aenum-3.1.1-py2-none-any.whl", hash = "sha256:35eeb0476ee72c7e9bddee0df48c91f07644c33f06da4e30ff41d7c85d025579"},
-    {file = "aenum-3.1.1-py3-none-any.whl", hash = "sha256:e2f2639bc05dd6f1e084cee1d949211c9d5cfa454329211905d81a585ea9cd92"},
-    {file = "aenum-3.1.1.tar.gz", hash = "sha256:75b96aa148e1335eae6c12015563989a675fcbd0bcbd0ae7ce5786329278929b"},
+    {file = "aenum-3.1.3-py2-none-any.whl", hash = "sha256:a3e86312ca58611236900b77e863d2b9034dfe8956a089a2935b55974eb33f1f"},
+    {file = "aenum-3.1.3-py3-none-any.whl", hash = "sha256:c3dba3d5482d09ea371651d8da08cb21e0b8a826970bb08a3b30789b4a7b91a9"},
+    {file = "aenum-3.1.3.tar.gz", hash = "sha256:1d494e4d3b3e3e95389aee420203d945776d2430ee9a3d4f162e267b3a7ec3a6"},
 ]
 aiodns = [
     {file = "aiodns-3.0.0-py3-none-any.whl", hash = "sha256:2b19bc5f97e5c936638d28e665923c093d8af2bf3aa88d35c43417fa25d136a2"},
