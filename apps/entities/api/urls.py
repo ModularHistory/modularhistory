@@ -9,6 +9,8 @@ router.register('', views.EntityViewSet)
 app_name = 'entities'
 
 urlpatterns = [
-    path('instant_search/', views.EntityInstantSearchAPIView.as_view()),
+    path(
+        'instant_search/', views.EntityInstantSearchAPIView.as_view(), name='instant_search'
+    ),
     path('', include(router.urls)),
 ]
