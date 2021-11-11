@@ -221,7 +221,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
 
     setCalculations({ now, marks, min, max, scale, descale });
     setValue([min, max]);
-  }, [modules]);
+  }, [datedModules]);
 
   const thumbRefs: MutableRefObject<HTMLElement | null>[] = [useRef(null), useRef(null)];
   const [value, setValue] = useState([0, 100]);
