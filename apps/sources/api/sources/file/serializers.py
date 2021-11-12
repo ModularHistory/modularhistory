@@ -5,7 +5,7 @@ from core.models.model import DrfModelSerializer
 class SourceFileDrfSerializer(DrfModelSerializer):
     """Serializer for sources files."""
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = SourceFile
         fields = DrfModelSerializer.Meta.fields + [
             'file',

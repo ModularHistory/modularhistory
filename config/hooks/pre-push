@@ -9,18 +9,19 @@ normal=$(tput sgr0)
 echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/dev/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
-    docker-compose run django python manage.py makemigrations --check --no-input --dry-run || {
+    docker compose run django python manage.py makemigrations --check --no-input --dry-run || {
         echo "
         ${bold}Migrations are required${normal}.
         To see what migrations need to be generated, run:
-            docker-compose run django python manage.py makemigrations --dry-run
+            docker compose run django python manage.py makemigrations --dry-run
         Then, to create the migration files, run:
-            docker-compose run django python manage.py makemigrations
+            docker compose run django python manage.py makemigrations
         Finally, to apply the migrations, run:
-            docker-compose run django python manage.py migrate
+            docker compose run django python manage.py migrate
         "; exit 1
     }
-    run_in_django python manage.py graph_models -o core/static/model_graph.png
+    # TODO: fix this...
+    # docker compose run django python manage.py graph_models -o core/static/model_graph.png
 }
 
 echo "Finished pre-push tasks."

@@ -433,8 +433,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
       jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" < "$docker_settings_file" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
       test "$(docker ps -q)" && {
-        echo "Stopping containers ..."
-        docker-compose down
+        docker compose containers ..."
+        docker compose down
       }
       test -z "$(docker ps -q)" && {
         echo "Quitting Docker ..."
@@ -486,7 +486,7 @@ poetry run invoke seed --no-db
 # Note: This requires a .env file.
 image_names=( "django" "next" "webserver" )
 for image_name in "${image_names[@]}"; do
-  docker-compose build "$image_name" || _error "Failed to build $image_name image."
+  docker compose build "$image_name" || _error "Failed to build $image_name image."
 done
 
 # Seed init.sql file.
@@ -527,14 +527,14 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up -d webserver && echo 'Finished.' || {
+docker compose up -d webserver && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. 
     Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker-compose up -d webserver
+      ${BOLD}cd ~/modularhistory && docker compose up -d webserver
 
   "
 }
