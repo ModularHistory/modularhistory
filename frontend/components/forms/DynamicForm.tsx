@@ -19,22 +19,22 @@ import { FC, MutableRefObject, useContext, useEffect, useRef, useState } from "r
 import PageTransitionContext from "../PageTransitionContext";
 
 const DynamicForm: FC = () => {
-  const [type, setType] = useState("");
+  const [contentType, setContentType] = useState("");
 
-  const handleFormType = (event: { target: { value: string } }) => {
-    setType(event.target.value);
+  const handleContentTypeChange = (event: { target: { value: string } }) => {
+    setContentType(event.target.value);
   };
 
   return (
-    <Card elevation={5}>
+    <Card raised>
       <FormControl sx={{ minWidth: "20rem", m: "1rem" }}>
         <InputLabel id="select-form-type">Type of Content</InputLabel>
         <Select
           labelId="select-form-type"
           id="select-form"
-          value={type}
+          value={contentType}
           label="Type of Content"
-          onChange={handleFormType}
+          onChange={handleContentTypeChange}
         >
           <MenuItem value={"none"}>
             <em>None</em>
@@ -46,7 +46,7 @@ const DynamicForm: FC = () => {
           <MenuItem value={"topics"}>Topic</MenuItem>
         </Select>
       </FormControl>
-      {type && type != "none" && (
+      {contentType && contentType != "none" && (
         <>
           <Divider sx={{ borderBottomWidth: 2 }} />
           <Box
@@ -59,7 +59,7 @@ const DynamicForm: FC = () => {
             }}
           >
             <Box>
-              <DynamicFormFields type={type} />
+              <DynamicFormFields contentType={contentType} />
             </Box>
           </Box>
         </>
@@ -69,7 +69,7 @@ const DynamicForm: FC = () => {
 };
 
 interface DynamicFormProps {
-  type: string;
+  contentType: string;
 }
 
 const fields = ["topics"] as const;
@@ -79,12 +79,12 @@ type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void
 
 //Dynamic fields form
 //Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
-const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => {
+const DynamicFormFields: FC<DynamicFormProps> = ({ contentType }: DynamicFormProps) => {
   const [formData, setFormData] = useState([]);
   const [choiceValue, setChoiceValue] = useState<string[]>([]);
 
-  const getDynamicFields = async (type: string) => {
-    return await axiosWithoutAuth.get(`/api/${type}/fields/`).then((response) => {
+  const getDynamicFields = async (contentType: string) => {
+    return await axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => {
       return response.data;
     });
   };
@@ -102,10 +102,10 @@ const DynamicFormFields: FC<DynamicFormProps> = ({ type }: DynamicFormProps) => 
   ) as FieldCallbacks;
 
   useEffect(() => {
-    getDynamicFields(type).then((result) => {
+    getDynamicFields(contentType).then((result) => {
       setFormData(result);
     });
-  }, [type]);
+  }, [contentType]);
 
   const checkField = (obj: any) => {
     return obj.editable;
