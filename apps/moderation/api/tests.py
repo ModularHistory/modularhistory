@@ -59,6 +59,10 @@ class ModerationApiTest:
 
     def _test_api_view_get(self, view, url_kwargs=None, status_code=200):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
+        # TODO: refactor this (also in _test_api_moderation_view).
+        # Force request path to include API path suffix.
+        if self.api_path_suffix and self.api_path_suffix not in path:
+            path += self.api_path_suffix + '/'
         response = self.api_client.get(path)
         assert response.status_code == status_code, 'Incorrect status code'
 
