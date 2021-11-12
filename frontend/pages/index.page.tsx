@@ -257,7 +257,7 @@ const SubscriptionBox: FC = () => {
   );
 
   return (
-    <StyledCard elevation={5}>
+    <StyledCard raised>
       <CardContent>
         <Grid
           item
