@@ -42,4 +42,6 @@ class _ArticleDrfSerializer(
 class ArticleDrfSerializer(_ArticleDrfSerializer):
     """Serializer for article sources."""
 
-    originalEdition = _ArticleDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _ArticleDrfSerializer(
+        read_only=True, source='original_edition'
+    )

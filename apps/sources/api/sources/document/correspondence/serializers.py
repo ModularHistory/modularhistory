@@ -20,4 +20,6 @@ class _CorrespondenceDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMix
 class CorrespondenceDrfSerializer(_CorrespondenceDrfSerializer):
     """Serializer for correspondence document sources."""
 
-    originalEdition = _CorrespondenceDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _CorrespondenceDrfSerializer(
+        read_only=True, source='original_edition'
+    )

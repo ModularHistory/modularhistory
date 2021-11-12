@@ -13,4 +13,6 @@ class _EntryDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
 class EntryDrfSerializer(_EntryDrfSerializer):
     """Serializer for journal entry sources."""
 
-    originalEdition = _EntryDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _EntryDrfSerializer(
+        read_only=True, source='original_edition'
+    )

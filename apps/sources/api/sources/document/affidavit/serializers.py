@@ -21,4 +21,6 @@ class _AffidavitDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
 class AffidavitDrfSerializer(_AffidavitDrfSerializer):
     """Serializer for affidavit document sources."""
 
-    originalEdition = _AffidavitDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _AffidavitDrfSerializer(
+        read_only=True, source='original_edition'
+    )

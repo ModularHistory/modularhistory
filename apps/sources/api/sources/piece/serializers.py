@@ -17,4 +17,6 @@ class _PieceDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
 class PieceDrfSerializer(_PieceDrfSerializer):
     """Serializer for piece sources."""
 
-    originalEdition = _PieceDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _PieceDrfSerializer(
+        read_only=True, source='original_edition'
+    )

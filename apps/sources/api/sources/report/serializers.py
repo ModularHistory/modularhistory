@@ -20,4 +20,6 @@ class _ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
 class ReportDrfSerializer(_ReportDrfSerializer):
     """Serializer for report sources."""
 
-    originalEdition = _ReportDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _ReportDrfSerializer(
+        read_only=True, source='original_edition'
+    )

@@ -91,7 +91,9 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
 class TextualDrfSerializerMixin(serializers.ModelSerializer):
     """TextualMixin serializer."""
 
-    originalEdition = SerializableDrfField(read_only=True, source='original_edition')
+    original_edition_serialized = SerializableDrfField(
+        read_only=True, source='original_edition'
+    )
     original_publication_date = HistoricDateTimeDrfField(write_only=True, required=False)
     original_publication_date_serialized = serializers.SerializerMethodField(
         'get_original_publication_date', read_only=True
@@ -105,7 +107,7 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
         fields = [
             'editors',
             'original_edition',
-            'originalEdition',
+            'original_edition_serialized',
             'original_publication_date',
             'original_publication_date_serialized',
         ]

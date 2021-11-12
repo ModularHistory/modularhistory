@@ -24,7 +24,9 @@ class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
 class BookDrfSerializer(_BookDrfSerializer):
     """Serializer for book sources."""
 
-    originalEdition = _BookDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _BookDrfSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class SectionDrfSerializer(SourceDrfSerializer):

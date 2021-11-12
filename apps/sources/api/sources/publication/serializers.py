@@ -57,7 +57,9 @@ class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
 class WebpageDrfSerializer(_WebpageDrfSerializer):
     """Serializer for webpage sources."""
 
-    originalEdition = _WebpageDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _WebpageDrfSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):

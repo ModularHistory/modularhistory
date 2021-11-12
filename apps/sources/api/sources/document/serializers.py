@@ -16,4 +16,6 @@ class _DocumentDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
 class DocumentDrfSerializer(_DocumentDrfSerializer):
     """Serializer for document sources."""
 
-    originalEdition = _DocumentDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _DocumentDrfSerializer(
+        read_only=True, source='original_edition'
+    )
