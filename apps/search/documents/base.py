@@ -23,15 +23,20 @@ class Document(ESDocument):
 
 
 def InstantSearchDocumentFactory(model: Type[Module], field_names: list[str], register=True):
+    """Returns an ElasticSearch Document class for the given module class.
+
+    All fields are analyzed as instant-search text fields.
+    The generated document is automatically registered by default.
+    """
     instant_search_fields = {}
     for field in field_names:
         if not hasattr(model, field):
-            raise KeyError(f'{model} does not have attribute "{field}"')
+            raise AttributeError(f'model {model} does not have attribute "{field}"')
         instant_search_fields[field] = fields.TextField(analyzer=instant_search_analyzer)
 
     document_class = type(
         f'{model.__name__}InstantSearchDocument',
-        (Document,),
+        (ESDocument,),
         {
             'Index': type(
                 'Index',

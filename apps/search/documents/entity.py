@@ -23,5 +23,4 @@ class EntityDocument(Document):
         model = Entity
 
 
-"""ElasticSearch document for entities used by search-as-you-type."""
 EntityInstantSearchDocument = InstantSearchDocumentFactory(Entity, ['name', 'aliases'])
