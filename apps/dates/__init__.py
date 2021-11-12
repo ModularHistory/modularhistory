@@ -1,4 +1,4 @@
-from core.environment import TESTING
-
-if TESTING:
+try:
     from .fakers import HistoricDateTimeProvider
+except Exception as err:
+    print(err)  # TODO

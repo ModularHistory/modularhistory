@@ -22,7 +22,7 @@ class SourceAttributionDrfSerializer(DrfModelSerializer):
     class Meta:
         model = SourceAttribution
         fields = DrfModelSerializer.Meta.fields + [
-            'source',
+            # 'source',  # TODO
             'attributee',
         ]
 
