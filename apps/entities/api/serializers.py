@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.dates.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models.entity import Entity
 from apps.images.models import Image

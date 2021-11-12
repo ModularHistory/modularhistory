@@ -55,6 +55,10 @@ class DatedModel(ExtendedModel):
         abstract = True
 
     def clean(self, *args, **kwargs):
+        if isinstance(self.date, str):
+            self.date = HistoricDateTime.from_iso(self.date)
+        if isinstance(self.end_date, str):
+            self.end_date = HistoricDateTime.from_iso(self.end_date)
         self.date_string = self.get_date_string()
         super().clean()
 
@@ -81,7 +85,7 @@ class DatedModel(ExtendedModel):
             )
             if date_string_requires_circa_prefix:
                 date_string = f'{CIRCA_PREFIX}{date_string}'
-            end_date = getattr(self, 'end_date', None)
+            end_date: Optional[HistoricDateTime] = getattr(self, 'end_date', None)
             if end_date:
                 date_string = f'{date_string} – {end_date.string}'
             use_ce = (

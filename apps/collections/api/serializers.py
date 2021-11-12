@@ -1,5 +1,3 @@
-from rest_framework import serializers
-
 from apps.collections.models import Collection
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.propositions.api.serializers import PropositionDrfSerializer

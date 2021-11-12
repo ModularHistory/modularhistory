@@ -5,6 +5,7 @@ from decimal import Decimal, getcontext
 from typing import Optional
 
 import sigfig
+from dateutil.parser import isoparse
 from millify import millify, prettify
 from pytz import UTC
 
@@ -87,39 +88,56 @@ class HistoricDateTime(datetime):
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
-    # TODO: this override somehow causes a crash when trying to delete a child model like Article
     def __new__(
         cls,
         year: int,
-        month: int,
-        day: int,
-        hour: int,
-        minute: int,
-        second: int,
-        microsecond: int,
+        month: int = 1,
+        day: int = 1,
+        hour: int = 0,
+        minute: int = 0,
+        second: int = 0,
+        microsecond: int = 0,
         tzinfo: Optional[tzinfo] = None,
+        *,
+        fold: int = 0,
     ) -> 'HistoricDateTime':
         """Create an instance."""
         tzinfo = tzinfo or UTC
         return super().__new__(
             cls,
             year,
-            month,
-            day,
+            month=month,
+            day=day,
             hour=hour,
             minute=minute,
             second=second,
             microsecond=microsecond,
             tzinfo=tzinfo,
+            fold=fold,
         )
 
     def __str__(self) -> str:
         """Return the datetime's string representation."""
         return self.string
 
-    def serialize(self) -> str:
-        """Serialize the datetime to a JSON-compatible string value."""
-        return self.isoformat()
+    @classmethod
+    def from_datetime(cls, datetime: datetime) -> 'HistoricDateTime':
+        return cls(
+            datetime.year,
+            month=datetime.month,
+            day=datetime.day,
+            hour=datetime.hour,
+            minute=datetime.minute,
+            second=datetime.second,
+            microsecond=datetime.microsecond,
+            tzinfo=datetime.tzinfo,
+            fold=datetime.fold,
+        )
+
+    @classmethod
+    def from_iso(cls, iso_string: str) -> 'HistoricDateTime':
+        """Create an instance from an ISO-formatted string."""
+        return cls.from_datetime(isoparse(iso_string))
 
     @property
     def is_bce(self) -> bool:
@@ -253,6 +271,10 @@ class HistoricDateTime(datetime):
             # CE dates
             year_string = str(self.year)
         return year_string
+
+    def serialize(self) -> str:
+        """Serialize the datetime to a JSON-compatible string value."""
+        return self.isoformat()
 
     @property
     def timeline_position(self):

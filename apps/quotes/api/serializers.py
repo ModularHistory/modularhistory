@@ -1,15 +1,14 @@
 """Serializers for the entities app."""
 
-from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
 from apps.sources.api.serializers import CitationDrfSerializerMixin
-from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer
 
 

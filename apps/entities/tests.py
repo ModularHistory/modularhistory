@@ -5,7 +5,8 @@ import json
 import pytest
 from graphene_django.utils.testing import graphql_query
 
-from apps.entities.models import Person
+from apps.entities.factories import EntityFactory
+from apps.entities.models.entity import Entity
 from core.tests import TestSuite
 
 
@@ -26,7 +27,7 @@ class EntitiesTestSuite(TestSuite):
     def test_entity_query(self, client_query):
         """Verify pages have 200 status."""
         name = 'Albert Einstein'
-        person: Person = Person.objects.create(name=name)
+        entity: Entity = EntityFactory.create(name=name)
         # fmt: off
         query = '''
         {
@@ -39,7 +40,7 @@ class EntitiesTestSuite(TestSuite):
                 adminUrl
             }
         }
-        ''' % person.slug
+        ''' % entity.slug
         # fmt: on
         response = client_query(query)
         assert response
