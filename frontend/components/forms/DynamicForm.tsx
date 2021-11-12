@@ -68,7 +68,7 @@ const DynamicForm: FC = () => {
   );
 };
 
-interface DynamicFormProps {
+interface DynamicFormFieldsProps {
   contentType: string;
 }
 
@@ -79,7 +79,7 @@ type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void
 
 //Dynamic fields form
 //Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
-const DynamicFormFields: FC<DynamicFormProps> = ({ contentType }: DynamicFormProps) => {
+const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicFormFieldsProps) => {
   const [formData, setFormData] = useState([]);
   const [choiceValue, setChoiceValue] = useState<string[]>([]);
 
