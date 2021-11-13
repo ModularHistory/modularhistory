@@ -133,7 +133,11 @@ class ExtendedModel(Model):
         """Return the value of the field currently in the database."""
         if self._state.adding:
             return None
-        return self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)[0]
+        value = self.__class__.objects.filter(pk=self.pk).values_list(field, flat=True)
+        if value:
+            return value[0]
+        else:
+            return None
 
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
@@ -260,8 +264,10 @@ class ModelSerializer(serpy.Serializer):
 class DrfModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
-    id = serializers.ReadOnlyField()
-    model = serializers.SerializerMethodField()
+    class Meta:
+        fields = ['pk']
+
+    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url']
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -273,12 +279,10 @@ class DrfModelSerializer(serializers.ModelSerializer):
         if requested_fields:
             # Drop any fields that are not specified in the `fields` argument.
             defined_fields = set(self.fields)
-
             if requested_fields - defined_fields:
                 raise ValueError(
                     f'Fields {requested_fields - defined_fields} do not exist on serializer {self.__class__}'
                 )
-
             for field_name in defined_fields - requested_fields:
                 del self.fields[field_name]
 
@@ -296,31 +300,31 @@ class DrfModelSerializer(serializers.ModelSerializer):
         field: serializers.Field
 
         for field_name, field in self.get_fields().items():
-            fields.append(
-                {
-                    'name': field_name,
-                    'editable': not getattr(field, 'read_only', False),
-                    'verbose_name': getattr(field, 'verbose_name', None),
-                    'choices': getattr(field, 'choices', None),
-                    'help_text': getattr(field, 'help_text', None),
-                    'type': field.__class__.__name__,
-                }
-            )
+            if field_name not in self.moderated_fields_excludes:
+                fields.append(
+                    {
+                        'name': field_name,
+                        'editable': not getattr(field, 'read_only', False),
+                        'required': not getattr(field, 'required', False),
+                        'allow_blank': not getattr(field, 'allow_blank', False),
+                        'verbose_name': getattr(field, 'verbose_name', None),
+                        'choices': getattr(field, 'choices', None),
+                        'help_text': getattr(field, 'help_text', None),
+                        'type': field.__class__.__name__,
+                    }
+                )
         return fields
-
-    class Meta:
-        fields = ['id', 'model']
 
 
 class DrfTypedModelSerializer(DrfModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
-    type = serializers.CharField(write_only=True, required=True)
+    type = serializers.CharField(required=True)
 
     def validate_type(self, value):
         return validate_model_type(self, value)
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         fields = DrfModelSerializer.Meta.fields + ['type']
 
 

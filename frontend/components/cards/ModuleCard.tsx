@@ -10,6 +10,7 @@ const StyledCard = styled(Card)({
   position: "relative",
   textOverflow: "ellipsis",
   minHeight: "15rem",
+  minWidth: "15rem",
   color: "black",
   "&:first-of-type": {
     marginTop: "0 !important",
@@ -146,7 +147,12 @@ const ModuleCard: FC<ModuleCardProps> = ({
     bgImage = module.primaryImage;
   }
   return (
-    <StyledCard className={`m-2 ${className || ""}`} sx={style} data-type={module.model}>
+    <StyledCard
+      className={`m-2 ${className || ""}`}
+      sx={style}
+      data-type={module.model}
+      data-testid={"moduleCard"}
+    >
       {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED

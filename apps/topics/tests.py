@@ -6,14 +6,16 @@ pytestmark = pytest.mark.django_db
 
 
 def create_topic(**kwargs) -> Topic:
-    kwargs['verified'] = True
-    return Topic.objects.create(**kwargs)
+    topic = Topic(**kwargs)
+    topic.verified = True
+    topic.save(moderate=False)
+    return topic
 
 
 def test_create_topic():
     """Test creating a topic."""
     topic = Topic(name='Foo')
-    topic.save()
+    topic.save(moderate=False)
     assert topic.id > 0
     assert topic.name == 'Foo'
 

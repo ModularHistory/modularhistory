@@ -5,6 +5,7 @@ from decimal import Decimal, getcontext
 from typing import Optional
 
 import sigfig
+from dateutil.parser import isoparse
 from millify import millify, prettify
 from pytz import UTC
 
@@ -19,8 +20,8 @@ SEASONS = (
     ('fall', 'Fall'),
 )
 
-TEN_THOUSAND = 10000
-ONE_MILLION = 1000000
+TEN_THOUSAND = 10_000
+ONE_MILLION = 1_000_000
 
 SIGNIFICANT_FIGURES = 4
 
@@ -29,7 +30,7 @@ APPROXIMATE_PRESENT_YEAR = 2000
 # https://en.wikipedia.org/wiki/Before_Present
 BP_REFERENCE_YEAR = 1950
 
-YBP_LOWER_LIMIT = 29999  # 30000 with rounding error protection
+YBP_LOWER_LIMIT = 29_999  # 30000 with rounding error protection
 
 BCE_THRESHOLD = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
 
@@ -46,7 +47,7 @@ MILLIFICATION_FLOOR = ONE_MILLION
 PRETTIFICATION_FLOOR = TEN_THOUSAND
 
 EXPONENT_INVERSION_BASIS = 30  # --> 20 for the Big Bang
-DECIMAL_INVERSION_BASIS = 100000  # --> 986200 for the Big Bang
+DECIMAL_INVERSION_BASIS = 100_000  # --> 986200 for the Big Bang
 
 
 def get_season_from_month(month: int) -> str:
@@ -87,39 +88,56 @@ class HistoricDateTime(datetime):
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
-    # TODO: this override somehow causes a crash when trying to delete a child model like Article
     def __new__(
         cls,
         year: int,
-        month: int,
-        day: int,
-        hour: int,
-        minute: int,
-        second: int,
-        microsecond: int,
+        month: int = 1,
+        day: int = 1,
+        hour: int = 0,
+        minute: int = 0,
+        second: int = 0,
+        microsecond: int = 0,
         tzinfo: Optional[tzinfo] = None,
-    ):
+        *,
+        fold: int = 0,
+    ) -> 'HistoricDateTime':
         """Create an instance."""
         tzinfo = tzinfo or UTC
         return super().__new__(
             cls,
             year,
-            month,
-            day,
+            month=month,
+            day=day,
             hour=hour,
             minute=minute,
             second=second,
             microsecond=microsecond,
             tzinfo=tzinfo,
+            fold=fold,
         )
 
     def __str__(self) -> str:
         """Return the datetime's string representation."""
         return self.string
 
-    def serialize(self) -> str:
-        """Serialize the datetime to a JSON-compatible string value."""
-        return self.isoformat()
+    @classmethod
+    def from_datetime(cls, datetime: datetime) -> 'HistoricDateTime':
+        return cls(
+            datetime.year,
+            month=datetime.month,
+            day=datetime.day,
+            hour=datetime.hour,
+            minute=datetime.minute,
+            second=datetime.second,
+            microsecond=datetime.microsecond,
+            tzinfo=datetime.tzinfo,
+            fold=datetime.fold,
+        )
+
+    @classmethod
+    def from_iso(cls, iso_string: str) -> 'HistoricDateTime':
+        """Create an instance from an ISO-formatted string."""
+        return cls.from_datetime(isoparse(iso_string))
 
     @property
     def is_bce(self) -> bool:
@@ -253,3 +271,18 @@ class HistoricDateTime(datetime):
             # CE dates
             year_string = str(self.year)
         return year_string
+
+    def serialize(self) -> str:
+        """Serialize the datetime to a JSON-compatible string value."""
+        return self.isoformat()
+
+    @property
+    def timeline_position(self):
+        """Return a representation of a date on a continuous floating-point scale."""
+        timeline_position = self.year_bp
+        if self.month_is_known:
+            timeline_position += (self.month - 1) / 12
+        if self.day_is_known:
+            # 366 accounts for leap years, and the offset is otherwise insignificant
+            timeline_position += (self.timetuple().tm_yday - 1) / 366
+        return timeline_position

@@ -1,9 +1,17 @@
+from drf_writable_nested import UniqueFieldsMixin
+from rest_framework.exceptions import ValidationError
+
 from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDrfSerializer
+from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
 from apps.sources.models import Article
 
 
-class _ArticleDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
+class _ArticleDrfSerializer(
+    UniqueFieldsMixin, SourceDrfSerializer, PageNumbersDrfSerializerMixin
+):
     """Serializer for article sources."""
+
+    publication = PublicationDrfSerializer()
 
     class Meta(SourceDrfSerializer.Meta):
         model = Article

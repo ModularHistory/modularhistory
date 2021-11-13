@@ -1,13 +1,14 @@
 """Serializers for the entities app."""
+
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
 from apps.sources.api.sources.document.collection.serializers import CollectionDrfSerializer
 from apps.sources.api.sources.file.serializers import SourceFileDrfSerializer
-from apps.sources.models import AbstractCitation, Source, SourceContainment
+from apps.sources.models import AbstractCitation, Source, SourceAttribution, SourceContainment
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from apps.sources.models.mixins.textual import TextualMixin
@@ -15,10 +16,21 @@ from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer, SerializableDrfField
 
 
+class SourceAttributionDrfSerializer(DrfModelSerializer):
+    """Serializer for source attributions."""
+
+    class Meta:
+        model = SourceAttribution
+        fields = DrfModelSerializer.Meta.fields + [
+            # 'source',  # TODO
+            'attributee',
+        ]
+
+
 class SourceContainmentDrfSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = SourceContainment
         fields = DrfModelSerializer.Meta.fields + [
             'source',
@@ -37,9 +49,9 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    source_containments = SourceContainmentDrfSerializer(
-        many=True, write_only=True, required=False
-    )
+    attributions = SourceAttributionDrfSerializer(many=True)
+    source_containments = SourceContainmentDrfSerializer(many=True, required=False)
+
     file_serialized = SourceFileDrfSerializer(read_only=True, source='file')
 
     class Meta(DrfModuleSerializer.Meta):
@@ -55,7 +67,7 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'file',
             'location',
             'attributee_html',
-            'attributees',
+            'attributions',
             'related_entities',
             'containment_html',
             'source_containments',
@@ -68,12 +80,6 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
-            'attributees': {
-                'write_only': True,
-                'required': False,
-                'read_only': False,
-                'queryset': Entity.objects.all(),
-            },
             'related_entities': {
                 'write_only': True,
                 'required': False,
@@ -137,7 +143,7 @@ class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
 class CitationDrfSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
     """Serializer for abstract citations."""
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = AbstractCitation
         fields = DrfModelSerializer.Meta.fields + [
             'html',

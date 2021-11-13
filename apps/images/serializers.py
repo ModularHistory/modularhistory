@@ -2,6 +2,7 @@
 
 import serpy
 
+from apps.dates.fields import TimelinePositionField
 from core.models.module import ModuleSerializer
 
 
@@ -14,3 +15,4 @@ class ImageSerializer(ModuleSerializer):
     caption_html = serpy.StrField()
     provider_string = serpy.StrField()
     bg_img_position = serpy.Field()
+    timeline_position = TimelinePositionField(attr='date', required=False)
