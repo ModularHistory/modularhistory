@@ -47,9 +47,9 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
         </Typography>
       </Box>
       {smallScreen ? (
-        <MobileViewComponent collection={collection} />
+        <MobileSharingButtons collection={collection} />
       ) : (
-        <DesktopViewComponent collection={collection} />
+        <DesktopSharingButtons collection={collection} />
       )}
       ;
       <Container>
@@ -104,85 +104,28 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-const MobileViewComponent: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+const MobileSharingButtons: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   const [showIcons, setShowIcons] = useState(false);
   const onClick = () => {
-    setShowIcons(true);
-    if (showIcons) {
-      setShowIcons(false);
-    }
+    setShowIcons((prevState) => !prevState);
   };
   return (
-    <>
-      <Container>
-        <Grid sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-          <Grid sx={{ maxWidth: 250, alignItems: "center", justifyContent: "center" }}>
-            <Grid
-              sx={{
-                flexDirection: "column",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={onClick}
-                sx={{ borderRadius: "50%" }}
-              >
-                <ShareIcon />
-              </Button>
-              <>
-                {showIcons ? (
-                  <Grid
-                    container
-                    spacing={2}
-                    alignItems="center"
-                    justifyContent="center"
-                    sx={{ my: 1 }}
-                  >
-                    <Grid item>
-                      <FacebookShareButton
-                        url={`https://modularhistory.com/collections/${collection.slug}`}
-                        quote={collection.title}
-                      >
-                        <FacebookIcon size={36} round={true} />
-                      </FacebookShareButton>
-                    </Grid>
-                    <Grid item>
-                      <TwitterShareButton
-                        url={`https://modularhistory.com/collections/${collection.slug}`}
-                        title={collection.title}
-                      >
-                        <TwitterIcon size={36} round={true} />
-                      </TwitterShareButton>
-                    </Grid>
-                    <Grid item>
-                      <EmailShareButton
-                        url={`https://modularhistory.com/collections/${collection.slug}`}
-                        subject={collection.title}
-                      >
-                        <EmailIcon size={36} round={true} />
-                      </EmailShareButton>
-                    </Grid>
-                  </Grid>
-                ) : null}
-              </>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Container>
-    </>
-  );
-};
-
-const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionProps) => {
-  return (
-    <Container>
-      <Grid sx={{ m: 3, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-        <Grid sx={{ maxWidth: 250, alignItems: "center", justifyContent: "center" }}>
-          <Grid container spacing={2} alignItems="center" justifyContent="center">
+    <Grid
+      sx={{
+        m: 1,
+        maxWidth: 250,
+        flexDirection: "column",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+      }}
+    >
+      <Button variant="contained" color="primary" onClick={onClick} sx={{ borderRadius: "50%" }}>
+        <ShareIcon />
+      </Button>
+      <>
+        {showIcons ? (
+          <Grid container spacing={2} alignItems="center" justifyContent="center" sx={{ my: 1 }}>
             <Grid item>
               <FacebookShareButton
                 url={`https://modularhistory.com/collections/${collection.slug}`}
@@ -208,8 +151,39 @@ const DesktopViewComponent: FC<CollectionProps> = ({ collection }: CollectionPro
               </EmailShareButton>
             </Grid>
           </Grid>
-        </Grid>
+        ) : null}
+      </>
+    </Grid>
+  );
+};
+
+const DesktopSharingButtons: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  return (
+    <Grid container justifyContent="center" spacing={2} sx={{ mx: 1, maxWidth: 200 }}>
+      <Grid item>
+        <FacebookShareButton
+          url={`https://modularhistory.com/collections/${collection.slug}`}
+          quote={collection.title}
+        >
+          <FacebookIcon size={36} round={true} />
+        </FacebookShareButton>
       </Grid>
-    </Container>
+      <Grid item>
+        <TwitterShareButton
+          url={`https://modularhistory.com/collections/${collection.slug}`}
+          title={collection.title}
+        >
+          <TwitterIcon size={36} round={true} />
+        </TwitterShareButton>
+      </Grid>
+      <Grid item>
+        <EmailShareButton
+          url={`https://modularhistory.com/collections/${collection.slug}`}
+          subject={collection.title}
+        >
+          <EmailIcon size={36} round={true} />
+        </EmailShareButton>
+      </Grid>
+    </Grid>
   );
 };
