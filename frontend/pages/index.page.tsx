@@ -13,6 +13,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SxProps } from "@mui/system";
 import axios from "axios";
+import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { FC, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
 
@@ -36,6 +37,18 @@ const StyledCardHeader: FC<{ title: string }> = ({ title }) => (
 interface GridItemProps {
   children: ReactNode;
   sx?: SxProps;
+}
+
+export interface TodayInHistoryProps {
+  todayinhistoryData: {
+    results: Exclude<ModuleUnion, Topic>[];
+  };
+}
+
+interface FeaturedContentProps {
+  featuredcontentData: {
+    results: Exclude<ModuleUnion, Topic>[];
+  };
 }
 
 const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
@@ -119,7 +132,11 @@ export default function Home() {
           <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <CardContent>
-              <TodayInHistory />
+              <TodayInHistory
+                todayinhistoryData={{
+                  results: [],
+                }}
+              />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -280,4 +297,23 @@ const SubscriptionBox: FC = () => {
       </CardContent>
     </StyledCard>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  let todayinhistoryData = {};
+  let featuredcontentData = {};
+
+  await axios
+    .get(`http://django:8000/api/home/today_in_history/`)
+    .then((response) => {
+      todayinhistoryData = response.data;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return {
+    props: { todayinhistoryData },
+    revalidate: 10,
+  };
 };
