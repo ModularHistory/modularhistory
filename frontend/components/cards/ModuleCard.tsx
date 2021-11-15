@@ -143,9 +143,14 @@ const ModuleCard: FC<ModuleCardProps> = ({
   let bgImage: Image | undefined;
   if (module.model == "images.image") {
     bgImage = module as Image;
+    //bgImage.title = module.title;
   } else if (moduleHasPrimaryImage(module)) {
     bgImage = module.primaryImage;
   }
+  const cleanHTML = (html: string) => {
+    return html.replace(/<.*?>/gi, "");
+  };
+
   return (
     <StyledCard
       className={`m-2 ${className || ""}`}
@@ -162,6 +167,9 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <div
           className="img-bg lazy-bg"
           data-img={bgImage.srcUrl}
+          aria-label={`${cleanHTML(bgImage.captionHtml)} | Provided by: ${cleanHTML(
+            bgImage.providerString
+          )}`}
           style={{
             backgroundPosition: bgImage.bgImgPosition,
             backgroundImage: `url(${bgImage.srcUrl})`,
