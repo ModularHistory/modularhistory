@@ -167,9 +167,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <div
           className="img-bg lazy-bg"
           data-img={bgImage.srcUrl}
-          aria-label={`${cleanHTML(bgImage.captionHtml)} | Provided by: ${cleanHTML(
-            bgImage.providerString
-          )}`}
+          aria-label={`${cleanHTML(bgImage.captionHtml)} | ${cleanHTML(bgImage.providerString)}`}
           style={{
             backgroundPosition: bgImage.bgImgPosition,
             backgroundImage: `url(${bgImage.srcUrl})`,
