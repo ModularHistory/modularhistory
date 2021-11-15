@@ -1,11 +1,10 @@
-import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory from "@/components/TodayInHistory";
 import { ModuleUnion, Topic } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, CardHeader, Divider, Grid, Link, Skeleton } from "@mui/material";
+import { Box, Button, CardHeader, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { styled } from "@mui/material/styles";
@@ -15,7 +14,7 @@ import { SxProps } from "@mui/system";
 import axios from "axios";
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, MouseEventHandler, ReactNode, useRef } from "react";
 
 const StyledCard = styled(Card)({
   padding: "1rem",
@@ -57,7 +56,8 @@ const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   </Grid>
 );
 
-export default function Home() {
+const Home: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryProps) => {
+  // export default function Home() {
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,7 +99,9 @@ export default function Home() {
       </Grid>
     </Grid>
   );
-
+  const abc = "----- HOME COMPONENT DATA---------";
+  console.log(abc);
+  console.log(todayinhistoryData);
   return (
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
@@ -124,7 +126,11 @@ export default function Home() {
           <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
             <CardContent>
-              <FeaturedContent />
+              <FeaturedContent
+                featuredcontentData={{
+                  results: [],
+                }}
+              />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -150,7 +156,9 @@ export default function Home() {
       </Grid>
     </Layout>
   );
-}
+};
+
+export default Home;
 
 const AboutModularHistory: FC = () => {
   return (
@@ -174,28 +182,10 @@ const AboutModularHistory: FC = () => {
   );
 };
 
-const FeaturedContent: FC = () => {
-  const [items, setItems] = useState<Exclude<ModuleUnion, Topic>[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const cancelTokenSource = axios.CancelToken.source();
-    axiosWithoutAuth
-      .get("/api/home/features/", { cancelToken: cancelTokenSource.token })
-      .then((response) => {
-        setItems(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (axios.isCancel(error)) return;
-        console.error(error);
-        setLoading(false);
-      });
-    return () => {
-      cancelTokenSource.cancel("component unmounted");
-    };
-  }, [loading]);
-
+const FeaturedContent: FC<FeaturedContentProps> = ({
+  featuredcontentData,
+}: FeaturedContentProps) => {
+  const items = featuredcontentData["results"] || [];
   return (
     <Grid container alignItems="center" justifyContent="center">
       <>
@@ -209,14 +199,6 @@ const FeaturedContent: FC = () => {
               </Link>
             </Grid>
           ))
-        ) : loading ? (
-          <Grid item xs={12} sm={6} md={4} lg={3}>
-            <StyledCard>
-              <CardContent>
-                <Skeleton sx={{ minHeight: 200, width: "100%" }} />
-              </CardContent>
-            </StyledCard>
-          </Grid>
         ) : (
           <p>Sorry, there is no featured content to display. Please check back later!</p>
         )}
@@ -307,13 +289,23 @@ export const getStaticProps: GetStaticProps = async () => {
     .get(`http://django:8000/api/home/today_in_history/`)
     .then((response) => {
       todayinhistoryData = response.data;
+      console.log(todayinhistoryData);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  await axios
+    .get(`http://django:8000/api/home/features/`)
+    .then((response) => {
+      featuredcontentData = response.data;
     })
     .catch((error) => {
       console.error(error);
     });
 
   return {
-    props: { todayinhistoryData },
+    props: { todayinhistoryData, featuredcontentData },
     revalidate: 10,
   };
 };
