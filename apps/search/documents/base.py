@@ -22,17 +22,18 @@ class Document(ESDocument):
         return cls._default_index(index)
 
 
-def InstantSearchDocumentFactory(model: Type[Module], field_names: list[str], register=True):
+def InstantSearchDocumentFactory(model: Type[Module], search_fields: list[str], filter_fields: list[str] = None, register=True):
     """Returns an ElasticSearch Document class for the given module class.
 
     All fields are analyzed as instant-search text fields.
     The generated document is automatically registered by default.
     """
-    instant_search_fields = {}
-    for field in field_names:
+    for field in search_fields + filter_fields:
         if not hasattr(model, field):
             raise AttributeError(f'model {model} does not have attribute "{field}"')
-        instant_search_fields[field] = fields.TextField(analyzer=instant_search_analyzer)
+
+    instant_search_fields = {field: fields.TextField(analyzer=instant_search_analyzer) for field in search_fields}
+    keyword_fields = {field: fields.KeywordField() for field in filter_fields}
 
     document_class = type(
         f'{model.__name__}InstantSearchDocument',
@@ -48,6 +49,7 @@ def InstantSearchDocumentFactory(model: Type[Module], field_names: list[str], re
             ),
             'Django': type('Django', (), {'model': model}),
             **instant_search_fields,
+            **keyword_fields,
         },
     )
 
