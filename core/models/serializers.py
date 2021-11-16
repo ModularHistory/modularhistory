@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 class DrfSluggedModelSerializer(DrfSearchableModelSerializer):
     """Base serializer for models extending SluggedModel and SearchableModel"""
 
-    # model = serializers.SerializerMethodField()
     title = serializers.CharField(required=False, allow_blank=True)
     slug = serializers.CharField(required=False)
     absolute_url = serializers.CharField(required=False, read_only=True)
@@ -23,7 +22,6 @@ class DrfSluggedModelSerializer(DrfSearchableModelSerializer):
     class Meta(DrfSearchableModelSerializer.Meta):
         model: type['SluggedModel']
         fields = DrfSearchableModelSerializer.Meta.fields + [
-            # 'model',
             'title',
             'slug',
             'absolute_url',
