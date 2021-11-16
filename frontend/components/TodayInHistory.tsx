@@ -5,13 +5,11 @@ import { FC } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
 
 export interface TodayInHistoryProps {
-  todayinhistoryData: {
-    results: Exclude<ModuleUnion, Topic>[];
-  };
+  todayinhistoryData: Exclude<ModuleUnion, Topic>[];
 }
 
 const TodayInHistory: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryProps) => {
-  const items = todayinhistoryData["results"] || [];
+  const items = todayinhistoryData || [];
   return (
     <Grid container spacing={1} justifyContent="center" alignItems="center">
       <>

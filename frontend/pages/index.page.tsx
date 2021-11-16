@@ -39,9 +39,7 @@ interface GridItemProps {
 }
 
 interface FeaturedContentProps {
-  featuredcontentData: {
-    results: Exclude<ModuleUnion, Topic>[];
-  };
+  featuredcontentData: Exclude<ModuleUnion, Topic>[];
 }
 
 type HomePageProps = TodayInHistoryProps & FeaturedContentProps;
@@ -118,11 +116,7 @@ const Home: FC<HomePageProps> = ({ todayinhistoryData, featuredcontentData }: Ho
           <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
             <CardContent>
-              <FeaturedContent
-                featuredcontentData={{
-                  results: featuredcontentData,
-                }}
-              />
+              <FeaturedContent featuredcontentData={featuredcontentData} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -130,11 +124,7 @@ const Home: FC<HomePageProps> = ({ todayinhistoryData, featuredcontentData }: Ho
           <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <CardContent>
-              <TodayInHistory
-                todayinhistoryData={{
-                  results: todayinhistoryData,
-                }}
-              />
+              <TodayInHistory todayinhistoryData={todayinhistoryData} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -177,7 +167,7 @@ const AboutModularHistory: FC = () => {
 const FeaturedContent: FC<FeaturedContentProps> = ({
   featuredcontentData,
 }: FeaturedContentProps) => {
-  const items = featuredcontentData["results"] || [];
+  const items = featuredcontentData || [];
   return (
     <Grid container alignItems="center" justifyContent="center">
       <>
