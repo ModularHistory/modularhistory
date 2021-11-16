@@ -26,6 +26,8 @@ class SearchableModelSerializer(ModelSerializer):
 class DrfSearchableModelSerializer(DrfModelSerializer):
     """Base serializer for searchable models."""
 
+    # TODO: 'model' field should be defined in DrfModelSerializer but ArticleDrfSerializer cannot resolve 'model' field if it's defined there
+    model = serializers.SerializerMethodField()
     meta = serializers.SerializerMethodField(required=False)
 
     def get_meta(self, model) -> Optional[dict]:
@@ -37,5 +39,8 @@ class DrfSearchableModelSerializer(DrfModelSerializer):
                 del meta[key]
         return meta
 
-    class Meta:
-        fields = DrfModelSerializer.Meta.fields + ['meta']
+    class Meta(DrfModelSerializer.Meta):
+        fields = DrfModelSerializer.Meta.fields + [
+            'model',
+            'meta',
+        ]
