@@ -1,8 +1,14 @@
+import { ModuleUnion, Topic } from "@/types/modules";
 import { Grid } from "@mui/material";
 import Link from "next/link";
-import { TodayInHistoryProps } from "pages/index.page";
 import { FC } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
+
+export interface TodayInHistoryProps {
+  todayinhistoryData: {
+    results: Exclude<ModuleUnion, Topic>[];
+  };
+}
 
 const TodayInHistory: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryProps) => {
   const items = todayinhistoryData["results"] || [];

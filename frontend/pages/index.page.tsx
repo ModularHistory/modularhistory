@@ -1,7 +1,7 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import TodayInHistory from "@/components/TodayInHistory";
+import TodayInHistory, { TodayInHistoryProps } from "@/components/TodayInHistory";
 import { ModuleUnion, Topic } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, CardHeader, Divider, Grid, Link } from "@mui/material";
@@ -38,17 +38,13 @@ interface GridItemProps {
   sx?: SxProps;
 }
 
-export interface TodayInHistoryProps {
-  todayinhistoryData: {
-    results: Exclude<ModuleUnion, Topic>[];
-  };
-}
-
 interface FeaturedContentProps {
   featuredcontentData: {
     results: Exclude<ModuleUnion, Topic>[];
   };
 }
+
+type HomePageProps = TodayInHistoryProps & FeaturedContentProps;
 
 const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" sx={sx}>
@@ -56,8 +52,9 @@ const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   </Grid>
 );
 
-const Home: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryProps) => {
+const Home: FC<HomePageProps> = ({ todayinhistoryData, featuredcontentData }: HomePageProps) => {
   // export default function Home() {
+  //const results = todayinhistoryData["results"] || [];
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
 
@@ -128,7 +125,7 @@ const Home: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryPro
             <CardContent>
               <FeaturedContent
                 featuredcontentData={{
-                  results: [],
+                  results: featuredcontentData,
                 }}
               />
             </CardContent>
@@ -140,7 +137,7 @@ const Home: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryPro
             <CardContent>
               <TodayInHistory
                 todayinhistoryData={{
-                  results: [],
+                  results: todayinhistoryData,
                 }}
               />
             </CardContent>
