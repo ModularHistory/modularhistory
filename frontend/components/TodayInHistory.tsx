@@ -12,9 +12,6 @@ export interface TodayInHistoryProps {
 
 const TodayInHistory: FC<TodayInHistoryProps> = ({ todayinhistoryData }: TodayInHistoryProps) => {
   const items = todayinhistoryData["results"] || [];
-  const abc = "----- TIH COMPONENT DATA---------";
-  console.log(abc);
-  console.log(todayinhistoryData);
   return (
     <Grid container spacing={1} justifyContent="center" alignItems="center">
       <>

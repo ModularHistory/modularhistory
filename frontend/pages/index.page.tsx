@@ -53,8 +53,6 @@ const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
 );
 
 const Home: FC<HomePageProps> = ({ todayinhistoryData, featuredcontentData }: HomePageProps) => {
-  // export default function Home() {
-  //const results = todayinhistoryData["results"] || [];
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,9 +94,6 @@ const Home: FC<HomePageProps> = ({ todayinhistoryData, featuredcontentData }: Ho
       </Grid>
     </Grid>
   );
-  const abc = "----- HOME COMPONENT DATA---------";
-  console.log(abc);
-  console.log(todayinhistoryData);
   return (
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
@@ -286,7 +281,6 @@ export const getStaticProps: GetStaticProps = async () => {
     .get(`http://django:8000/api/home/today_in_history/`)
     .then((response) => {
       todayinhistoryData = response.data;
-      console.log(todayinhistoryData);
     })
     .catch((error) => {
       console.error(error);
