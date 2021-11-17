@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import serpy
 
+from apps.dates.fields import TimelinePositionField
 from core.models.module import ModuleSerializer
 
 if TYPE_CHECKING:
@@ -46,6 +47,7 @@ class EntitySerializer(ModuleSerializer):
     categorizations = CategorizationSerializer(
         many=True, attr='categorizations.all', call=True
     )
+    timeline_position = TimelinePositionField(attr='birth_date', required=False)
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""

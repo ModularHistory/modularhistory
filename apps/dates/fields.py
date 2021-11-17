@@ -3,6 +3,7 @@
 from datetime import datetime as DateTime  # noqa: N812
 from typing import Optional, Union
 
+import serpy
 from dateutil.parser import isoparse
 from django.db.models import DateTimeField
 
@@ -69,3 +70,10 @@ class HistoricDateTimeField(DateTimeField):
         if preprep_value:
             return super().get_prep_value(preprep_value)
         return None
+
+
+class TimelinePositionField(serpy.Field):
+    """Represents dates on a continuous floating point scale."""
+
+    def to_value(self, value: HistoricDateTime):
+        return value.timeline_position

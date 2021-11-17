@@ -1,4 +1,5 @@
 """Serializers for the entities app."""
+
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework import serializers
 
@@ -21,7 +22,7 @@ class SourceAttributionDrfSerializer(DrfModelSerializer):
     class Meta:
         model = SourceAttribution
         fields = DrfModelSerializer.Meta.fields + [
-            # 'source',
+            # 'source',  # TODO
             'attributee',
         ]
 

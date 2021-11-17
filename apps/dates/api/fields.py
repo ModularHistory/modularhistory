@@ -19,3 +19,10 @@ class HistoricDateTimeDrfField(DrfDateTimeField):
             tzinfo=value.tzinfo,
         )
         return value
+
+
+class TimelinePositionDrfField(HistoricDateTimeDrfField):
+    """Represents dates on a continuous floating point scale."""
+
+    def to_representation(self, value: HistoricDateTime):
+        return value.timeline_position
