@@ -110,46 +110,14 @@ const MobileSharingButtons: FC<CollectionProps> = ({ collection }: CollectionPro
     setShowIcons((prevState) => !prevState);
   };
   return (
-    <Grid
-      sx={{
-        m: 1,
-        maxWidth: 250,
-        flexDirection: "column",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-      }}
-    >
+    <Grid container justifyContent="flex-end">
       <Button variant="contained" color="primary" onClick={onClick} sx={{ borderRadius: "50%" }}>
         <ShareIcon />
       </Button>
       <>
         {showIcons ? (
-          <Grid container spacing={2} alignItems="center" justifyContent="center" sx={{ my: 1 }}>
-            <Grid item>
-              <FacebookShareButton
-                url={`https://modularhistory.com/collections/${collection.slug}`}
-                quote={collection.title}
-              >
-                <FacebookIcon size={36} round={true} />
-              </FacebookShareButton>
-            </Grid>
-            <Grid item>
-              <TwitterShareButton
-                url={`https://modularhistory.com/collections/${collection.slug}`}
-                title={collection.title}
-              >
-                <TwitterIcon size={36} round={true} />
-              </TwitterShareButton>
-            </Grid>
-            <Grid item>
-              <EmailShareButton
-                url={`https://modularhistory.com/collections/${collection.slug}`}
-                subject={collection.title}
-              >
-                <EmailIcon size={36} round={true} />
-              </EmailShareButton>
-            </Grid>
+          <Grid container justifyContent="flex-end">
+            <SharingButtonGroup collection={collection} />
           </Grid>
         ) : null}
       </>
@@ -159,31 +127,47 @@ const MobileSharingButtons: FC<CollectionProps> = ({ collection }: CollectionPro
 
 const DesktopSharingButtons: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   return (
-    <Grid container justifyContent="center" spacing={2} sx={{ mx: 1, maxWidth: 200 }}>
-      <Grid item>
-        <FacebookShareButton
-          url={`https://modularhistory.com/collections/${collection.slug}`}
-          quote={collection.title}
-        >
-          <FacebookIcon size={36} round={true} />
-        </FacebookShareButton>
-      </Grid>
-      <Grid item>
-        <TwitterShareButton
-          url={`https://modularhistory.com/collections/${collection.slug}`}
-          title={collection.title}
-        >
-          <TwitterIcon size={36} round={true} />
-        </TwitterShareButton>
-      </Grid>
-      <Grid item>
-        <EmailShareButton
-          url={`https://modularhistory.com/collections/${collection.slug}`}
-          subject={collection.title}
-        >
-          <EmailIcon size={36} round={true} />
-        </EmailShareButton>
-      </Grid>
+    <Grid container justifyContent="flex-end">
+      <SharingButtonGroup collection={collection} />
     </Grid>
+  );
+};
+
+const SharingButtonGroup: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  return (
+    <>
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        spacing={2}
+        sx={{ m: 2, maxWidth: 200 }}
+      >
+        <Grid item>
+          <FacebookShareButton
+            url={`https://modularhistory.com/collections/${collection.slug}`}
+            quote={collection.title}
+          >
+            <FacebookIcon size={36} round={true} />
+          </FacebookShareButton>
+        </Grid>
+        <Grid item>
+          <TwitterShareButton
+            url={`https://modularhistory.com/collections/${collection.slug}`}
+            title={collection.title}
+          >
+            <TwitterIcon size={36} round={true} />
+          </TwitterShareButton>
+        </Grid>
+        <Grid item>
+          <EmailShareButton
+            url={`https://modularhistory.com/collections/${collection.slug}`}
+            subject={collection.title}
+          >
+            <EmailIcon size={36} round={true} />
+          </EmailShareButton>
+        </Grid>
+      </Grid>
+    </>
   );
 };
