@@ -1,11 +1,8 @@
-from typing import Type
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.entities.models.entity import Entity
-from apps.search.documents.base import InstantSearchDocument
 from apps.search.documents.entity import EntityInstantSearchDocument
 from core.api.views import ExtendedModelViewSet
 
@@ -22,26 +19,16 @@ class EntityViewSet(ExtendedModelViewSet):
     }
 
 
-class InstantSearchApiView(APIView):
-    """Abstract API view used by search-as-you-type endpoints."""
-
-    document: Type[InstantSearchDocument]
+class EntityInstantSearchAPIView(APIView):
+    """API view used by search-as-you-type fields retrieving entity names and IDs."""
 
     def get(self, request):
         query = request.query_params.get('query', '')
         if len(query) == 0:
             return Response([])
-
-        search = self.document.search()
-        if request.query_params.get('filters', None):
-            search = search.filter('term', **request.query_params.get('filters', {}))
-
-        results = search.query(
-            'multi_match', query=query, fields=self.document.search_fields
-        ).source(self.document.search_fields)
-
+        results = (
+            EntityInstantSearchDocument.search()
+            .query('multi_match', query=query)
+            .source(['name'])
+        )
         return Response([{'id': result.meta.id} | result.to_dict() for result in results])
-
-
-class EntityInstantSearchAPIView(InstantSearchApiView):
-    document = EntityInstantSearchDocument

@@ -22,7 +22,7 @@ class Document(ESDocument):
         return cls._default_index(index)
 
 
-class InstantSearchDocument(Document):
+class InstantSearchDocument(ESDocument):
     search_fields: list[str]
     filter_fields: list[str]
 
@@ -61,10 +61,10 @@ def InstantSearchDocumentFactory(
                 },
             ),
             'Django': type('Django', (), {'model': model}),
-            **instant_search_fields,
-            **keyword_fields,
             'search_fields': search_fields,
             'filter_fields': filter_fields,
+            **instant_search_fields,
+            **keyword_fields,
         },
     )
 

@@ -1,5 +1,8 @@
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from ..documents import instant_search_documents_map
 from .filters.elastic_filters import ModulesSearchFilterBackend
 from .filters.post_resolve_filters import ApplyMetaFilterBackend, SortByFilterBackend
 from .filters.pre_resolve_filters import PreResolveFilterBackend
@@ -38,3 +41,24 @@ class ElasticSearchResultsAPIView(ListAPIView):
         self.search = Search()
 
         return self.search
+
+
+class InstantSearchApiView(APIView):
+    """API view used by search-as-you-type fields."""
+
+    def get(self, request):
+        query = request.query_params.get(QUERY_PARAM, '')
+        if len(query) == 0:
+            return Response([])
+
+        document = instant_search_documents_map[request.query_params.get('model')]
+
+        search = document.search()
+        if request.query_params.get('filters', None):
+            search = search.filter('term', **request.query_params.get('filters', {}))
+
+        results = search.query(
+            'multi_match', query=query, fields=document.search_fields
+        ).source(document.search_fields)
+
+        return Response([{'id': result.meta.id} | result.to_dict() for result in results])

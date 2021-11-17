@@ -1,8 +1,8 @@
 """Base model classes for ModularHistory."""
-
+import inspect
 import logging
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern
+from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type, Union
 
 import regex
 import serpy
@@ -328,9 +328,11 @@ class DrfTypedModelSerializer(DrfModelSerializer):
         fields = DrfModelSerializer.Meta.fields + ['type']
 
 
-def get_model_name(instance: ExtendedModel) -> str:
+def get_model_name(instance: Union[ExtendedModel, Type[ExtendedModel]]) -> str:
     """Return the model name of the instance."""
-    model_cls: type['ExtendedModel'] = instance.__class__
+    model_cls: Type['ExtendedModel'] = (
+        instance if inspect.isclass(instance) else instance.__class__
+    )
     app_label = model_cls._meta.app_label
     model_type = model_cls.__name__.lower()
     try:
