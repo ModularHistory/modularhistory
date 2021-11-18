@@ -21,6 +21,17 @@ const EntityRelatedQuoteCard = styled(Card)({
   color: "black",
 });
 
+const EntityRelatedEntityCard = styled(Card)({
+  quotes: '"“" "”" "‘" "’"',
+  cursor: "pointer",
+  position: "relative",
+  textOverflow: "ellipsis",
+  minHeight: "5rem",
+  marginBottom: "1rem",
+  width: "20rem",
+  color: "black",
+});
+
 interface EntityProps {
   entity: Entity;
 }
@@ -60,6 +71,25 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
             ))}
           </>
         )}
+        {entity.relatedEntities?.map((relatedEntity) => (
+          <Link href={`/entities/${relatedEntity.slug}`} key={relatedEntity.slug} passHref>
+            <a>
+              <EntityRelatedEntityCard raised>
+                <CardHeader
+                  title={relatedEntity.name}
+                  titleTypographyProps={{ variant: "h5" }}
+                ></CardHeader>
+                <CardContent>
+                  <HTMLEllipsis
+                    unsafeHTML={relatedEntity.description}
+                    maxLine="1"
+                    basedOn="words"
+                  />
+                </CardContent>
+              </EntityRelatedEntityCard>
+            </a>
+          </Link>
+        ))}
       </ModuleContainer>
     </Layout>
   );
@@ -85,6 +115,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             slug
             bite
             dateString
+          }
+          relatedEntities {
+            name
+            description
+            slug
           }
         }
       }`,

@@ -15,6 +15,7 @@ class EntityType(ModuleType):
 
     cached_images = GenericScalar(source='cached_images')
     related_quotes = graphene.List(QuoteType, slug=graphene.String())
+    related_entities = graphene.List(lambda: EntityType, slug=graphene.String())
 
     class Meta:
         model = Entity
@@ -29,6 +30,10 @@ class EntityType(ModuleType):
     @staticmethod
     def resolve_related_quotes(root: Entity, *args, **kwargs):
         return root.quotes.all()
+
+    @staticmethod
+    def resolve_related_entities(root: Entity, *args, **kwargs):
+        return root.entities.all()
 
 
 class Query(graphene.ObjectType):

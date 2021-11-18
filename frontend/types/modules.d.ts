@@ -91,6 +91,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   truncatedDescription: string;
   meta?: Meta;
   relatedQuotes?: Quote[];
+  relatedEntities?: Entity[];
 }
 
 export interface Collection {
