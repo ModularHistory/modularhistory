@@ -49,6 +49,25 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
       />
       <ModuleContainer>
         <ModuleDetail module={entity} />
+        {entity.relatedEntities?.map((relatedEntity) => (
+          <Link href={`/entities/${relatedEntity.slug}`} key={relatedEntity.slug} passHref>
+            <a>
+              <EntityRelatedEntityCard raised>
+                <CardHeader
+                  title={relatedEntity.name}
+                  titleTypographyProps={{ variant: "h5" }}
+                ></CardHeader>
+                <CardContent>
+                  <HTMLEllipsis
+                    unsafeHTML={relatedEntity.description}
+                    maxLine="1"
+                    basedOn="words"
+                  />
+                </CardContent>
+              </EntityRelatedEntityCard>
+            </a>
+          </Link>
+        ))}
         {(entity.relatedQuotes?.length ?? 0) > 0 && (
           <>
             <CardHeader
@@ -71,25 +90,6 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
             ))}
           </>
         )}
-        {entity.relatedEntities?.map((relatedEntity) => (
-          <Link href={`/entities/${relatedEntity.slug}`} key={relatedEntity.slug} passHref>
-            <a>
-              <EntityRelatedEntityCard raised>
-                <CardHeader
-                  title={relatedEntity.name}
-                  titleTypographyProps={{ variant: "h5" }}
-                ></CardHeader>
-                <CardContent>
-                  <HTMLEllipsis
-                    unsafeHTML={relatedEntity.description}
-                    maxLine="1"
-                    basedOn="words"
-                  />
-                </CardContent>
-              </EntityRelatedEntityCard>
-            </a>
-          </Link>
-        ))}
       </ModuleContainer>
     </Layout>
   );
