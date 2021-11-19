@@ -3,29 +3,34 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
-import { ModuleUnion, Topic } from "@/types/modules";
-import { Box, Container, Drawer, useMediaQuery } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import type { TimelineProps } from "@/components/search/Timeline";
+import { GlobalTheme } from "@/pages/_app.page";
+import { SerpModule } from "@/types/modules";
+import { Box, Container, Drawer, styled, useMediaQuery } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter, withRouter } from "next/router";
 import qs from "qs";
 import {
+  createRef,
   Dispatch,
   FC,
+  memo,
   MouseEventHandler,
   SetStateAction,
-  useCallback,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from "react";
+import { InView } from "react-intersection-observer";
 
 const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm"), {
   ssr: false,
 });
+
+const Timeline = dynamic(() => import("@/components/search/Timeline"), { ssr: false });
 
 const SliderToggle = styled("button")({
   border: "2px solid black !important",
@@ -33,10 +38,10 @@ const SliderToggle = styled("button")({
   "&.open": { transform: "translateX(229px) !important" },
 });
 
-interface SearchProps {
+export interface SearchProps {
   count: number;
   totalPages: number;
-  results: Exclude<ModuleUnion, Topic>[];
+  results: SerpModule[];
 }
 
 const Search: FC<SearchProps> = (props: SearchProps) => {
@@ -66,7 +71,8 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
 
             <div className="results-container">
               <SearchPageHeader {...props} />
-              <SearchResultsPanes {...props} />
+              {/* force re-mount when results change because a variable number of hooks are used */}
+              <SearchResultsPanes modules={props.results} />
             </div>
           </div>
 
@@ -148,89 +154,95 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
   );
 };
 
-interface TwoPaneState {
-  moduleIndex: number;
-  setModuleIndex: Dispatch<SetStateAction<number>>;
-  setModuleIndexFromEvent: MouseEventHandler;
-}
+const SearchResultsPanes = withRouter(
+  memo(
+    function SearchResultsPanes({
+      modules,
+      router,
+    }: {
+      modules: SerpModule[];
+      router: NextRouter;
+    }) {
+      // currently selected module
+      const [moduleIndex, setModuleIndex] = useState(0);
 
-function useTwoPaneState(): TwoPaneState {
-  // This hook is used to track which card in the left pane
-  // should have its details displayed in the right pane.
-  const router = useRouter();
-  const [moduleIndex, setModuleIndex] = useState(0);
+      // Reset the selected module to 0 when a page transition occurs.
+      useEffect(() => {
+        const handle = () => setModuleIndex(0);
+        router.events.on("routeChangeComplete", handle);
+        return () => router.events.off("routeChangeComplete", handle);
+      }, [router.events]);
 
-  // event handler for when the user clicks on a module card
-  const setModuleIndexFromEvent = useCallback(
-    (e) => {
-      // This condition allows ctrl-clicking to open details in a new tab.
-      if (e.ctrlKey || e.metaKey) return;
-      e.preventDefault();
+      // controls whether the modal is open (conditional based on screen size)
+      const [isModalOpen, setModalOpen] = useState(false);
 
-      const { index, key } = e.currentTarget.dataset;
-      setModuleIndex(index);
-      router.replace({ hash: key });
+      return (
+        <div className="two-pane-container">
+          {useMemo(
+            () => (
+              <SearchResultsLeftPane {...{ modules, setModuleIndex, setModalOpen, router }} />
+            ),
+            [modules]
+          )}
+          <SearchResultsRightPane
+            // set key to prevent new details from retaining previous scroll position
+            key={moduleIndex}
+            {...{ module: modules[moduleIndex] ?? modules[0], isModalOpen, setModalOpen }}
+          />
+        </div>
+      );
     },
-    [router.replace]
-  );
+    (prevProps, nextProps) => {
+      // prevent re-render when router updates.
+      return prevProps.modules === nextProps.modules;
+    }
+  )
+);
 
-  // Reset the selected module to 0 when a page transition occurs.
-  useEffect(() => {
-    const handle = () => setModuleIndex(0);
-    router.events.on("routeChangeComplete", handle);
-    return () => router.events.off("routeChangeComplete", handle);
-  }, [router.events]);
-
-  return { moduleIndex, setModuleIndex, setModuleIndexFromEvent };
-}
-
-interface PaneProps extends SearchProps, TwoPaneState {
-  isModalOpen: boolean;
+interface LeftPaneProps {
+  modules: SerpModule[];
   setModalOpen: Dispatch<SetStateAction<boolean>>;
-  initialUrlAnchor: string;
+  setModuleIndex: Dispatch<SetStateAction<number>>;
+  router: NextRouter;
 }
 
-const SearchResultsPanes: FC<SearchProps> = (props: SearchProps) => {
-  const twoPaneState = useTwoPaneState();
-
-  // controls whether the modal is open (conditional based on screen size)
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const paneProps: PaneProps = {
-    ...props,
-    ...twoPaneState,
-    isModalOpen,
-    setModalOpen,
-    // useRef here guarantees the initial value is retained when the hash is updated
-    initialUrlAnchor: useRef(useRouter().asPath.split("#")[1]).current,
-  };
-
-  return (
-    <div className="two-pane-container">
-      <SearchResultsLeftPane {...paneProps} />
-      <SearchResultsRightPane {...paneProps} />
-    </div>
-  );
-};
-
-const SearchResultsLeftPane: FC<PaneProps> = ({
-  results: modules,
-  moduleIndex,
-  setModuleIndexFromEvent,
+const SearchResultsLeftPane: FC<LeftPaneProps> = ({
+  modules,
+  setModuleIndex,
   setModalOpen,
-  initialUrlAnchor,
+  router,
 }) => {
-  const selectModule: MouseEventHandler = (event) => {
-    setModuleIndexFromEvent(event);
+  // we are unable to obtain the url anchor during SSR,
+  // so we must update the selected module after rendering.
+  useEffect(() => {
+    const urlAnchor = router.asPath.split("#")[1];
+    const initialIndex = urlAnchor ? modules.findIndex((module) => module.slug === urlAnchor) : 0;
+    if (initialIndex > 0) {
+      setModuleIndex(initialIndex);
+      setTimeout(
+        () => modulesWithRefs[initialIndex].ref.current?.scrollIntoView({ behavior: "smooth" }),
+        100
+      );
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
+
+  const modulesWithRefs: TimelineProps<HTMLAnchorElement>["modules"] = useMemo(
+    () => modules.map((module) => ({ ...module, ref: createRef() })),
+    [modules]
+  );
+
+  const selectModule: MouseEventHandler = (e) => {
+    // This condition allows ctrl-clicking to open details in a new tab.
+    if (e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+
+    const { index } = (e.currentTarget as any).dataset;
+    setModuleIndex(index);
+    router.replace({ hash: modules[index].slug });
     setModalOpen(true);
   };
-
-  // on initial load, scroll to the module card designated by the url anchor
-  const initialModuleRef = useRef<HTMLAnchorElement>(null);
-  useEffect(() => {
-    // non-delayed scrolls sometimes cause inconsistent behavior, so wait 100ms
-    setTimeout(() => initialModuleRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box
@@ -243,50 +255,45 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
       }}
     >
       {modules.map((module, index) => (
-        <a
-          href={module.absoluteUrl}
-          className="result 2pane-result"
-          data-href={module.absoluteUrl}
-          data-key={module.slug}
-          key={module.slug}
-          data-index={index}
-          onClick={selectModule}
-          ref={initialUrlAnchor === module.slug && index !== 0 ? initialModuleRef : undefined}
+        <InView
+          as="div"
+          onChange={(inView) => {
+            viewStateRegistry.get(module.absoluteUrl)?.(inView);
+          }}
+          key={module.absoluteUrl}
         >
-          <ModuleUnionCard module={module} selected={index === moduleIndex} />
-        </a>
+          <a
+            href={module.absoluteUrl}
+            className={`result 2pane-result`}
+            key={module.absoluteUrl}
+            data-index={index}
+            onClick={selectModule}
+            ref={modulesWithRefs[index].ref}
+          >
+            <ModuleUnionCard module={module} />
+          </a>
+        </InView>
       ))}
     </Box>
   );
 };
 
-const SearchResultsRightPane: FC<PaneProps> = ({
-  results: modules,
-  moduleIndex,
-  isModalOpen,
-  setModalOpen,
-  setModuleIndex,
-  initialUrlAnchor,
-}) => {
-  // we are unable to obtain the url anchor during SSR,
-  // so we must update the selected module after rendering.
-  useEffect(() => {
-    const initialIndex = initialUrlAnchor
-      ? modules.findIndex((module) => module.slug === initialUrlAnchor)
-      : 0;
-    setModuleIndex(initialIndex);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+interface RightPaneProps {
+  module: SerpModule;
+  isModalOpen: boolean;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+}
 
+const SearchResultsRightPane: FC<RightPaneProps> = ({ module, isModalOpen, setModalOpen }) => {
   // media query value is based on /core/static/styles/serp.css
-  const smallScreen = useMediaQuery("(max-width: 660px)");
-  const selectedModule = modules[moduleIndex] || modules[0];
+  const smallScreen = useMediaQuery((theme: GlobalTheme) => theme.breakpoints.down("sm"));
 
   if (smallScreen) {
-    return <ModuleModal module={selectedModule} open={isModalOpen} setOpen={setModalOpen} />;
+    return <ModuleModal module={module} open={isModalOpen} setOpen={setModalOpen} />;
   } else {
     return (
       <div className="card view-detail sticky">
-        <ModuleDetail module={selectedModule} key={selectedModule.absoluteUrl} />
+        <ModuleDetail module={module} key={module.absoluteUrl} />
       </div>
     );
   }

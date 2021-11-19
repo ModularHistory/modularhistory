@@ -37,7 +37,5 @@ class DrfSearchableModelSerializer(DrfModelSerializer):
                 del meta[key]
         return meta
 
-    class Meta(DrfModelSerializer.Meta):
-        fields = DrfModelSerializer.Meta.fields + [
-            'meta',
-        ]
+    class Meta:
+        fields = DrfModelSerializer.Meta.fields + ['meta']

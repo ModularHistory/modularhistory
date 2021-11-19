@@ -1,4 +1,4 @@
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.sources.api.serializers import DocumentDrfSerializerMixin, SourceDrfSerializer
 from apps.sources.models import Document
 

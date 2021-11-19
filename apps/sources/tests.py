@@ -3,12 +3,6 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 
-@pytest.fixture()
-def api_client():
-    """Return an API client to be used in a test."""
-    return APIClient()
-
-
 @pytest.mark.django_db()
 class TestSources:
     """Test the sources app."""
