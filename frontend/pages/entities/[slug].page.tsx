@@ -3,8 +3,7 @@ import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Entity } from "@/types/modules";
-import { Card, CardContent, CardHeader, styled, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Card, CardContent, CardHeader, styled, Typography } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
@@ -124,7 +123,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           }
           relatedEntities {
             name
-            description
             slug
           }
         }
