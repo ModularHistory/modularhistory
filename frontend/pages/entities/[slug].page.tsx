@@ -3,7 +3,8 @@ import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Entity } from "@/types/modules";
-import { Card, CardContent, CardHeader, styled } from "@mui/material";
+import { Card, CardContent, CardHeader, styled, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
@@ -26,10 +27,13 @@ const EntityRelatedEntityCard = styled(Card)({
   cursor: "pointer",
   position: "relative",
   textOverflow: "ellipsis",
-  minHeight: "5rem",
+  minHeight: "1rem",
   marginBottom: "1rem",
-  width: "20rem",
+  width: "17rem",
   color: "black",
+  "&:hover": {
+    backgroundColor: "#c4e1ff",
+  },
 });
 
 interface EntityProps {
@@ -49,25 +53,27 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
       />
       <ModuleContainer>
         <ModuleDetail module={entity} />
-        {entity.relatedEntities?.map((relatedEntity) => (
-          <Link href={`/entities/${relatedEntity.slug}`} key={relatedEntity.slug} passHref>
-            <a>
-              <EntityRelatedEntityCard raised>
-                <CardHeader
-                  title={relatedEntity.name}
-                  titleTypographyProps={{ variant: "h5" }}
-                ></CardHeader>
-                <CardContent>
-                  <HTMLEllipsis
-                    unsafeHTML={relatedEntity.description}
-                    maxLine="1"
-                    basedOn="words"
-                  />
-                </CardContent>
-              </EntityRelatedEntityCard>
-            </a>
-          </Link>
-        ))}
+        {(entity.relatedEntities?.length ?? 0) > 0 && (
+          <>
+            <CardHeader
+              title={`Entitles related to ${entity.name}:`}
+              style={{ textAlign: "center" }}
+            ></CardHeader>
+            <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+              {entity.relatedEntities?.map((relatedEntity) => (
+                <Link href={`/entities/${relatedEntity.slug}`} key={relatedEntity.slug} passHref>
+                  <a>
+                    <EntityRelatedEntityCard raised sx={{ margin: "0.3rem" }}>
+                      <Typography sx={{ padding: "0.5rem", textAlign: "center" }}>
+                        <HTMLEllipsis unsafeHTML={relatedEntity.name} maxLine="1" basedOn="words" />
+                      </Typography>
+                    </EntityRelatedEntityCard>
+                  </a>
+                </Link>
+              ))}
+            </Box>
+          </>
+        )}
         {(entity.relatedQuotes?.length ?? 0) > 0 && (
           <>
             <CardHeader
