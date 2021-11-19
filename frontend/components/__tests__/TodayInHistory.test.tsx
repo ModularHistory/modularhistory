@@ -27,18 +27,18 @@ describe("TodayInHistory", () => {
   };
 
   it("renders", () => {
-    render(<TodayInHistory todayModules={[]} />);
+    render(<TodayInHistory modules={[]} />);
   });
 
   describe("with content", () => {
     it("renders modules", async () => {
-      const { findByText } = render(<TodayInHistory todayModules={[testModule]} />);
+      const { findByText } = render(<TodayInHistory modules={[testModule]} />);
       expect(await findByText(testModule.title)).toBeInTheDocument();
     });
 
     it("has modules linked to details pages", async () => {
       mockRouter.setCurrentUrl("/");
-      const { findByText } = render(<TodayInHistory todayModules={[testModule]} />);
+      const { findByText } = render(<TodayInHistory modules={[testModule]} />);
       userEvent.click(await findByText(testModule.title));
       expect(Router.asPath).toStrictEqual(testModule.absoluteUrl);
     });
@@ -46,7 +46,7 @@ describe("TodayInHistory", () => {
 
   describe("without content", () => {
     it("shows 'no modules' message", async () => {
-      const { findByText } = render(<TodayInHistory todayModules={[]} />);
+      const { findByText } = render(<TodayInHistory modules={[]} />);
       expect(
         await findByText("There are no modules associated with this date.")
       ).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe("TodayInHistory", () => {
   describe("module card clicked", () => {
     it("renders clicked module card", async () => {
       mockRouter.setCurrentUrl("/");
-      const { findByText } = render(<TodayInHistory todayModules={[testModule]} />);
+      const { findByText } = render(<TodayInHistory modules={[testModule]} />);
       userEvent.click(await findByText(testModule.title));
       expect(Router.asPath).toStrictEqual(testModule.absoluteUrl);
     });

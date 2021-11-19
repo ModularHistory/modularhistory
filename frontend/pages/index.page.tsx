@@ -38,11 +38,10 @@ interface GridItemProps {
   sx?: SxProps;
 }
 
-interface FeaturedContentProps {
+interface HomePageProps {
   featuredModules: Exclude<ModuleUnion, Topic>[];
+  todayInHistoryModules: Exclude<ModuleUnion, Topic>[];
 }
-
-type HomePageProps = TodayInHistoryProps & FeaturedContentProps;
 
 const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" sx={sx}>
@@ -50,7 +49,7 @@ const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   </Grid>
 );
 
-const Home: FC<HomePageProps> = ({ todayModules, featuredModules }: HomePageProps) => {
+const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: HomePageProps) => {
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,7 +115,7 @@ const Home: FC<HomePageProps> = ({ todayModules, featuredModules }: HomePageProp
           <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
             <CardContent>
-              <FeaturedContent featuredModules={featuredModules} />
+              <FeaturedContent modules={featuredModules} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -124,7 +123,7 @@ const Home: FC<HomePageProps> = ({ todayModules, featuredModules }: HomePageProp
           <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <CardContent>
-              <TodayInHistory todayModules={todayModules} />
+              <TodayInHistory modules={todayInHistoryModules} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -164,11 +163,15 @@ const AboutModularHistory: FC = () => {
   );
 };
 
-const FeaturedContent: FC<FeaturedContentProps> = ({ featuredModules }: FeaturedContentProps) => {
+interface FeaturedContentProps {
+  modules: Exclude<ModuleUnion, Topic>[];
+}
+
+const FeaturedContent: FC<FeaturedContentProps> = ({ modules }: FeaturedContentProps) => {
   return (
     <Grid container alignItems="center" justifyContent="center">
-      {featuredModules.length ? (
-        featuredModules.map((module, index) => (
+      {modules.length ? (
+        modules.map((module, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
             <Link href={module.absoluteUrl} underline="none">
               <a>
@@ -259,13 +262,13 @@ const SubscriptionBox: FC = () => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  let todayModules: TodayInHistoryProps[] = [];
+  let todayInHistoryModules: TodayInHistoryProps[] = [];
   let featuredModules: FeaturedContentProps[] = [];
 
   const tihPromise = axios
     .get(`http://django:8000/api/home/today_in_history/`)
     .then((response) => {
-      todayModules = response.data;
+      todayInHistoryModules = response.data;
     })
     .catch((error) => {
       console.error(error);
@@ -283,7 +286,7 @@ export const getStaticProps: GetStaticProps = async () => {
   await Promise.allSettled([tihPromise, featuredPromise]);
 
   return {
-    props: { todayModules, featuredModules },
+    props: { todayInHistoryModules, featuredModules },
     revalidate: 10,
   };
 };
