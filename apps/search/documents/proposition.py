@@ -5,7 +5,7 @@ from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
 from apps.propositions.models.proposition import Proposition
-from apps.search.documents.base import Document
+from apps.search.documents.base import Document, InstantSearchDocumentFactory
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
 
@@ -52,3 +52,8 @@ class PropositionDocument(Document):
             return related_instance.propositions.all()
         except AttributeError:
             return related_instance.proposition_set.all()
+
+
+PropositionInstantSearchDocument = InstantSearchDocumentFactory(
+    model=Proposition, search_fields=['title'], filter_fields=['type']
+)
