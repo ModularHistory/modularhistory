@@ -2,9 +2,9 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
+from apps.sources.models import Publication, SourceFile
 from apps.sources.models.source import Source
 
-from ...sources.models import Publication, SourceFile
 from .base import Document, InstantSearchDocumentFactory
 
 
