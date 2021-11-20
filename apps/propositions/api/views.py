@@ -13,5 +13,5 @@ class PropositionViewSet(ExtendedModelViewSet):
         # get_absolute_url for occurrences currently returns a link with "propositions"
         # instead of "occurrences". For now, we work around this by allowing retrieval
         # of occurrences through the propositions API, but listing should exclude occurrences.
-        self.queryset = self.queryset.filter(type='propositions.conclusions')
+        self.queryset = self.queryset.filter(type='propositions.conclusion')
         return super().list(request, **kwargs)

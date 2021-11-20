@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -47,15 +48,26 @@ class InstantSearchApiView(APIView):
     """API view used by search-as-you-type fields."""
 
     def get(self, request):
-        query = request.query_params.get(QUERY_PARAM, '')
+        query = request.query_params.get(QUERY_PARAM) or request.data.get(QUERY_PARAM, '')
+        model = request.query_params.get('model') or request.data.get('model')
+        filters = request.data.get('filters', {})
+
         if len(query) == 0:
             return Response([])
 
-        document = instant_search_documents_map[request.query_params.get('model')]
+        if model not in instant_search_documents_map:
+            raise ValidationError(
+                f'Invalid instant search model, must be one of: {", ".join(instant_search_documents_map.keys())}'
+            )
 
+        if not isinstance(filters, dict):
+            raise ValidationError(f'Invalid filters, must be a key-valued object')
+
+        document = instant_search_documents_map[model]
         search = document.search()
-        if request.query_params.get('filters', None):
-            search = search.filter('term', **request.query_params.get('filters', {}))
+
+        if filters:
+            search = search.filter('term', **filters)
 
         results = search.query(
             'multi_match', query=query, fields=document.search_fields

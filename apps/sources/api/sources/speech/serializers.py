@@ -1,5 +1,4 @@
 from apps.propositions.api.serializers import PropositionDrfSerializer
-from apps.search.api.instant_search import INSTANT_SEARCH_TOPICS
 from apps.sources.api.serializers import SourceDrfSerializer
 from apps.sources.models import Speech
 
@@ -11,7 +10,7 @@ class SpeechDrfSerializer(SourceDrfSerializer):
 
     instant_search_fields = {
         'utterance': {
-            'module': INSTANT_SEARCH_TOPICS,
+            'model': 'propositions.proposition',
             'filters': {
                 'type': 'speech',
             },

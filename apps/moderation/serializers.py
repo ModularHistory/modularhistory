@@ -1,19 +1,13 @@
 from django.core.serializers.python import Serializer
-from django.urls import reverse
 from rest_framework import serializers
 
-from apps.search.api.instant_search import (
-    INSTANT_SEARCH_ENTITIES,
-    INSTANT_SEARCH_TOPICS,
-)
-
 common_instant_search_fields = {
-    'attributees': {'module': INSTANT_SEARCH_ENTITIES},
-    'related_entities': {'module': INSTANT_SEARCH_ENTITIES},
-    'tags': {'module': INSTANT_SEARCH_TOPICS},
-    'location': {'module': INSTANT_SEARCH_TOPICS},  # TODO
-    'file': {'module': INSTANT_SEARCH_TOPICS},  # TODO
-    'images': {'module': INSTANT_SEARCH_TOPICS},  # TODO
+    'attributees': {'model': 'entities.entity'},
+    'related_entities': {'model': 'entities.entity'},
+    'tags': {'model': 'topics.topic'},
+    'location': {'model': 'places.place'},
+    'file': {'model': 'sources.sourcefile'},
+    'images': {'model': 'images.image'},
 }
 
 
@@ -28,10 +22,8 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
     def get_instant_search_field(self, field, field_name: str):
         field_info = self.get_instant_search_fields().get(field_name)
         if field_info:
-            module = field_info['module']
             return {
-                'module': module,
-                'path': reverse(f'{module}:instant_search'),
+                'model': field_info['model'],
                 'filters': field_info.get('filters', {}),
             }
         return None

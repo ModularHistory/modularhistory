@@ -1,7 +1,5 @@
 from drf_writable_nested import UniqueFieldsMixin
-from rest_framework.exceptions import ValidationError
 
-from apps.search.api.instant_search import INSTANT_SEARCH_TOPICS
 from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDrfSerializer
 from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
 from apps.sources.models import Article
@@ -14,13 +12,10 @@ class _ArticleDrfSerializer(
 
     instant_search_fields = {
         'publication': {
-            'module': INSTANT_SEARCH_TOPICS,  # TODO
+            'model': 'sources.publication',
         },
         'original_edition': {
-            'module': INSTANT_SEARCH_TOPICS,  # TODO
-            'filters': {
-                'model': 'sources.article',
-            },
+            'model': 'sources.article',
         },
     }
 
