@@ -85,7 +85,7 @@ const TimelineModuleMark: FC<
     }}
     onClick={() => {
       const moduleCard = mark.module.ref.current;
-      moduleCard?.scrollIntoView({ behavior: "smooth" });
+      moduleCard?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       moduleCard?.click();
     }}
     registryKey={mark.module.absoluteUrl}
@@ -141,7 +141,12 @@ const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
   return (
     <Tooltip
       title={
-        <Box whiteSpace={"nowrap"} data-testid={"timelineTooltip"}>
+        <Box
+          whiteSpace={"nowrap"}
+          textOverflow={"ellipsis"}
+          overflow={"hidden"}
+          data-testid={"timelineTooltip"}
+        >
           {tooltipTitle}
         </Box>
       }

@@ -12,7 +12,6 @@ import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
   MuiSlider
 )({
-  height: "77vh",
   [`& .${sliderClasses.mark}`]: {
     width: "12px",
     backgroundColor: "#212529",
