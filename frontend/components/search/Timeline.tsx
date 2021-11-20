@@ -2,7 +2,6 @@ import { SerpModule } from "@/types/modules";
 import Compress from "@mui/icons-material/Compress";
 import {
   Box,
-  Mark,
   Slider as MuiSlider,
   sliderClasses,
   SliderMark as MuiSliderMark,
@@ -15,23 +14,24 @@ import {
   ComponentProps,
   Dispatch,
   FC,
+  forwardRef,
   memo,
-  MutableRefObject,
+  ReactElement,
   RefObject,
   SetStateAction,
+  TouchEventHandler,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { throttle } from "throttle-debounce";
 
 const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
   MuiSlider
 )({
-  height: "80vh",
-  position: "fixed",
-  left: "40px",
+  height: "77vh",
   [`& .${sliderClasses.mark}`]: {
     width: "12px",
     backgroundColor: "#212529",
@@ -53,41 +53,66 @@ type PositionedModule<T extends Partial<SerpModule>> = T & Required<Pick<T, "tim
 function positionedModuleTypeGuard<T extends Partial<SerpModule>>(
   module: T
 ): module is PositionedModule<T> {
-  return !(module.timelinePosition == null);
+  return module.timelinePosition != null;
 }
 
-type TimelineMarkModule<T extends HTMLElement> = Required<
+type TimelineMarkModule<T extends HTMLElement = HTMLElement> = Required<
   Pick<SerpModule, "timelinePosition" | "title" | "absoluteUrl">
 > & { ref: RefObject<T> };
 
-interface TimelineMarkProps<T extends HTMLElement = HTMLElement>
-  extends ComponentProps<typeof MuiSliderMark> {
-  modules: Array<TimelineMarkModule<T>>;
+interface TimelineMarkProps extends ComponentProps<typeof MuiSliderMark> {
   viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
+  marks: Mark[];
 }
 
 const TimelineMark: FC<TimelineMarkProps> = memo(
-  function TimelineMark({ modules, viewStateRegistry, ...markProps }) {
+  function TimelineMark({ viewStateRegistry, marks, ...markProps }) {
     // Mui passes this prop but doesn't type it.
-    const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
-    const isBreak = moduleIndex >= modules.length;
-    const module = isBreak ? undefined : modules[moduleIndex];
+    const index = (markProps as typeof markProps & { "data-index": number })["data-index"];
+    const mark = marks[index];
 
     const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [inView, setInView] = useState(module ? isElementInViewport(module.ref.current) : false);
+    const [inView, setInView] = useState(
+      mark.isBreak ? false : isElementInViewport(mark.module.ref.current)
+    );
 
-    if (!module) {
+    if (mark.isBreak) {
+      viewStateRegistry.set(String(mark.value), setInView);
       return (
-        <MuiSliderMark {...markProps} data-testid={"timelineBreak"}>
-          <BreakIcon />
-        </MuiSliderMark>
+        <Tooltip
+          title={
+            <Box whiteSpace={"nowrap"} data-testid={"timelineTooltip"}>
+              {mark.label}
+            </Box>
+          }
+          arrow
+          placement={"right"}
+          open={inView || tooltipOpen}
+          onOpen={() => setTooltipOpen(true)}
+          onClose={() => setTooltipOpen(false)}
+          // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
+          componentsProps={{
+            popper: { disablePortal: true } as any,
+            tooltip: { sx: { zIndex: 100 } },
+          }}
+        >
+          <MuiSliderMark {...markProps} data-testid={"timelineBreak"}>
+            <Box
+              ref={(ref: HTMLSpanElement) => {
+                mark.ref = ref;
+              }}
+            >
+              <BreakIcon />
+            </Box>
+          </MuiSliderMark>
+        </Tooltip>
       );
     }
 
-    viewStateRegistry.set(module.absoluteUrl, setInView);
+    viewStateRegistry.set(mark.module.absoluteUrl, setInView);
 
     const handleClick = () => {
-      const moduleCard = module.ref.current;
+      const moduleCard = mark.module.ref.current;
       moduleCard?.scrollIntoView({ behavior: "smooth" });
       moduleCard?.click();
     };
@@ -96,7 +121,7 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
       <Tooltip
         title={
           <Box whiteSpace={"nowrap"} onClick={handleClick} data-testid={"timelineTooltip"}>
-            {module.title}
+            {mark.module.title}
           </Box>
         }
         arrow
@@ -108,13 +133,21 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
         componentsProps={{ popper: { disablePortal: true } as any }}
       >
         <MuiSliderMark {...markProps} data-testid={"timelineMark"}>
-          <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
+          <Box
+            position={"relative"}
+            bottom={"3px"}
+            padding={"5px"}
+            onClick={handleClick}
+            ref={(ref: HTMLDivElement) => {
+              mark.ref = ref;
+            }}
+          />
         </MuiSliderMark>
       </Tooltip>
     );
   },
   (prevProps, nextProps) => {
-    const keys: Array<keyof TimelineMarkProps> = ["modules", "viewStateRegistry"];
+    const keys: Array<keyof TimelineMarkProps> = ["marks", "viewStateRegistry"];
     for (const key of keys) {
       if (prevProps[key] !== nextProps[key]) return false;
     }
@@ -122,20 +155,52 @@ const TimelineMark: FC<TimelineMarkProps> = memo(
   }
 );
 
+interface TimelineThumbProps extends ComponentProps<typeof SliderThumb> {
+  refs: HTMLSpanElement[];
+  "data-index": number;
+}
+
+const TimelineThumb: FC<TimelineThumbProps> = ({ refs, ...props }) => {
+  // SliderThumb does forward its ref, but it is mis-typed, so we have to cast it.
+  const SliderThumbWithRef = SliderThumb as ReturnType<typeof forwardRef>;
+  return (
+    <SliderThumbWithRef
+      {...props}
+      ref={(ref: HTMLSpanElement) => {
+        refs[props["data-index"]] = ref;
+      }}
+      data-testid={"timelineThumb"}
+    />
+  );
+};
+
 export type TimelineProps<T extends HTMLElement = HTMLElement> = {
   modules: Array<
     Omit<TimelineMarkModule<T>, "timelinePosition"> &
       Partial<Pick<TimelineMarkModule<T>, "timelinePosition">>
   >;
-} & Pick<TimelineMarkProps, "viewStateRegistry">;
+} & Pick<TimelineMarkProps, "viewStateRegistry"> &
+  Partial<Pick<SliderProps, "sx">>;
 
-type TimelineCalculations = {
+type Mark<T extends HTMLElement = HTMLElement> = Exclude<
+  SliderProps["marks"],
+  boolean | undefined
+>[number] &
+  (
+    | { isBreak: false; module: TimelineMarkModule<T> }
+    | { isBreak: true; label: ReactElement; module?: never }
+  ) & {
+    ref?: HTMLSpanElement;
+  };
+
+interface TimelineCalculations extends Required<Pick<SliderProps, "min" | "max">> {
+  marks: Mark[];
   now: number;
   scale: (n: number) => number;
   descale: (n: number) => number;
-} & Required<Pick<SliderProps, "marks" | "min" | "max">>;
+}
 
-const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
+const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
   // Some modules will possibly not have dates. Since we rely on the indexes of
   // marks and modules aligning, we must filter out undated modules.
   const datedModules = useMemo(() => modules.filter(positionedModuleTypeGuard), [modules]);
@@ -148,13 +213,22 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
     if (datedModules.length < 2) return;
     const now = new Date().getFullYear();
 
-    const positions = datedModules.map((m) => m.timelinePosition);
-    const marks: Mark[] = positions.map((position, index) => ({
-      // add a tiny incremental value to eliminate duplicate keys
-      value: position + index * 10 ** -5,
-    }));
+    const marks: TimelineCalculations["marks"] = datedModules.map(
+      ({ timelinePosition, absoluteUrl, title, ref }, index) => ({
+        // add a tiny incremental value to eliminate duplicate keys
+        value: timelinePosition + index * 10 ** -5,
+        module: {
+          timelinePosition,
+          absoluteUrl,
+          title,
+          ref,
+        },
+        isBreak: false,
+      })
+    );
 
     // mark & module indexes must correspond, so we can only sort after creating marks
+    const positions = datedModules.map((m) => m.timelinePosition);
     positions.sort((a, b) => a - b);
 
     // lengths of time between consecutive timeline marks
@@ -187,6 +261,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
               {formatYbp(end - buffer, now)} — {formatYbp(start + buffer, now)}
             </Box>
           ),
+          isBreak: true,
         });
       }
     });
@@ -223,9 +298,55 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
     setValue([min, max]);
   }, [datedModules]);
 
-  const thumbRefs: MutableRefObject<HTMLElement | null>[] = [useRef(null), useRef(null)];
+  const thumbRefs = useRef<TimelineThumbProps["refs"]>([]).current;
   const [value, setValue] = useState([0, 100]);
   const handleChange = useCallback((_, value) => setValue(value), []);
+
+  const touchTimeoutRef = useRef<number>();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleTouchMove: TouchEventHandler = useCallback(
+    throttle(100, true, (event) => {
+      clearTimeout(touchTimeoutRef.current);
+      const { clientY } = event.touches[0];
+      const measuredMarks = marks.map((mark) => {
+        const { top } = mark.ref?.getBoundingClientRect() ?? {};
+        return { mark, distance: top ? Math.abs(clientY - top) : Number.POSITIVE_INFINITY };
+      });
+      measuredMarks
+        .sort((a, b) => a.distance - b.distance)
+        .forEach(({ mark }, sortIndex) => {
+          viewStateRegistry.get(mark.module?.absoluteUrl ?? String(mark.value))?.(sortIndex < 5);
+        });
+    }),
+    [calculations]
+  );
+
+  const maybeStopPropagation = useCallback(
+    (event: Pick<MouseEvent | TouchEvent, "target" | "stopPropagation">) => {
+      // by default the slider will move thumbs to click locations anywhere on the rail,
+      // so we block clicks that are not directly on the thumbs.
+      if (!thumbRefs.includes(event.target as HTMLElement)) {
+        event.stopPropagation();
+      }
+    },
+    [thumbRefs]
+  );
+
+  const handleTouchStart: TouchEventHandler = useCallback(
+    (event) => {
+      maybeStopPropagation(event);
+      handleTouchMove(event);
+    },
+    [maybeStopPropagation, handleTouchMove]
+  );
+
+  const handleTouchEnd: TouchEventHandler = useCallback(() => {
+    touchTimeoutRef.current = window.setTimeout(() => {
+      for (const setState of viewStateRegistry.values()) {
+        setState(false);
+      }
+    }, 1e3);
+  }, [viewStateRegistry]);
 
   if (calculations === null) {
     return <Slider orientation={"vertical"} value={[0, 100]} disabled />;
@@ -235,12 +356,10 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
 
   return (
     <Slider
-      onMouseDownCapture={(event) => {
-        // by default the slider will move thumbs to click locations anywhere on the rail,
-        // so we block clicks that are not directly on the thumbs.
-        if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
-          event.stopPropagation();
-      }}
+      onMouseDownCapture={maybeStopPropagation}
+      onTouchStartCapture={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       orientation={"vertical"}
       valueLabelDisplay={"on"}
       marks={marks}
@@ -250,13 +369,14 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
       max={max}
       valueLabelFormat={(ybp) => formatYbp(descale(ybp), now)}
       componentsProps={{
-        mark: { modules: datedModules, viewStateRegistry },
-        thumb: { disabled: true },
+        mark: { viewStateRegistry, marks },
+        thumb: { refs: thumbRefs },
       }}
       components={{
         Mark: TimelineMark,
-        Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
+        Thumb: TimelineThumb,
       }}
+      sx={sx}
     />
   );
 };
