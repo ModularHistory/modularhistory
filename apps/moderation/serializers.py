@@ -6,7 +6,6 @@ common_instant_search_fields = {
     'related_entities': {'model': 'entities.entity'},
     'tags': {'model': 'topics.topic'},
     'location': {'model': 'places.place'},
-    'file': {'model': 'sources.sourcefile'},
     'images': {'model': 'images.image'},
 }
 
@@ -19,13 +18,13 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
     def get_instant_search_fields(self) -> dict:
         return common_instant_search_fields | self.instant_search_fields
 
-    def get_instant_search_field(self, field, field_name: str):
-        field_info = self.get_instant_search_fields().get(field_name)
-        if field_info:
-            return {
-                'model': field_info['model'],
-                'filters': field_info.get('filters', {}),
-            }
+    def get_instant_search_field(self, field_name: str):
+        field = self.get_instant_search_fields().get(field_name)
+        if field:
+            field_info = {'model': field['model']}
+            if 'filters' in field:
+                field_info['filters'] = field['filters']
+            return field_info
         return None
 
     def get_choices_for_field(self, field, field_name: str):
@@ -54,7 +53,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                     'help_text': getattr(field, 'help_text', None),
                     'choices': self.get_choices_for_field(field, field_name),
                 }
-                instant_search_field = self.get_instant_search_field(field, field_name)
+                instant_search_field = self.get_instant_search_field(field_name)
                 if instant_search_field:
                     data.update(data | {'instant_search': instant_search_field})
                 fields.append(data)

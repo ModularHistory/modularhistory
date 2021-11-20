@@ -10,7 +10,7 @@ class _ArticleDrfSerializer(
 ):
     """Serializer for article sources."""
 
-    instant_search_fields = {
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
         'publication': {'model': 'sources.publication'},
         'original_edition': {
             'model': 'sources.source',

@@ -45,6 +45,10 @@ class SourceContainmentDrfSerializer(DrfModelSerializer):
 class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for sources."""
 
+    instant_search_fields = {
+        'file': {'model': 'sources.sourcefile'},
+    }
+
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
