@@ -9,6 +9,7 @@ import {
   SliderThumb,
   styled,
   Tooltip,
+  TooltipProps,
 } from "@mui/material";
 import {
   ComponentProps,
@@ -16,7 +17,9 @@ import {
   FC,
   forwardRef,
   memo,
+  MouseEventHandler,
   ReactElement,
+  ReactNode,
   RefObject,
   SetStateAction,
   TouchEventHandler,
@@ -65,85 +68,120 @@ interface TimelineMarkProps extends ComponentProps<typeof MuiSliderMark> {
   marks: Mark[];
 }
 
-const TimelineMark: FC<TimelineMarkProps> = memo(
-  function TimelineMark({ viewStateRegistry, marks, ...markProps }) {
-    // Mui passes this prop but doesn't type it.
-    const index = (markProps as typeof markProps & { "data-index": number })["data-index"];
-    const mark = marks[index];
-
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [inView, setInView] = useState(
-      mark.isBreak ? false : isElementInViewport(mark.module.ref.current)
-    );
-
-    if (mark.isBreak) {
-      viewStateRegistry.set(String(mark.value), setInView);
-      return (
-        <Tooltip
-          title={
-            <Box whiteSpace={"nowrap"} data-testid={"timelineTooltip"}>
-              {mark.label}
-            </Box>
-          }
-          arrow
-          placement={"right"}
-          open={inView || tooltipOpen}
-          onOpen={() => setTooltipOpen(true)}
-          onClose={() => setTooltipOpen(false)}
-          // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
-          componentsProps={{
-            popper: { disablePortal: true } as any,
-            tooltip: { sx: { zIndex: 100 } },
-          }}
-        >
-          <MuiSliderMark {...markProps} data-testid={"timelineBreak"}>
-            <Box
-              ref={(ref: HTMLSpanElement) => {
-                mark.ref = ref;
-              }}
-            >
-              <BreakIcon />
-            </Box>
-          </MuiSliderMark>
-        </Tooltip>
-      );
-    }
-
-    viewStateRegistry.set(mark.module.absoluteUrl, setInView);
-
-    const handleClick = () => {
+const TimelineModuleMark: FC<
+  Pick<TimelineMarkBaseProps, "viewStateRegistry" | "muiMarkProps"> & {
+    mark: Mark & { isBreak: false };
+  }
+> = ({ mark, viewStateRegistry, muiMarkProps }) => (
+  <TimelineMarkBase
+    tooltipTitle={mark.module.title}
+    markBoxProps={{
+      position: "relative",
+      bottom: "3px",
+      padding: "5px",
+    }}
+    onClick={() => {
       const moduleCard = mark.module.ref.current;
       moduleCard?.scrollIntoView({ behavior: "smooth" });
       moduleCard?.click();
-    };
+    }}
+    registryKey={mark.module.absoluteUrl}
+    mark={mark}
+    viewStateRegistry={viewStateRegistry}
+    muiMarkProps={muiMarkProps}
+  />
+);
 
-    return (
-      <Tooltip
-        title={
-          <Box whiteSpace={"nowrap"} onClick={handleClick} data-testid={"timelineTooltip"}>
-            {mark.module.title}
-          </Box>
-        }
-        arrow
-        placement={"right"}
-        open={inView || tooltipOpen}
-        onOpen={() => setTooltipOpen(true)}
-        onClose={() => setTooltipOpen(false)}
-        // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
-        componentsProps={{ popper: { disablePortal: true } as any }}
-      >
-        <MuiSliderMark {...markProps} data-testid={"timelineMark"}>
-          <Box
-            position={"relative"}
-            bottom={"3px"}
-            padding={"5px"}
-            onClick={handleClick}
-            ref={(ref: HTMLDivElement) => {
-              mark.ref = ref;
-            }}
-          />
-        </MuiSliderMark>
-      </Tooltip>
+const TimelineBreakMark: FC<
+  Pick<TimelineMarkBaseProps, "viewStateRegistry" | "muiMarkProps"> & {
+    mark: Mark & { isBreak: true };
+  }
+> = ({ mark, viewStateRegistry, muiMarkProps }) => (
+  <TimelineMarkBase
+    tooltipTitle={mark.label}
+    tooltipProps={{ zIndex: 1 }}
+    markBoxProps={{ children: <BreakIcon /> }}
+    registryKey={String(mark.value)}
+    mark={mark}
+    viewStateRegistry={viewStateRegistry}
+    muiMarkProps={muiMarkProps}
+  />
+);
+
+interface TimelineMarkBaseProps {
+  tooltipTitle: ReactNode;
+  tooltipProps?: NonNullable<TooltipProps["componentsProps"]>["tooltip"];
+  markBoxProps: ComponentProps<typeof Box>;
+  onClick?: MouseEventHandler;
+  registryKey: string;
+  mark: Mark;
+  viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
+  muiMarkProps: ComponentProps<typeof MuiSliderMark>;
+}
+
+const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
+  tooltipTitle,
+  tooltipProps,
+  markBoxProps,
+  onClick,
+  registryKey,
+  mark,
+  viewStateRegistry,
+  muiMarkProps,
+}) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [inView, setInView] = useState(
+    mark.isBreak ? false : isElementInViewport(mark.module.ref.current)
+  );
+
+  viewStateRegistry.set(registryKey, setInView);
+  return (
+    <Tooltip
+      title={
+        <Box whiteSpace={"nowrap"} data-testid={"timelineTooltip"}>
+          {tooltipTitle}
+        </Box>
+      }
+      arrow
+      placement={"right"}
+      open={inView || tooltipOpen}
+      onOpen={() => setTooltipOpen(true)}
+      onClose={() => setTooltipOpen(false)}
+      // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
+      componentsProps={{
+        popper: { disablePortal: true } as any,
+        tooltip: { onClick, ...tooltipProps },
+      }}
+    >
+      <MuiSliderMark {...muiMarkProps} data-testid={"timelineBreak"}>
+        <Box
+          ref={(ref: HTMLSpanElement) => {
+            mark.ref = ref;
+          }}
+          onClick={onClick}
+          {...markBoxProps}
+        />
+      </MuiSliderMark>
+    </Tooltip>
+  );
+};
+
+const TimelineMark: FC<TimelineMarkProps> = memo(
+  function TimelineMark({ marks, viewStateRegistry, ...muiMarkProps }) {
+    // Mui passes this prop but doesn't type it.
+    const mark = marks[(muiMarkProps as unknown as { "data-index": number })["data-index"]];
+    return mark.isBreak ? (
+      <TimelineBreakMark
+        mark={mark}
+        viewStateRegistry={viewStateRegistry}
+        muiMarkProps={muiMarkProps}
+      />
+    ) : (
+      <TimelineModuleMark
+        mark={mark}
+        viewStateRegistry={viewStateRegistry}
+        muiMarkProps={muiMarkProps}
+      />
     );
   },
   (prevProps, nextProps) => {
