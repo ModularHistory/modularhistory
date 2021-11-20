@@ -49,6 +49,7 @@ class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSer
             'primary_image',
             'cached_images',
             'timeline',
+            'type',
         ]
         read_only_fields = ['truncated_elaboration']
         extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {

@@ -321,7 +321,9 @@ def get_model_name(instance: Union[ExtendedModel, Type[ExtendedModel]]) -> str:
         is_typed = hasattr(instance, 'typed_model_marker')
         if not is_polymorphic and not is_typed:
             instance_type = type_field.value_from_object(instance)
-            if isinstance(instance_type, str) and not instance_type.startswith(app_label):
+            if isinstance(instance_type, str):
+                if instance_type.startswith(app_label):
+                    return instance_type
                 model_type = instance_type
     except FieldDoesNotExist:
         pass
