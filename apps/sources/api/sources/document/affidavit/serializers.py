@@ -5,6 +5,13 @@ from apps.sources.models import Affidavit
 class _AffidavitDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
     """Serializer for affidavit document sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.affidavit'},
+        },
+    }
+
     class Meta(SourceDrfSerializer.Meta):
         location_required = True
         model = Affidavit

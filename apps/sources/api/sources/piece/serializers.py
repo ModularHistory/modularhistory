@@ -5,6 +5,13 @@ from apps.sources.models import Piece
 class _PieceDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
     """Serializer for piece sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.piece'},
+        },
+    }
+
     class Meta(SourceDrfSerializer.Meta):
         model = Piece
         fields = (

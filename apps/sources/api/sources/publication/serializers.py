@@ -33,6 +33,13 @@ class PublicationDrfSerializer(
 class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
     """Serializer for webpage sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.webpage'},
+        },
+    }
+
     date = HistoricDateTimeDrfField(write_only=True, required=False)
 
     def validate(self, attrs):
