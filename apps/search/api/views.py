@@ -52,16 +52,15 @@ class InstantSearchApiView(APIView):
         model = request.query_params.get('model') or request.data.get('model')
         filters = request.data.get('filters', {})
 
-        if len(query) == 0:
-            return Response([])
-
         if model not in instant_search_documents_map:
             raise ValidationError(
                 f'Invalid instant search model, must be one of: {", ".join(instant_search_documents_map.keys())}'
             )
-
         if not isinstance(filters, dict):
             raise ValidationError(f'Invalid filters, must be a key-valued object')
+
+        if len(query) == 0:
+            return Response([])
 
         document = instant_search_documents_map[model]
         search = document.search()
