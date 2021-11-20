@@ -17,6 +17,7 @@ class TopicViewSet(ExtendedModelViewSet):
     list_fields = {'name', 'pk'}
 
 
+# TODO: remove this after changing frontend to use the new API
 class TopicInstantSearchAPIView(APIView):
     """API view used by search-as-you-type fields retrieving topic names and IDs."""
 

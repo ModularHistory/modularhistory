@@ -19,6 +19,7 @@ class EntityViewSet(ExtendedModelViewSet):
     }
 
 
+# TODO: remove this after changing frontend to use the new API
 class EntityInstantSearchAPIView(APIView):
     """API view used by search-as-you-type fields retrieving entity names and IDs."""
 

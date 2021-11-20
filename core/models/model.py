@@ -104,6 +104,10 @@ class ExtendedModel(Model):
         """Return the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
 
+    @property
+    def model_name(self):
+        return get_model_name(self)
+
     def save(self, *args, **kwargs):
         self.pre_save()
         super().save(*args, **kwargs)
