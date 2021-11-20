@@ -133,6 +133,14 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
         <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings
         </NavDropdown.Item>
+        {
+          <>
+            <Divider style={{ margin: "0.5rem 0" }} />
+            <NavDropdown.Item href={`/users/${session.user.handle}/contributions`}>
+              My Contributions
+            </NavDropdown.Item>
+          </>
+        }
         {(session.user.isSuperuser && (
           <>
             <Divider style={{ margin: "0.5rem 0" }} />
