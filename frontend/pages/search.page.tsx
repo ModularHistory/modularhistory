@@ -175,19 +175,22 @@ const SearchResultsPanes = withRouter(
       );
 
       return (
-        <Stack direction={"row"} divider={<Divider orientation={"vertical"} />}>
+        <Stack direction={"row"} divider={<Divider orientation={"vertical"} flexItem />}>
           <Timeline
             modules={modulesWithRefs}
             viewStateRegistry={viewStateRegistry}
             sx={{
-              ml: 4,
-              mb: 6,
-              mr: { xs: 4, md: 24 },
+              // ml: 4,
+              // mb: 6,
+              // mr: { xs: 4, md: 12, lg: 24 },
+              // p: {}
+              m: 0,
+              p: "0 50px !important",
               position: "sticky",
               top: "60px",
               height: "85vh",
               zIndex: 10,
-              transition: "margin-right 250ms",
+              // transition: "margin-right 500ms",
             }}
           />
           {useMemo(
@@ -263,17 +266,13 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <Grid
-      container
-      justifyContent={"right"}
-      sx={{ overflowY: "scroll", flex: "1 1", minHeight: "100px" }}
-    >
+    <Grid container>
       {modules.map((module, index) => (
-        <Grid xs={12} sm={6} md={4} lg={3} item key={module.absoluteUrl}>
+        <Grid xs={12} sm={6} md={4} xl={3} item key={module.absoluteUrl}>
           <InView
             as="div"
             onChange={(inView) => {
-              viewStateRegistry.get(module.absoluteUrl)?.(inView);
+              // viewStateRegistry.get(module.absoluteUrl)?.(inView);
             }}
           >
             <a

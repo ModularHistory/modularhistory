@@ -32,7 +32,7 @@ export type Mark<T extends HTMLElement = HTMLElement> = Exclude<
 >[number] &
   (
     | { isBreak: false; module: TimelineMarkModule<T> }
-    | { isBreak: true; label: ReactElement; module?: never }
+    | { isBreak: true; labelNode: ReactElement; module?: never }
   ) & {
     ref?: HTMLSpanElement;
   };
@@ -101,7 +101,7 @@ const TimelineBreakMark: FC<
   }
 > = ({ mark, viewStateRegistry, muiMarkProps }) => (
   <TimelineMarkBase
-    tooltipTitle={mark.label}
+    tooltipTitle={mark.labelNode}
     tooltipStyles={{ zIndex: 1 }}
     markBoxProps={{ children: <BreakIcon /> }}
     registryKey={String(mark.value)}
@@ -134,7 +134,8 @@ const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
 }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [inView, setInView] = useState(
-    mark.isBreak ? false : isElementInViewport(mark.module.ref.current)
+    // mark.isBreak ? false : isElementInViewport(mark.module.ref.current)
+    false
   );
 
   viewStateRegistry.set(registryKey, setInView);

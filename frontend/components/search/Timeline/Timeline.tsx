@@ -1,12 +1,8 @@
-import TimelineMark, {
-  Mark,
-  TimelineMarkModule,
-  TimelineMarkProps,
-} from "@/components/search/Timeline/TimelineMark";
 import { SerpModule } from "@/types/modules";
 import { Box, Slider as MuiSlider, sliderClasses, SliderProps, styled } from "@mui/material";
-import { FC, TouchEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, TouchEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { throttle } from "throttle-debounce";
+import TimelineMark, { Mark, TimelineMarkModule, TimelineMarkProps } from "./TimelineMark";
 import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 
 const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
@@ -21,6 +17,12 @@ const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkPro
     "&:before": { top: -8 },
   },
 });
+
+type MouseOrTouchEvent = Pick<MouseEvent | TouchEvent, "target" | "stopPropagation"> &
+  (
+    | (Pick<TouchEvent, "touches"> & { clientY?: never })
+    | (Pick<MouseEvent, "clientY"> & { touches?: never })
+  );
 
 type PositionedModule<T extends Partial<SerpModule>> = T & Required<Pick<T, "timelinePosition">>;
 
@@ -101,7 +103,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
         breaks.push(break_);
         marks.push({
           value: break_.value,
-          label: (
+          labelNode: (
             <Box color={"lightgray"}>
               {formatYbp(end - buffer, now)} — {formatYbp(start + buffer, now)}
             </Box>
@@ -148,11 +150,12 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
   const handleChange = useCallback((_, value) => setValue(value), []);
 
   const touchTimeoutRef = useRef<number>();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleTouchMove: TouchEventHandler = useCallback(
-    throttle(100, true, (event) => {
+  const handleMouseOrTouchMove = useCallback(
+    throttle(100, true, (event: MouseOrTouchEvent) => {
       clearTimeout(touchTimeoutRef.current);
-      const { clientY } = event.touches[0];
+      const { clientY } = event.touches ? event.touches[0] : event;
       const measuredMarks = marks.map((mark) => {
         const { top } = mark.ref?.getBoundingClientRect() ?? {};
         return { mark, distance: top ? Math.abs(clientY - top) : Number.POSITIVE_INFINITY };
@@ -167,7 +170,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
   );
 
   const maybeStopPropagation = useCallback(
-    (event: Pick<MouseEvent | TouchEvent, "target" | "stopPropagation">) => {
+    (event: MouseOrTouchEvent) => {
       // by default the slider will move thumbs to click locations anywhere on the rail,
       // so we block clicks that are not directly on the thumbs.
       if (!thumbRefs.includes(event.target as HTMLElement)) {
@@ -177,15 +180,15 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
     [thumbRefs]
   );
 
-  const handleTouchStart: TouchEventHandler = useCallback(
-    (event) => {
+  const handleTouchStart = useCallback(
+    (event: TouchEvent) => {
       maybeStopPropagation(event);
-      handleTouchMove(event);
+      handleMouseOrTouchMove(event);
     },
-    [maybeStopPropagation, handleTouchMove]
+    [maybeStopPropagation, handleMouseOrTouchMove]
   );
 
-  const handleTouchEnd: TouchEventHandler = useCallback(() => {
+  const handleMouseOrTouchEnd = useCallback(() => {
     touchTimeoutRef.current = window.setTimeout(() => {
       for (const setState of viewStateRegistry.values()) {
         setState(false);
@@ -203,8 +206,10 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
     <Slider
       onMouseDownCapture={maybeStopPropagation}
       onTouchStartCapture={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={handleTouchMove}
+      onMouseLeave={handleMouseOrTouchEnd}
+      onTouchEnd={handleMouseOrTouchEnd}
+      onMouseMove={handleMouseOrTouchMove}
+      onTouchMove={handleMouseOrTouchMove}
       orientation={"vertical"}
       valueLabelDisplay={"on"}
       marks={marks}
