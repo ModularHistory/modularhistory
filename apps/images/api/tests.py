@@ -36,6 +36,7 @@ class ImagesApiTest(ModerationApiTest):
             'description': 'Image 1 Description',
             'caption': 'Image 1 Caption',
             'provider': 'Image 1 Provider',
+            'image_type': 'painting',
             'date': '2001-01-01T01:01:20',
         }
 
@@ -47,5 +48,6 @@ class ImagesApiTest(ModerationApiTest):
             'caption': 'UPDATED Image 1 Caption',
             'provider': 'UPDATED Image 1 Provider',
             'date': '2004-01-01T00:00:00',
+            'image_type': 'portrait',
             'end_date': '2015-01-01T01:01:25',
         }
