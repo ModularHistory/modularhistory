@@ -53,7 +53,6 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    attributions = SourceAttributionDrfSerializer(many=True)
     source_containments = SourceContainmentDrfSerializer(many=True, required=False)
 
     file_serialized = SourceFileDrfSerializer(read_only=True, source='file')
@@ -71,8 +70,8 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'file',
             'location',
             'attributee_html',
-            'attributions',
             'related_entities',
+            'attributees',
             'containment_html',
             'source_containments',
             'file',
@@ -84,6 +83,12 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
+            'attributees': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Entity.objects.all(),
+            },
             'related_entities': {
                 'write_only': True,
                 'required': False,

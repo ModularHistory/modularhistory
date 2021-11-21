@@ -18,7 +18,7 @@ class _ArticleDrfSerializer(
         },
     }
 
-    publication = PublicationDrfSerializer()
+    publication_serialized = PublicationDrfSerializer(read_only=True, source='publication')
 
     class Meta(SourceDrfSerializer.Meta):
         model = Article
@@ -27,6 +27,7 @@ class _ArticleDrfSerializer(
             + PageNumbersDrfSerializerMixin.Meta.fields
             + [
                 'publication',
+                'publication_serialized',
                 'number',
                 'volume',
             ]

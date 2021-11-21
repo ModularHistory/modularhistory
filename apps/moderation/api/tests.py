@@ -95,12 +95,7 @@ class ModerationApiTest:
             response.status_code == 401
         ), 'Request without authentication should have been denied.'
         self.api_client.force_authenticate(self.contributor)
-        from pprint import pformat
-
-        try:
-            response = api_request(**request_kwargs)
-        except Exception as err:
-            raise Exception(pformat(data.get('attributions')) + '\n' + str(err))
+        response = api_request(**request_kwargs)
         self.api_client.logout()
         if response.status_code != change_status_code:
             raise Exception(f'Incorrect change status code: {response.data}')

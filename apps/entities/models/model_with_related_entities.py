@@ -46,7 +46,7 @@ class AbstractEntityRelation(ModeratedRelation):
 
 
 class RelatedEntitiesField(CustomManyToManyField):
-    """Custom field for related topics."""
+    """Custom field for related entities."""
 
     target_model = 'entities.Entity'
     through_model_base = AbstractEntityRelation

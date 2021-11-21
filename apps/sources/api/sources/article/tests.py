@@ -4,16 +4,14 @@ import pytest
 from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
-from apps.moderation.api.tests import ModerationApiTest
-from apps.sources.api.serializers import SourceAttributionDrfSerializer
-from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
+from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.sources.factories import ArticleFactory, PublicationFactory
 from apps.sources.models import Article
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 
 
-class ArticleApiTest(ModerationApiTest):
+class ArticlesApiTest(ModerationApiTest):
     """Test the articles api."""
 
     __test__ = True
@@ -25,27 +23,25 @@ class ArticleApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Article)
-        verified_article: Article = ArticleFactory.create(verified=True)
+        article: Article = ArticleFactory.create(verified=True)
         self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
         self.topic_ids = [TopicFactory.create().id for _ in range(4)]
-        self.publications = [PublicationFactory.create() for _ in range(2)]
-        Article.attributees.through.objects.create(
-            source=verified_article,
-            attributee_id=self.attributee_ids[3],
-            verified=True,
-        )
-        Article.tags.through.objects.create(
-            content_object=verified_article,
-            topic_id=self.topic_ids[3],
-            verified=True,
-        )
-        self.verified_model = verified_article
+        self.publications = [PublicationFactory.create().id for _ in range(2)]
+        article.attributees.set(shuffled_copy(self.attributee_ids, size=2))
+        article.tags.set(shuffled_copy(self.topic_ids, size=2))
+        self.verified_model = article
         self.uncheckable_fields = [
             'date',
             'end_date',
             'original_publication_date',
         ]
-        self.relation_fields = ['publication', 'attributions', 'source_containments', 'tags']
+        self.relation_fields = [
+            'publication',
+            'source_containments',
+            'attributees',
+            'related_entities',
+            'tags',
+        ]
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):
@@ -59,15 +55,9 @@ class ArticleApiTest(ModerationApiTest):
             'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'date': '2017-01-01 01:01:20.086202',
             'end_date': '2020-01-01 01:01:20.086202',
-            'publication': PublicationDrfSerializer(self.publications[0]).data,
-            'attributions': [
-                SourceAttributionDrfSerializer(
-                    Article.attributees.through(
-                        attributee_id=id,
-                    )
-                ).data
-                for id in self.attributee_ids[:2]
-            ],
+            'publication': self.publications[0],
+            'attributees': self.attributee_ids[:2],
+            'related_entities': self.attributee_ids[:2],
             'tags': self.topic_ids[:2],
         }
 
@@ -82,14 +72,8 @@ class ArticleApiTest(ModerationApiTest):
             'volume': 20,
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'date': '2027-01-01 01:01:20',
-            'publication': PublicationDrfSerializer(self.publications[1]).data,
-            'attributions': [
-                SourceAttributionDrfSerializer(
-                    Article.attributees.through(
-                        attributee_id=id,
-                    )
-                ).data
-                for id in self.attributee_ids[1:]
-            ],
+            'publication': self.publications[1],
+            'attributees': self.attributee_ids[1:],
+            'related_entities': self.attributee_ids[1:],
             'tags': self.topic_ids[1:],
         }
