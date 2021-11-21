@@ -33,6 +33,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
       details = <OccurrenceDetail occurrence={module} />;
       break;
     case "propositions.proposition":
+    case "propositions.conclusion":
       details = <PropositionDetail proposition={module} />;
       break;
     case "quotes.quote":

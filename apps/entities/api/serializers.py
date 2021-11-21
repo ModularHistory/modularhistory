@@ -48,7 +48,9 @@ class EntitySerializer(TypedModuleSerializer):
     death_date_serialized = serializers.SerializerMethodField(
         'get_serialized_death_date', read_only=True
     )
-    timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
+    timeline_position = TimelinePositionField(
+        read_only=True, required=False, source='birth_date'
+    )
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -78,7 +80,7 @@ class EntitySerializer(TypedModuleSerializer):
             'cached_images',
             'primary_image',
             'reference_urls',
-            'timeline',
+            'timeline_position',
         ]
         extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
             'images': {

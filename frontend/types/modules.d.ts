@@ -78,7 +78,8 @@ export interface Source extends SearchableModule {
     | "sources.book"
     | "sources.correspondence"
     | "sources.document"
-    | "sources.speech";
+    | "sources.speech"
+    | "sources.webpage";
   citationHtml: string;
   citationString: string;
   meta?: Meta;
@@ -113,7 +114,7 @@ export interface Argument extends BaseModule {
 }
 
 export interface Proposition extends SearchableModule, ModuleWithImages {
-  model: "propositions.proposition";
+  model: "propositions.proposition" | "propositions.conclusion";
   summary: string;
   elaboration: string;
   truncatedElaboration: string;

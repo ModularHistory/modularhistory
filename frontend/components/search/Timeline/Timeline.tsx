@@ -5,24 +5,23 @@ import { throttle } from "throttle-debounce";
 import TimelineMark, { Mark, TimelineMarkModule, TimelineMarkProps } from "./TimelineMark";
 import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 
-const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
-  MuiSlider
-)({
-  // remove margin and add padding to increase mouse/touch event area
-  margin: 0,
-  marginBottom: 48,
-  // MUI media query attempts to override padding on touch devices
-  // TODO: investigate how to disable default media query and remove "!important"
-  padding: "0 50px !important",
-  [`& .${sliderClasses.mark}`]: {
-    width: "12px",
-    backgroundColor: "#212529",
-  },
-  [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
-    top: 58,
-    "&:before": { top: -8 },
-  },
-});
+const Slider: FC<SliderProps<"span", { componentsProps?: { mark?: TimelineMarkProps & any } }>> =
+  styled(MuiSlider)({
+    // remove margin and add padding to increase mouse/touch event area
+    margin: 0,
+    marginBottom: 48,
+    // MUI media query attempts to override padding on touch devices
+    // TODO: investigate how to disable default media query and remove "!important"
+    padding: "0 50px !important",
+    [`& .${sliderClasses.mark}`]: {
+      width: "12px",
+      backgroundColor: "#212529",
+    },
+    [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
+      top: 58,
+      "&:before": { top: -8 },
+    },
+  });
 
 type MouseOrTouchEvent = Pick<MouseEvent | TouchEvent, "target" | "stopPropagation"> &
   (
@@ -66,32 +65,22 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
     if (datedModules.length < 2) return;
     const now = new Date().getFullYear();
 
-    const marks: TimelineCalculations["marks"] = datedModules.map(
-      ({ timelinePosition, absoluteUrl, title, ref }, index) => ({
-        // add a tiny incremental value to eliminate duplicate keys
-        value: timelinePosition + index * 10 ** -5,
-        module: {
-          timelinePosition,
-          absoluteUrl,
-          title,
-          ref,
-        },
-        isBreak: false,
-      })
-    );
-
-    // mark & module indexes must correspond, so we can only sort after creating marks
-    const positions = datedModules.map((m) => m.timelinePosition);
-    positions.sort((a, b) => a - b);
+    const marks: TimelineCalculations["marks"] = datedModules.map((module, index) => ({
+      // add a tiny incremental value to eliminate duplicate keys
+      value: module.timelinePosition + index * 10 ** -5,
+      isBreak: false,
+      module,
+    }));
 
     // lengths of time between consecutive timeline marks
+    const positions = datedModules.map((m) => m.timelinePosition).sort((a, b) => a - b);
     const ranges = positions.slice(1).map((position, index) => position - positions[index]);
     // total time spanned by timeline marks
     const totalRange = positions[positions.length - 1] - positions[0];
     const averageRange = totalRange / (positions.length - 1);
     // we use this to normalize the slider scale to 1000 points
     // so the thumbs always appear to slide smooooothly
-    const baseMultiplier = 1e3 / totalRange;
+    const baseMultiplier = Math.max(1e3 / totalRange, 1);
 
     const breaks: (Pick<Mark, "value"> & { length: number })[] = [];
 
@@ -149,6 +138,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
 
     setCalculations({ now, marks, min, max, scale, descale });
     setValue([min, max]);
+    console.log(baseMultiplier);
   }, [datedModules]);
 
   const thumbRefs = useRef<TimelineThumbProps["refs"]>([]).current;

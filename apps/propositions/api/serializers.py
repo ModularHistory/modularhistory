@@ -30,7 +30,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
     date = HistoricDateTimeField(write_only=True, required=False)
     end_date = HistoricDateTimeField(write_only=True, required=False)
     citations = CitationSerializer(many=True, write_only=True, required=False)
-    timeline = TimelinePositionField(read_only=True, required=False, source='date')
+    timeline_position = TimelinePositionField(read_only=True, required=False, source='date')
 
     class Meta(TypedModuleSerializer.Meta):
         model = Proposition
@@ -48,7 +48,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
             'images',
             'primary_image',
             'cached_images',
-            'timeline',
+            'timeline_position',
             'type',
         ]
         read_only_fields = ['truncated_elaboration']

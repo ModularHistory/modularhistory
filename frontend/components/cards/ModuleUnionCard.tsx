@@ -34,12 +34,10 @@ const HighlightEllipsis: FC<HighlightEllipsisProps> = ({ unsafeHTML }) => (
 
 interface ModuleUnionCardProps extends ModuleCardProps {
   module: Exclude<ModuleUnion, Topic>;
-  selected?: boolean;
 }
 
 const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
   module,
-  selected,
   ...childProps
 }: ModuleUnionCardProps) => {
   // ModuleUnionCard is a generic component for rendering cards of any
@@ -70,6 +68,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       );
       break;
     case "propositions.proposition":
+    case "propositions.conclusion":
       content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
         <HTMLEllipsis
           unsafeHTML={applyHTMLFilter(module.elaboration)}
@@ -95,6 +94,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "sources.correspondence":
     case "sources.document":
     case "sources.speech":
+    case "sources.webpage":
       content = (
         <div>{module.citationHtml && <HighlightEllipsis unsafeHTML={module.citationHtml} />}</div>
       );
@@ -117,7 +117,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       })(module);
   }
   return (
-    <ModuleCard module={module} className={selected ? "selected" : ""} {...childProps}>
+    <ModuleCard module={module} {...childProps}>
       {content}
     </ModuleCard>
   );

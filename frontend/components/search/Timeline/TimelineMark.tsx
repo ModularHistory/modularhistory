@@ -15,6 +15,7 @@ import {
   SetStateAction,
   useState,
 } from "react";
+import { observe } from "react-intersection-observer";
 
 const BreakIcon = styled(Compress)({
   transform: "translate(-25%, -50%)",
@@ -85,7 +86,23 @@ const TimelineModuleMark: FC<
     }}
     onClick={() => {
       const moduleCard = mark.module.ref.current;
-      moduleCard?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (moduleCard) {
+        // click on card once scrolled into view
+        moduleCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        const destroy = observe(
+          moduleCard,
+          (inView) => {
+            if (inView) {
+              moduleCard.click();
+              destroy();
+            }
+          },
+          { threshold: 1 }
+        );
+        // some events (like double-click) might create extra observers,
+        // so we delete any that weren't triggered in time
+        setTimeout(destroy, 2e3);
+      }
     }}
     registryKey={mark.module.absoluteUrl}
     mark={mark}

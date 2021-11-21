@@ -189,6 +189,7 @@ const SearchResultsPanes = withRouter(
               <SearchResultsLeftPane
                 modules={modulesWithRefs}
                 {...{
+                  moduleIndex,
                   setModuleIndex,
                   setModalOpen,
                   router,
@@ -196,7 +197,7 @@ const SearchResultsPanes = withRouter(
                 }}
               />
             ),
-            [modules, viewStateRegistry]
+            [modules, moduleIndex, viewStateRegistry]
           )}
           <ModuleModal module={modules[moduleIndex]} open={isModalOpen} setOpen={setModalOpen} />
         </Stack>
@@ -212,12 +213,14 @@ const SearchResultsPanes = withRouter(
 interface LeftPaneProps extends Pick<TimelineProps, "viewStateRegistry"> {
   modules: (SerpModule & { ref: RefObject<any> })[];
   setModalOpen: Dispatch<SetStateAction<boolean>>;
+  moduleIndex: number;
   setModuleIndex: Dispatch<SetStateAction<number>>;
   router: NextRouter;
 }
 
 const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   modules,
+  moduleIndex,
   setModuleIndex,
   setModalOpen,
   router,
@@ -253,9 +256,22 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <Grid container>
+    <Grid container maxWidth={1800} spacing={2}>
       {modules.map((module, index) => (
-        <Grid xs={12} sm={6} md={4} xl={3} item key={module.absoluteUrl}>
+        <Grid
+          xs={12}
+          sm={6}
+          md={4}
+          xl={3}
+          item
+          key={module.absoluteUrl}
+          sx={{
+            "& .selected": {
+              borderLeft: "8px solid #FFE000",
+              borderRadius: "5px",
+            },
+          }}
+        >
           <InView
             as="div"
             onChange={(inView) => {
@@ -264,13 +280,14 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
           >
             <a
               href={module.absoluteUrl}
-              className={`result 2pane-result`}
               key={module.absoluteUrl}
               data-index={index}
               onClick={selectModule}
               ref={modules[index].ref}
+              onMouseEnter={() => viewStateRegistry.get(module.absoluteUrl)?.(true)}
+              onMouseLeave={() => viewStateRegistry.get(module.absoluteUrl)?.(false)}
             >
-              <ModuleUnionCard module={module} />
+              <ModuleUnionCard module={module} className={index == moduleIndex ? "selected" : ""} />
             </a>
           </InView>
         </Grid>
