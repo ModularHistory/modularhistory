@@ -23,10 +23,10 @@ class QuotesApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Quote)
-        quote: Quote = QuoteFactory.create(verified=True)
-        self.attributees = [EntityFactory.create(verified=True).id for _ in range(4)]
-        self.images = [ImageFactory.create(verified=True).id for _ in range(4)]
-        self.tags = [TopicFactory.create(verified=True).id for _ in range(4)]
+        quote: Quote = QuoteFactory.create()
+        self.attributees = [EntityFactory.create().id for _ in range(4)]
+        self.images = [ImageFactory.create().id for _ in range(4)]
+        self.tags = [TopicFactory.create().id for _ in range(4)]
         quote.attributees.set(shuffled_copy(self.attributees, size=2))
         quote.images.set(shuffled_copy(self.images, size=2))
         quote.tags.set(shuffled_copy(self.tags, size=2))

@@ -29,9 +29,9 @@ class OccurrencesApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor: 'User' = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Proposition)
-        occurrence: 'Occurrence' = OccurrenceFactory.create(verified=True)
-        self.image_ids: list[int] = [ImageFactory.create(verified=True).id for _ in range(4)]
-        self.topic_ids: list[int] = [TopicFactory.create(verified=True).id for _ in range(4)]
+        occurrence: 'Occurrence' = OccurrenceFactory.create()
+        self.image_ids: list[int] = [ImageFactory.create().id for _ in range(4)]
+        self.topic_ids: list[int] = [TopicFactory.create().id for _ in range(4)]
         for topic_id in self.topic_ids:
             assert Topic.objects.filter(id=topic_id).exists()
         occurrence.images.set(shuffled_copy(self.image_ids, size=2))

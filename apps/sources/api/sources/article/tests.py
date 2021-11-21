@@ -23,7 +23,7 @@ class ArticlesApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Article)
-        article: Article = ArticleFactory.create(verified=True)
+        article: Article = ArticleFactory.create()
         self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
         self.entity_ids = [EntityFactory.create().id for _ in range(4)]
         self.topic_ids = [TopicFactory.create().id for _ in range(4)]

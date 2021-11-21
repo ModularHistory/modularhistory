@@ -20,7 +20,7 @@ class TopicsApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Topic)
-        topic: Topic = TopicFactory.create(verified=True)
+        topic: Topic = TopicFactory.create()
         self.verified_model = topic
 
     @pytest.fixture()

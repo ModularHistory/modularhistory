@@ -23,8 +23,8 @@ class ImagesApiTest(ModerationApiTest):
     def data(self, db: None):
         self.contributor = UserFactory.create()
         self.content_type = ContentType.objects.get_for_model(Image)
-        image = ImageFactory.create(verified=True)
-        tags = [TopicFactory.create(verified=True).id for _ in range(4)]
+        image = ImageFactory.create()
+        tags = [TopicFactory.create().id for _ in range(4)]
         image.tags.set(shuffled_copy(tags, size=2))
         self.verified_model = image
         self.uncheckable_fields = ['image']
