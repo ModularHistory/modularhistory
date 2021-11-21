@@ -22,7 +22,6 @@ class TopicsApiTest(ModerationApiTest):
         self.content_type = ContentType.objects.get_for_model(Topic)
         topic: Topic = TopicFactory.create(verified=True)
         self.verified_model = topic
-        self.relation_fields = ['location']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

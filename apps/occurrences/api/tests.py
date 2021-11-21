@@ -38,7 +38,6 @@ class OccurrencesApiTest(ModerationApiTest):
         occurrence.tags.set(shuffled_copy(self.topic_ids, size=2))
         self.verified_model = occurrence
         self.uncheckable_fields = ['date']
-        self.relation_fields = ['images', 'tags']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

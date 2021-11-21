@@ -37,13 +37,6 @@ class ArticlesApiTest(ModerationApiTest):
             'end_date',
             'original_publication_date',
         ]
-        self.relation_fields = [
-            'publication',
-            'source_containments',
-            'attributees',
-            'related_entities',
-            'tags',
-        ]
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

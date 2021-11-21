@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Callable, Optional, Union
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import ForeignKey
+from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -47,9 +48,6 @@ class ModerationApiTest:
     verified_model: ModeratedModel
     content_type: ContentType
 
-    # fields to be treated as relation fields
-    # TODO: could be improved to detect relation fields automatically via model._meta.get_field
-    relation_fields = []
     # fields that won't be verified after creation/update/patch
     # TODO: usually date fields are not checkable, find a way to check them or detect them automatically
     uncheckable_fields = []
@@ -119,49 +117,52 @@ class ModerationApiTest:
         assert contributions.count() == 1, 'Multiple contributions were created for a change.'
         return response.data, created_change, contributions
 
-    def _test_api_moderation_change(self, data: dict, **request_params):
+    def _test_api_moderation_changes(self, data: dict, **request_params):
         response, change, contribution = self._test_api_moderation_view(
             data, **request_params
         )
         for field_name, value in data.items():
-            if field_name in self.relation_fields:
-                changed_object_field = getattr(change.changed_object, field_name)
-                is_foreign_key = isinstance(
-                    change.changed_object._meta.get_field(field_name), ForeignKey
-                )
-                if is_foreign_key:
-                    id = value.get('pk') if isinstance(value, dict) else value
-                    assert (
-                        changed_object_field.id == id
-                    ), f'{field_name} was not changed correctly.'
-                else:
-                    related_manager: 'Manager' = changed_object_field
-                    item: Union[dict, int]
-                    for item in value:
-                        if isinstance(item, dict):
-                            # TODO: confirm this is a relation to a `through` model
-                            id = item.pop('pk')
-                            assert related_manager.model.all_objects.filter(
-                                **item
-                            ).exists(), (
-                                f'{field_name} ({related_manager}) does not contain {item}.'
-                            )
-                        else:
-                            # TODO: confirm this is a direct m2m relation (ignoring the `through` model)
-                            id = item
-                            assert related_manager.model.objects.filter(
-                                pk=id
-                            ).exists(), (
-                                f'{field_name} ({related_manager}) does not contain {id}.'
-                            )
+            changed_object_field = getattr(change.changed_object, field_name)
+            field_info = change.changed_object._meta.get_field(field_name)
+            if self._test_moderated_field_relation_changes(
+                changed_object_field, field_name, field_info, value
+            ):
+                pass
             elif field_name == 'id':  # TODO
                 assert (
                     change.changed_object.pk == value
                 ), f'{field_name} was not changed correctly.'
             elif field_name not in self.uncheckable_fields:
                 assert (
-                    getattr(change.changed_object, field_name) == value
+                    changed_object_field == value
                 ), f'{field_name} was not changed correctly.'
+
+    def _test_moderated_field_relation_changes(
+        self, changed_object_field, field_name: str, field_info, value
+    ):
+        is_foreign_key = isinstance(field_info, ForeignKey)
+        is_related_field = isinstance(field_info, RelatedField)
+
+        if is_foreign_key:
+            pk = value.get('pk') if isinstance(value, dict) else value
+            assert changed_object_field.id == pk, f'{field_name} was not changed correctly.'
+        elif is_related_field:
+            related_manager: 'Manager' = changed_object_field
+            item: Union[dict, int]
+            for item in value:
+                if isinstance(item, dict):
+                    # TODO: confirm this is a relation to a `through` model
+                    assert related_manager.model.all_objects.filter(
+                        **item
+                    ).exists(), f'{field_name} ({related_manager}) does not contain {item}.'
+                else:
+                    # TODO: confirm this is a direct m2m relation (ignoring the `through` model)
+                    pk = item
+                    assert related_manager.model.objects.filter(
+                        pk=pk
+                    ).exists(), f'{field_name} ({related_manager}) does not contain {pk}.'
+
+        return is_foreign_key or is_related_field
 
     def test_api_list(self):
         """Test the moderated listing API."""
@@ -175,14 +176,14 @@ class ModerationApiTest:
 
     def test_api_create(self, data_for_creation: dict):
         """Test the moderated creation API."""
-        self._test_api_moderation_change(
+        self._test_api_moderation_changes(
             data=data_for_creation,
             change_status_code=201,
         )
 
     def test_api_update(self, data_for_update: dict):
         """Test the moderated update API."""
-        self._test_api_moderation_change(
+        self._test_api_moderation_changes(
             data=data_for_update,
             view=f'{self.api_prefix}-detail',
             object_id=self.verified_model.pk,
@@ -191,7 +192,7 @@ class ModerationApiTest:
 
     def test_api_patch(self, data_for_update: dict):
         """Test the moderated patch API."""
-        self._test_api_moderation_change(
+        self._test_api_moderation_changes(
             data=data_for_update,
             view=f'{self.api_prefix}-detail',
             object_id=self.verified_model.pk,
