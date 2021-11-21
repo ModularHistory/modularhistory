@@ -8,6 +8,12 @@ import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
   MuiSlider
 )({
+  // remove margin and add padding to increase mouse/touch event area
+  margin: 0,
+  marginBottom: 48,
+  // MUI media query attempts to override padding on touch devices
+  // TODO: investigate how to disable default media query and remove "!important"
+  padding: "0 50px !important",
   [`& .${sliderClasses.mark}`]: {
     width: "12px",
     backgroundColor: "#212529",

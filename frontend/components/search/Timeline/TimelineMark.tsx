@@ -1,7 +1,7 @@
 import { SerpModule } from "@/types/modules";
 import Compress from "@mui/icons-material/Compress";
 import { Box, SliderProps, styled, Tooltip } from "@mui/material";
-import { SliderMark as MuiSliderMark } from "@mui/material/Slider/Slider";
+import { SliderMark as MuiSliderMark } from "@mui/material/Slider";
 import { SystemProps } from "@mui/system";
 import {
   ComponentProps,
@@ -86,7 +86,6 @@ const TimelineModuleMark: FC<
     onClick={() => {
       const moduleCard = mark.module.ref.current;
       moduleCard?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      moduleCard?.click();
     }}
     registryKey={mark.module.absoluteUrl}
     mark={mark}

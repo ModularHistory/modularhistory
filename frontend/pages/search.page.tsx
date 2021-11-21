@@ -1,12 +1,10 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
-import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
-import type { TimelineProps } from "@/components/search/Timeline/Timeline";
-import { GlobalTheme } from "@/pages/_app.page";
+import type { TimelineProps } from "@/components/search/Timeline";
 import { SerpModule } from "@/types/modules";
-import { Divider, Drawer, Grid, Stack, styled, useMediaQuery } from "@mui/material";
+import { Divider, Drawer, Grid, Stack, styled } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -31,7 +29,7 @@ const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm")
   ssr: false,
 });
 
-const Timeline = dynamic(() => import("@/components/search/Timeline/Timeline"), { ssr: false });
+const Timeline = dynamic(() => import("@/components/search/Timeline"), { ssr: false });
 
 const SliderToggle = styled("button")({
   border: "2px solid black !important",
@@ -167,7 +165,7 @@ const SearchResultsPanes = withRouter(
       // controls whether the modal is open (conditional based on screen size)
       const [isModalOpen, setModalOpen] = useState(false);
 
-      const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
+      const viewStateRegistry: TimelineProps["viewStateRegistry"] = useMemo(() => new Map(), []);
       // TODO: no need for useMemo since the whole thang is memoized
       const modulesWithRefs: (SerpModule & { ref: RefObject<any> })[] = useMemo(
         () => modules.map((module) => ({ ...module, ref: createRef() })),
@@ -180,17 +178,10 @@ const SearchResultsPanes = withRouter(
             modules={modulesWithRefs}
             viewStateRegistry={viewStateRegistry}
             sx={{
-              // ml: 4,
-              // mb: 6,
-              // mr: { xs: 4, md: 12, lg: 24 },
-              // p: {}
-              m: 0,
-              p: "0 50px !important",
               position: "sticky",
               top: "60px",
               height: "85vh",
               zIndex: 10,
-              // transition: "margin-right 500ms",
             }}
           />
           {useMemo(
@@ -205,13 +196,9 @@ const SearchResultsPanes = withRouter(
                 }}
               />
             ),
-            [modules]
+            [modules, viewStateRegistry]
           )}
-          {/*<SearchResultsRightPane*/}
-          {/*  // set key to prevent new details from retaining previous scroll position*/}
-          {/*  key={moduleIndex}*/}
-          {/*  {...{ module: modules[moduleIndex] ?? modules[0], isModalOpen, setModalOpen }}*/}
-          {/*/>*/}
+          <ModuleModal module={modules[moduleIndex]} open={isModalOpen} setOpen={setModalOpen} />
         </Stack>
       );
     },
@@ -290,23 +277,6 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
       ))}
     </Grid>
   );
-};
-
-interface RightPaneProps {
-  module: SerpModule;
-  isModalOpen: boolean;
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-const SearchResultsRightPane: FC<RightPaneProps> = ({ module, isModalOpen, setModalOpen }) => {
-  // media query value is based on /core/static/styles/serp.css
-  const smallScreen = useMediaQuery((theme: GlobalTheme) => theme.breakpoints.down("sm"));
-
-  if (smallScreen) {
-    return <ModuleModal module={module} open={isModalOpen} setOpen={setModalOpen} />;
-  } else {
-    return <ModuleDetail module={module} key={module.absoluteUrl} />;
-  }
 };
 
 export default Search;
