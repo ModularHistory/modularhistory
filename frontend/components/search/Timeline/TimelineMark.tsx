@@ -91,6 +91,7 @@ const TimelineModuleMark: FC<
     mark={mark}
     viewStateRegistry={viewStateRegistry}
     muiMarkProps={muiMarkProps}
+    testId={"timelineModuleMark"}
   />
 );
 
@@ -107,6 +108,7 @@ const TimelineBreakMark: FC<
     mark={mark}
     viewStateRegistry={viewStateRegistry}
     muiMarkProps={muiMarkProps}
+    testId={"timelineBreakMark"}
   />
 );
 
@@ -119,6 +121,7 @@ interface TimelineMarkBaseProps {
   mark: Mark;
   viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
   muiMarkProps: ComponentProps<typeof MuiSliderMark>;
+  testId: string;
 }
 
 const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
@@ -130,6 +133,7 @@ const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
   mark,
   viewStateRegistry,
   muiMarkProps,
+  testId,
 }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [inView, setInView] = useState(
@@ -161,7 +165,7 @@ const TimelineMarkBase: FC<TimelineMarkBaseProps> = ({
         tooltip: { onClick, sx: tooltipStyles },
       }}
     >
-      <MuiSliderMark {...muiMarkProps} data-testid={"timelineBreak"}>
+      <MuiSliderMark {...muiMarkProps} data-testid={testId}>
         <Box
           ref={(ref: HTMLSpanElement) => {
             mark.ref = ref;

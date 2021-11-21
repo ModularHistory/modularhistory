@@ -88,7 +88,7 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
     const ranges = positions.slice(1).map((position, index) => position - positions[index]);
     // total time spanned by timeline marks
     const totalRange = positions[positions.length - 1] - positions[0];
-    const averageRange = totalRange / positions.length;
+    const averageRange = totalRange / (positions.length - 1);
     // we use this to normalize the slider scale to 1000 points
     // so the thumbs always appear to slide smooooothly
     const baseMultiplier = 1e3 / totalRange;

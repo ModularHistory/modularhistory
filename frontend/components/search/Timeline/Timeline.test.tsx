@@ -3,8 +3,8 @@ import { createRef } from "react";
 import Timeline, { TimelineProps } from "./Timeline";
 
 describe("Timeline", () => {
-  const markTestId = "timelineMark";
-  const breakTestId = "timelineBreak";
+  const markTestId = "timelineModuleMark";
+  const breakTestId = "timelineBreakMark";
   const tooltipTestId = "timelineTooltip";
 
   let consoleMock: jest.SpyInstance;
@@ -73,7 +73,7 @@ describe("Timeline", () => {
     expect(positioned[2].dataset.testid).toBe(breakTestId);
   });
 
-  it("shows tooltip when told to", async () => {
+  it("registers tooltip state dispatch", async () => {
     const modules = createModules(2);
     const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
     renderTimeline({ modules, viewStateRegistry });
