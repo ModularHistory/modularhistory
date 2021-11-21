@@ -27,7 +27,7 @@ class ImagesApiTest(ModerationApiTest):
         tags = [TopicFactory.create(verified=True).id for _ in range(4)]
         image.tags.set(shuffled_copy(tags, size=2))
         self.verified_model = image
-        self.uncheckable_fields = ['date', 'end_date', 'image']
+        self.uncheckable_fields = ['image']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):
@@ -38,6 +38,7 @@ class ImagesApiTest(ModerationApiTest):
             'provider': 'Image 1 Provider',
             'image_type': 'painting',
             'date': '2001-01-01T01:01:20',
+            'end_date': '2010-01-01 01:01:25.086200',
         }
 
     @pytest.fixture()

@@ -28,7 +28,6 @@ class EntitiesApiTest(ModerationApiTest):
         entity.images.set(shuffled_copy(self.images, size=2))
         entity.tags.set(shuffled_copy(self.tags, size=2))
         self.verified_model = entity
-        self.uncheckable_fields = ['birth_date', 'death_date']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

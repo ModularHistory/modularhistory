@@ -32,11 +32,6 @@ class ArticlesApiTest(ModerationApiTest):
         article.related_entities.set(shuffled_copy(self.entity_ids, size=2))
         article.tags.set(shuffled_copy(self.topic_ids, size=2))
         self.verified_model = article
-        self.uncheckable_fields = [
-            'date',
-            'end_date',
-            'original_publication_date',
-        ]
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

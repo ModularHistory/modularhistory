@@ -31,7 +31,6 @@ class QuotesApiTest(ModerationApiTest):
         quote.images.set(shuffled_copy(self.images, size=2))
         quote.tags.set(shuffled_copy(self.tags, size=2))
         self.verified_model = quote
-        self.uncheckable_fields = ['date']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

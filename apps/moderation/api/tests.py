@@ -9,6 +9,7 @@ from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.dates.structures import HistoricDateTime
 from apps.moderation.models import Change, ContentContribution, ModeratedModel
 from apps.users.models import User
 
@@ -49,7 +50,6 @@ class ModerationApiTest:
     content_type: ContentType
 
     # fields that won't be verified after creation/update/patch
-    # TODO: usually date fields are not checkable, find a way to check them or detect them automatically
     uncheckable_fields = []
     # test data to be used for creation and update/patch respectively
     test_data: dict
@@ -136,6 +136,10 @@ class ModerationApiTest:
                 assert (
                     change.changed_object.pk == value
                 ), f'{field_name} was not changed correctly.'
+            elif isinstance(changed_object_field, HistoricDateTime):
+                assert changed_object_field == HistoricDateTime.from_iso(
+                    value
+                ), f'HistoricDateTime {field_name} was not changed correctly.'
             elif field_name not in self.uncheckable_fields:
                 assert (
                     changed_object_field == value

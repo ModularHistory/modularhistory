@@ -37,7 +37,6 @@ class OccurrencesApiTest(ModerationApiTest):
         occurrence.images.set(shuffled_copy(self.image_ids, size=2))
         occurrence.tags.set(shuffled_copy(self.topic_ids, size=2))
         self.verified_model = occurrence
-        self.uncheckable_fields = ['date']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):
@@ -49,6 +48,7 @@ class OccurrencesApiTest(ModerationApiTest):
             'elaboration': 'Some elaboration',
             'certainty': 2,
             'date': '0001-01-01T01:01:20.056200Z',
+            'end_date': '0005-01-01T01:01:25',
             'postscript': 'Some postscript',
             'images': self.image_ids[:2],
             'tags': self.topic_ids[:2],
@@ -65,6 +65,7 @@ class OccurrencesApiTest(ModerationApiTest):
             'postscript': 'UPDATED Some postscript',
             'certainty': 2,
             'date': '0001-01-01T01:01:20.056200Z',
+            'end_date': '2001-01-01T01:05:20',
             'images': self.image_ids[1:],
             'tags': self.topic_ids[1:],
         }
