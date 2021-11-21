@@ -55,12 +55,14 @@ class ModerationApiTest:
     test_data: dict
     updated_test_data: dict
 
-    def _test_api_view_get(self, view, url_kwargs=None, status_code=200):
+    def build_api_path(self, view, url_kwargs):
         path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
-        # TODO: refactor this (also in _test_api_moderation_view).
-        # Force request path to include API path suffix.
         if self.api_path_suffix and self.api_path_suffix not in path:
             path += self.api_path_suffix + '/'
+        return path
+
+    def _test_api_view_get(self, view, url_kwargs=None, status_code=200):
+        path = self.build_api_path(view, url_kwargs)
         response = self.api_client.get(path)
         assert response.status_code == status_code, 'Incorrect status code'
 
@@ -77,34 +79,36 @@ class ModerationApiTest:
             url_kwargs = {}
         if object_id:
             url_kwargs.update({'pk_or_slug': object_id})
-        path = reverse(f'{self.api_name}:{view}', kwargs=url_kwargs)
-        # Force request path to include API path suffix.
-        if self.api_path_suffix and self.api_path_suffix not in path:
-            path += self.api_path_suffix + '/'
-        json_data: str = json.dumps(data)
+        path = self.build_api_path(view, url_kwargs)
+        api_request: Callable = getattr(self.api_client, method)
         request_kwargs = {
             'path': path,
-            'data': json_data,
+            'data': json.dumps(data),
             'content_type': 'application/json',
         }
-        api_request: Callable = getattr(self.api_client, method)
+
+        # test without auth first
         response: 'Response' = api_request(**request_kwargs)
         assert (
             response.status_code == 401
         ), 'Request without authentication should have been denied.'
+
+        # then temporarily login as contributor to test moderation
         self.api_client.force_authenticate(self.contributor)
         response = api_request(**request_kwargs)
         self.api_client.logout()
-        if response.status_code != change_status_code:
-            raise Exception(f'Incorrect change status code: {response.data}')
+
         assert (
             response.status_code == change_status_code
         ), f'Incorrect change status code: {response.data}'
+
         if response.data and 'pk' in response.data:
             object_id = response.data['pk']
+
         assert Change.objects.filter(
             object_id=object_id, content_type=self.content_type
         ).exists(), f'No change for {self.content_type} with {object_id=} was found: {Change.objects.all()}'
+
         created_change = Change.objects.get(
             initiator=self.contributor,
             object_id=object_id,
