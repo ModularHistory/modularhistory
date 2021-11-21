@@ -25,9 +25,11 @@ class ArticlesApiTest(ModerationApiTest):
         self.content_type = ContentType.objects.get_for_model(Article)
         article: Article = ArticleFactory.create(verified=True)
         self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
+        self.entity_ids = [EntityFactory.create().id for _ in range(4)]
         self.topic_ids = [TopicFactory.create().id for _ in range(4)]
         self.publications = [PublicationFactory.create().id for _ in range(2)]
         article.attributees.set(shuffled_copy(self.attributee_ids, size=2))
+        article.related_entities.set(shuffled_copy(self.entity_ids, size=2))
         article.tags.set(shuffled_copy(self.topic_ids, size=2))
         self.verified_model = article
         self.uncheckable_fields = [
@@ -57,7 +59,7 @@ class ArticlesApiTest(ModerationApiTest):
             'end_date': '2020-01-01 01:01:20.086202',
             'publication': self.publications[0],
             'attributees': self.attributee_ids[:2],
-            'related_entities': self.attributee_ids[:2],
+            'related_entities': self.entity_ids[:2],
             'tags': self.topic_ids[:2],
         }
 
@@ -74,6 +76,6 @@ class ArticlesApiTest(ModerationApiTest):
             'date': '2027-01-01 01:01:20',
             'publication': self.publications[1],
             'attributees': self.attributee_ids[1:],
-            'related_entities': self.attributee_ids[1:],
+            'related_entities': self.entity_ids[1:],
             'tags': self.topic_ids[1:],
         }
