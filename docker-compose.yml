@@ -36,8 +36,9 @@ services:
   certbot:
     # https://hub.docker.com/r/certbot/certbot/
     image: "certbot/certbot"
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
-      wait $${!}; done;'"
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
+      wait $${!}; done;'
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
@@ -240,6 +241,7 @@ services:
         condition: on-failure
     expose:
       - "6379"
+    # TODO: https://stackoverflow.com/questions/47088261/restarting-an-unhealthy-docker-container-based-on-healthcheck
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 20s
