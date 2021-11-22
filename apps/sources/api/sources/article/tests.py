@@ -4,6 +4,7 @@ import pytest
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
+from apps.places.factories import PlaceFactory
 from apps.sources.factories import ArticleFactory, PublicationFactory
 from apps.sources.models import Article
 from apps.topics.factories import TopicFactory
@@ -25,6 +26,7 @@ class ArticlesApiTest(ModerationApiTest):
         self.entity_ids = [EntityFactory.create().id for _ in range(4)]
         self.topic_ids = [TopicFactory.create().id for _ in range(4)]
         self.publications = [PublicationFactory.create() for _ in range(3)]
+        self.location_ids = [PlaceFactory.create().id for _ in range(2)]
         article: Article = ArticleFactory.create(publication=self.publications[0])
         article.attributees.set(shuffled_copy(self.attributee_ids, size=2))
         article.related_entities.set(shuffled_copy(self.entity_ids, size=2))
@@ -41,10 +43,12 @@ class ArticlesApiTest(ModerationApiTest):
             'editors': 'Some editor',
             'number': 1,
             'volume': 2,
-            'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'date': '2017-01-01 01:01:20.086202',
             'end_date': '2020-01-01 01:01:20.086202',
+            'original_publication_date': '0001-01-01T01:01:20.086200Z',
+            'original_edition': self.verified_model.id,
             'publication': self.publications[1].id,
+            'location': self.location_ids[0],
             'attributees': self.attributee_ids[:2],
             'related_entities': self.entity_ids[:2],
             'tags': self.topic_ids[:2],
@@ -68,9 +72,11 @@ class ArticlesApiTest(ModerationApiTest):
             'editors': 'UPDATED Some editor',
             'number': 10,
             'volume': 20,
+            'original_edition': self.verified_container_id,
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'date': '2027-01-01 01:01:20',
             'publication': self.publications[2].id,
+            'location': self.location_ids[1],
             'attributees': self.attributee_ids[1:],
             'related_entities': self.entity_ids[1:],
             'tags': self.topic_ids[1:],

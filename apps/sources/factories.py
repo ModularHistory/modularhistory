@@ -127,7 +127,7 @@ class DocumentFactory(PageNumberedSourceFactory):
     location_info = factory.Faker('address')
     collection = factory.SubFactory(CollectionFactory)
     collection_number = fuzzy.FuzzyInteger(1, 20)
-    descriptive_phrase = factory.Faker('sentence', nb_words=10)
+    descriptive_phrase = factory.Faker('sentence', nb_words=3)
     information_url = factory.Faker('url')
 
 
