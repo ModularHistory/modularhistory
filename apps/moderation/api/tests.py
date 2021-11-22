@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Callable, Optional, Union
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, ManyToOneRel
 from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -149,7 +149,9 @@ class ModerationApiTest:
         self, changed_object_field, field_name: str, field_info, value
     ):
         is_foreign_key = isinstance(field_info, ForeignKey)
-        is_related_field = isinstance(field_info, RelatedField)
+        is_related_field = isinstance(field_info, RelatedField) or isinstance(
+            field_info, ManyToOneRel
+        )
 
         if is_foreign_key:
             pk = value.get('pk') if isinstance(value, dict) else value

@@ -33,7 +33,6 @@ class SourceContainmentDrfSerializer(DrfModelSerializer):
     class Meta:
         model = SourceContainment
         fields = DrfModelSerializer.Meta.fields + [
-            'source',
             'container',
             'phrase',
             'page_number',
