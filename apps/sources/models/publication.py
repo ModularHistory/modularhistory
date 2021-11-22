@@ -54,9 +54,7 @@ class Publication(TypedModel, AbstractPublication):
         return soupify(self.html).get_text()
 
     def save(self, *args, **kwargs):
-        """Save the publication."""
-        self.clean()
-        super().save(*args, **kwargs)
+        AbstractPublication.save(self, *args, **kwargs)
 
     def clean(self):
         """Prepare the publication to be saved."""

@@ -74,4 +74,8 @@ class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
 
     class Meta:
         model = Website
-        fields = PublicationDrfMixinSerializer.Meta.fields + ['owner']
+        fields = (
+            DrfModelSerializer.Meta.fields
+            + PublicationDrfMixinSerializer.Meta.fields
+            + ['owner']
+        )

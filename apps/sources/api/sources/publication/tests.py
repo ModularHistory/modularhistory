@@ -5,10 +5,74 @@ import pytest
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.places.factories import PlaceFactory
-from apps.sources.factories import WebpageFactory, WebsiteFactory
+from apps.sources.factories import PublicationFactory, WebpageFactory, WebsiteFactory
 from apps.sources.models import Webpage
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
+
+
+class PublicationsApiTest(ModerationApiTest):
+    """Test the source publications API."""
+
+    __test__ = True
+    api_name = 'sources_api'
+    api_prefix = 'publication'
+    api_path_suffix = 'publications'
+
+    @pytest.fixture(autouse=True)
+    def data(self, db: None):
+        self.contributor = UserFactory.create()
+        self.verified_model = PublicationFactory.create()
+
+    @pytest.fixture()
+    def data_for_creation(self, db: None, data: None):
+        return {
+            'name': 'Some publication',
+            'type': 'sources.journal',
+            'aliases': 'Some aliases',
+            'description': 'Some description',
+        }
+
+    @pytest.fixture()
+    def data_for_update(self, db: None, data: None):
+        return {
+            'name': 'UPDATED Some publication',
+            'type': 'sources.magazine',
+            'aliases': 'UPDATED Some aliases',
+            'description': 'UPDATED Some description',
+        }
+
+
+class WebsitesApiTest(ModerationApiTest):
+    """Test the source websites API."""
+
+    __test__ = True
+    api_name = 'sources_api'
+    api_prefix = 'website'
+    api_path_suffix = 'websites'
+
+    @pytest.fixture(autouse=True)
+    def data(self, db: None):
+        self.contributor = UserFactory.create()
+        self.verified_model = WebsiteFactory.create()
+
+    @pytest.fixture()
+    def data_for_creation(self, db: None, data: None):
+        return {
+            'name': 'Some website',
+            'aliases': 'Some aliases',
+            'description': 'Some description',
+            'owner': 'Some owner',
+        }
+
+    @pytest.fixture()
+    def data_for_update(self, db: None, data: None):
+        return {
+            'name': 'UPDATED Some website',
+            'aliases': 'UPDATED Some aliases',
+            'description': 'UPDATED Some description',
+            'owner': 'UPDATED Some owner',
+        }
 
 
 class WebpagesApiTest(ModerationApiTest):
