@@ -3,10 +3,8 @@
 import base64
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.images.factories import ImageFactory, generate_temporary_image
-from apps.images.models import Image
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
@@ -22,7 +20,6 @@ class ImagesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Image)
         image = ImageFactory.create()
         tags = [TopicFactory.create().id for _ in range(4)]
         image.tags.set(shuffled_copy(tags, size=2))

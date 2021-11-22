@@ -3,12 +3,10 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.occurrences.factories import OccurrenceFactory
-from apps.propositions.models import Proposition
 from apps.topics.factories import TopicFactory
 from apps.topics.models import Topic
 from apps.users.factories import UserFactory
@@ -28,7 +26,6 @@ class OccurrencesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True, scope='function')
     def data(self, db: None):
         self.contributor: 'User' = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Proposition)
         occurrence: 'Occurrence' = OccurrenceFactory.create()
         self.image_ids: list[int] = [ImageFactory.create().id for _ in range(4)]
         self.topic_ids: list[int] = [TopicFactory.create().id for _ in range(4)]

@@ -1,7 +1,6 @@
 """Tests for the quotes api."""
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.images.factories import ImageFactory
@@ -22,7 +21,6 @@ class QuotesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Quote)
         quote: Quote = QuoteFactory.create()
         self.attributees = [EntityFactory.create().id for _ in range(4)]
         self.images = [ImageFactory.create().id for _ in range(4)]

@@ -1,7 +1,6 @@
 """Tests for the source books api."""
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
@@ -22,7 +21,6 @@ class BooksApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Book)
         book: Book = BookFactory.create()
         self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
         self.entity_ids = [EntityFactory.create().id for _ in range(4)]

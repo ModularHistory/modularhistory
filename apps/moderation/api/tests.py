@@ -47,7 +47,6 @@ class ModerationApiTest:
     contributor: User
     # verified moderated model to be used update/patch/delete tests
     verified_model: ModeratedModel
-    content_type: ContentType
 
     # fields that won't be verified after creation/update/patch
     uncheckable_fields = []
@@ -102,17 +101,18 @@ class ModerationApiTest:
             response.status_code == change_status_code
         ), f'Incorrect change status code: {response.data}'
 
+        content_type = ContentType.objects.get_for_model(self.verified_model)
         if response.data and 'pk' in response.data:
             object_id = response.data['pk']
 
         assert Change.objects.filter(
-            object_id=object_id, content_type=self.content_type
-        ).exists(), f'No change for {self.content_type} with {object_id=} was found: {Change.objects.all()}'
+            object_id=object_id, content_type=content_type
+        ).exists(), f'No change for {content_type} with {object_id=} was found: {Change.objects.all()}'
 
         created_change = Change.objects.get(
             initiator=self.contributor,
             object_id=object_id,
-            content_type=self.content_type,
+            content_type=content_type,
         )
         contributions = ContentContribution.objects.filter(
             contributor=self.contributor, change_id=created_change

@@ -1,11 +1,9 @@
 """Tests for the places api."""
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.moderation.api.tests import ModerationApiTest
 from apps.places.factories import PlaceFactory
-from apps.places.models import Place
 from apps.users.factories import UserFactory
 
 
@@ -19,7 +17,6 @@ class PlacesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Place)
         self.verified_model = PlaceFactory.create()
 
     @pytest.fixture()
