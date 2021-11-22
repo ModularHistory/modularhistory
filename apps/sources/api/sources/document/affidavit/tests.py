@@ -1,49 +1,50 @@
-"""Tests for the source documents api."""
+"""Tests for the source affidavits api."""
 
 import pytest
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.places.factories import PlaceFactory
-from apps.sources.factories import CollectionFactory, DocumentFactory
-from apps.sources.models import Document
+from apps.sources.factories import AffidavitFactory, CollectionFactory
+from apps.sources.models import Affidavit
 from apps.topics.factories import TopicFactory
 from apps.users.factories import UserFactory
 
 
-class DocumentsApiTest(ModerationApiTest):
-    """Test the source documents api."""
+class AffidavitsApiTest(ModerationApiTest):
+    """Test the source affidavits api."""
 
     __test__ = True
     api_name = 'sources_api'
-    api_prefix = 'document'
-    api_path_suffix = 'documents'
+    api_prefix = 'affidavit'
+    api_path_suffix = 'affidavits'
 
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        document: Document = DocumentFactory.create()
+        affidavit: Affidavit = AffidavitFactory.create()
         self.attributee_ids = [EntityFactory.create().id for _ in range(4)]
         self.entity_ids = [EntityFactory.create().id for _ in range(4)]
         self.topic_ids = [TopicFactory.create().id for _ in range(4)]
         self.collection_ids = [CollectionFactory.create().id for _ in range(2)]
         self.location_ids = [PlaceFactory.create().id for _ in range(2)]
-        document.attributees.set(shuffled_copy(self.attributee_ids, size=2))
-        document.related_entities.set(shuffled_copy(self.entity_ids, size=2))
-        document.tags.set(shuffled_copy(self.topic_ids, size=2))
-        self.verified_model = document
-        self.verified_container_id = DocumentFactory.create().id
+        affidavit.attributees.set(shuffled_copy(self.attributee_ids, size=2))
+        affidavit.related_entities.set(shuffled_copy(self.entity_ids, size=2))
+        affidavit.tags.set(shuffled_copy(self.topic_ids, size=2))
+        self.verified_model = affidavit
+        self.verified_container_id = AffidavitFactory.create().id
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):
         return {
-            'title': 'Test document',
+            'title': 'Test affidavit',
             'editors': 'Some editor',
             'collection_number': 24,
             'information_url': 'https://modularhistory.com',
             'url': 'https://modularhistory.com',
             'href': 'https://modularhistory.com',
             'location_info': 'Some location info',
+            'certifier': 'Some certifier',
             'page_number': 12,
             'end_page_number': 123,
             'date': '2017-01-01 01:01:20.086202',
@@ -68,13 +69,14 @@ class DocumentsApiTest(ModerationApiTest):
     @pytest.fixture()
     def data_for_update(self, db: None, data: None):
         return {
-            'title': 'UPDATED Test document',
+            'title': 'UPDATED Test affidavit',
             'editors': 'Some editor',
             'collection_number': 24,
             'information_url': 'https://modularhistory.com',
             'url': 'https://modularhistory.com',
             'href': 'https://modularhistory.com',
             'location_info': 'UPDATED Some location info',
+            'certifier': 'UPDATED Some certifier',
             'page_number': 12,
             'end_page_number': 123,
             'date': '2027-01-01 01:01:20',
