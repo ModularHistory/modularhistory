@@ -1,7 +1,7 @@
-
 version: "3.8"
 
-x-common-env-vars: &common-env-vars
+x-common-env-vars:
+  &common-env-vars
   DOCKERIZED: "True"
   REDIS_HOST: "redis"
   POSTGRES_HOST: "postgres"
@@ -36,7 +36,8 @@ services:
   certbot:
     # https://hub.docker.com/r/certbot/certbot/
     image: "certbot/certbot"
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
+      wait $${!}; done;'"
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
@@ -80,7 +81,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail http://localhost:8000/healthcheck/ || exit 1",
+          "curl --fail http://localhost:8000/healthcheck/ || exit 1"
         ]
       timeout: 7s
       interval: 30s
@@ -149,7 +150,7 @@ services:
     environment:
       <<: *common-env-vars
     healthcheck:
-      test: ["CMD-SHELL", "stat -t /tmp/celerybeat.pid || exit 1"]
+      test: [ "CMD-SHELL", "stat -t /tmp/celerybeat.pid || exit 1" ]
       timeout: 20s
       interval: 30s
       retries: 3
@@ -179,7 +180,7 @@ services:
       - xpack.security.http.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
       - xpack.security.http.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
       - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.security.transport.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
       - xpack.security.transport.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
@@ -187,7 +188,8 @@ services:
     expose:
       - "9200"
     healthcheck:
-      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200
+        >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
       timeout: 10s
       retries: 5
@@ -232,19 +234,21 @@ services:
 
   redis:
     image: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
     deploy:
       restart_policy:
         condition: on-failure
     expose:
       - "6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 20s
       timeout: 10s
       retries: 3
       start_period: 20s
     volumes:
       - "data:/data"
+      - ./config/redis:/usr/local/etc/redis
 
   postgres:
     image: postgres:14
@@ -255,7 +259,7 @@ services:
     expose:
       - "5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -284,7 +288,7 @@ services:
 
   redisinsight:
     image: redislabs/redisinsight:latest
-    profiles: ["debug"]
+    profiles: [ "debug" ]
     depends_on:
       - redis
     deploy:
@@ -298,7 +302,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail http://localhost:8002/healthcheck/ || exit 1",
+          "curl --fail http://localhost:8002/healthcheck/ || exit 1"
         ]
       timeout: 7s
       interval: 15s
@@ -308,7 +312,7 @@ services:
       - "8002:8002"
     volumes:
       - "redisinsight:/db"
-  
+
   cypress:
     # https://github.com/cypress-io/cypress-docker-images
     image: "cypress/included:8.4.1"
@@ -324,10 +328,10 @@ services:
 
 volumes:
   # `data` is used by both redis and mongodb
-  data:
-  letsencrypt:
-  certbot:
-  postgres_data:
-  es_data:
-  es_certs:
-  redisinsight:
+  data: null
+  letsencrypt: null
+  certbot: null
+  postgres_data: null
+  es_data: null
+  es_certs: null
+  redisinsight: null
