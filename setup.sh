@@ -472,7 +472,7 @@ poetry run invoke seed --no-db
   mem_limit=$(docker stats --format "{{.MemUsage}}" --no-stream | head -1 | gsed -r -e 's/.+ \/ ([0-9]+).*/\1/')
   if [[ "$mem_limit" -lt 2 ]]; then
     _print_red "
-      Increase Docker's memory limit to 3–4 GB.
+      The configured memory limit for Docker is ${mem_limit}. Please increase the memory limit to 3–4 GB.
     "
     echo "
       To do so, open the Docker Desktop application, go to settings, and click Resources.
