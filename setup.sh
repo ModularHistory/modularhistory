@@ -433,7 +433,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
       jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" < "$docker_settings_file" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
       test "$(docker ps -q)" && {
-        docker compose containers ..."
+        echo "Stopping containers ..."
         docker compose down
       }
       test -z "$(docker ps -q)" && {
