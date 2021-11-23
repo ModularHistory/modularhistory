@@ -94,6 +94,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
 }
 
 export interface Collection {
+  absoluteUrl: any;
   model: "collections.collection";
   slug: string;
   title: string;
