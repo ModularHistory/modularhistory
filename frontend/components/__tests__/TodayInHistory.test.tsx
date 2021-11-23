@@ -2,8 +2,6 @@ import TodayInHistory from "@/components/TodayInHistory";
 import { Quote } from "@/types/modules";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-// import { rest } from "msw";
-// import { setupServer } from "msw/node";
 import mockRouter from "next-router-mock";
 import Router from "next/router";
 
@@ -50,15 +48,6 @@ describe("TodayInHistory", () => {
       expect(
         await findByText("There are no modules associated with this date.")
       ).toBeInTheDocument();
-    });
-  });
-
-  describe("module card clicked", () => {
-    it("renders clicked module card", async () => {
-      mockRouter.setCurrentUrl("/");
-      const { findByText } = render(<TodayInHistory modules={[testModule]} />);
-      userEvent.click(await findByText(testModule.title));
-      expect(Router.asPath).toStrictEqual(testModule.absoluteUrl);
     });
   });
 });

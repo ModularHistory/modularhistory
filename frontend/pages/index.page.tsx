@@ -2,7 +2,7 @@ import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory, { TodayInHistoryProps } from "@/components/TodayInHistory";
-import { ModuleUnion, Topic } from "@/types/modules";
+import { SerpModule } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, CardHeader, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
@@ -39,8 +39,8 @@ interface GridItemProps {
 }
 
 interface HomePageProps {
-  featuredModules: Exclude<ModuleUnion, Topic>[];
-  todayInHistoryModules: Exclude<ModuleUnion, Topic>[];
+  featuredModules: SerpModule[];
+  todayInHistoryModules: SerpModule[];
 }
 
 const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
@@ -164,7 +164,7 @@ const AboutModularHistory: FC = () => {
 };
 
 interface FeaturedContentProps {
-  modules: Exclude<ModuleUnion, Topic>[];
+  modules: SerpModule[];
 }
 
 const FeaturedContent: FC<FeaturedContentProps> = ({ modules }: FeaturedContentProps) => {

@@ -1,11 +1,11 @@
-import { ModuleUnion, Topic } from "@/types/modules";
+import { SerpModule } from "@/types/modules";
 import { Grid } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
 
 export interface TodayInHistoryProps {
-  modules: Exclude<ModuleUnion, Topic>[];
+  modules: SerpModule[];
 }
 
 const TodayInHistory: FC<TodayInHistoryProps> = ({ modules }: TodayInHistoryProps) => {
