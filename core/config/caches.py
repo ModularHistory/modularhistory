@@ -16,6 +16,7 @@ REDIS_CACHE = {
     'LOCATION': f'{REDIS_BASE_URL}/0',
     'OPTIONS': {
         'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
     },
 }
 
