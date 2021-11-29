@@ -1,3 +1,4 @@
+import axiosWithAuth from "@/axiosWithAuth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
@@ -13,6 +14,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { GetServerSideProps } from "next";
+import { useSession } from "next-auth/client";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import React, { FC, useState } from "react";
@@ -42,8 +44,6 @@ const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) 
       </Link>
     </Grid>
   ));
-  // console.log(typeof (collections))
-
   return (
     <Layout>
       <NextSeo
@@ -85,7 +85,36 @@ const DisplayCard: FC<{ collections: Collection[] }> = ({ collections }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setValue(dialogValue.key);
+    saveCollection(dialogValue.key);
     handleClose();
+  };
+
+  const [session, loading] = useSession();
+
+  const saveCollection = async (event: string) => {
+    const title = event;
+    const creator = session?.user?.handle;
+    const slug = title.replace(/ /g, "-");
+    console.log("The log is", title, creator, slug);
+
+    const data = JSON.stringify({
+      title: title,
+      creator: creator,
+      slug: slug,
+    });
+
+    await axiosWithAuth
+      .post(
+        "/api/collections/",
+        { headers: { "Content-Type": "application/json" } },
+        { data: data }
+      )
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (

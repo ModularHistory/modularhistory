@@ -1,6 +1,5 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import PageHeader from "@/components/PageHeader";
 import { Collection } from "@/types/modules";
 import ShareIcon from "@mui/icons-material/Share";
 import { Box, Button, Container, useMediaQuery } from "@mui/material";
@@ -38,7 +37,6 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
         canonical={"/collections"}
         description={`"${collection.title}", a collection of historical occurrences, entities, sources, and more.`}
       />
-      <PageHeader>{collection.title}</PageHeader>
       <Box sx={{ m: 2 }}>
         <Typography
           sx={{ fontFamily: "Segoe UI", fontWeight: 500, fontSize: 40 }}
