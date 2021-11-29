@@ -56,7 +56,12 @@ const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionPro
       ;
       <Container>
         <Grid container spacing={2}>
-          {[collection.propositions, collection.entities, collection.quotes, collection.sources]
+          {[
+            collection.propositionsSerialized,
+            collection.entitiesSerialized,
+            collection.quotesSerialized,
+            collection.sourcesSerialized,
+          ]
             .flat()
             .map((module) => (
               <Grid item key={module.slug} xs={6} sm={4} md={3}>

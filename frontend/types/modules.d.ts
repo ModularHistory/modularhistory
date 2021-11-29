@@ -97,21 +97,10 @@ export interface Collection {
   slug: string;
   title: string;
   creator: User;
-  quotes: Quote[];
-  entities: Entity[];
-  propositions: Proposition[];
-  sources: Source[];
-}
-
-export interface Collection {
-  model: "collections.collection";
-  slug: string;
-  title: string;
-  creator: User;
-  quotes: Quote[];
-  entities: Entity[];
-  propositions: Proposition[];
-  sources: Source[];
+  quotesSerialized: Quote[];
+  entitiesSerialized: Entity[];
+  propositionsSerialized: Proposition[];
+  sourcesSerialized: Source[];
 }
 
 export interface Argument extends BaseModule {
