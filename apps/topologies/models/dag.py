@@ -105,7 +105,7 @@ class Node(AbstractModel, ExtendedModel):
     def add_child(self, descendant, **kwargs):
         kwargs.update({'parent': self, 'child': descendant})
         cls = self.children.through(**kwargs)
-        return cls.save()
+        return cls.save(moderate=False)  # TODO
 
     def remove_child(self, descendant):
         self.children.through.objects.get(parent=self, child=descendant).delete()

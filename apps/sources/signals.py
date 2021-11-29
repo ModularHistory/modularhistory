@@ -18,7 +18,7 @@ from apps.sources.tasks import update_source
 def process_post_save(source: models.Source):
     """Respond to the saving of a source m2m relationship."""
     source.update_calculated_fields()
-    source.save()
+    source.save(moderate=False)  # TODO: is this OK?
 
 
 def process_pre_delete(source: models.Source):
@@ -58,10 +58,40 @@ def respond_to_source_containment_deletion(
 
 
 @receiver(m2m_changed, sender=models.SourceContainment)
-def respond_to_proposition_argument_changes(
+def respond_to_source_containment_changes(
     sender: models.SourceContainment, instance: models.Source, **kwargs
 ):
     """Respond to creation/modification of a source-source_containment relationship."""
     process_relation_changes(
         sender, instance, 'source', instance.source_containments.all(), **kwargs
+    )
+
+
+@receiver(m2m_changed, sender=models.TopicRelation)
+def respond_to_source_tags_changes(
+    sender: models.TopicRelation, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-tags/topics relationship."""
+    process_relation_changes(
+        sender, instance, 'topic', instance.topic_relations.all(), **kwargs
+    )
+
+
+@receiver(m2m_changed, sender=models.EntityRelation)
+def respond_to_source_related_entities_changes(
+    sender: models.EntityRelation, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-related_entities relationship."""
+    process_relation_changes(
+        sender, instance, 'entity', instance.entity_relations.all(), **kwargs
+    )
+
+
+@receiver(m2m_changed, sender=models.SourceAttribution)
+def respond_to_source_attributions_changes(
+    sender: models.SourceAttribution, instance: models.Source, **kwargs
+):
+    """Respond to creation/modification of a source-attributees relationship."""
+    process_relation_changes(
+        sender, instance, 'attributee', instance.attributions.all(), **kwargs
     )

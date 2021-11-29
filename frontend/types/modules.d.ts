@@ -10,7 +10,6 @@ export interface BaseModule {
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
-  title?: string;
   name?: string;
   changes?: Change[];
   issues?: Issue[];
@@ -19,6 +18,7 @@ export interface BaseModule {
 export interface SearchableModule extends BaseModule {
   cachedTags: Topic[];
   verified: boolean;
+  timelinePosition?: number;
 }
 
 export interface Citation {
@@ -48,6 +48,7 @@ export interface Text {
   description?: string[]; // for sources.source, entities.person
   elaboration?: string[]; // for occurances
 }
+
 export interface Meta {
   score: number;
   highlight: Text;
@@ -102,6 +103,17 @@ export interface Collection {
   sources: Source[];
 }
 
+export interface Collection {
+  model: "collections.collection";
+  slug: string;
+  title: string;
+  creator: User;
+  quotes: Quote[];
+  entities: Entity[];
+  propositions: Proposition[];
+  sources: Source[];
+}
+
 export interface Argument extends BaseModule {
   type: string;
   explanation: string;
@@ -131,6 +143,7 @@ export interface Topic extends BaseModule {
 }
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
+export type SerpModule = Exclude<ModuleUnion, Topic>;
 
 export interface FlatPage {
   title: string;

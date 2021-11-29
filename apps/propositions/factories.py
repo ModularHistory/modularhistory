@@ -1,17 +1,26 @@
 import factory
-from factory.django import DjangoModelFactory
+from factory import fuzzy
 
 from apps.images.factories import ImageFactory
+from apps.moderation.factories import ModeratedModelFactory
 from apps.propositions import models
 from apps.topics.factories import TopicFactory
 
 
-class PropositionFactory(DjangoModelFactory):
+class PropositionFactory(ModeratedModelFactory):
     class Meta:
         model = models.Proposition
 
+    title = factory.Faker('sentence', nb_words=10)
+    slug = factory.Faker('slug')
+    type = fuzzy.FuzzyChoice(x[0] for x in models.TYPE_CHOICES)
+    elaboration = factory.Faker('text')
+    summary = factory.Faker('text')
+    date = factory.Faker('historic_datetime')
+    end_date = factory.Faker('historic_datetime')
 
-class TopicRelationFactory(DjangoModelFactory):
+
+class TopicRelationFactory(ModeratedModelFactory):
     class Meta:
         model = models.TopicRelation
 
@@ -19,7 +28,7 @@ class TopicRelationFactory(DjangoModelFactory):
     topic = factory.SubFactory(TopicFactory)
 
 
-class ImageRelationFactory(DjangoModelFactory):
+class ImageRelationFactory(ModeratedModelFactory):
     class Meta:
         model = models.ImageRelation
 
@@ -27,7 +36,7 @@ class ImageRelationFactory(DjangoModelFactory):
     image = factory.SubFactory(ImageFactory)
 
 
-class PropositionWithRelatedObjectsFactory(PropositionFactory):
+class PropositionWithRelatedObjectsFactory(ModeratedModelFactory):
     class Meta:
         model = models.Proposition
 

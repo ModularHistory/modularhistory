@@ -242,7 +242,7 @@ class HTMLField(TextField):
         try:
             value = self._clean(value, model_instance=model_instance)
         except Exception as err:
-            logging.error(err)
+            logging.error(f'{value=} resulted in {err=}')
         return value
 
     def _clean(self, value: str, model_instance: Optional['ExtendedModel']) -> str:

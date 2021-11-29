@@ -2,6 +2,7 @@
 
 import serpy
 
+from apps.dates.fields import TimelinePositionField
 from core.models.model import ModelSerializer
 from core.models.module import ModuleSerializer
 
@@ -11,6 +12,7 @@ class SourceSerializer(ModuleSerializer):
 
     citation_html = serpy.StrField()
     title = serpy.StrField()
+    timeline_position = TimelinePositionField(attr='date', required=False)
 
 
 class ContainmentSerializer(ModelSerializer):

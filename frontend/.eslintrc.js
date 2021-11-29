@@ -10,6 +10,7 @@ const sharedRules = {
 };
 
 module.exports = {
+  root: true,
   env: {
     browser: true,
     es2021: true,
@@ -40,6 +41,10 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       plugins: ["react", "@typescript-eslint"],
       rules: sharedRules,
+    },
+    {
+      files: ["*.test.tsx", "**/*.test.tsx"],
+      rules: { "@typescript-eslint/no-non-null-assertion": "off" },
     },
   ],
 };

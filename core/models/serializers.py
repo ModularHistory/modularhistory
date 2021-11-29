@@ -9,23 +9,34 @@ from .model import validate_model_type
 
 if TYPE_CHECKING:
     from .module import Module
+    from .slugged import SluggedModel
 
 
-class DrfModuleSerializer(DrfSearchableModelSerializer):
-    """Base serializer for ModularHistory's modules."""
+class DrfSluggedModelSerializer(DrfSearchableModelSerializer):
+    """Base serializer for models extending SluggedModel and SearchableModel"""
 
     title = serializers.CharField(required=False, allow_blank=True)
     slug = serializers.CharField(required=False)
-    absolute_url = serializers.CharField(required=False)
-    admin_url = serializers.CharField(required=False)
-    cached_tags = serializers.JSONField(required=False)
+    absolute_url = serializers.CharField(required=False, read_only=True)
 
     class Meta(DrfSearchableModelSerializer.Meta):
-        model: type['Module']
+        model: type['SluggedModel']
         fields = DrfSearchableModelSerializer.Meta.fields + [
             'title',
             'slug',
             'absolute_url',
+        ]
+
+
+class DrfModuleSerializer(DrfSluggedModelSerializer):
+    """Base serializer for ModularHistory's modules."""
+
+    admin_url = serializers.CharField(required=False, read_only=True)
+    cached_tags = serializers.JSONField(required=False, read_only=True)
+
+    class Meta(DrfSluggedModelSerializer.Meta):
+        model: type['Module']
+        fields = DrfSluggedModelSerializer.Meta.fields + [
             'admin_url',
             'tags',
             'cached_tags',
@@ -43,7 +54,7 @@ class DrfModuleSerializer(DrfSearchableModelSerializer):
 class DrfTypedModuleSerializer(DrfModuleSerializer):
     """Base serializer for ModularHistory's typed modules."""
 
-    type = serializers.CharField(write_only=True, required=True)
+    type = serializers.CharField(required=True)
 
     def validate_type(self, value):
         return validate_model_type(self, value)

@@ -31,7 +31,7 @@ class TestModeration:
             certainty=1,
             date=HistoricDateTime(2000, 1, 1, 1, 1, 1, microsecond=1),
         )
-        p.save()
+        p.save(contributor=UserFactory.create())
 
         proposition_ct = ContentType.objects.get_for_model(Proposition)
 

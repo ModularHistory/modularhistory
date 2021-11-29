@@ -1,0 +1,11 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with site_name=site.name site_domain=site.domain %}
+Your e-mail address was used to register an account on {{ site_domain }}.
+{% endblocktrans %}
+To confirm your email address, please open the following URL in your browser:
+{{ activation_url }}
+{% blocktrans with site_name=site.name site_domain=site.domain %}
+Thank you for using {{ site_name }}!
+{% endblocktrans %}
+{% endautoescape %}

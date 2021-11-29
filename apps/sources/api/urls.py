@@ -1,4 +1,4 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.sources.api import views
@@ -20,7 +20,6 @@ router.register('sources', views.SourceViewSet)
 app_name = 'sources'
 
 urlpatterns = [
-    re_path(r'/?$', views.SourceViewSet.as_view({'get': 'list'})),
     path('', include(entry_router.urls)),
     path('', include(film_router.urls)),
     path('', include(book_router.urls)),

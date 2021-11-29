@@ -40,7 +40,7 @@ runs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    # Configure docker-compose.
+    # Configure docker compose.
     - name: Configure Docker Compose
       shell: bash
       run: |

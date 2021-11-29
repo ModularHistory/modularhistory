@@ -1,7 +1,7 @@
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
 from apps.images.models import Image
 from apps.propositions.models import Argument, Citation, Occurrence, Proposition
 from apps.sources.api.serializers import CitationDrfSerializerMixin
@@ -29,6 +29,7 @@ class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSer
     date = HistoricDateTimeDrfField(write_only=True, required=False)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
+    timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')
 
     class Meta(DrfTypedModuleSerializer.Meta):
         model = Proposition
@@ -46,6 +47,7 @@ class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSer
             'images',
             'primary_image',
             'cached_images',
+            'timeline',
         ]
         read_only_fields = ['truncated_elaboration']
         extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
@@ -66,7 +68,7 @@ class ArgumentDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
         many=True, read_only=True, source='premises.all'
     )
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = Argument
         fields = DrfModelSerializer.Meta.fields + [
             'conclusion',

@@ -8,7 +8,7 @@ class RepositoryDrfSerializer(DrfModelSerializer):
 
     location_serialized = PlaceDrfSerializer(read_only=True, source='location')
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = Repository
         fields = DrfModelSerializer.Meta.fields + [
             'name',
@@ -23,7 +23,7 @@ class CollectionDrfSerializer(DrfModelSerializer):
 
     repository_serialized = RepositoryDrfSerializer(read_only=True, source='repository')
 
-    class Meta(DrfModelSerializer.Meta):
+    class Meta:
         model = Collection
         fields = DrfModelSerializer.Meta.fields + [
             'name',

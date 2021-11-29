@@ -11,7 +11,7 @@ from apps.moderation.models.change import Change
 class ChangeType(DjangoObjectType):
     """GraphQL type for the Change model."""
 
-    id = graphene.Int()
+    pk = graphene.Int()
 
     class Meta:
         model = Change

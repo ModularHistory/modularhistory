@@ -27,7 +27,7 @@ services:
       - ./_volumes/static:/modularhistory/_volumes/static
       - ./_volumes/redirects:/modularhistory/_volumes/redirects
       # Keep the nginx config in a volume to allow for zero-downtime deploys via
-      # `docker-compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
+      # `docker compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
       # container would always have to be stopped (so its static IP address becomes 
       # available) before starting a replacement container with an updated config.
       - ./config/nginx/prod:/etc/nginx/conf.d
@@ -248,9 +248,9 @@ services:
 
   postgres:
     image: postgres:14
-    deploy:
-      restart_policy:
-        condition: any
+    # deploy:
+    #   restart_policy:
+    #     condition: 'always'
     env_file: .env
     expose:
       - "5432"

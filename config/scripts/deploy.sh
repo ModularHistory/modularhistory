@@ -30,7 +30,7 @@ containers_to_deploy_without_downtime=("$django" "$celery" "$next")
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
     # https://nginx.org/en/docs/beginners_guide.html#control
-    docker-compose exec -T "$webserver" nginx -s reload || {
+    docker compose exec -T "$webserver" nginx -s reload || {
         echo "Failed to reload nginx config file."; exit 1
     }
 }
@@ -39,13 +39,13 @@ wait_for_health () {
     healthy=false; timeout=300; interval=15; waited=0
     while [[ "$healthy" = false ]]; do
         healthy=true
-        [[ "$(docker-compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
+        [[ "$(docker compose ps)" =~ (Exit 1|unhealthy|starting) ]] && healthy=false
         if [[ "$healthy" = false ]]; then
             if [[ $waited -gt $timeout ]]; then 
-                docker-compose logs; echo "Timed out."; exit 1
+                docker compose logs; echo "Timed out."; exit 1
             fi
-            [[ $((waited%2)) -eq 0 ]] && docker-compose logs --tail 20 "$1"
-            echo ""; docker-compose ps; echo ""
+            [[ $((waited%2)) -eq 0 ]] && docker compose logs --tail 20 "$1"
+            echo ""; docker compose ps; echo ""
             echo "Waiting for $1 to be healthy (total waited: ${waited}s) ..."
             sleep $interval; waited=$((waited + interval))
         fi
@@ -53,7 +53,7 @@ wait_for_health () {
 }
 
 # List extant containers.
-echo "" && echo "Extant containers:" && docker-compose ps
+echo "" && echo "Extant containers:" && docker compose ps
 
 # Login to the container registry.
 echo "" && echo "Logging in to the container registry..."
@@ -63,7 +63,7 @@ echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
 
 # Pull new images.
 echo "" && echo "Pulling images for version $SHA ..."
-docker-compose pull --include-deps -q "${images_to_pull[@]}" || {
+docker compose pull --include-deps -q "${images_to_pull[@]}" || {
     echo "Failed to pull required images."; exit 1
 }
 for image_name in "${images_to_pull[@]}"; do
@@ -76,14 +76,14 @@ declare -a started_containers
 
 # If containers are not already running, start them up.
 for container in "${containers_to_start[@]}"; do
-    docker-compose ps | grep "$container" | grep -q "Up" || {
-        docker-compose up -d --no-recreate "$container"
+    docker compose ps | grep "$container" | grep -q "Up" || {
+        docker compose up -d --no-recreate "$container"
         started_containers+=("${container}")
     }
 done
 
 # Take down celery_beat to avoid triggering a periodic task during the deploy.
-docker-compose rm --stop --force celery_beat
+docker compose rm --stop --force celery_beat
 
 # Deploy new containers.
 declare -A old_container_ids
@@ -91,21 +91,21 @@ for container in "${containers_to_deploy_without_downtime[@]}"; do
     if [[ ! " ${started_containers[*]} " =~ " ${container} " ]]; then
         echo "" && echo "Deploying $container ..."
         old_container_ids[$container]=$(docker ps -f "name=${container}" -q | tail -n1)
-        docker-compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
+        docker compose up -d --no-deps --scale "${container}=2" --no-recreate "$container"
         container_name=$(docker ps -f "name=${container}" --format '{{.Names}}' | tail -n1)
         # new_container_name="${container_name/modularhistory_/modularhistory_${new}_}"
         # docker rename "$container_name" "$new_container_name"
-        docker-compose ps | grep "Exit 1" && exit 1
+        docker compose ps | grep "Exit 1" && exit 1
         wait_for_health "$container_name"
     fi
 done
 
 # Start celery_beat.
-docker-compose up -d --no-deps --no-recreate "$celery_beat"
+docker compose up -d --no-deps --no-recreate "$celery_beat"
 wait_for_health "$celery_beat"
 
 echo "" && echo "Finished deploying new containers."
-echo "" && docker-compose ps
+echo "" && docker compose ps
 
 # Reload nginx to begin sending traffic to the new containers.
 reload_nginx
@@ -117,19 +117,19 @@ for old_container_id in "${old_container_ids[@]}"; do
     docker rm "$old_container_id"
 done
 for container in "${containers_to_deploy_without_downtime[@]}"; do
-    docker-compose up -d --no-deps --scale "${container}=1" --no-recreate "$container"
+    docker compose up -d --no-deps --scale "${container}=1" --no-recreate "$container"
 done
 echo "" && echo "Finished removing old containers."
-echo "" && docker-compose ps
+echo "" && docker compose ps
 
 # Reload nginx to stop trying to send traffic to the old containers.
 reload_nginx
 
 # Confirm all containers are running.
 for container in "${containers_to_start[@]}"; do
-    docker-compose ps | grep "$container" | grep -q "Up" || {
+    docker compose ps | grep "$container" | grep -q "Up" || {
         echo "WARNING: ${container} unexpectedly is not running. Starting..."
-        docker-compose up -d "$container"
+        docker compose up -d "$container"
         wait_for_health "$container"
     }
 done
@@ -142,5 +142,5 @@ docker image prune -a -f; docker system prune -f
 echo "" && echo "Updating PyInvoke config..."
 cp config/invoke.yaml "$HOME/.invoke.yaml"
 
-echo "" && docker-compose ps
+echo "" && docker compose ps
 echo "" && echo "Done."

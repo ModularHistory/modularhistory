@@ -1,6 +1,6 @@
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import InstantSearch, { InstantSearchProps } from "../InstantSearch";
+import InstantSearch, { InstantSearchProps } from "../InstantSearch/InstantSearch";
 
 describe("Instant search input field", () => {
   const [idKey, labelKey] = ["id", "label"];

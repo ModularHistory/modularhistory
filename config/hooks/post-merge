@@ -12,7 +12,15 @@ setup_sha_file=".venv/.setup.sha"
 poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
-docker-compose ps | grep "webserver" | grep --quiet "Up" && up=true || up=false
+
+docker system info &>/dev/null || {
+  open --background -a Docker && {
+    while ! docker system info &>/dev/null; do 
+      echo "Waiting for Docker to start up..."; sleep 5
+    done
+  }
+}
+docker compose ps | grep "webserver" | grep --quiet "Up" && up=true || up=false
 
 # Determine whether to prompt to (re)run the setup script.
 if [[ ! -f $setup_sha_file ]]; then
@@ -45,7 +53,7 @@ fi
 
 # If docker-compose.yml files have been updated, stop all running containers so that
 # containers will have to be recreated with the updated configuration.
-echo "$changed_files" | grep --quiet 'docker-compose' && docker-compose down --remove-orphans
+echo "$changed_files" | grep --quiet 'docker-compose' && docker compose down --remove-orphans
 
 # Update django dependencies if necessary.
 echo "$changed_files" | grep --quiet 'poetry.lock' && {
@@ -59,10 +67,10 @@ echo "$changed_files" | grep --quiet 'poetry.lock' && {
     # Install dependencies.
     poetry install --no-root
     # Rebuild the django image.
-    docker-compose build django
-    docker-compose ps | grep --quiet 'django' && {
+    docker compose build django
+    docker compose ps | grep --quiet 'django' && {
       # Recreate running containers.
-      docker-compose up -d django
+      docker compose up -d django
     }
     shasum poetry.lock > "$poetry_sha_file"
   fi
@@ -90,7 +98,7 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 }
 
 # Restart any stopped containers, if containers were previously running.
-[[ "$up" = true ]] && docker-compose up -d webserver
+[[ "$up" = true ]] && docker compose up -d webserver
 
 # Prompt to update hooks if necessary.
 if [[ $post_merge_hook_changed = true ]]; then

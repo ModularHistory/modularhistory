@@ -3,9 +3,9 @@
 from datetime import datetime as DateTime  # noqa: N812
 from typing import Optional, Union
 
+import serpy
 from dateutil.parser import isoparse
 from django.db.models import DateTimeField
-from rest_framework.fields import DateTimeField as DrfDateTimeField
 
 from apps.dates.structures import HistoricDateTime
 
@@ -72,17 +72,8 @@ class HistoricDateTimeField(DateTimeField):
         return None
 
 
-class HistoricDateTimeDrfField(DrfDateTimeField):
-    def to_internal_value(self, value):
-        value = super().to_internal_value(value)
-        value = HistoricDateTime(
-            value.year,
-            value.month,
-            value.day,
-            value.hour,
-            value.minute,
-            value.second,
-            value.microsecond,
-            tzinfo=value.tzinfo,
-        )
-        return value
+class TimelinePositionField(serpy.Field):
+    """Represents dates on a continuous floating point scale."""
+
+    def to_value(self, value: HistoricDateTime):
+        return value.timeline_position

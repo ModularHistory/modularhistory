@@ -14,6 +14,8 @@ class TypedModelManager(BaseTypedModelManager):
 class TypedModel(BasedTypedModel, ExtendedModel, metaclass=TypedModelMetaclass):
     """Base model for models implementing single-table inheritance via `type`."""
 
+    _typedmodels_registry: dict
+
     class Meta:
         abstract = True
 

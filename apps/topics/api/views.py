@@ -14,7 +14,7 @@ class TopicViewSet(ExtendedModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicDrfSerializer
     pagination_class = LargeSizePagination
-    list_fields = {'name', 'id'}
+    list_fields = {'name', 'pk'}
 
 
 class TopicInstantSearchAPIView(APIView):

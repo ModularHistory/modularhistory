@@ -264,7 +264,7 @@ class Proposition(  # noqa: WPS215
         """Return the occurrence's elaboration, truncated."""
         if not self.elaboration:
             return None
-        elaboration_soup = soupify(self.elaboration)
+        elaboration_soup = soupify(self.elaboration, features='html.parser')
         img_tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find('img')
         if isinstance(img_tag, Tag):
             img_tag.decompose()
@@ -272,13 +272,9 @@ class Proposition(  # noqa: WPS215
             truncatechars_html(elaboration_soup.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
             .replace('<p>', '')
             .replace('</p>', '')
+            .strip('\n')
         )
         return format_html(truncated_elaboration)
-
-    @property
-    def ordered_images(self) -> 'QuerySet':
-        """Careful!  These are occurrence-images, not images."""
-        return self.image_relations.all().select_related('image')
 
     @property
     def escaped_summary(self) -> SafeString:

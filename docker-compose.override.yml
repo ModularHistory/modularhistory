@@ -32,9 +32,9 @@ services:
       dockerfile: ./build/Dockerfile.django
       args:
         ENVIRONMENT: dev
-    deploy:
-      restart_policy:
-        condition: none
+    # deploy:
+    #   restart_policy:
+    #     condition: 'no'
     image: django:latest
     user: root
     ports:

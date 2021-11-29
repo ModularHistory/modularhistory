@@ -5,6 +5,7 @@ from .conflict import Conflict
 from .fallacy import Fallacy, FallacyIdentification
 from .occurrence import Occurrence, Publication
 from .proposition import (
+    TYPE_CHOICES,
     Citation,
     CollectionInclusion,
     Conclusion,

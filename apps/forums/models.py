@@ -1,13 +1,16 @@
 from django.db import models
+from django.utils.timezone import now
 
 from apps.users.models import User
+from core.models.module import Module
 
 
 class Thread(models.Model):
     """A forum thread."""
 
     # creator = models.ForeignKey(User, on_delete=models.CASCADE)  # noqa: E800
-    initial_post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    initial_post = models.ForeignKey('Post', null=True, on_delete=models.CASCADE)
+    updated_date = models.DateTimeField(default=now)
 
     def __str__(self) -> str:
         """Return the thread's string representation."""

@@ -48,25 +48,25 @@ class ModeratedModel(SoftDeletableModel):
         ]
 
     def delete(self, **kwargs):
-        """Override saving after deletion to use moderation"""
+        """Override saving after deletion to use moderation."""
         super()._delete(on_save=self.save, **kwargs)
 
     def undelete(self, **kwargs):
-        """Override saving after un-deletion to use moderation"""
+        """Override saving after un-deletion to use moderation."""
         super()._undelete(on_save=self.save, **kwargs)
 
     def save(self, *args, **kwargs):
+        """Override save behavior to use moderation."""
         moderate = kwargs.pop('moderate', True)
         contributor = kwargs.pop('contributor', get_current_authenticated_user())
-        if moderate and contributor:
-            self.save_change(contributor=contributor)
-        else:
-            # if contributor is None, but moderate=True, content moderation is skipped to avoid unintentional save_change calls
-            if moderate:
-                logging.error(
-                    'No contributor available to use to save a contribution, falling back to super().save'
-                )
-            super().save(*args, **kwargs)
+        # Allow creation of pre-verified model instances.
+        if self._state.adding and self.verified:
+            return super().save(*args, **kwargs)
+        elif moderate:
+            if contributor:
+                return self.save_change(contributor=contributor)
+            raise Exception('Contributor is required when saving a moderated change.')
+        super().save(*args, **kwargs)
 
     def save_change(
         self,
@@ -78,7 +78,7 @@ class ModeratedModel(SoftDeletableModel):
         object_is_new = self._state.adding
         self.clean()
         logging.info(
-            f'Saving a change: pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
+            f'Saving a change: model={self.__class__.__name__} pk={self.pk}, contributor={contributor}, is_new={object_is_new}'
         )
         if object_is_new:
             self.verified = False
@@ -100,7 +100,14 @@ class ModeratedModel(SoftDeletableModel):
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
                 initiator=contributor,
-                content_type=ContentType.objects.get_for_model(self.__class__),
+                content_type=ContentType.objects.get_for_model(
+                    # Ensure TypedModel subclasses use the content type of their base model.
+                    getattr(
+                        self.__class__,
+                        'base_class',
+                        self.__class__,
+                    )
+                ),
                 object_id=self.pk,
                 moderation_status=ModerationStatus.PENDING,
                 changed_object=self,

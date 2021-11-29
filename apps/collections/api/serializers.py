@@ -1,14 +1,12 @@
-from rest_framework import serializers
-
 from apps.collections.models import Collection
 from apps.entities.api.serializers import EntityDrfSerializer
 from apps.propositions.api.serializers import PropositionDrfSerializer
 from apps.quotes.api.serializers import QuoteDrfSerializer
 from apps.sources.api.serializers import SourceDrfSerializer
-from core.models.serializers import DrfTypedModuleSerializer
+from core.models.serializers import DrfSluggedModelSerializer
 
 
-class CollectionDrfSerializer(DrfTypedModuleSerializer):
+class CollectionDrfSerializer(DrfSluggedModelSerializer):
     """Serializer for collection."""
 
     propositions = PropositionDrfSerializer(many=True)
@@ -16,14 +14,13 @@ class CollectionDrfSerializer(DrfTypedModuleSerializer):
     quotes = QuoteDrfSerializer(many=True)
     sources = SourceDrfSerializer(many=True)
 
-    class Meta(DrfTypedModuleSerializer.Meta):
+    class Meta(DrfSluggedModelSerializer.Meta):
         model = Collection
-        fields = DrfTypedModuleSerializer.Meta.fields + [
+        fields = DrfSluggedModelSerializer.Meta.fields + [
             'creator',
             'entities',
             'quotes',
             'sources',
             'propositions',
         ]
-        fields.remove('tags')
         read_only_fields = ['truncated_description']

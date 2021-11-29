@@ -1,6 +1,5 @@
-import axiosWithoutAuth from "@/axiosWithoutAuth";
 import TextField from "@/components/forms/StyledTextField";
-import InstantSearch from "@/components/search/InstantSearch";
+import { EntitiesInstantSearch, TopicsInstantSearch } from "@/components/search/InstantSearch";
 import { Container, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
@@ -133,58 +132,18 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
         </Grid>
 
         <Grid item xs={12} sm={sm}>
-          <InstantSearch
-            label={"Entities"}
-            labelKey={"name"}
+          <EntitiesInstantSearch
             onChange={fieldCallbacks.entities}
             disabled={isLoading}
-            defaultValue={
-              fieldsRef.current.entities
-                ? axiosWithoutAuth
-                    .get("/graphql/", {
-                      params: {
-                        query: `{ entities(ids: [${fieldsRef.current.entities}]) { id name } }`,
-                      },
-                    })
-                    .then(({ data: { data } }) => data.entities)
-                : []
-            }
-            getDataForInput={(input, config) =>
-              axiosWithoutAuth
-                .get("/api/entities/instant_search/", {
-                  params: { query: input },
-                  ...config,
-                })
-                .then(({ data }) => data)
-            }
+            defaultValue={fieldsRef.current.entities}
           />
         </Grid>
 
         <Grid item xs={12} sm={sm}>
-          <InstantSearch
-            label={"Topics"}
-            labelKey={"name"}
+          <TopicsInstantSearch
             onChange={fieldCallbacks.topics}
             disabled={isLoading}
-            defaultValue={
-              fieldsRef.current.topics
-                ? axiosWithoutAuth
-                    .get("/graphql/", {
-                      params: {
-                        query: `{ topics(ids: [${fieldsRef.current.topics}]) { id name } }`,
-                      },
-                    })
-                    .then(({ data: { data } }) => data.topics)
-                : []
-            }
-            getDataForInput={(input, config) =>
-              axiosWithoutAuth
-                .get("/api/topics/instant_search/", {
-                  params: { query: input },
-                  ...config,
-                })
-                .then(({ data }) => data)
-            }
+            defaultValue={fieldsRef.current.topics}
           />
         </Grid>
 

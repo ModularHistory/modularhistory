@@ -318,15 +318,18 @@ class Source(
             # Generate attributee_html from attributees (m2m relationship).
             attributees = self.ordered_attributees
             n_attributions = len(attributees)
-            first_attributee = attributees[0]
-            html = first_attributee.name_html
-            if n_attributions == 2:
-                html = f'{html} and {attributees[1].name_html}'
-            elif n_attributions == 3:
-                html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
-            elif n_attributions > 3:
-                html = f'{html} et al.'
-            return html
+            if n_attributions:
+                first_attributee = attributees[0]
+                html = first_attributee.name_html
+                if n_attributions == 2:
+                    html = f'{html} and {attributees[1].name_html}'
+                elif n_attributions == 3:
+                    html = (
+                        f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
+                    )
+                elif n_attributions > 3:
+                    html = f'{html} et al.'
+                return html
         return ''
 
     def get_citation_html(self) -> str:
