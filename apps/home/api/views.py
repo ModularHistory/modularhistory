@@ -1,12 +1,10 @@
 from datetime import datetime
 from itertools import chain
 
-from django.db.models import Q
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.entities.models import Entity
 from apps.home.models import Feature
 from apps.propositions.models import Occurrence
 from apps.quotes.models import Quote
@@ -31,19 +29,36 @@ class TodayInHistoryView(APIView):
     def get(self, request):
         today = datetime.now()
         # today = datetime(2021, 7, 7)  # for testing
-        entities = Entity.objects.filter(
-            Q(
-                birth_date__month=today.month,
-                birth_date__day=today.day,
-            )
-            | Q(
-                death_date__month=today.month,
-                death_date__day=today.day,
-            )
-        )
-        occurrences = Occurrence.objects.filter(date__month=today.month, date__day=today.day)
-        quotes = Quote.objects.filter(date__month=today.month, date__day=today.day)
+
+        date_filter = {
+            'date__month': today.month,
+            'date__day': today.day,
+            # Remove modules with unknown days (automatically set to the 1st of the month).
+            'date__second': 0,
+            'date_is_circa': False,
+        }
+
+        occurrences = Occurrence.objects.filter(**date_filter)
+        quotes = Quote.objects.filter(**date_filter)
+        # Temporarily exclude entities until we have a better way of indicating
+        # that they were _born_ on this day.
+        # entities = Entity.objects.filter(
+        #     Q(
+        #         birth_date__month=today.month,
+        #         birth_date__day=today.day,
+        #     )
+        #     | Q(
+        #         death_date__month=today.month,
+        #         death_date__day=today.day,
+        #     )
+        # )
+
         serialized_results = [
-            instance.serialize() for instance in chain(entities, occurrences, quotes)
+            instance.serialize()
+            for instance in chain(
+                # entities,
+                occurrences,
+                quotes,
+            )
         ]
         return Response(serialized_results)
