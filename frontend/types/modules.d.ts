@@ -96,7 +96,7 @@ export interface Collection {
   model: "collections.collection";
   slug: string;
   title: string;
-  creator: User;
+  creator?: User;
   quotesSerialized: Quote[];
   entitiesSerialized: Entity[];
   propositionsSerialized: Proposition[];

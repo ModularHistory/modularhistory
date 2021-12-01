@@ -67,20 +67,19 @@ const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) 
 
 //Autocomplete Component
 const DisplayCard: FC<{ collections: Collection[] }> = ({ collections }) => {
+  const [session, loading] = useSession();
   const [value, setValue] = useState<string | null>(null);
   const [open, toggleOpen] = useState(false);
+  const [dialogValue, setDialogValue] = useState({
+    key: "",
+  });
 
   const handleClose = () => {
     setDialogValue({
       key: "",
     });
-
     toggleOpen(false);
   };
-
-  const [dialogValue, setDialogValue] = useState({
-    key: "",
-  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,26 +88,18 @@ const DisplayCard: FC<{ collections: Collection[] }> = ({ collections }) => {
     handleClose();
   };
 
-  const [session, loading] = useSession();
-
   const saveCollection = async (event: string) => {
     const title = event;
-    const creator = session?.user?.handle;
     const slug = title.replace(/ /g, "-");
-    console.log("The log is", title, creator, slug);
-
-    const data = JSON.stringify({
-      title: title,
-      creator: creator,
-      slug: slug,
-    });
-
+    const collection: Partial<Collection> = {
+      title,
+      slug,
+    };
+    if (session?.user) {
+      collection.creator = session.user;
+    }
     await axiosWithAuth
-      .post(
-        "/api/collections/",
-        { headers: { "Content-Type": "application/json" } },
-        { data: data }
-      )
+      .post("/api/collections/", collection)
       .then(function (response) {
         console.log(JSON.stringify(response.data));
       })
