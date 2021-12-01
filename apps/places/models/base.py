@@ -18,6 +18,7 @@ class PlaceTypes:
     city = 'places.city'
     county = 'places.county'
     state = 'places.state'
+    administrative_division = 'places.administrativedivision'
     country = 'places.country'
     region = 'places.region'
     continent = 'places.continent'
@@ -29,6 +30,7 @@ LOCATION_PRECEDENCE = [
     PlaceTypes.city,
     PlaceTypes.county,
     PlaceTypes.state,
+    PlaceTypes.administrative_division,
     PlaceTypes.country,
     PlaceTypes.region,
     PlaceTypes.continent,
