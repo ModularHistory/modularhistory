@@ -91,7 +91,7 @@ class TopicAdmin(ModeratedModelAdmin):
         custom_urls = [
             path(
                 'related_topic_search/',
-                self.admin_site.admin_view(TagSearchView.as_view()),
+                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='related_topic_search',
             ),
         ]
