@@ -28,12 +28,6 @@ else
   " && exit
 fi
 
-function activate_venv() {
-  set a
-  # shellcheck disable=SC1091
-  source .venv/bin/activate; unset a
-}
-
 poetry config virtualenvs.create true &>/dev/null
 poetry config virtualenvs.in-project true &>/dev/null
 
@@ -42,13 +36,17 @@ if [[ -d .venv ]]; then
   echo "Verifying the active Python version is $PYTHON_VERSION..."
   if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
     echo "Destroying the existing .venv ..."
-    [[ -d .venv ]] && rm -r .venv
+    rm -r .venv
   fi
 fi
 [[ -d .venv ]] || {
+  python -m venv .venv
   poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
-activate_venv
+
+set a
+# shellcheck disable=SC1091
+source .venv/bin/activate; unset a
 if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
   _error "Failed to activate Python $PYTHON_VERSION."
 fi
@@ -67,7 +65,6 @@ poetry install --no-root || {
   echo ""
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
-  mkdir -p .venv
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
   if [[ "$IN_VENV" = 0 ]]; then
     _error "Failed to create and/or activate virtual environment."
