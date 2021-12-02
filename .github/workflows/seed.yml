@@ -125,7 +125,10 @@ jobs:
       run: |
         poetry --version
         echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
-        poetry install --no-root
+        poetry install --no-root || {
+          yes | poetry cache clear . --all
+          poetry install --no-root
+        }
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
