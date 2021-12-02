@@ -5,7 +5,6 @@ from pprint import pformat
 from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern
 
 import regex
-import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
@@ -96,7 +95,7 @@ class ExtendedModel(Model):
     @classmethod
     def get_serializer(cls) -> type[Serializer]:
         """Return the serializer class used to serialize model instances."""
-        serializer = getattr(cls, "serializer", None) or None
+        serializer = getattr(cls, 'serializer', None) or None
         return serializer
 
     @property
@@ -255,19 +254,7 @@ class ExtendedModel(Model):
         return placeholder
 
 
-class ModelSerializer(serpy.Serializer):
-    """Base serializer for ModularHistory's models."""
-
-    id = serpy.IntField()
-    model = serpy.MethodField()
-    absolute_url = serpy.StrField()
-
-    def get_model(self, instance: ExtendedModel) -> str:
-        """Return the model name of the instance."""
-        return get_model_name(instance)
-
-
-class DrfModelSerializer(serializers.ModelSerializer):
+class ModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     class Meta:
@@ -322,7 +309,7 @@ class DrfModelSerializer(serializers.ModelSerializer):
         return fields
 
 
-class DrfTypedModelSerializer(DrfModelSerializer):
+class TypedModelSerializer(ModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
     type = serializers.CharField(required=True)
@@ -331,7 +318,7 @@ class DrfTypedModelSerializer(DrfModelSerializer):
         return validate_model_type(self, value)
 
     class Meta:
-        fields = DrfModelSerializer.Meta.fields + ['type']
+        fields = ModelSerializer.Meta.fields + ['type']
 
 
 def get_model_name(instance: ExtendedModel) -> str:

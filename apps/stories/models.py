@@ -6,7 +6,6 @@ from rest_framework.serializers import Serializer
 
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
-from apps.stories.serializers import StorySerializer
 from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
@@ -54,13 +53,6 @@ class Story(ModelWithSources):
 
     searchable_fields = ['handle', 'description']
     slug_base_fields = ('handle',)
-
-    @classmethod
-    def get_serializer(self) -> Serializer:
-        """Return the serializer for the entity."""
-        from apps.stories.serializers import StorySerializer
-
-        return StorySerializer
 
     def __str__(self) -> str:
         """Return the fact's string representation."""

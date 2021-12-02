@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.forums.models import Post, Thread
-from core.models.serializers import DrfModuleSerializer
 
 
 class ThreadSerializer(serializers.ModelSerializer):

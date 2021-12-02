@@ -7,10 +7,10 @@ from apps.quotes.api.serializers import QuoteSerializer
 from apps.quotes.models.quote import Quote
 from apps.sources.api.serializers import SourceSerializer
 from apps.sources.models.source import Source
-from core.models.serializers import DrfSluggedModelSerializer, DrfTypedModuleSerializer
+from core.models.serializers import SluggedModelSerializer, TypedModuleSerializer
 
 
-class CollectionSerializer(DrfSluggedModelSerializer):
+class CollectionSerializer(SluggedModelSerializer):
     """Serializer for collection."""
 
     propositions_serialized = PropositionSerializer(
@@ -20,9 +20,9 @@ class CollectionSerializer(DrfSluggedModelSerializer):
     quotes_serialized = QuoteSerializer(many=True, read_only=True, source='quotes')
     sources_serialized = SourceSerializer(many=True, read_only=True, source='sources')
 
-    class Meta(DrfSluggedModelSerializer.Meta):
+    class Meta(SluggedModelSerializer.Meta):
         model = Collection
-        fields = DrfSluggedModelSerializer.Meta.fields + [
+        fields = SluggedModelSerializer.Meta.fields + [
             'creator',
             'entities',
             'entities_serialized',

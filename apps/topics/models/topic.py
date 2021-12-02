@@ -7,7 +7,6 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.serializers import Serializer
 
-from apps.topics.serializers import TopicSerializer
 from apps.topologies.models import edge_factory, node_factory
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField

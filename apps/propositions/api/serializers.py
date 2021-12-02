@@ -1,13 +1,13 @@
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.images.models import Image
 from apps.propositions.models import Argument, Citation, Occurrence, Proposition
 from apps.sources.api.serializers import CitationSerializerMixin
-from core.models.model import DrfModelSerializer
-from core.models.serializers import DrfTypedModuleSerializer
-from core.models.titled import TitleCaseDrfField
+from core.models.model import ModelSerializer
+from core.models.serializers import TypedModuleSerializer
+from core.models.titled import TitleCaseField
 
 
 class CitationSerializer(CitationSerializerMixin):
@@ -23,17 +23,17 @@ class CitationSerializer(CitationSerializerMixin):
         ]
 
 
-class _PropositionSerializer(WritableNestedModelSerializer, DrfTypedModuleSerializer):
+class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     """Serializer for propositions."""
 
-    date = HistoricDateTimeDrfField(write_only=True, required=False)
-    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    date = HistoricDateTimeField(write_only=True, required=False)
+    end_date = HistoricDateTimeField(write_only=True, required=False)
     citations = CitationSerializer(many=True, write_only=True, required=False)
-    timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')
+    timeline = TimelinePositionField(read_only=True, required=False, source='date')
 
-    class Meta(DrfTypedModuleSerializer.Meta):
+    class Meta(TypedModuleSerializer.Meta):
         model = Proposition
-        fields = DrfTypedModuleSerializer.Meta.fields + [
+        fields = TypedModuleSerializer.Meta.fields + [
             'summary',
             'elaboration',
             'truncated_elaboration',
@@ -50,7 +50,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, DrfTypedModuleSerial
             'timeline',
         ]
         read_only_fields = ['truncated_elaboration']
-        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
             'certainty': {'required': False},
             'images': {
                 'write_only': True,
@@ -61,7 +61,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, DrfTypedModuleSerial
         }
 
 
-class ArgumentSerializer(UniqueFieldsMixin, DrfModelSerializer):
+class ArgumentSerializer(UniqueFieldsMixin, ModelSerializer):
     """Serializer for arguments."""
 
     premises_serialized = _PropositionSerializer(
@@ -70,7 +70,7 @@ class ArgumentSerializer(UniqueFieldsMixin, DrfModelSerializer):
 
     class Meta:
         model = Argument
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModelSerializer.Meta.fields + [
             'conclusion',
             'position',
             'type',
@@ -107,7 +107,7 @@ class PropositionSerializer(_PropositionSerializer):
 class OccurrenceSerializer(PropositionSerializer):
     """Serializer for occurrences."""
 
-    title = TitleCaseDrfField()
+    title = TitleCaseField()
 
     class Meta(PropositionSerializer.Meta):
         model = Occurrence

@@ -1,13 +1,13 @@
 from apps.sources.models import SourceFile
-from core.models.model import DrfModelSerializer
+from core.models.model import ModelSerializer
 
 
-class SourceFileSerializer(DrfModelSerializer):
+class SourceFileSerializer(ModelSerializer):
     """Serializer for sources files."""
 
     class Meta:
         model = SourceFile
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModelSerializer.Meta.fields + [
             'file',
             'name',
             'page_offset',

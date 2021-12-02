@@ -1,14 +1,14 @@
 from drf_writable_nested import UniqueFieldsMixin
 from rest_framework import serializers
 
-from apps.dates.api.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeField
 from apps.sources.api.serializers import SourceSerializer, TextualSerializerMixin
 from apps.sources.models import Webpage, Website
 from apps.sources.models.publication import AbstractPublication, Publication
-from core.models.model import DrfModelSerializer, DrfTypedModelSerializer
+from core.models.model import ModelSerializer, TypedModelSerializer
 
 
-class PublicationDrfMixinSerializer(serializers.ModelSerializer):
+class PublicationMixinSerializer(serializers.ModelSerializer):
     """Serializer for abstract publication sources."""
 
     class Meta:
@@ -18,22 +18,20 @@ class PublicationDrfMixinSerializer(serializers.ModelSerializer):
 
 class PublicationSerializer(
     UniqueFieldsMixin,
-    DrfTypedModelSerializer,
-    PublicationDrfMixinSerializer,
+    TypedModelSerializer,
+    PublicationMixinSerializer,
 ):
     """Serializer for publication sources."""
 
     class Meta(SourceSerializer.Meta):
         model = Publication
-        fields = (
-            DrfTypedModelSerializer.Meta.fields + PublicationDrfMixinSerializer.Meta.fields
-        )
+        fields = TypedModelSerializer.Meta.fields + PublicationMixinSerializer.Meta.fields
 
 
 class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for webpage sources."""
 
-    date = HistoricDateTimeDrfField(write_only=True, required=False)
+    date = HistoricDateTimeField(write_only=True, required=False)
 
     def validate(self, attrs):
         if not attrs.get('website') and not attrs.get('website_name'):
@@ -60,9 +58,9 @@ class WebpageSerializer(_WebpageSerializer):
     originalEdition = _WebpageSerializer(read_only=True, source='original_edition')
 
 
-class WebsiteSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
+class WebsiteSerializer(ModelSerializer, PublicationMixinSerializer):
     """Serializer for website sources."""
 
     class Meta:
         model = Website
-        fields = PublicationDrfMixinSerializer.Meta.fields + ['owner']
+        fields = PublicationMixinSerializer.Meta.fields + ['owner']
