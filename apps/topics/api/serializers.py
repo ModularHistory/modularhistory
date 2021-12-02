@@ -4,7 +4,7 @@ from apps.topics.models import Topic
 from core.models.serializers import DrfModuleSerializer
 
 
-class TopicDrfSerializer(DrfModuleSerializer):
+class TopicSerializer(DrfModuleSerializer):
     """Serializer for topics."""
 
     class Meta(DrfModuleSerializer.Meta):

@@ -5,8 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.moderation.api.tests import ModerationApiTest
-from apps.sources.api.serializers import SourceAttributionDrfSerializer
-from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
+from apps.sources.api.serializers import SourceAttributionSerializer
+from apps.sources.api.sources.publication.serializers import PublicationSerializer
 from apps.sources.factories import ArticleFactory, PublicationFactory
 from apps.sources.models import Article
 from apps.topics.factories import TopicFactory
@@ -59,9 +59,9 @@ class ArticleApiTest(ModerationApiTest):
             'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'date': '2017-01-01 01:01:20.086202',
             'end_date': '2020-01-01 01:01:20.086202',
-            'publication': PublicationDrfSerializer(self.publications[0]).data,
+            'publication': PublicationSerializer(self.publications[0]).data,
             'attributions': [
-                SourceAttributionDrfSerializer(
+                SourceAttributionSerializer(
                     Article.attributees.through(
                         attributee_id=id,
                     )
@@ -82,9 +82,9 @@ class ArticleApiTest(ModerationApiTest):
             'volume': 20,
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'date': '2027-01-01 01:01:20',
-            'publication': PublicationDrfSerializer(self.publications[1]).data,
+            'publication': PublicationSerializer(self.publications[1]).data,
             'attributions': [
-                SourceAttributionDrfSerializer(
+                SourceAttributionSerializer(
                     Article.attributees.through(
                         attributee_id=id,
                     )

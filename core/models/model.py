@@ -93,6 +93,12 @@ class ExtendedModel(Model):
         """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
 
+    @classmethod
+    def get_serializer(cls) -> type[Serializer]:
+        """Return the serializer class used to serialize model instances."""
+        serializer = getattr(cls, "serializer", None) or None
+        return serializer
+
     @property
     def admin_url(self) -> str:
         """Return the model instance's admin URL."""

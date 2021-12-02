@@ -1,24 +1,24 @@
 from apps.collections.models import Collection
-from apps.entities.api.serializers import EntityDrfSerializer
+from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.entity import Entity
-from apps.propositions.api.serializers import PropositionDrfSerializer
+from apps.propositions.api.serializers import PropositionSerializer
 from apps.propositions.models.proposition import Proposition
-from apps.quotes.api.serializers import QuoteDrfSerializer
+from apps.quotes.api.serializers import QuoteSerializer
 from apps.quotes.models.quote import Quote
-from apps.sources.api.serializers import SourceDrfSerializer
+from apps.sources.api.serializers import SourceSerializer
 from apps.sources.models.source import Source
 from core.models.serializers import DrfSluggedModelSerializer, DrfTypedModuleSerializer
 
 
-class CollectionDrfSerializer(DrfSluggedModelSerializer):
+class CollectionSerializer(DrfSluggedModelSerializer):
     """Serializer for collection."""
 
-    propositions_serialized = PropositionDrfSerializer(
+    propositions_serialized = PropositionSerializer(
         many=True, read_only=True, source='propositions'
     )
-    entities_serialized = EntityDrfSerializer(many=True, read_only=True, source='entities')
-    quotes_serialized = QuoteDrfSerializer(many=True, read_only=True, source='quotes')
-    sources_serialized = SourceDrfSerializer(many=True, read_only=True, source='sources')
+    entities_serialized = EntitySerializer(many=True, read_only=True, source='entities')
+    quotes_serialized = QuoteSerializer(many=True, read_only=True, source='quotes')
+    sources_serialized = SourceSerializer(many=True, read_only=True, source='sources')
 
     class Meta(DrfSluggedModelSerializer.Meta):
         model = Collection

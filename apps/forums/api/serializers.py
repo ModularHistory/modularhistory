@@ -4,7 +4,7 @@ from apps.forums.models import Post, Thread
 from core.models.serializers import DrfModuleSerializer
 
 
-class ThreadDrfSerializer(serializers.ModelSerializer):
+class ThreadSerializer(serializers.ModelSerializer):
     """Serializer for threads."""
 
     class Meta:
@@ -12,7 +12,7 @@ class ThreadDrfSerializer(serializers.ModelSerializer):
         fields = ['pk', 'updated_date', 'initial_post']
 
 
-class PostDrfSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     """Serializer for posts."""
 
     class Meta:

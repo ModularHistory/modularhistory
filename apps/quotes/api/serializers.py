@@ -8,14 +8,14 @@ from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfF
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
-from apps.sources.api.serializers import CitationDrfSerializerMixin
+from apps.sources.api.serializers import CitationSerializerMixin
 from core.models.serializers import DrfModuleSerializer
 
 
-class CitationDrfSerializer(CitationDrfSerializerMixin):
+class CitationSerializer(CitationSerializerMixin):
     """Serializer for quote citations."""
 
-    class Meta(CitationDrfSerializerMixin.Meta):
+    class Meta(CitationSerializerMixin.Meta):
         model = Citation
         validators = [
             UniqueTogetherValidator(
@@ -25,11 +25,11 @@ class CitationDrfSerializer(CitationDrfSerializerMixin):
         ]
 
 
-class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
+class QuoteSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for quotes."""
 
     title = serializers.CharField(required=False, allow_blank=False)
-    citations = CitationDrfSerializer(many=True, write_only=True, required=False)
+    citations = CitationSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeDrfField(write_only=True, required=False)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
     timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')

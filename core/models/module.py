@@ -33,15 +33,6 @@ FieldList = list[str]
 # TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
-class ModuleSerializer(SearchableModelSerializer):
-    """Base serializer for ModularHistory's modules."""
-
-    title = TitleCaseField()
-    slug = serpy.StrField()
-    admin_url = serpy.StrField()
-    cached_tags = serpy.Field(required=False)
-
-
 class Views(Constant):
     """Labels of views for which model instances can generate HTML."""
 
@@ -62,7 +53,6 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     objects: 'Manager' = ModuleManager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: type[serializers.Serializer] = ModuleSerializer
     placeholder_regex: Optional[str] = None
     slug_base_fields: Sequence[str] = ('title',)
 
@@ -178,7 +168,7 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
-        return self.serializer(self).data
+        return self.get_serializer()(self).data
 
     @classmethod
     def get_object_html(

@@ -2,7 +2,7 @@ from drf_writable_nested import UniqueFieldsMixin
 from rest_framework import serializers
 
 from apps.dates.api.fields import HistoricDateTimeDrfField
-from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializerMixin
+from apps.sources.api.serializers import SourceSerializer, TextualSerializerMixin
 from apps.sources.models import Webpage, Website
 from apps.sources.models.publication import AbstractPublication, Publication
 from core.models.model import DrfModelSerializer, DrfTypedModelSerializer
@@ -16,21 +16,21 @@ class PublicationDrfMixinSerializer(serializers.ModelSerializer):
         fields = ['name', 'aliases', 'description']
 
 
-class PublicationDrfSerializer(
+class PublicationSerializer(
     UniqueFieldsMixin,
     DrfTypedModelSerializer,
     PublicationDrfMixinSerializer,
 ):
     """Serializer for publication sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Publication
         fields = (
             DrfTypedModelSerializer.Meta.fields + PublicationDrfMixinSerializer.Meta.fields
         )
 
 
-class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
+class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for webpage sources."""
 
     date = HistoricDateTimeDrfField(write_only=True, required=False)
@@ -42,11 +42,11 @@ class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
             )
         return attrs
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Webpage
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + TextualDrfSerializerMixin.Meta.fields
+            SourceSerializer.Meta.fields
+            + TextualSerializerMixin.Meta.fields
             + [
                 'website_name',
                 'website',
@@ -54,13 +54,13 @@ class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
         )
 
 
-class WebpageDrfSerializer(_WebpageDrfSerializer):
+class WebpageSerializer(_WebpageSerializer):
     """Serializer for webpage sources."""
 
-    originalEdition = _WebpageDrfSerializer(read_only=True, source='original_edition')
+    originalEdition = _WebpageSerializer(read_only=True, source='original_edition')
 
 
-class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
+class WebsiteSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
     """Serializer for website sources."""
 
     class Meta:

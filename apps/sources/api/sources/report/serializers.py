@@ -1,15 +1,15 @@
-from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializerMixin
+from apps.sources.api.serializers import SourceSerializer, TextualSerializerMixin
 from apps.sources.models import Report
 
 
-class _ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
+class _ReportSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for report sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Report
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + TextualDrfSerializerMixin.Meta.fields
+            SourceSerializer.Meta.fields
+            + TextualSerializerMixin.Meta.fields
             + [
                 'publisher',
                 'number',
@@ -17,7 +17,7 @@ class _ReportDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
         )
 
 
-class ReportDrfSerializer(_ReportDrfSerializer):
+class ReportSerializer(_ReportSerializer):
     """Serializer for report sources."""
 
-    originalEdition = _ReportDrfSerializer(read_only=True, source='original_edition')
+    originalEdition = _ReportSerializer(read_only=True, source='original_edition')

@@ -6,8 +6,8 @@ from rest_framework import serializers
 from apps.dates.api.fields import HistoricDateTimeDrfField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
-from apps.sources.api.sources.document.collection.serializers import CollectionDrfSerializer
-from apps.sources.api.sources.file.serializers import SourceFileDrfSerializer
+from apps.sources.api.sources.document.collection.serializers import CollectionSerializer
+from apps.sources.api.sources.file.serializers import SourceFileSerializer
 from apps.sources.models import AbstractCitation, Source, SourceAttribution, SourceContainment
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
@@ -16,7 +16,7 @@ from core.models.model import DrfModelSerializer
 from core.models.serializers import DrfModuleSerializer, SerializableDrfField
 
 
-class SourceAttributionDrfSerializer(DrfModelSerializer):
+class SourceAttributionSerializer(DrfModelSerializer):
     """Serializer for source attributions."""
 
     class Meta:
@@ -27,7 +27,7 @@ class SourceAttributionDrfSerializer(DrfModelSerializer):
         ]
 
 
-class SourceContainmentDrfSerializer(DrfModelSerializer):
+class SourceContainmentSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
     class Meta:
@@ -42,17 +42,17 @@ class SourceContainmentDrfSerializer(DrfModelSerializer):
         ]
 
 
-class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
+class SourceSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for sources."""
 
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    attributions = SourceAttributionDrfSerializer(many=True)
-    source_containments = SourceContainmentDrfSerializer(many=True, required=False)
+    attributions = SourceAttributionSerializer(many=True)
+    source_containments = SourceContainmentSerializer(many=True, required=False)
 
-    file_serialized = SourceFileDrfSerializer(read_only=True, source='file')
+    file_serialized = SourceFileSerializer(read_only=True, source='file')
 
     class Meta(DrfModuleSerializer.Meta):
         model = Source
@@ -89,7 +89,7 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
         }
 
 
-class TextualDrfSerializerMixin(serializers.ModelSerializer):
+class TextualSerializerMixin(serializers.ModelSerializer):
     """TextualMixin serializer."""
 
     originalEdition = SerializableDrfField(read_only=True, source='original_edition')
@@ -112,25 +112,25 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
         ]
 
 
-class PageNumbersDrfSerializerMixin(TextualDrfSerializerMixin):
+class PageNumbersSerializerMixin(TextualSerializerMixin):
     """PageNumbersMixin serializer."""
 
-    class Meta(TextualDrfSerializerMixin.Meta):
+    class Meta(TextualSerializerMixin.Meta):
         model = PageNumbersMixin
-        fields = TextualDrfSerializerMixin.Meta.fields + [
+        fields = TextualSerializerMixin.Meta.fields + [
             'page_number',
             'end_page_number',
         ]
 
 
-class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
+class DocumentSerializerMixin(PageNumbersSerializerMixin):
     """DocumentMixin serializer."""
 
-    collection_serialized = CollectionDrfSerializer(read_only=True, source='collection')
+    collection_serialized = CollectionSerializer(read_only=True, source='collection')
 
-    class Meta(PageNumbersDrfSerializerMixin.Meta):
+    class Meta(PageNumbersSerializerMixin.Meta):
         model = DocumentMixin
-        fields = PageNumbersDrfSerializerMixin.Meta.fields + [
+        fields = PageNumbersSerializerMixin.Meta.fields + [
             'collection',
             'collection_serialized',
             'collection_number',
@@ -140,7 +140,7 @@ class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
         ]
 
 
-class CitationDrfSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
+class CitationSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
     """Serializer for abstract citations."""
 
     class Meta:

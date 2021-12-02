@@ -26,7 +26,7 @@ class SearchableModelSerializer(ModelSerializer):
 class DrfSearchableModelSerializer(DrfModelSerializer):
     """Base serializer for searchable models."""
 
-    # TODO: 'model' field should be defined in DrfModelSerializer but ArticleDrfSerializer cannot resolve 'model' field if it's defined there
+    # TODO: 'model' field should be defined in DrfModelSerializer but ArticleSerializer cannot resolve 'model' field if it's defined there
     model = serializers.SerializerMethodField()
     meta = serializers.SerializerMethodField(required=False)
 

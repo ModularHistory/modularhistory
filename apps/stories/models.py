@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
@@ -52,8 +53,14 @@ class Story(ModelWithSources):
     )
 
     searchable_fields = ['handle', 'description']
-    serializer = StorySerializer
     slug_base_fields = ('handle',)
+
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.stories.serializers import StorySerializer
+
+        return StorySerializer
 
     def __str__(self) -> str:
         """Return the fact's string representation."""

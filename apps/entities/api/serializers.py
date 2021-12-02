@@ -29,7 +29,7 @@ class CategorizationSerializer(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntityDrfSerializer(DrfTypedModuleSerializer):
+class EntitySerializer(DrfTypedModuleSerializer):
     """Serializer for entities.
     TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
     """

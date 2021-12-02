@@ -5,7 +5,7 @@ from apps.places.models import Place
 from core.models.model import DrfTypedModelSerializer
 
 
-class PlaceDrfSerializer(DrfTypedModelSerializer):
+class PlaceSerializer(DrfTypedModelSerializer):
     """Serializer for places."""
 
     class Meta(DrfTypedModelSerializer.Meta):

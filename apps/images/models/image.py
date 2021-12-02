@@ -9,9 +9,9 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
+from rest_framework.serializers import Serializer
 
 from apps.images.models.media_model import MediaModel
-from apps.images.serializers import ImageSerializer
 from apps.topics.models.taggable import AbstractTopicRelation, TagsField
 from core.fields.file_field import upload_to
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
@@ -100,7 +100,13 @@ class Image(MediaModel):
         'description',
         'provider',
     ]
-    serializer = ImageSerializer
+
+    @classmethod
+    def get_serializer(self) -> type[Serializer]:
+        """Return the serializer for the entity."""
+        from apps.images.api.serializers import ImageSerializer
+
+        return ImageSerializer
 
     def __str__(self) -> str:
         """Return the string representation of the image."""

@@ -1,16 +1,16 @@
-from apps.propositions.api.serializers import PropositionDrfSerializer
-from apps.sources.api.serializers import SourceDrfSerializer
+from apps.propositions.api.serializers import PropositionSerializer
+from apps.sources.api.serializers import SourceSerializer
 from apps.sources.models import Speech
 
 
-class SpeechDrfSerializer(SourceDrfSerializer):
+class SpeechSerializer(SourceSerializer):
     """Serializer for speech sources."""
 
-    utterance_serialized = PropositionDrfSerializer(read_only=True, source='utterance')
+    utterance_serialized = PropositionSerializer(read_only=True, source='utterance')
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Speech
-        fields = SourceDrfSerializer.Meta.fields + [
+        fields = SourceSerializer.Meta.fields + [
             'type',
             'audience',
             'utterance',

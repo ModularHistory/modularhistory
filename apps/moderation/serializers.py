@@ -6,7 +6,8 @@ from rest_framework.serializers import ModelSerializer
 def get_moderated_model_serializer(
     model_serializer: type[ModelSerializer],
 ) -> type[ModelSerializer]:
-    """Return the serializer to be used for moderation of a moderated model.
+    """
+    Return the serializer to be used for moderation of a moderated model.
     Adds 'fields' field to given model_serializer.
     """
 

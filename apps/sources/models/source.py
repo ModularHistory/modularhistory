@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
+from rest_framework.serializers import Serializer
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
@@ -26,7 +27,6 @@ from apps.entities.models.model_with_related_entities import (
     RelatedEntitiesField,
 )
 from apps.sources.models.source_file import SourceFile
-from apps.sources.serializers import SourceSerializer
 from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
@@ -248,8 +248,14 @@ class Source(
 
     objects = SourceManager().from_queryset(SourceQuerySet)()
     searchable_fields = ['citation_string', 'tags__name', 'tags__aliases', 'description']
-    serializer = SourceSerializer
     slug_base_fields = ('title',)
+
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.sources.api.serializers import SourceSerializer
+
+        return SourceSerializer
 
     def __html__(self) -> str:
         """

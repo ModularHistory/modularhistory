@@ -2,7 +2,7 @@ from apps.sources.models import SourceFile
 from core.models.model import DrfModelSerializer
 
 
-class SourceFileDrfSerializer(DrfModelSerializer):
+class SourceFileSerializer(DrfModelSerializer):
     """Serializer for sources files."""
 
     class Meta:
