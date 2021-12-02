@@ -9,6 +9,6 @@ router.register('', views.TopicViewSet)
 app_name = 'topics'
 
 urlpatterns = [
-    path('instant_search/', views.TopicInstantSearchAPIView.as_view()),
+    path('instant_search/', views.TopicInstantSearchAPIView.as_view(), name='instant_search'),
     path('', include(router.urls)),
 ]

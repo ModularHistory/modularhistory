@@ -1,7 +1,6 @@
 """Tests for the entities api."""
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.entities.factories import EntityFactory
 from apps.entities.models import Entity
@@ -21,15 +20,12 @@ class EntitiesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Entity)
         entity: Entity = EntityFactory.create()
         self.images = [ImageFactory.create().id for _ in range(4)]
         self.tags = [TopicFactory.create().id for _ in range(4)]
         entity.images.set(shuffled_copy(self.images, size=2))
         entity.tags.set(shuffled_copy(self.tags, size=2))
         self.verified_model = entity
-        self.uncheckable_fields = ['birth_date', 'death_date']
-        self.relation_fields = ['images', 'tags']
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):

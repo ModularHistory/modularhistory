@@ -33,6 +33,13 @@ class PublicationDrfSerializer(
 class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
     """Serializer for webpage sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.webpage'},
+        },
+    }
+
     date = HistoricDateTimeDrfField(write_only=True, required=False)
 
     def validate(self, attrs):
@@ -57,7 +64,9 @@ class _WebpageDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
 class WebpageDrfSerializer(_WebpageDrfSerializer):
     """Serializer for webpage sources."""
 
-    originalEdition = _WebpageDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _WebpageDrfSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
@@ -65,4 +74,8 @@ class WebsiteDrfSerializer(DrfModelSerializer, PublicationDrfMixinSerializer):
 
     class Meta:
         model = Website
-        fields = PublicationDrfMixinSerializer.Meta.fields + ['owner']
+        fields = (
+            DrfModelSerializer.Meta.fields
+            + PublicationDrfMixinSerializer.Meta.fields
+            + ['owner']
+        )

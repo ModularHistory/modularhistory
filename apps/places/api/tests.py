@@ -1,11 +1,9 @@
 """Tests for the places api."""
 
 import pytest
-from django.contrib.contenttypes.models import ContentType
 
 from apps.moderation.api.tests import ModerationApiTest
 from apps.places.factories import PlaceFactory
-from apps.places.models import Place
 from apps.users.factories import UserFactory
 
 
@@ -19,13 +17,11 @@ class PlacesApiTest(ModerationApiTest):
     @pytest.fixture(autouse=True)
     def data(self, db: None):
         self.contributor = UserFactory.create()
-        self.content_type = ContentType.objects.get_for_model(Place)
-        self.verified_model = PlaceFactory.create(verified=True)
-        self.relation_fields = ['location']
+        self.verified_model = PlaceFactory.create()
 
     @pytest.fixture()
     def data_for_creation(self, db: None, data: None):
-        place_continent = PlaceFactory.create(verified=True, type='places.continent').id
+        place_continent = PlaceFactory.create(type='places.continent').id
         return {
             'type': 'places.country',
             'name': 'Kigoparene',
@@ -35,7 +31,7 @@ class PlacesApiTest(ModerationApiTest):
 
     @pytest.fixture()
     def data_for_update(self, db: None, data: None):
-        place_country = PlaceFactory.create(verified=True, type='places.country').id
+        place_country = PlaceFactory.create(type='places.country').id
         return {
             'type': 'places.city',
             'name': 'Whonix',

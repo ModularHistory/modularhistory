@@ -6,6 +6,13 @@ from apps.sources.models import Correspondence
 class _CorrespondenceDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
     """Serializer for correspondence document sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.correspondence'},
+        },
+    }
+
     date = HistoricDateTimeDrfField(write_only=True, required=False)
 
     class Meta(SourceDrfSerializer.Meta):
@@ -20,4 +27,6 @@ class _CorrespondenceDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMix
 class CorrespondenceDrfSerializer(_CorrespondenceDrfSerializer):
     """Serializer for correspondence document sources."""
 
-    originalEdition = _CorrespondenceDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _CorrespondenceDrfSerializer(
+        read_only=True, source='original_edition'
+    )

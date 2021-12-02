@@ -30,10 +30,11 @@ class SourceAttributionDrfSerializer(DrfModelSerializer):
 class SourceContainmentDrfSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
+    instant_search_fields = {'container': {'model': 'sources.source'}}
+
     class Meta:
         model = SourceContainment
         fields = DrfModelSerializer.Meta.fields + [
-            'source',
             'container',
             'phrase',
             'page_number',
@@ -45,11 +46,14 @@ class SourceContainmentDrfSerializer(DrfModelSerializer):
 class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for sources."""
 
+    instant_search_fields = {
+        'file': {'model': 'sources.sourcefile'},
+    }
+
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeDrfField(write_only=True, required=True)
     end_date = HistoricDateTimeDrfField(write_only=True, required=False)
 
-    attributions = SourceAttributionDrfSerializer(many=True)
     source_containments = SourceContainmentDrfSerializer(many=True, required=False)
 
     file_serialized = SourceFileDrfSerializer(read_only=True, source='file')
@@ -67,8 +71,8 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'file',
             'location',
             'attributee_html',
-            'attributions',
             'related_entities',
+            'attributees',
             'containment_html',
             'source_containments',
             'file',
@@ -80,6 +84,12 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
+            'attributees': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Entity.objects.all(),
+            },
             'related_entities': {
                 'write_only': True,
                 'required': False,
@@ -92,7 +102,9 @@ class SourceDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
 class TextualDrfSerializerMixin(serializers.ModelSerializer):
     """TextualMixin serializer."""
 
-    originalEdition = SerializableDrfField(read_only=True, source='original_edition')
+    original_edition_serialized = SerializableDrfField(
+        read_only=True, source='original_edition'
+    )
     original_publication_date = HistoricDateTimeDrfField(write_only=True, required=False)
     original_publication_date_serialized = serializers.SerializerMethodField(
         'get_original_publication_date', read_only=True
@@ -106,7 +118,7 @@ class TextualDrfSerializerMixin(serializers.ModelSerializer):
         fields = [
             'editors',
             'original_edition',
-            'originalEdition',
+            'original_edition_serialized',
             'original_publication_date',
             'original_publication_date_serialized',
         ]
@@ -142,6 +154,13 @@ class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
 
 class CitationDrfSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
     """Serializer for abstract citations."""
+
+    instant_search_fields = {
+        'source': {'model': 'sources.source'},
+        'content_object': {
+            'model': 'parent'  # TODO: hint that it's parent models id some way else
+        },
+    }
 
     class Meta:
         model = AbstractCitation

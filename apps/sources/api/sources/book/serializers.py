@@ -5,6 +5,13 @@ from apps.sources.models import Book, Section
 class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
     """Serializer for book sources."""
 
+    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.book'},
+        },
+    }
+
     class Meta(SourceDrfSerializer.Meta):
         model = Book
         fields = (
@@ -24,7 +31,9 @@ class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
 class BookDrfSerializer(_BookDrfSerializer):
     """Serializer for book sources."""
 
-    originalEdition = _BookDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _BookDrfSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class SectionDrfSerializer(SourceDrfSerializer):

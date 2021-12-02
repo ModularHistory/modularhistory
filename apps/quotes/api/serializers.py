@@ -28,6 +28,10 @@ class CitationDrfSerializer(CitationDrfSerializerMixin):
 class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
     """Serializer for quotes."""
 
+    instant_search_fields = {
+        'related_quotes': {'model': 'quotes.quote'},
+    }
+
     title = serializers.CharField(required=False, allow_blank=False)
     citations = CitationDrfSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeDrfField(write_only=True, required=False)
