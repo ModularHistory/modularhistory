@@ -33,6 +33,7 @@ poetry config virtualenvs.create true &>/dev/null
 poetry config virtualenvs.in-project true &>/dev/null
 
 # Initialize .venv with the correct Python version.
+echo ""
 if [[ -d .venv ]]; then
   echo "Verifying the active Python version is $PYTHON_VERSION..."
   if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
@@ -67,7 +68,6 @@ if [[ "$IN_VENV" = 0 ]]; then
 
     IN_VENV: $IN_VENV
     VIRTUAL_ENV: $VIRTUAL_ENV
-    VENV: $VENV
   "
 else
   echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
@@ -83,6 +83,7 @@ fi
 echo "Virtual environment activated."
 
 # Install project dependencies.
+echo ""
 echo "Installing dependencies ..."
 pip install --upgrade pip
 if [[ "$os" == "$MAC_OS" ]]; then
