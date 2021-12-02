@@ -699,13 +699,13 @@ jobs:
     needs: changed-files
     if: ${{ contains(needs.changed-files.outputs.modified-files, 'py') }}
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       max-parallel: 3
       matrix:
         executable: [mypy, pytype]
         python-version: [3.9]
     continue-on-error: ${{ matrix.executable == 'mypy' }}
-    environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -802,6 +802,7 @@ jobs:
   analyze:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       fail-fast: false
       matrix:

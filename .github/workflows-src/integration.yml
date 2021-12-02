@@ -233,13 +233,13 @@ jobs:
     needs: changed-files
     if: ${{ contains(needs.changed-files.outputs.modified-files, 'py') }}
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       max-parallel: 3
       matrix:
         executable: [ mypy, pytype ]
         python-version: [ 3.9 ]
     continue-on-error: ${{ matrix.executable == 'mypy' }}
-    environment: test
     steps:
     - 
       includes: ./.github/actions/setup
@@ -267,6 +267,7 @@ jobs:
   analyze:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       fail-fast: false
       matrix:
