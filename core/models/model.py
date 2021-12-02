@@ -260,7 +260,7 @@ class ExtendedModel(Model):
         return placeholder
 
 
-class ModelSerializer(serializers.ModelSerializer):
+class ModelSerializer(ModeratedModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     def __init__(self, *args, **kwargs):
