@@ -1,9 +1,7 @@
-import logging
 import os
 import re
 from copy import deepcopy
 from os.path import isfile, join
-from pprint import pformat
 from typing import Optional
 
 from decouple import config
@@ -102,19 +100,19 @@ def sync(
     context.run(command)
 
 
-def upload_to_mega(filepath: str, account: str = 'default'):
-    """Upload a file to Mega."""
-    from core.storage.mega_storage import mega_clients  # noqa: E402
+# def upload_to_mega(filepath: str, account: str = 'default'):
+#     """Upload a file to Mega."""
+#     from core.storage.mega_storage import mega_clients  # noqa: E402
 
-    mega_client = mega_clients[account]
-    filename = os.path.basename(filepath)
-    logging.info(f'Pushing {filepath} to Mega ({account}) ...')
-    extant_file = mega_client.find(filename, exclude_deleted=True)
-    if extant_file:
-        logging.info(f'Extant backup ({extant_file}) must be deleted.')
-    result = mega_client.upload(filepath)
-    logging.info(f'Upload result: {pformat(result)}')
-    uploaded_file = mega_client.find(filename)
-    if not uploaded_file:
-        raise Exception(f'Could not find {filename} in Mega ({account}) after uploading.')
-    return uploaded_file
+#     mega_client = mega_clients[account]
+#     filename = os.path.basename(filepath)
+#     logging.info(f'Pushing {filepath} to Mega ({account}) ...')
+#     extant_file = mega_client.find(filename, exclude_deleted=True)
+#     if extant_file:
+#         logging.info(f'Extant backup ({extant_file}) must be deleted.')
+#     result = mega_client.upload(filepath)
+#     logging.info(f'Upload result: {pformat(result)}')
+#     uploaded_file = mega_client.find(filename)
+#     if not uploaded_file:
+#         raise Exception(f'Could not find {filename} in Mega ({account}) after uploading.')
+#     return uploaded_file
