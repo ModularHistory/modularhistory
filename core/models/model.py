@@ -260,6 +260,7 @@ class ExtendedModel(Model):
         return placeholder
 
 
+# TODO: Ideally, ModeratedModelSerializer should inherit from ModelSerializer, not vice versa.
 class ModelSerializer(ModeratedModelSerializer):
     """Base serializer for ModularHistory's models."""
 
