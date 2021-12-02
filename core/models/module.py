@@ -4,23 +4,19 @@ import logging
 from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Sequence
 
 import regex
-import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from rest_framework import serializers
 
 from apps.moderation.models.searchable import (
     SearchableModeratedManager,
     SearchableModeratedModel,
 )
-from apps.search.api.serializers import SearchableModelSerializer
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged import SluggedModel
-from core.models.titled import TitleCaseField
 from core.models.typed import TypedModel, TypedModelManager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
@@ -31,15 +27,6 @@ if TYPE_CHECKING:
 FieldList = list[str]
 
 # TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
-
-
-class ModuleSerializer(SearchableModelSerializer):
-    """Base serializer for ModularHistory's modules."""
-
-    title = TitleCaseField()
-    slug = serpy.StrField()
-    admin_url = serpy.StrField()
-    cached_tags = serpy.Field(required=False)
 
 
 class Views(Constant):
@@ -62,7 +49,6 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     objects: 'Manager' = ModuleManager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
-    serializer: type[serializers.Serializer] = ModuleSerializer
     placeholder_regex: Optional[str] = None
     slug_base_fields: Sequence[str] = ('title',)
 
@@ -178,7 +164,7 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
 
     def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
-        return self.serializer(self).data
+        return self.get_serializer()(self).data
 
     @classmethod
     def get_object_html(

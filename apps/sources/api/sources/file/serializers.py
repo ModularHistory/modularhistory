@@ -4,7 +4,7 @@ from drf_extra_fields.fields import Base64FileField
 from rest_framework import serializers
 
 from apps.sources.models import SourceFile
-from core.models.model import DrfModelSerializer
+from core.models.model import ModelSerializer
 
 
 class SourceFileBase64Field(Base64FileField):
@@ -24,14 +24,14 @@ class SourceFileBase64Field(Base64FileField):
         return guessed_extension
 
 
-class SourceFileDrfSerializer(DrfModelSerializer):
+class SourceFileSerializer(ModelSerializer):
     """Serializer for sources files."""
 
     file = SourceFileBase64Field()
 
     class Meta:
         model = SourceFile
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModelSerializer.Meta.fields + [
             'file',
             'name',
             'page_offset',

@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
@@ -27,7 +28,6 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.quotes.serializers import QuoteSerializer
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
@@ -74,6 +74,13 @@ class Citation(AbstractCitation):
     """A relationship between a quote and a source."""
 
     content_object = get_quote_fk(related_name='citations')
+
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.quotes.api.serializers import CitationSerializer
+
+        return CitationSerializer
 
 
 class ImageRelation(AbstractImageRelation):
@@ -163,8 +170,14 @@ class Quote(
         'tags__name',
         'tags__aliases',
     ]
-    serializer = QuoteSerializer
     slug_base_fields = ('title',)
+
+    @classmethod
+    def get_serializer(self) -> type[Serializer]:
+        """Return the serializer for the entity."""
+        from apps.quotes.api.serializers import QuoteSerializer
+
+        return QuoteSerializer
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""

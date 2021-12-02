@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from apps.sources.serializers import CitationSerializer
 from core.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
@@ -104,7 +103,6 @@ class AbstractCitation(ModeratedPositionedRelation):
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern
-    serializer = CitationSerializer
 
     def __str__(self) -> str:
         """Return the citation's string representation."""

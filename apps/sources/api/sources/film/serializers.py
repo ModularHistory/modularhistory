@@ -1,12 +1,12 @@
-from apps.sources.api.serializers import SourceDrfSerializer
+from apps.sources.api.serializers import SourceSerializer
 from apps.sources.models import Film
 
 
-class FilmDrfSerializer(SourceDrfSerializer):
+class FilmSerializer(SourceSerializer):
     """Serializer for film sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Film
-        fields = SourceDrfSerializer.Meta.fields + [
+        fields = SourceSerializer.Meta.fields + [
             'type',
         ]

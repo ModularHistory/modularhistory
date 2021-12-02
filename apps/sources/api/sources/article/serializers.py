@@ -1,16 +1,14 @@
 from drf_writable_nested import UniqueFieldsMixin
 
-from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDrfSerializer
-from apps.sources.api.sources.publication.serializers import PublicationDrfSerializer
+from apps.sources.api.serializers import PageNumbersSerializerMixin, SourceSerializer
+from apps.sources.api.sources.publication.serializers import PublicationSerializer
 from apps.sources.models import Article
 
 
-class _ArticleDrfSerializer(
-    UniqueFieldsMixin, SourceDrfSerializer, PageNumbersDrfSerializerMixin
-):
+class _ArticleSerializer(UniqueFieldsMixin, SourceSerializer, PageNumbersSerializerMixin):
     """Serializer for article sources."""
 
-    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+    instant_search_fields = SourceSerializer.instant_search_fields | {
         'publication': {'model': 'sources.publication'},
         'original_edition': {
             'model': 'sources.source',
@@ -18,13 +16,13 @@ class _ArticleDrfSerializer(
         },
     }
 
-    publication_serialized = PublicationDrfSerializer(read_only=True, source='publication')
+    publication_serialized = PublicationSerializer(read_only=True, source='publication')
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Article
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + PageNumbersDrfSerializerMixin.Meta.fields
+            SourceSerializer.Meta.fields
+            + PageNumbersSerializerMixin.Meta.fields
             + [
                 'publication',
                 'publication_serialized',
@@ -34,9 +32,9 @@ class _ArticleDrfSerializer(
         )
 
 
-class ArticleDrfSerializer(_ArticleDrfSerializer):
+class ArticleSerializer(_ArticleSerializer):
     """Serializer for article sources."""
 
-    original_edition_serialized = _ArticleDrfSerializer(
+    original_edition_serialized = _ArticleSerializer(
         read_only=True, source='original_edition'
     )

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
-from apps.topics.serializers import TopicSerializer
 from apps.topologies.models import edge_factory, node_factory
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
@@ -82,11 +82,17 @@ class Topic(Node, Module):
         # 'aliases',
         # 'description'
     ]
-    serializer = TopicSerializer
     slug_base_fields = ('name',)
 
     class Meta:
         ordering = ['name']
+
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.topics.api.serializers import TopicSerializer
+
+        return TopicSerializer
 
     def __str__(self) -> str:
         """Return the topic's string representation."""

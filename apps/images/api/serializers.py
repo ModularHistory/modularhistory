@@ -2,21 +2,21 @@
 
 from drf_extra_fields.fields import HybridImageField
 
-from apps.dates.api.fields import HistoricDateTimeDrfField
+from apps.dates.api.fields import HistoricDateTimeField
 from apps.images.models import Image, Video
 from apps.images.models.media_model import MediaModel
-from core.models.serializers import DrfModuleSerializer
+from core.models.serializers import ModuleSerializer
 
 
-class MediaModelDrfSerializer(DrfModuleSerializer):
+class MediaModelSerializer(ModuleSerializer):
     """Serializer for media models."""
 
-    date = HistoricDateTimeDrfField(write_only=True, required=False)
-    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    date = HistoricDateTimeField(write_only=True, required=False)
+    end_date = HistoricDateTimeField(write_only=True, required=False)
 
-    class Meta(DrfModuleSerializer.Meta):
+    class Meta(ModuleSerializer.Meta):
         model = MediaModel
-        fields = DrfModuleSerializer.Meta.fields + [
+        fields = ModuleSerializer.Meta.fields + [
             'date',
             'end_date',
             'date_string',
@@ -26,21 +26,21 @@ class MediaModelDrfSerializer(DrfModuleSerializer):
             'caption_html',
             'description_html',
         ]
-        extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = ModuleSerializer.Meta.extra_kwargs | {
             'caption': {'write_only': True},
             'description': {'required': False, 'write_only': True},
             'provider': {'required': False, 'write_only': True},
         }
 
 
-class ImageDrfSerializer(MediaModelDrfSerializer):
+class ImageSerializer(MediaModelSerializer):
     """Serializer for images."""
 
     image = HybridImageField()
 
-    class Meta(MediaModelDrfSerializer.Meta):
+    class Meta(MediaModelSerializer.Meta):
         model = Image
-        fields = MediaModelDrfSerializer.Meta.fields + [
+        fields = MediaModelSerializer.Meta.fields + [
             'provider_string',
             'image',
             'image_type',
@@ -50,17 +50,15 @@ class ImageDrfSerializer(MediaModelDrfSerializer):
             'bg_img_position',
             'urls',
         ]
-        extra_kwargs = MediaModelDrfSerializer.Meta.extra_kwargs | {
+        extra_kwargs = MediaModelSerializer.Meta.extra_kwargs | {
             'image': {'write_only': True},
         }
 
 
-class VideoDrfSerializer(MediaModelDrfSerializer):
+class VideoSerializer(MediaModelSerializer):
     """Serializer for videos."""
 
-    class Meta(MediaModelDrfSerializer.Meta):
+    class Meta(MediaModelSerializer.Meta):
         model = Video
-        fields = MediaModelDrfSerializer.Meta.fields + ['url', 'embed_code', 'duration']
-        extra_kwargs = MediaModelDrfSerializer.Meta.extra_kwargs | {
-            'url': {'allow_null': False}
-        }
+        fields = MediaModelSerializer.Meta.fields + ['url', 'embed_code', 'duration']
+        extra_kwargs = MediaModelSerializer.Meta.extra_kwargs | {'url': {'allow_null': False}}

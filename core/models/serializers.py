@@ -2,41 +2,41 @@ from typing import TYPE_CHECKING
 
 from rest_framework import serializers
 
-from apps.search.api.serializers import DrfSearchableModelSerializer
+from apps.search.api.serializers import SearchableModelSerializer
 from apps.topics.models import Topic
 
-from .model import DrfTypedModelSerializerMixin
+from .model import TypedModelSerializerMixin
 
 if TYPE_CHECKING:
     from .module import Module
     from .slugged import SluggedModel
 
 
-class DrfSluggedModelSerializer(DrfSearchableModelSerializer):
+class SluggedModelSerializer(SearchableModelSerializer):
     """Base serializer for models extending SluggedModel and SearchableModel"""
 
     title = serializers.CharField(required=False, allow_blank=True)
     slug = serializers.CharField(required=False)
     absolute_url = serializers.CharField(required=False, read_only=True)
 
-    class Meta(DrfSearchableModelSerializer.Meta):
+    class Meta(SearchableModelSerializer.Meta):
         model: type['SluggedModel']
-        fields = DrfSearchableModelSerializer.Meta.fields + [
+        fields = SearchableModelSerializer.Meta.fields + [
             'title',
             'slug',
             'absolute_url',
         ]
 
 
-class DrfModuleSerializer(DrfSluggedModelSerializer):
+class ModuleSerializer(SluggedModelSerializer):
     """Base serializer for ModularHistory's modules."""
 
     admin_url = serializers.CharField(required=False, read_only=True)
     cached_tags = serializers.JSONField(required=False, read_only=True)
 
-    class Meta(DrfSluggedModelSerializer.Meta):
+    class Meta(SluggedModelSerializer.Meta):
         model: type['Module']
-        fields = DrfSluggedModelSerializer.Meta.fields + [
+        fields = SluggedModelSerializer.Meta.fields + [
             'admin_url',
             'tags',
             'cached_tags',
@@ -51,14 +51,14 @@ class DrfModuleSerializer(DrfSluggedModelSerializer):
         }
 
 
-class DrfTypedModuleSerializer(DrfTypedModelSerializerMixin, DrfModuleSerializer):
+class TypedModuleSerializer(TypedModelSerializerMixin, ModuleSerializer):
     """Base serializer for ModularHistory's typed modules."""
 
-    class Meta(DrfModuleSerializer.Meta):
-        fields = DrfModuleSerializer.Meta.fields + ['type']
+    class Meta(ModuleSerializer.Meta):
+        fields = ModuleSerializer.Meta.fields + ['type']
 
 
-class SerializableDrfField(serializers.Field):
+class SerializableField(serializers.Field):
     """DRF field serializer that uses models .serialize() which uses Model.serializer_class"""
 
     def to_representation(self, value):
