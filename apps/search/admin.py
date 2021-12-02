@@ -102,27 +102,29 @@ class SearchableModelAdmin(ModeratedModelAdmin):
         custom_urls = [
             path(
                 'tag_search/',
-                self.admin_site.admin_view(TagSearchView.as_view()),
+                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='tag_search',
             ),
             path(
                 'user_search/',
-                self.admin_site.admin_view(UserSearchView.as_view()),
+                self.admin_site.admin_view(UserSearchView.as_view(model_admin=self)),
                 name='user_search',
             ),
             path(
                 'collection_search/',
-                self.admin_site.admin_view(CollectionSearchView.as_view()),
+                self.admin_site.admin_view(CollectionSearchView.as_view(model_admin=self)),
                 name='collection_search',
             ),
             path(
                 'entity_search/',
-                self.admin_site.admin_view(EntitySearchView.as_view()),
+                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
                 name='entity_search',
             ),
             path(
                 'entity_category_search/',
-                self.admin_site.admin_view(EntityCategorySearchView.as_view()),
+                self.admin_site.admin_view(
+                    EntityCategorySearchView.as_view(model_admin=self)
+                ),
                 name='entity_category_search',
             ),
         ]
