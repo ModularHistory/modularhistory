@@ -35,7 +35,6 @@ class SourceContainmentSerializer(ModelSerializer):
     class Meta:
         model = SourceContainment
         fields = ModelSerializer.Meta.fields + [
-            'source',
             'container',
             'phrase',
             'page_number',
