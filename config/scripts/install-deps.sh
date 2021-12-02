@@ -57,7 +57,6 @@ echo "Activating virtual environment ..."
 set -a
 # shellcheck disable=SC1091
 source .venv/bin/activate
-.venv/bin/activate
 unset a
 IN_VENV=$(python -c 'import sys; print ("1" if sys.prefix != sys.base_prefix or hasattr(sys, "real_prefix") else "0")')
 if [[ "$IN_VENV" = 0 ]]; then
