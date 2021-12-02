@@ -74,9 +74,11 @@ jobs:
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
     - name: Specify Docker Compose version
       run: |
+        echo ""
         echo "Installed version: $(docker compose version)"
         version=2.2.1
         echo "2.2.1" | grep -i --quiet "$version" || {
+          echo "Installing Docker Compose version $version ..."
           mkdir -p ~/.docker/cli-plugins/
           curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
           chmod +x ~/.docker/cli-plugins/docker-compose
