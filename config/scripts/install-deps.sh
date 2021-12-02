@@ -44,12 +44,25 @@ fi
   poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
 
+echo "Activating virtual environment ..."
 set a
 # shellcheck disable=SC1091
 source .venv/bin/activate; unset a
+IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
+if [[ "$IN_VENV" = 0 ]]; then
+  _error "Failed to create and/or activate virtual environment."
+else
+  echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
+    _error "
+      Failed to activate virtual environment in $(pwd); instead, the active 
+      virtual environment is $VIRTUAL_ENV.
+    "
+  }
+fi
 if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
   _error "Failed to activate Python $PYTHON_VERSION."
 fi
+echo "Virtual environment activated."
 
 # Install project dependencies.
 echo "Installing dependencies ..."
@@ -65,17 +78,6 @@ poetry install --no-root || {
   echo ""
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
-  IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
-  if [[ "$IN_VENV" = 0 ]]; then
-    _error "Failed to create and/or activate virtual environment."
-  else
-    echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
-      _error "
-        Failed to activate virtual environment in $(pwd); instead, the active 
-        virtual environment is $VIRTUAL_ENV.
-      "
-    }
-  fi
   # https://python-poetry.org/docs/cli/#export
   poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
   pip install --upgrade pip
