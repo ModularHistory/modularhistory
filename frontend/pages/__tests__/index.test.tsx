@@ -7,7 +7,7 @@ import Home from "../index.page";
 
 describe("Home", () => {
   it("renders without exceptions", () => {
-    render(<Home />);
+    render(<Home todayInHistoryModules={[]} featuredModules={[]} />);
   });
 
   describe("Search form", () => {
@@ -16,7 +16,7 @@ describe("Home", () => {
     });
 
     it("can search without input", () => {
-      const { queryByTestId } = render(<Home />);
+      const { queryByTestId } = render(<Home todayInHistoryModules={[]} featuredModules={[]} />);
       const searchButton = queryByTestId("searchButton");
       userEvent.click(searchButton!);
       expect(Router).toMatchObject({
@@ -26,7 +26,7 @@ describe("Home", () => {
     });
 
     it("can search with input", () => {
-      const { queryByTestId } = render(<Home />);
+      const { queryByTestId } = render(<Home todayInHistoryModules={[]} featuredModules={[]} />);
       const searchInput = queryByTestId("query");
       const queryString = "jest is best";
       userEvent.type(searchInput!, queryString + "{enter}");
