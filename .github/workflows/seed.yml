@@ -126,6 +126,9 @@ jobs:
         poetry --version
         echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root || {
+          echo ""
+          echo "Dependency installation failed. Clearing cache and retrying..."
+          echo ""
           yes | poetry cache clear . --all
           poetry install --no-root
         }
