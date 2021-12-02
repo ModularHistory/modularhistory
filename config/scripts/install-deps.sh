@@ -69,9 +69,16 @@ poetry install --no-root || {
   echo "Attempting workaround ..."
   mkdir -p .venv
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
-  [[ "$IN_VENV" = 0 ]] || {
+  if [[ "$IN_VENV" = 0 ]]; then
     _error "Failed to create and/or activate virtual environment."
-  }
+  else
+    echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
+      _error "
+        Failed to activate virtual environment in $(pwd); instead, the active 
+        virtual environment is $VIRTUAL_ENV.
+      "
+    }
+  fi
   # https://python-poetry.org/docs/cli/#export
   poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
   pip install --upgrade pip
