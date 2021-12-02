@@ -139,6 +139,8 @@ const DesktopSharingButtons: FC<CollectionProps> = ({ collection }: CollectionPr
 };
 
 const SharingButtonGroup: FC<CollectionProps> = ({ collection }: CollectionProps) => {
+  const url = `https://modularhistory.com${collection.absoluteUrl}`;
+  const iconProps = { size: 36, round: true };
   return (
     <>
       <Grid
@@ -149,27 +151,18 @@ const SharingButtonGroup: FC<CollectionProps> = ({ collection }: CollectionProps
         sx={{ m: 2, maxWidth: 200 }}
       >
         <Grid item>
-          <FacebookShareButton
-            url={`https://modularhistory.com/collections/${collection.slug}`}
-            quote={collection.title}
-          >
-            <FacebookIcon size={36} round={true} />
+          <FacebookShareButton url={url} quote={collection.title}>
+            <FacebookIcon {...iconProps} />
           </FacebookShareButton>
         </Grid>
         <Grid item>
-          <TwitterShareButton
-            url={`https://modularhistory.com/collections/${collection.slug}`}
-            title={collection.title}
-          >
-            <TwitterIcon size={36} round={true} />
+          <TwitterShareButton url={url} title={collection.title}>
+            <TwitterIcon {...iconProps} />
           </TwitterShareButton>
         </Grid>
         <Grid item>
-          <EmailShareButton
-            url={`https://modularhistory.com/collections/${collection.slug}`}
-            subject={collection.title}
-          >
-            <EmailIcon size={36} round={true} />
+          <EmailShareButton url={url} subject={collection.title}>
+            <EmailIcon {...iconProps} />
           </EmailShareButton>
         </Grid>
       </Grid>

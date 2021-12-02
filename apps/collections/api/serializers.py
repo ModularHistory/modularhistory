@@ -7,10 +7,10 @@ from apps.quotes.api.serializers import QuoteSerializer
 from apps.quotes.models.quote import Quote
 from apps.sources.api.serializers import SourceSerializer
 from apps.sources.models.source import Source
-from core.models.serializers import SluggedModelSerializer, TypedModuleSerializer
+from core.models.serializers import SluggedModelSerializer
 
 
-class CollectionSerializer(SluggedModelSerializer):
+class CollectionDrfSerializer(SluggedModelSerializer):
     """Serializer for collection."""
 
     propositions_serialized = PropositionSerializer(

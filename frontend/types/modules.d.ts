@@ -93,6 +93,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
   relatedQuotes?: Quote[];
 }
 export interface Collection {
+  absoluteUrl: any;
   model: "collections.collection";
   slug: string;
   title: string;

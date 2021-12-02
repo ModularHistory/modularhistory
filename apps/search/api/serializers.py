@@ -10,7 +10,7 @@ ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    # TODO: 'model' field should be defined in ModelSerializer but ArticleSerializer cannot resolve 'model' field if it's defined there
+    # TODO: 'model' field should be defined in DrfModelSerializer but ArticleDrfSerializer cannot resolve 'model' field if it's defined there
     model = serializers.SerializerMethodField()
     meta = serializers.SerializerMethodField(required=False)
 

@@ -5,6 +5,13 @@ from apps.sources.models import Report
 class _ReportSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for report sources."""
 
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.report'},
+        },
+    }
+
     class Meta(SourceSerializer.Meta):
         model = Report
         fields = (
@@ -20,4 +27,6 @@ class _ReportSerializer(SourceSerializer, TextualSerializerMixin):
 class ReportSerializer(_ReportSerializer):
     """Serializer for report sources."""
 
-    originalEdition = _ReportSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _ReportSerializer(
+        read_only=True, source='original_edition'
+    )

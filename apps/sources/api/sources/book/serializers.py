@@ -5,6 +5,13 @@ from apps.sources.models import Book, Section
 class _BookSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for book sources."""
 
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.book'},
+        },
+    }
+
     class Meta(SourceSerializer.Meta):
         model = Book
         fields = (
@@ -24,7 +31,9 @@ class _BookSerializer(SourceSerializer, TextualSerializerMixin):
 class BookSerializer(_BookSerializer):
     """Serializer for book sources."""
 
-    originalEdition = _BookSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _BookSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class SectionSerializer(SourceSerializer):

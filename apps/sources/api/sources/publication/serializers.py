@@ -31,6 +31,13 @@ class PublicationSerializer(
 class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for webpage sources."""
 
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.webpage'},
+        },
+    }
+
     date = HistoricDateTimeField(write_only=True, required=False)
 
     def validate(self, attrs):
@@ -55,7 +62,9 @@ class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
 class WebpageSerializer(_WebpageSerializer):
     """Serializer for webpage sources."""
 
-    originalEdition = _WebpageSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _WebpageSerializer(
+        read_only=True, source='original_edition'
+    )
 
 
 class WebsiteSerializer(ModelSerializer, PublicationMixinSerializer):
@@ -63,4 +72,8 @@ class WebsiteSerializer(ModelSerializer, PublicationMixinSerializer):
 
     class Meta:
         model = Website
-        fields = PublicationMixinSerializer.Meta.fields + ['owner']
+        fields = (
+            ModelSerializer.Meta.fields
+            + PublicationMixinSerializer.Meta.fields
+            + ['owner']
+        )

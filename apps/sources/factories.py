@@ -25,7 +25,7 @@ class SourceFactory(ModeratedModelFactory):
     class Meta:
         model = models.Source
 
-    title = factory.Faker('sentence', nb_words=10)
+    title = factory.Faker('sentence', nb_words=3)
     slug = factory.Faker('slug')
     date = factory.Faker('historic_datetime')
     end_date = factory.Faker('historic_datetime')
@@ -72,7 +72,7 @@ class PublicationMixinFactory(ModeratedModelFactory):
 
     name = factory.Faker('company')
     aliases = [factory.Faker('company') for _ in range(2)]
-    description = factory.Faker('sentence', nb_words=10)
+    description = factory.Faker('sentence', nb_words=3)
 
 
 class PublicationFactory(PublicationMixinFactory):
@@ -127,7 +127,7 @@ class DocumentFactory(PageNumberedSourceFactory):
     location_info = factory.Faker('address')
     collection = factory.SubFactory(CollectionFactory)
     collection_number = fuzzy.FuzzyInteger(1, 20)
-    descriptive_phrase = factory.Faker('sentence', nb_words=10)
+    descriptive_phrase = factory.Faker('sentence', nb_words=3)
     information_url = factory.Faker('url')
 
 

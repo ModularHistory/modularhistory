@@ -1,4 +1,5 @@
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
@@ -48,6 +49,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
             'primary_image',
             'cached_images',
             'timeline',
+            'type',
         ]
         read_only_fields = ['truncated_elaboration']
         extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
@@ -108,8 +110,9 @@ class OccurrenceSerializer(PropositionSerializer):
     """Serializer for occurrences."""
 
     title = TitleCaseField()
+    type = serializers.HiddenField(default='propositions.occurrence')
+    allowed_types = ['propositions.occurrence']
 
     class Meta(PropositionSerializer.Meta):
         model = Occurrence
         fields = PropositionSerializer.Meta.fields + ['postscript']
-        allowed_types = ['propositions.occurrence']

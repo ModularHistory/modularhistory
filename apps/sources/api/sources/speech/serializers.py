@@ -8,6 +8,15 @@ class SpeechSerializer(SourceSerializer):
 
     utterance_serialized = PropositionSerializer(read_only=True, source='utterance')
 
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'utterance': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'speech',
+            },
+        }
+    }
+
     class Meta(SourceSerializer.Meta):
         model = Speech
         fields = SourceSerializer.Meta.fields + [

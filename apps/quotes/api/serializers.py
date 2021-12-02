@@ -28,6 +28,10 @@ class CitationSerializer(CitationSerializerMixin):
 class QuoteSerializer(WritableNestedModelSerializer, ModuleSerializer):
     """Serializer for quotes."""
 
+    instant_search_fields = {
+        'related_quotes': {'model': 'quotes.quote'},
+    }
+
     title = serializers.CharField(required=False, allow_blank=False)
     citations = CitationSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeField(write_only=True, required=False)

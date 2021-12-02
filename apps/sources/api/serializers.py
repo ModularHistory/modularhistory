@@ -30,6 +30,8 @@ class SourceAttributionSerializer(ModelSerializer):
 class SourceContainmentSerializer(ModelSerializer):
     """Serializer for source containments."""
 
+    instant_search_fields = {'container': {'model': 'sources.source'}}
+
     class Meta:
         model = SourceContainment
         fields = ModelSerializer.Meta.fields + [
@@ -44,6 +46,10 @@ class SourceContainmentSerializer(ModelSerializer):
 
 class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
     """Serializer for sources."""
+
+    instant_search_fields = {
+        'file': {'model': 'sources.sourcefile'},
+    }
 
     title = serializers.CharField(required=False, allow_blank=False)
     date = HistoricDateTimeField(write_only=True, required=True)
@@ -67,8 +73,8 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'file',
             'location',
             'attributee_html',
-            'attributions',
             'related_entities',
+            'attributees',
             'containment_html',
             'source_containments',
             'file',
@@ -80,6 +86,12 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
+            'attributees': {
+                'write_only': True,
+                'required': False,
+                'read_only': False,
+                'queryset': Entity.objects.all(),
+            },
             'related_entities': {
                 'write_only': True,
                 'required': False,
@@ -92,7 +104,7 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
 class TextualSerializerMixin(serializers.ModelSerializer):
     """TextualMixin serializer."""
 
-    originalEdition = SerializableField(read_only=True, source='original_edition')
+    original_edition_serialized = SerializableField(read_only=True, source='original_edition')
     original_publication_date = HistoricDateTimeField(write_only=True, required=False)
     original_publication_date_serialized = serializers.SerializerMethodField(
         'get_original_publication_date', read_only=True
@@ -106,7 +118,7 @@ class TextualSerializerMixin(serializers.ModelSerializer):
         fields = [
             'editors',
             'original_edition',
-            'originalEdition',
+            'original_edition_serialized',
             'original_publication_date',
             'original_publication_date_serialized',
         ]
@@ -142,6 +154,13 @@ class DocumentSerializerMixin(PageNumbersSerializerMixin):
 
 class CitationSerializerMixin(UniqueFieldsMixin, ModelSerializer):
     """Serializer for abstract citations."""
+
+    instant_search_fields = {
+        'source': {'model': 'sources.source'},
+        'content_object': {
+            'model': 'parent'  # TODO: hint that it's parent models id some way else
+        },
+    }
 
     class Meta:
         model = AbstractCitation

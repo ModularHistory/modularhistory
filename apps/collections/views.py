@@ -1,6 +1,6 @@
-from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models.query import QuerySet
 
+from apps.admin.views import AutocompleteJsonView
 from apps.collections.models import Collection
 
 
