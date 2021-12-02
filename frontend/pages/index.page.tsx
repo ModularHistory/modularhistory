@@ -1,11 +1,10 @@
-import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
-import TodayInHistory from "@/components/TodayInHistory";
-import { ModuleUnion, Topic } from "@/types/modules";
+import TodayInHistory, { TodayInHistoryProps } from "@/components/TodayInHistory";
+import { SerpModule } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, CardHeader, Divider, Grid, Link, Skeleton } from "@mui/material";
+import { Box, Button, CardHeader, Divider, Grid, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { styled } from "@mui/material/styles";
@@ -13,8 +12,9 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SxProps } from "@mui/system";
 import axios from "axios";
+import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, MouseEventHandler, ReactNode, useRef } from "react";
 
 const StyledCard = styled(Card)({
   padding: "1rem",
@@ -38,13 +38,18 @@ interface GridItemProps {
   sx?: SxProps;
 }
 
+interface HomePageProps {
+  featuredModules: SerpModule[];
+  todayInHistoryModules: SerpModule[];
+}
+
 const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
   <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" sx={sx}>
     {children}
   </Grid>
 );
 
-export default function Home() {
+const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: HomePageProps) => {
   const router = useRouter();
   const queryInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,7 +91,6 @@ export default function Home() {
       </Grid>
     </Grid>
   );
-
   return (
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
@@ -111,7 +115,7 @@ export default function Home() {
           <StyledCard raised>
             <StyledCardHeader title="Featured Content" />
             <CardContent>
-              <FeaturedContent />
+              <FeaturedContent modules={featuredModules} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -119,7 +123,7 @@ export default function Home() {
           <StyledCard raised sx={{ minWidth: "20rem" }}>
             <StyledCardHeader title="Today in History" />
             <CardContent>
-              <TodayInHistory />
+              <TodayInHistory modules={todayInHistoryModules} />
             </CardContent>
           </StyledCard>
         </GridItem>
@@ -133,7 +137,9 @@ export default function Home() {
       </Grid>
     </Layout>
   );
-}
+};
+
+export default Home;
 
 const AboutModularHistory: FC = () => {
   return (
@@ -157,53 +163,26 @@ const AboutModularHistory: FC = () => {
   );
 };
 
-const FeaturedContent: FC = () => {
-  const [items, setItems] = useState<Exclude<ModuleUnion, Topic>[]>([]);
-  const [loading, setLoading] = useState(true);
+interface FeaturedContentProps {
+  modules: SerpModule[];
+}
 
-  useEffect(() => {
-    const cancelTokenSource = axios.CancelToken.source();
-    axiosWithoutAuth
-      .get("/api/home/features/", { cancelToken: cancelTokenSource.token })
-      .then((response) => {
-        setItems(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (axios.isCancel(error)) return;
-        console.error(error);
-        setLoading(false);
-      });
-    return () => {
-      cancelTokenSource.cancel("component unmounted");
-    };
-  }, [loading]);
-
+const FeaturedContent: FC<FeaturedContentProps> = ({ modules }: FeaturedContentProps) => {
   return (
     <Grid container alignItems="center" justifyContent="center">
-      <>
-        {items.length ? (
-          items.map((module, index) => (
-            <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
-              <Link href={module.absoluteUrl} underline="none">
-                <a>
-                  <ModuleUnionCard module={module} />
-                </a>
-              </Link>
-            </Grid>
-          ))
-        ) : loading ? (
-          <Grid item xs={12} sm={6} md={4} lg={3}>
-            <StyledCard>
-              <CardContent>
-                <Skeleton sx={{ minHeight: 200, width: "100%" }} />
-              </CardContent>
-            </StyledCard>
+      {modules.length ? (
+        modules.map((module, index) => (
+          <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+            <Link href={module.absoluteUrl} underline="none">
+              <a>
+                <ModuleUnionCard module={module} />
+              </a>
+            </Link>
           </Grid>
-        ) : (
-          <p>Sorry, there is no featured content to display. Please check back later!</p>
-        )}
-      </>
+        ))
+      ) : (
+        <p>Sorry, there is no featured content to display. Please check back later!</p>
+      )}
     </Grid>
   );
 };
@@ -280,4 +259,34 @@ const SubscriptionBox: FC = () => {
       </CardContent>
     </StyledCard>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  let todayInHistoryModules: TodayInHistoryProps[] = [];
+  let featuredModules: FeaturedContentProps[] = [];
+
+  const tihPromise = axios
+    .get(`http://django:8000/api/home/today_in_history/`)
+    .then((response) => {
+      todayInHistoryModules = response.data;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  const featuredPromise = axios
+    .get(`http://django:8000/api/home/features/`)
+    .then((response) => {
+      featuredModules = response.data;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  await Promise.allSettled([tihPromise, featuredPromise]);
+
+  return {
+    props: { todayInHistoryModules, featuredModules },
+    revalidate: 10,
+  };
 };
