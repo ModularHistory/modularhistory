@@ -3,6 +3,8 @@
 echo "Sourcing functions from $(dirname "$0")/functions.sh ..."
 source "$(dirname $0)/functions.sh"
 
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+
 # Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
@@ -26,6 +28,31 @@ else
   " && exit
 fi
 
+function activate_venv() {
+  set a
+  # shellcheck disable=SC1091
+  source .venv/bin/activate; unset a
+}
+
+poetry config virtualenvs.create true &>/dev/null
+poetry config virtualenvs.in-project true &>/dev/null
+
+# Initialize .venv with the correct Python version.
+if [[ -d .venv ]]; then
+  echo "Verifying the active Python version is $PYTHON_VERSION..."
+  if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
+    echo "Destroying the existing .venv ..."
+    [[ -d .venv ]] && rm -r .venv
+  fi
+fi
+[[ -d .venv ]] || {
+  poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
+}
+activate_venv
+if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
+  _error "Failed to activate Python $PYTHON_VERSION."
+fi
+
 # Install project dependencies.
 echo "Installing dependencies ..."
 pip install --upgrade pip
@@ -40,6 +67,7 @@ poetry install --no-root || {
   echo ""
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
+  mkdir -p .venv
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
   [[ "$IN_VENV" = 0 ]] || {
     _error "Failed to create and/or activate virtual environment."

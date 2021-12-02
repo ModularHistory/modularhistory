@@ -1,8 +1,11 @@
 #!/bin/bash
 
 PYTHON_VERSION="3.9.5"
+export PYTHON_VERSION
 
 PROJECT_DIR=$(dirname "$0")
+export PROJECT_DIR
+
 VOLUMES_DIR="$PROJECT_DIR/_volumes"
 
 # Enter the project.
@@ -310,30 +313,8 @@ poetry config virtualenvs.in-project true &>/dev/null
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
-function activate_venv() {
-  set a
-  # shellcheck disable=SC1091
-  source .venv/bin/activate; unset a
-}
-
-# Initialize .venv with the correct Python version.
-if [[ -d .venv ]]; then
-  echo "Verifying the active Python version is $PYTHON_VERSION..."
-  if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
-    echo "Destroying the existing .venv ..."
-    [[ -d .venv ]] && rm -r .venv
-  fi
-fi
-[[ -d .venv ]] || {
-  poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
-}
-activate_venv
-if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
-  _error "Failed to activate Python $PYTHON_VERSION."
-fi
-
 # Install the project's Python dependencies.
-bash config/scripts/install_python_deps.sh
+bash config/scripts/install-deps.sh
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
