@@ -67,10 +67,6 @@ if [[ "$IN_VENV" = 0 ]]; then
 
     IN_VENV: $IN_VENV
     VIRTUAL_ENV: $VIRTUAL_ENV
-
-    $(pwd)
-
-    $(ls -a .venv)
   "
 else
   echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
