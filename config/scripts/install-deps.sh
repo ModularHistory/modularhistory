@@ -43,6 +43,7 @@ else
   echo "Virtual environment does not yet exist at $(pwd)/.venv."
 fi
 [[ -d .venv ]] || {
+  echo "Creating a new virtual environment at $(pwd)/.venv ..."
   python -m venv .venv
   poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
