@@ -56,7 +56,12 @@ IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else 
 if [[ "$IN_VENV" = 0 ]]; then
   _error "
     Failed to create and/or activate virtual environment.
+
+    IN_VENV: $IN_VENV
     
+    $(pwd)
+
+    $(ls)
   "
 else
   echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
