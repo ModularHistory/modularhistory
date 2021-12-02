@@ -11,7 +11,7 @@ common_instant_search_fields = {
 
 
 class ModeratedModelSerializer(serializers.ModelSerializer):
-    moderated_fields_excludes = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
+    excluded_moderated_fields = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
     instant_search_fields = {}
 
@@ -42,7 +42,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
         field: serializers.Field
 
         for field_name, field in self.get_fields().items():
-            if field_name not in self.moderated_fields_excludes:
+            if field_name not in self.excluded_moderated_fields:
                 data = {
                     'name': field_name,
                     'type': field.__class__.__name__,
@@ -55,7 +55,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                 }
                 instant_search_field = self.get_instant_search_field(field_name)
                 if instant_search_field:
-                    data.update(data | {'instant_search': instant_search_field})
+                    data.update({'instant_search': instant_search_field})
                 fields.append(data)
         return fields
 

@@ -226,8 +226,8 @@ services:
       - elasticsearch
     env_file: .env
     environment:
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       ELASTICSEARCH_USERNAME: elastic
       # ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
     expose:
