@@ -73,7 +73,5 @@ class WebsiteSerializer(ModelSerializer, PublicationMixinSerializer):
     class Meta:
         model = Website
         fields = (
-            ModelSerializer.Meta.fields
-            + PublicationMixinSerializer.Meta.fields
-            + ['owner']
+            ModelSerializer.Meta.fields + PublicationMixinSerializer.Meta.fields + ['owner']
         )

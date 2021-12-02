@@ -27,6 +27,4 @@ class _ReportSerializer(SourceSerializer, TextualSerializerMixin):
 class ReportSerializer(_ReportSerializer):
     """Serializer for report sources."""
 
-    original_edition_serialized = _ReportSerializer(
-        read_only=True, source='original_edition'
-    )
+    original_edition_serialized = _ReportSerializer(read_only=True, source='original_edition')

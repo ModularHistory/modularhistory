@@ -122,16 +122,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: |
-        poetry --version
-        echo "ubuntu-latest" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
-        poetry install --no-root || {
-          echo ""
-          echo "Dependency installation failed. Clearing cache and retrying..."
-          echo ""
-          yes | poetry cache clear . --all
-          poetry install --no-root
-        }
+      run: bash config/scripts/install-python-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug

@@ -31,9 +31,7 @@ class _BookSerializer(SourceSerializer, TextualSerializerMixin):
 class BookSerializer(_BookSerializer):
     """Serializer for book sources."""
 
-    original_edition_serialized = _BookSerializer(
-        read_only=True, source='original_edition'
-    )
+    original_edition_serialized = _BookSerializer(read_only=True, source='original_edition')
 
 
 class SectionSerializer(SourceSerializer):

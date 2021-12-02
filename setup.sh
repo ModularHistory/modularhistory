@@ -346,35 +346,8 @@ if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
   _error "Failed to activate Python $PYTHON_VERSION."
 fi
 
-# Install project dependencies.
-echo "Installing dependencies ..."
-pip install --upgrade pip
-if [[ "$os" == "$MAC_OS" ]]; then
-  # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
-  # shellcheck disable=SC2155
-  export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
-  # shellcheck disable=SC2155
-  export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
-fi
-poetry install --no-root || {
-  _print_red "Failed to install dependencies with Poetry."
-  echo "Attempting workaround ..."
-  IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
-  [[ "$IN_VENV" = 0 ]] || {
-    _error "Failed to create and/or activate virtual environment."
-  }
-  # https://python-poetry.org/docs/cli/#export
-  poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
-  pip install --upgrade pip
-  # shellcheck disable=SC2015
-  pip install -r requirements.txt && {
-    rm requirements.txt
-    echo "Installed dependencies with pip after failing to install with Poetry."
-  } || {
-    rm requirements.txt
-    _print_red "Failed to install dependencies with pip."
-  }
-}
+# Install the project's Python dependencies.
+bash config/scripts/install_python_deps.sh
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."

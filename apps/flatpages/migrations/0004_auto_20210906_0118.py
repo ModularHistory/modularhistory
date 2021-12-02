@@ -12,13 +12,13 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='flatpage',
-            options={'ordering': ['path'], 'verbose_name': 'flat page', 'verbose_name_plural': 'flat pages'},
+            options={
+                'ordering': ['path'],
+                'verbose_name': 'flat page',
+                'verbose_name_plural': 'flat pages',
+            },
         ),
-        migrations.RenameField(
-            model_name='flatpage',
-            old_name='url',
-            new_name='path'
-        ),
+        migrations.RenameField(model_name='flatpage', old_name='url', new_name='path'),
         migrations.AlterUniqueTogether(
             name='flatpage',
             unique_together={('path',)},

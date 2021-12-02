@@ -15,15 +15,11 @@ class _PieceSerializer(SourceSerializer, PageNumbersSerializerMixin):
     class Meta(SourceSerializer.Meta):
         model = Piece
         fields = (
-            SourceSerializer.Meta.fields
-            + PageNumbersSerializerMixin.Meta.fields
-            + ['type']
+            SourceSerializer.Meta.fields + PageNumbersSerializerMixin.Meta.fields + ['type']
         )
 
 
 class PieceSerializer(_PieceSerializer):
     """Serializer for piece sources."""
 
-    original_edition_serialized = _PieceSerializer(
-        read_only=True, source='original_edition'
-    )
+    original_edition_serialized = _PieceSerializer(read_only=True, source='original_edition')
