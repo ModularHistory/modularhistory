@@ -7,6 +7,7 @@ from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
@@ -16,7 +17,6 @@ from apps.entities.models.model_with_related_entities import (
     ModelWithRelatedEntities,
     RelatedEntitiesField,
 )
-from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
@@ -148,17 +148,20 @@ class Entity(
     related_entities = RelatedEntitiesField(through=EntityRelation)
     tags = TagsField(through=TopicRelation)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for the Entity model."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
     searchable_fields = ['name', 'aliases', 'description']
-    serializer = EntitySerializer
     slug_base_fields = ('unabbreviated_name',)
+
+    @classmethod
+    def get_serializer(self):
+        """Return the serializer for the entity."""
+        from apps.entities.api.serializers import EntitySerializer
+
+        return EntitySerializer
 
     def __str__(self) -> str:
         """Return the string representation of the entity."""

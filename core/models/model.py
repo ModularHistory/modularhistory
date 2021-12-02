@@ -1,11 +1,11 @@
 """Base model classes for ModularHistory."""
+
 import inspect
 import logging
 from pprint import pformat
 from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type, Union
 
 import regex
-import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
@@ -93,6 +93,12 @@ class ExtendedModel(Model):
     def get_searchable_fields(cls) -> FieldList:
         """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
+
+    @classmethod
+    def get_serializer(cls) -> type[Serializer]:
+        """Return the serializer class used to serialize model instances."""
+        serializer = getattr(cls, 'serializer', None) or None
+        return serializer
 
     @property
     def admin_url(self) -> str:
@@ -254,19 +260,8 @@ class ExtendedModel(Model):
         return placeholder
 
 
-class ModelSerializer(serpy.Serializer):
-    """Base serializer for ModularHistory's models."""
-
-    id = serpy.IntField()
-    model = serpy.MethodField()
-    absolute_url = serpy.StrField()
-
-    def get_model(self, instance: ExtendedModel) -> str:
-        """Return the model name of the instance."""
-        return get_model_name(instance)
-
-
-class DrfModelSerializer(ModeratedModelSerializer):
+# TODO: Ideally, ModeratedModelSerializer should inherit from ModelSerializer, not vice versa.
+class ModelSerializer(ModeratedModelSerializer):
     """Base serializer for ModularHistory's models."""
 
     def __init__(self, *args, **kwargs):
@@ -294,7 +289,8 @@ class DrfModelSerializer(ModeratedModelSerializer):
         fields = ['pk']
 
 
-class DrfTypedModelSerializerMixin(serializers.ModelSerializer):
+class TypedModelSerializerMixin(serializers.ModelSerializer):
+    """Base serializer for ModularHistory's typed models."""
 
     type = serializers.CharField(required=True)
 
@@ -305,11 +301,11 @@ class DrfTypedModelSerializerMixin(serializers.ModelSerializer):
         return validate_model_type(self, value)
 
 
-class DrfTypedModelSerializer(DrfTypedModelSerializerMixin, DrfModelSerializer):
+class TypedModelSerializer(TypedModelSerializerMixin, ModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
-    class Meta(DrfModelSerializer.Meta):
-        fields = DrfModelSerializer.Meta.fields + ['type']
+    class Meta(ModelSerializer.Meta):
+        fields = ModelSerializer.Meta.fields + ['type']
 
 
 def get_model_name(instance: Union[ExtendedModel, Type[ExtendedModel]]) -> str:

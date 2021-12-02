@@ -9,7 +9,6 @@ from invoke.context import Context
 
 from core.constants.environments import Environments
 from core.constants.misc import RcloneStorageProviders
-from core.utils.files import upload_to_mega
 
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
@@ -43,8 +42,8 @@ def backup(
         context.run(f'mv {backup_file} {join(backups_dir, filename)}')
         backup_file = join(backups_dir, filename)
     print(f'Finished creating backup file: {backup_file}')
-    if push:
-        upload_to_mega(backup_file, account=Environments.DEV)
+    # if push:
+    #     upload_to_mega(backup_file, account=Environments.DEV)
 
 
 RCLONE_STORAGE_PROVIDERS = (

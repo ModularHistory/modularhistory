@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
+from rest_framework.serializers import Serializer
+
 from apps.propositions.models.proposition import Proposition
-from apps.propositions.serializers import OccurrenceSerializer
 from core.models.manager import SearchableManager
 
 if TYPE_CHECKING:
@@ -33,7 +34,13 @@ class Occurrence(Proposition):
         ordering = ['date']
 
     objects = OccurrenceManager()
-    serializer = OccurrenceSerializer
+
+    @classmethod
+    def get_serializer(self) -> type[Serializer]:
+        """Return the serializer for the entity."""
+        from apps.propositions.api.serializers import OccurrenceSerializer
+
+        return OccurrenceSerializer
 
 
 class Birth(Occurrence):

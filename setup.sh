@@ -1,32 +1,29 @@
 #!/bin/bash
 
-PYTHON_VERSION="3.9.5"
+set -a
+
+PYTHON_VERSION="3.9.9"
+export PYTHON_VERSION
 
 PROJECT_DIR=$(dirname "$0")
+export PROJECT_DIR
+
+unset a
+
 VOLUMES_DIR="$PROJECT_DIR/_volumes"
 
-RED='\033[0;31m'
-NC='\033[0m'  # No Color
-BOLD=$(tput bold)
-MAC_OS="MacOS"
-LINUX="Linux"
+# Enter the project.
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+echo "Working in $(pwd) ..."
+
+# Import functions like _print_error.
+source "config/scripts/functions.sh"
 
 function _append() {
   grep -qxF "$1" "$2" || {
     echo "Appending the following line to $2:" && echo "  $1"
     echo "$1" >> "$2"
   }
-}
-
-function _print_red() {
-  # Print a message with red text.
-  # shellcheck disable=SC2059
-  printf "${RED}$1${NC}\n"
-}
-
-function _error() {
-  # Print a message with red text and exit the script with an error status (1).
-  _print_red "$1" >&2; exit 1
 }
 
 # Detect operating system.
@@ -119,10 +116,6 @@ fi
 
 echo "Detected $os."
 zsh_profile="$HOME/.zshrc"
-
-# Enter the project
-cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
-echo "Working in $(pwd) ..."
 
 # Create shell profiles if they don't already exist.
 touch "$bash_profile"
@@ -324,57 +317,8 @@ poetry config virtualenvs.in-project true &>/dev/null
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
-function activate_venv() {
-  set a
-  # shellcheck disable=SC1091
-  source .venv/bin/activate; unset a
-}
-
-# Initialize .venv with the correct Python version.
-if [[ -d .venv ]]; then
-  echo "Verifying the active Python version is $PYTHON_VERSION..."
-  if [[ ! "$(.venv/bin/python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
-    echo "Destroying the existing .venv ..."
-    [[ -d .venv ]] && rm -r .venv
-  fi
-fi
-[[ -d .venv ]] || {
-  poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
-}
-activate_venv
-if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
-  _error "Failed to activate Python $PYTHON_VERSION."
-fi
-
-# Install project dependencies.
-echo "Installing dependencies ..."
-pip install --upgrade pip
-if [[ "$os" == "$MAC_OS" ]]; then
-  # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
-  # shellcheck disable=SC2155
-  export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
-  # shellcheck disable=SC2155
-  export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
-fi
-poetry install --no-root || {
-  _print_red "Failed to install dependencies with Poetry."
-  echo "Attempting workaround ..."
-  IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
-  [[ "$IN_VENV" = 0 ]] || {
-    _error "Failed to create and/or activate virtual environment."
-  }
-  # https://python-poetry.org/docs/cli/#export
-  poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
-  pip install --upgrade pip
-  # shellcheck disable=SC2015
-  pip install -r requirements.txt && {
-    rm requirements.txt
-    echo "Installed dependencies with pip after failing to install with Poetry."
-  } || {
-    rm requirements.txt
-    _print_red "Failed to install dependencies with pip."
-  }
-}
+# Install the project's Python dependencies.
+bash config/scripts/install-deps.sh
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."

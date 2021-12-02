@@ -1,4 +1,4 @@
-from apps.sources.api.sources.document.affidavit.serializers import AffidavitDrfSerializer
+from apps.sources.api.sources.document.affidavit.serializers import AffidavitSerializer
 from apps.sources.models import Affidavit
 from core.api.views import ExtendedModelViewSet
 
@@ -8,4 +8,4 @@ class AffidavitViewSet(ExtendedModelViewSet):
 
     list_fields = None
     queryset = Affidavit.objects.all()
-    serializer_class = AffidavitDrfSerializer
+    serializer_class = AffidavitSerializer

@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.entities.api.serializers import EntityDrfSerializer
+from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.entity import Entity
 from apps.search.documents.entity import EntityInstantSearchDocument
 from core.api.views import ExtendedModelViewSet
@@ -11,7 +11,7 @@ class EntityViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
-    serializer_class = EntityDrfSerializer
+    serializer_class = EntitySerializer
     list_fields = ExtendedModelViewSet.list_fields | {
         'title',
         'truncated_description',

@@ -1,29 +1,25 @@
-from apps.sources.api.serializers import PageNumbersDrfSerializerMixin, SourceDrfSerializer
+from apps.sources.api.serializers import PageNumbersSerializerMixin, SourceSerializer
 from apps.sources.models import Piece
 
 
-class _PieceDrfSerializer(SourceDrfSerializer, PageNumbersDrfSerializerMixin):
+class _PieceSerializer(SourceSerializer, PageNumbersSerializerMixin):
     """Serializer for piece sources."""
 
-    instant_search_fields = SourceDrfSerializer.instant_search_fields | {
+    instant_search_fields = SourceSerializer.instant_search_fields | {
         'original_edition': {
             'model': 'sources.source',
             'filters': {'model_name': 'sources.piece'},
         },
     }
 
-    class Meta(SourceDrfSerializer.Meta):
+    class Meta(SourceSerializer.Meta):
         model = Piece
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + PageNumbersDrfSerializerMixin.Meta.fields
-            + ['type']
+            SourceSerializer.Meta.fields + PageNumbersSerializerMixin.Meta.fields + ['type']
         )
 
 
-class PieceDrfSerializer(_PieceDrfSerializer):
+class PieceSerializer(_PieceSerializer):
     """Serializer for piece sources."""
 
-    original_edition_serialized = _PieceDrfSerializer(
-        read_only=True, source='original_edition'
-    )
+    original_edition_serialized = _PieceSerializer(read_only=True, source='original_edition')
