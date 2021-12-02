@@ -50,7 +50,7 @@ runs:
         echo ""
         echo "Installed version: $(docker compose version)"
         version=${{ inputs.docker-compose-version }}
-        echo "${{ inputs.docker-compose-version }}" | grep -i --quiet "$version" || {
+        docker compose version | grep --quiet "$version" || {
           echo "Installing Docker Compose version $version ..."
           mkdir -p ~/.docker/cli-plugins/
           curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
