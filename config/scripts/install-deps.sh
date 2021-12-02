@@ -85,6 +85,13 @@ echo "Virtual environment activated."
 # Install project dependencies.
 echo ""
 echo "Installing dependencies ..."
+# Install system dependencies.
+if [[ "$os" == "$MAC_OS" ]]; then
+  brew install graphviz
+else
+  sudo apt-get install -y graphviz graphviz-dev
+fi
+# Upgrade pip.
 pip install --upgrade pip
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
@@ -106,6 +113,6 @@ poetry install --no-root || {
     echo "Installed dependencies with pip after failing to install with Poetry."
   } || {
     rm requirements.txt
-    _print_red "Failed to install dependencies with pip."
+    _error "Failed to install dependencies with pip."
   }
 }
