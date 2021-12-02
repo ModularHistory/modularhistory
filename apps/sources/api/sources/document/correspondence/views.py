@@ -1,5 +1,5 @@
 from apps.sources.api.sources.document.correspondence.serializers import (
-    CorrespondenceDrfSerializer,
+    CorrespondenceSerializer,
 )
 from apps.sources.models import Correspondence
 from core.api.views import ExtendedModelViewSet
@@ -10,4 +10,4 @@ class CorrespondenceViewSet(ExtendedModelViewSet):
 
     list_fields = None
     queryset = Correspondence.objects.all()
-    serializer_class = CorrespondenceDrfSerializer
+    serializer_class = CorrespondenceSerializer

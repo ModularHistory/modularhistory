@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.dates.structures import serialize_date
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
-from core.models.serializers import DrfTypedModuleSerializer
+from core.models.serializers import TypedModuleSerializer
 
 
 class CategorySerializer(serializers.Serializer):
@@ -29,7 +29,7 @@ class CategorizationSerializer(serializers.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntityDrfSerializer(DrfTypedModuleSerializer):
+class EntitySerializer(TypedModuleSerializer):
     """Serializer for entities.
     TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
     """
@@ -40,15 +40,15 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
     )
 
     # write only versions are not rendered to output
-    birth_date = HistoricDateTimeDrfField(write_only=True, required=False)
-    death_date = HistoricDateTimeDrfField(write_only=True, required=False)
+    birth_date = HistoricDateTimeField(write_only=True, required=False)
+    death_date = HistoricDateTimeField(write_only=True, required=False)
     birth_date_serialized = serializers.SerializerMethodField(
         'get_serialized_birth_date', read_only=True
     )
     death_date_serialized = serializers.SerializerMethodField(
         'get_serialized_death_date', read_only=True
     )
-    timeline = TimelinePositionDrfField(read_only=True, required=False, source='birth_date')
+    timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -58,10 +58,10 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
         """Return the entity's death date, serialized."""
         return serialize_date(instance.death_date)
 
-    class Meta(DrfTypedModuleSerializer.Meta):
+    class Meta(TypedModuleSerializer.Meta):
         model = Entity
         read_only_fields = ['truncated_description']
-        fields = DrfTypedModuleSerializer.Meta.fields + [
+        fields = TypedModuleSerializer.Meta.fields + [
             'name',
             'unabbreviated_name',
             'aliases',
@@ -80,7 +80,7 @@ class EntityDrfSerializer(DrfTypedModuleSerializer):
             'reference_urls',
             'timeline',
         ]
-        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
             'images': {
                 'write_only': True,
                 'required': False,

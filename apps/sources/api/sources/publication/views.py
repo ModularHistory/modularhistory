@@ -1,7 +1,7 @@
 from apps.sources.api.sources.publication.serializers import (
-    PublicationDrfSerializer,
-    WebpageDrfSerializer,
-    WebsiteDrfSerializer,
+    PublicationSerializer,
+    WebpageSerializer,
+    WebsiteSerializer,
 )
 from apps.sources.api.views import SourceViewSet
 from apps.sources.models import Publication, Webpage, Website
@@ -12,14 +12,14 @@ class WebpageViewSet(SourceViewSet):
     """API endpoint for viewing and editing webpage sources."""
 
     queryset = Webpage.objects.all()
-    serializer_class = WebpageDrfSerializer
+    serializer_class = WebpageSerializer
 
 
 class PublicationViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing publication sources."""
 
     queryset = Publication.objects.all()
-    serializer_class = PublicationDrfSerializer
+    serializer_class = PublicationSerializer
     list_fields = None
 
 
@@ -27,5 +27,5 @@ class WebsiteViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing website sources."""
 
     queryset = Website.objects.all()
-    serializer_class = WebsiteDrfSerializer
+    serializer_class = WebsiteSerializer
     list_fields = None

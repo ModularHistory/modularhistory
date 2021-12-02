@@ -3,7 +3,7 @@ from rest_framework.fields import DateTimeField as DrfDateTimeField
 from apps.dates.structures import HistoricDateTime
 
 
-class HistoricDateTimeDrfField(DrfDateTimeField):
+class HistoricDateTimeField(DrfDateTimeField):
     """Serializer field for historic datetimes."""
 
     def to_internal_value(self, value) -> HistoricDateTime:
@@ -21,7 +21,7 @@ class HistoricDateTimeDrfField(DrfDateTimeField):
         return value
 
 
-class TimelinePositionDrfField(HistoricDateTimeDrfField):
+class TimelinePositionField(HistoricDateTimeField):
     """Represents dates on a continuous floating point scale."""
 
     def to_representation(self, value: HistoricDateTime):

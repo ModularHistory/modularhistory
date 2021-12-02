@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 
-from apps.collections.api.serializers import CollectionDrfSerializer
+from apps.collections.api.serializers import CollectionSerializer
 from apps.collections.models import Collection
 
 
@@ -10,5 +10,5 @@ class CollectionViewSet(ModelViewSet):
 
     queryset = Collection.objects.all()
     lookup_field = 'slug'
-    serializer_class = CollectionDrfSerializer
+    serializer_class = CollectionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

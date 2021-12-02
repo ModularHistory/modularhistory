@@ -1,7 +1,7 @@
 from rest_framework.generics import RetrieveAPIView
 
+from apps.flatpages.api.serializers import FlatPageSerializer
 from apps.flatpages.models import FlatPage
-from apps.flatpages.serializers import FlatPageSerializer
 
 
 class FlatPageAPIView(RetrieveAPIView):

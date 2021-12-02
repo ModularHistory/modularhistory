@@ -1,16 +1,16 @@
-from apps.places.api.serializers import PlaceDrfSerializer
+from apps.places.api.serializers import PlaceSerializer
 from apps.sources.models import Collection, Repository
-from core.models.model import DrfModelSerializer
+from core.models.model import ModelSerializer
 
 
-class RepositoryDrfSerializer(DrfModelSerializer):
+class RepositorySerializer(ModelSerializer):
     """Serializer for document collections repositories."""
 
-    location_serialized = PlaceDrfSerializer(read_only=True, source='location')
+    location_serialized = PlaceSerializer(read_only=True, source='location')
 
     class Meta:
         model = Repository
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModelSerializer.Meta.fields + [
             'name',
             'owner',
             'location',
@@ -18,14 +18,14 @@ class RepositoryDrfSerializer(DrfModelSerializer):
         ]
 
 
-class CollectionDrfSerializer(DrfModelSerializer):
+class CollectionSerializer(ModelSerializer):
     """Serializer for document collections."""
 
-    repository_serialized = RepositoryDrfSerializer(read_only=True, source='repository')
+    repository_serialized = RepositorySerializer(read_only=True, source='repository')
 
     class Meta:
         model = Collection
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModelSerializer.Meta.fields + [
             'name',
             'repository',
             'repository_serialized',

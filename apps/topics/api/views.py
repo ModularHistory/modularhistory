@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.search.documents import TopicInstantSearchDocument
-from apps.topics.api.serializers import TopicDrfSerializer
+from apps.topics.api.serializers import TopicSerializer
 from apps.topics.models.topic import Topic
 from core.api.views import ExtendedModelViewSet
 from core.pagination import LargeSizePagination
@@ -12,7 +12,7 @@ class TopicViewSet(ExtendedModelViewSet):
     """API endpoint for viewing and editing topics."""
 
     queryset = Topic.objects.all()
-    serializer_class = TopicDrfSerializer
+    serializer_class = TopicSerializer
     pagination_class = LargeSizePagination
     list_fields = {'name', 'pk'}
 

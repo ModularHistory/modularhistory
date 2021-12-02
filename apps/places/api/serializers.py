@@ -2,15 +2,15 @@
 
 
 from apps.places.models import Place
-from core.models.model import DrfTypedModelSerializer
+from core.models.model import TypedModelSerializer
 
 
-class PlaceDrfSerializer(DrfTypedModelSerializer):
+class PlaceSerializer(TypedModelSerializer):
     """Serializer for places."""
 
-    class Meta(DrfTypedModelSerializer.Meta):
+    class Meta(TypedModelSerializer.Meta):
         model = Place
-        fields = DrfTypedModelSerializer.Meta.fields + [
+        fields = TypedModelSerializer.Meta.fields + [
             'string',
             'name',
             'preposition',

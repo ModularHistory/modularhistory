@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.models import DatedModel
@@ -28,7 +29,6 @@ from apps.places.models.model_with_locations import (
     LocationsField,
     ModelWithLocations,
 )
-from apps.propositions.serializers import PropositionSerializer
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -95,6 +95,13 @@ class Citation(AbstractCitation):
     """A relation of a source to a proposition."""
 
     content_object = get_proposition_fk(related_name='citations')
+
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.propositions.api.serializers import CitationSerializer
+
+        return CitationSerializer
 
 
 class Location(AbstractLocationRelation):
@@ -229,8 +236,14 @@ class Proposition(  # noqa: WPS215
         'related_entities__aliases',
         'tags__aliases',
     ]
-    serializer = PropositionSerializer
     slug_base_fields = ('title', 'summary')
+
+    @classmethod
+    def get_serializer(self):
+        """Return the serializer for the entity."""
+        from apps.propositions.api.serializers import PropositionSerializer
+
+        return PropositionSerializer
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""

@@ -1,22 +1,22 @@
 from apps.collections.models import Collection
-from apps.entities.api.serializers import EntityDrfSerializer
-from apps.propositions.api.serializers import PropositionDrfSerializer
-from apps.quotes.api.serializers import QuoteDrfSerializer
-from apps.sources.api.serializers import SourceDrfSerializer
-from core.models.serializers import DrfSluggedModelSerializer
+from apps.entities.api.serializers import EntitySerializer
+from apps.propositions.api.serializers import PropositionSerializer
+from apps.quotes.api.serializers import QuoteSerializer
+from apps.sources.api.serializers import SourceSerializer
+from core.models.serializers import SluggedModelSerializer
 
 
-class CollectionDrfSerializer(DrfSluggedModelSerializer):
+class CollectionSerializer(SluggedModelSerializer):
     """Serializer for collection."""
 
-    propositions = PropositionDrfSerializer(many=True)
-    entities = EntityDrfSerializer(many=True)
-    quotes = QuoteDrfSerializer(many=True)
-    sources = SourceDrfSerializer(many=True)
+    propositions = PropositionSerializer(many=True)
+    entities = EntitySerializer(many=True)
+    quotes = QuoteSerializer(many=True)
+    sources = SourceSerializer(many=True)
 
-    class Meta(DrfSluggedModelSerializer.Meta):
+    class Meta(SluggedModelSerializer.Meta):
         model = Collection
-        fields = DrfSluggedModelSerializer.Meta.fields + [
+        fields = SluggedModelSerializer.Meta.fields + [
             'creator',
             'entities',
             'quotes',
