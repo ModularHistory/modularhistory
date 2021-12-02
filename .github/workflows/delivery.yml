@@ -105,6 +105,16 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Specify Docker Compose version
+      run: |
+        echo "Installed version: $(docker compose version)"
+        version=2.2.1
+        echo "2.2.1" | grep -i --quiet "$version" || {
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          echo "Installed version: $(docker compose version)"
+        }
     - name: Configure Docker Compose
       shell: bash
       run: |
@@ -219,6 +229,16 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Specify Docker Compose version
+      run: |
+        echo "Installed version: $(docker compose version)"
+        version=2.2.1
+        echo "2.2.1" | grep -i --quiet "$version" || {
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          echo "Installed version: $(docker compose version)"
+        }
     - name: Configure Docker Compose
       shell: bash
       run: |

@@ -9,6 +9,10 @@ inputs:
     description: 'Operating system'
     required: false
     default: ubuntu-latest
+  docker-compose-version:
+    description: 'Docker Compose version'
+    required: false
+    default: 2.2.1
   python-version:
     description: 'Python version'
     required: false
@@ -40,6 +44,17 @@ runs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Set up docker compose
+    - name: Specify Docker Compose version
+      run: |
+        echo "Installed version: $(docker compose version)"
+        version=${{ inputs.docker-compose-version }}
+        echo "${{ inputs.docker-compose-version }}" | grep -i --quiet "$version" || {
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          echo "Installed version: $(docker compose version)"
+        }
     # Configure docker compose.
     - name: Configure Docker Compose
       shell: bash
