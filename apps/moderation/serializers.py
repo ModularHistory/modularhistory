@@ -1,6 +1,7 @@
 from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.python import Serializer
 from rest_framework import serializers
+from rest_framework.serializers import ListSerializer
 
 from core.fields import HTMLField
 
@@ -66,6 +67,11 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                         data.update({'is_html': True})
                 except FieldDoesNotExist:
                     pass
+
+                if isinstance(field, ListSerializer) and isinstance(
+                    field.child, ModeratedModelSerializer
+                ):
+                    data.update({'child_fields': field.child.get_moderated_fields()})
 
                 fields.append(data)
         return fields

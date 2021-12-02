@@ -30,6 +30,8 @@ class SourceAttributionDrfSerializer(DrfModelSerializer):
 class SourceContainmentDrfSerializer(DrfModelSerializer):
     """Serializer for source containments."""
 
+    instant_search_fields = {'container': {'model': 'sources.source'}}
+
     class Meta:
         model = SourceContainment
         fields = DrfModelSerializer.Meta.fields + [
@@ -152,6 +154,13 @@ class DocumentDrfSerializerMixin(PageNumbersDrfSerializerMixin):
 
 class CitationDrfSerializerMixin(UniqueFieldsMixin, DrfModelSerializer):
     """Serializer for abstract citations."""
+
+    instant_search_fields = {
+        'source': {'model': 'sources.source'},
+        'content_object': {
+            'model': 'parent'  # TODO: hint that it's parent models id some way else
+        },
+    }
 
     class Meta:
         model = AbstractCitation
