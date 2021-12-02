@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import { TopicsInstantSearch } from "@/components/search/InstantSearch";
+import { InstantSearch } from "@/components/search/InstantSearch";
 import {
   Box,
   Button,
@@ -9,13 +9,10 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
-import { ParsedUrlQueryInput } from "querystring";
-import { FC, MutableRefObject, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 
 const DynamicForm: FC = () => {
@@ -43,6 +40,7 @@ const DynamicForm: FC = () => {
           <MenuItem value={"entities"}>Entity</MenuItem>
           <MenuItem value={"images"}>Image</MenuItem>
           <MenuItem value={"occurrences"}>Occurrence</MenuItem>
+          <MenuItem value={"propositions"}>Proposition</MenuItem>
           <MenuItem value={"topics"}>Topic</MenuItem>
         </Select>
       </FormControl>
@@ -72,122 +70,104 @@ interface DynamicFormFieldsProps {
   contentType: string;
 }
 
-const fields = ["topics"] as const;
-type Field = typeof fields[number];
-type FieldsRef = MutableRefObject<Record<Field, any>>;
-type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
+interface DField {
+  name: string;
+  type:
+    | "CharField"
+    | "ManyRelatedField"
+    | "ListField"
+    | "HistoricDateTimeDrfField"
+    | "PrimaryKeyRelatedField";
+  editable: boolean;
+  required: boolean;
+  allowBlank: boolean;
+  verboseName: string | null;
+  helpText: string | null;
+  choices: Record<string, any> | null;
+  style: Record<string, any>;
+  instantSearch?: {
+    model: string;
+    filters: Record<string, any>;
+  };
+}
 
 //Dynamic fields form
 //Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
 const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicFormFieldsProps) => {
-  const [formData, setFormData] = useState([]);
-  const [choiceValue, setChoiceValue] = useState<string[]>([]);
+  const [formData, setFormData] = useState<DField[]>([]);
 
-  const getDynamicFields = async (contentType: string) => {
-    return await axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => {
-      return response.data;
-    });
-  };
+  const getDynamicFields = (contentType: string): Promise<DField[]> =>
+    axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => response.data);
 
   const isLoading = useContext(PageTransitionContext);
 
-  const handleChoice = (event: { target: { value: string[] | string } }) => {
-    const value = event.target.value as string[] | string;
-    setChoiceValue(typeof value === "string" ? value.split(",") : value);
-  };
-
-  const fieldsRef = useRef({}) as FieldsRef;
-  const fieldCallbacks = Object.fromEntries(
-    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
-  ) as FieldCallbacks;
-
   useEffect(() => {
     getDynamicFields(contentType).then((result) => {
-      setFormData(result);
+      setFormData(result.filter((field) => field.editable));
     });
   }, [contentType]);
 
-  const checkField = (obj: any) => {
-    return obj.editable;
-  };
-
+  // const checkField = (obj: any) => {
+  //   return obj.editable;
+  // };
+  //
   const createDisplayName = (str: string) => {
     return str.replace(/_/g, " ");
   };
-
-  const createChoiceValue = (str: string) => {
-    return str.replace(/<.*?>/g, "");
-  };
+  //
+  // const createChoiceValue = (str: string) => {
+  //   return str.replace(/<.*?>/g, "");
+  // };
 
   return (
     <>
-      <FormControl>
-        <Grid container spacing={3}>
-          {formData &&
-            formData.map((field: any) => (
-              <>
-                {checkField(field) &&
-                  ((field.name === "tags" && (
-                    <Grid item key={field.name} xs={4}>
-                      <TopicsInstantSearch
-                        label={"tags"}
-                        onChange={fieldCallbacks.topics}
-                        disabled={isLoading}
-                        defaultValue={fieldsRef.current.topics}
-                      />
-                    </Grid>
-                  )) ||
-                    (field.type === "CharField" && (
-                      <Grid item key={field.name} xs={4}>
-                        <TextField
-                          id={field.name}
-                          label={createDisplayName(field.name)}
-                          variant="outlined"
-                          helperText={field.helpText}
-                          required={field.required}
-                          sx={{ minWidth: "5rem" }}
-                        />
-                      </Grid>
-                    )) ||
-                    (field.type === "ManyRelatedField" && (
-                      <Grid item key={field.name} xs={4}>
-                        <FormControl>
-                          <InputLabel id={field.name}>{createDisplayName(field.name)}</InputLabel>
-                          <Select
-                            labelId={field.name}
-                            id={field.name}
-                            label={createDisplayName(field.name)}
-                            value={choiceValue}
-                            required={field.required}
-                            multiple
-                            autoWidth
-                            variant="outlined"
-                            onChange={handleChoice}
-                            input={<OutlinedInput label={createDisplayName(field.name)} />}
-                            sx={{ width: "10rem" }}
-                            MenuProps={{
-                              anchorOrigin: { vertical: "bottom", horizontal: "center" },
-                              style: { width: "30rem" },
-                            }}
-                          >
-                            {field.choices &&
-                              Object.values(field.choices).map((choice: any) => (
-                                <MenuItem key={choice} value={choice} dense divider>
-                                  <Typography noWrap>{createChoiceValue(choice)}</Typography>
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )))}
-              </>
-            ))}
-        </Grid>
-        <p>* = required field</p>
-        <Button variant="contained" sx={{ m: "1rem" }} type="submit">
-          Submit
-        </Button>
-      </FormControl>
+      <Box component={"pre"} maxWidth={"80vw"}>
+        {JSON.stringify(formData, null, 4)}
+      </Box>
+      <Grid container spacing={1}>
+        {formData
+          .map((field) => {
+            if (field.instantSearch) {
+              return (
+                <InstantSearch
+                  label={field.name}
+                  getDataForInput={(input) =>
+                    axiosWithoutAuth
+                      .get(`/api/search/instant/`, {
+                        params: { model: field.instantSearch?.model, query: input },
+                      })
+                      .then(({ data }) => data)
+                  }
+                  labelKey={"name"}
+                />
+              );
+            }
+            switch (field.type) {
+              case "CharField":
+                return (
+                  <TextField
+                    label={createDisplayName(field.name)}
+                    variant="outlined"
+                    helperText={field.helpText}
+                    required={field.required}
+                    sx={{ minWidth: "5rem" }}
+                    multiline
+                  />
+                );
+              default:
+                return null;
+            }
+          })
+          .map((field, index) => (
+            <Grid item key={index}>
+              {field}
+            </Grid>
+          ))}
+      </Grid>
+      <p>* = required field</p>
+      <Button variant="contained" sx={{ m: "1rem" }} type="submit">
+        Submit
+      </Button>
     </>
   );
 };

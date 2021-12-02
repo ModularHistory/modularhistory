@@ -8,7 +8,7 @@ type Option = Record<string, string>;
 
 export interface InstantSearchProps {
   label: string;
-  defaultValue: Option | Option[] | Promise<Option[]>;
+  defaultValue?: Option | Option[] | Promise<Option[]>;
   onChange?: (value: string[]) => void;
   getDataForInput: (input: string, config: AxiosRequestConfig) => Option[] | Promise<Option[]>;
   labelKey: string;
@@ -16,6 +16,7 @@ export interface InstantSearchProps {
   idKey?: string;
   minimumSearchLength?: number;
   throttleDelay?: number;
+  multiple?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
   getDataForInput,
   labelKey,
   disabled,
+  multiple = true,
   idKey = "id",
   minimumSearchLength = 1,
   throttleDelay = 250,
@@ -46,6 +48,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
 
   // load labels for values initially loaded from url parameters
   useEffect(() => {
+    if (defaultValue == null) return;
     Promise.resolve(defaultValue).then((defaultValue) => {
       setSelectedOptions((prevState) => [
         ...prevState,
@@ -54,9 +57,17 @@ const InstantSearch: FC<InstantSearchProps> = ({
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleValueChange = (event: SyntheticEvent, values: Option[]) => {
-    onChange?.(values.map((value) => value[idKey]));
-    setSelectedOptions(values);
+  const handleValueChange = (event: SyntheticEvent, value: Option | Option[] | null) => {
+    if (Array.isArray(value)) {
+      onChange?.(value.map((option) => option[idKey]));
+      setSelectedOptions(value);
+    } else if (value != null) {
+      onChange?.([value[idKey]]);
+      setSelectedOptions([value]);
+    } else {
+      onChange?.([]);
+      setSelectedOptions([]);
+    }
   };
 
   // Throttling behavior only works if the same instance of
@@ -91,13 +102,13 @@ const InstantSearch: FC<InstantSearchProps> = ({
 
   return (
     <Autocomplete
-      multiple
+      multiple={multiple}
       limitTags={5}
       noOptionsText={"Type to search"}
       options={[...options, ...selectedOptions]}
       filterOptions={() => options}
       getOptionLabel={(option) => option[labelKey] as string}
-      value={selectedOptions}
+      value={multiple ? selectedOptions : selectedOptions[0]}
       onChange={handleValueChange}
       // we do not use strict equality here since ids may be numbers or strings
       isOptionEqualToValue={(option, value) => option[idKey] == value[idKey]}
