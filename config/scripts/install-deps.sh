@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo ""
 echo "Sourcing functions from $(dirname "$0")/functions.sh ..."
 source "$(dirname $0)/functions.sh"
 
@@ -38,6 +39,8 @@ if [[ -d .venv ]]; then
     echo "Destroying the existing .venv ..."
     rm -r .venv
   fi
+else
+  echo "Virtual environment does not yet exist at $(pwd)/.venv."
 fi
 [[ -d .venv ]] || {
   python -m venv .venv
@@ -48,10 +51,12 @@ fi
 }
 
 # Activate the virtual environment.
+echo ""
 echo "Activating virtual environment ..."
 set -a
 # shellcheck disable=SC1091
-source .venv/bin/activate; unset a
+source .venv/bin/activate
+unset a
 IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
 if [[ "$IN_VENV" = 0 ]]; then
   _error "
@@ -63,7 +68,7 @@ if [[ "$IN_VENV" = 0 ]]; then
 
     $(pwd)
 
-    $(ls -a)
+    $(ls -a .venv)
   "
 else
   echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
