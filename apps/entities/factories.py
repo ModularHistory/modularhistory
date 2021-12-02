@@ -13,7 +13,7 @@ class EntityFactory(ModeratedModelFactory):
     type = fuzzy.FuzzyChoice(
         [key for key in models.Entity._typedmodels_registry.keys() if key != 'entities.deity']
     )
-    title = factory.Faker('sentence', nb_words=10)
+    title = factory.Faker('sentence', nb_words=3)
     slug = factory.Faker('slug')
     name = UniqueFaker('name')
     unabbreviated_name = UniqueFaker('name')

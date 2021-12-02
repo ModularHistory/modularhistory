@@ -11,7 +11,7 @@ class PropositionFactory(ModeratedModelFactory):
     class Meta:
         model = models.Proposition
 
-    title = factory.Faker('sentence', nb_words=10)
+    title = factory.Faker('sentence', nb_words=3)
     slug = factory.Faker('slug')
     type = fuzzy.FuzzyChoice(x[0] for x in models.TYPE_CHOICES)
     elaboration = factory.Faker('text')

@@ -8,7 +8,7 @@ from apps.quotes.models.quote import Quote
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
 
-from .base import Document
+from .base import Document, InstantSearchDocumentFactory
 
 
 @registry.register_document
@@ -49,3 +49,12 @@ class QuoteDocument(Document):
 
     def get_instances_from_related(self, related_instance: Union[Source, Entity]):
         return related_instance.quotes.all()
+
+
+QuoteInstantSearchDocument = InstantSearchDocumentFactory(
+    model=Quote,
+    search_fields=['name'],
+    field_kwargs={
+        'name': {'attr': '__str__'}
+    },  # TODO: we might want just to use 'title' field
+)

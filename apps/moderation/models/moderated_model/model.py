@@ -14,7 +14,6 @@ from apps.moderation.models.moderated_model.manager import ModeratedManager
 from core.models.soft_deletable import SoftDeletableModel
 
 if TYPE_CHECKING:
-    from django.db.models.fields import Field
 
     from apps.moderation.models.changeset import ChangeSet
     from apps.users.models import User
@@ -121,38 +120,6 @@ class ModeratedModel(SoftDeletableModel):
                 content_after=self,
             )
         return _change
-
-    @classmethod
-    def get_moderated_fields(cls) -> list[dict]:
-        """
-        Return a serialized list of the model's moderated fields.
-
-        This can be used to construct forms intelligently in front-end code.
-        """
-        fields = []
-        field: 'Field'
-        for field in cls._meta.get_fields():
-            verbose_name = getattr(field, 'verbose_name', None)  # default to None
-            editable = getattr(field, 'editable', True)  # default to True
-            if any(
-                [
-                    field.name in cls.Moderation.excluded_fields,
-                    not verbose_name or not editable,  # temporary heuristic -- TODO
-                    field.name.endswith('_ptr'),  # OneToOneField
-                ]
-            ):
-                continue
-            fields.append(
-                {
-                    'name': field.name,
-                    'verbose_name': verbose_name,
-                    'editable': editable,
-                    'choices': getattr(field, 'choices', None),
-                    'help_text': getattr(field, 'help_text', None),
-                    'type': field.__class__.__name__,
-                }
-            )
-        return fields
 
     @property
     def change_in_progress(self) -> Optional['Change']:

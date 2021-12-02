@@ -1,22 +1,83 @@
+from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.python import Serializer
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ListSerializer
+
+from core.fields import HTMLField
+
+common_instant_search_fields = {
+    'attributees': {'model': 'entities.entity'},
+    'related_entities': {'model': 'entities.entity'},
+    'tags': {'model': 'topics.topic'},
+    'location': {'model': 'places.place'},
+    'images': {'model': 'images.image'},
+}
 
 
-def get_moderated_model_serializer(
-    model_serializer: type[ModelSerializer],
-) -> type[ModelSerializer]:
-    """Return the serializer to be used for moderation of a moderated model.
-    Adds 'fields' field to given model_serializer.
-    """
+class ModeratedModelSerializer(serializers.ModelSerializer):
+    excluded_moderated_fields = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
-    class ModeratedModelSerializer(model_serializer):
-        fields = serializers.ReadOnlyField(source='get_moderated_fields')
+    instant_search_fields = {}
 
-        class Meta(model_serializer.Meta):
-            fields = model_serializer.Meta.fields + ['fields']
+    def get_instant_search_fields(self) -> dict:
+        return common_instant_search_fields | self.instant_search_fields
 
-    return ModeratedModelSerializer
+    def get_instant_search_field(self, field_name: str):
+        field = self.get_instant_search_fields().get(field_name)
+        if field:
+            field_info = {'model': field['model']}
+            if 'filters' in field:
+                field_info['filters'] = field['filters']
+            return field_info
+        return None
+
+    def get_choices_for_field(self, field, field_name: str):
+        if field_name in self.get_instant_search_fields():
+            return None
+        return getattr(field, 'choices', None)
+
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
+
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: serializers.Field
+
+        for field_name, field in self.get_fields().items():
+            if field_name not in self.excluded_moderated_fields:
+                data = {
+                    'name': field_name,
+                    'type': field.__class__.__name__,
+                    'editable': not getattr(field, 'read_only', False),
+                    'required': not getattr(field, 'required', False),
+                    'allow_blank': not getattr(field, 'allow_blank', False),
+                    'verbose_name': getattr(field, 'verbose_name', None),
+                    'help_text': getattr(field, 'help_text', None),
+                    'choices': self.get_choices_for_field(field, field_name),
+                }
+
+                instant_search_field = self.get_instant_search_field(field_name)
+                if instant_search_field:
+                    data.update({'instant_search': instant_search_field})
+
+                try:
+                    if isinstance(self.Meta.model._meta.get_field(field_name), HTMLField):
+                        data.update({'is_html': True})
+                except FieldDoesNotExist:
+                    pass
+
+                if isinstance(field, ListSerializer) and isinstance(
+                    field.child, ModeratedModelSerializer
+                ):
+                    data.update({'child_fields': field.child.get_moderated_fields()})
+
+                fields.append(data)
+        return fields
+
+    class Meta:
+        pass
 
 
 class PythonSerializer(Serializer):
@@ -35,7 +96,7 @@ class PythonSerializer(Serializer):
         use_natural_primary_keys=False,
         progress_output=None,
         object_count=0,
-        **options
+        **options,
     ):
         """
         Serialize a queryset.

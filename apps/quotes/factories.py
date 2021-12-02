@@ -8,7 +8,7 @@ class QuoteFactory(ModeratedModelFactory):
     class Meta:
         model = models.Quote
 
-    title = factory.Faker('sentence', nb_words=10)
+    title = factory.Faker('sentence', nb_words=3)
     slug = factory.Faker('slug')
     text = factory.Faker('text')
     bite = factory.Faker('text')
