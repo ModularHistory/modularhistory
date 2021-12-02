@@ -1,23 +1,14 @@
-import axiosWithAuth from "@/axiosWithAuth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Collection } from "@/types/modules";
 import { CardContent } from "@mui/material";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import { GetServerSideProps } from "next";
-import { useSession } from "next-auth/client";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import React, { FC, useState } from "react";
+import { FC } from "react";
 import { Card, Container } from "react-bootstrap";
 
 interface CollectionProps {
@@ -26,9 +17,6 @@ interface CollectionProps {
     totalPages: number;
   };
 }
-
-const filter = createFilterOptions<Option>();
-type Option = Pick<Collection, "title"> & Partial<Collection> & { isOpen?: boolean };
 
 const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) => {
   //Grid Component for collection card
@@ -54,7 +42,6 @@ const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) 
         }
       />
       <PageHeader>Collections</PageHeader>
-      <DisplayCard collections={collections}></DisplayCard>
       <Pagination count={collectionsData["totalPages"]} />
       <Container>
         <Grid container spacing={2}>
@@ -62,138 +49,6 @@ const Collections: FC<CollectionProps> = ({ collectionsData }: CollectionProps) 
         </Grid>
       </Container>
     </Layout>
-  );
-};
-
-//Autocomplete Component
-const DisplayCard: FC<{ collections: Collection[] }> = ({ collections }) => {
-  const [session, loading] = useSession();
-  const [value, setValue] = useState<string | null>(null);
-  const [open, toggleOpen] = useState(false);
-  const [dialogValue, setDialogValue] = useState({
-    key: "",
-  });
-
-  const handleClose = () => {
-    setDialogValue({
-      key: "",
-    });
-    toggleOpen(false);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setValue(dialogValue.key);
-    saveCollection(dialogValue.key);
-    handleClose();
-  };
-
-  const saveCollection = async (event: string) => {
-    const title = event;
-    const slug = title.replace(/ /g, "-");
-    const collection: Partial<Collection> = {
-      title,
-      slug,
-    };
-    if (session?.user) {
-      collection.creator = session.user;
-    }
-    await axiosWithAuth
-      .post("/api/collections/", collection)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  return (
-    <div>
-      <Autocomplete
-        value={value}
-        onChange={(event, newValue) => {
-          if (typeof newValue === "string") {
-            // timeout to avoid instant validation of the dialog's form.
-            setTimeout(() => {
-              toggleOpen(true);
-              setDialogValue({
-                key: newValue,
-              });
-            });
-          } else if (newValue && newValue.title) {
-            toggleOpen(true);
-            setDialogValue({
-              key: newValue.title,
-            });
-          } else {
-            setValue(value);
-          }
-        }}
-        filterOptions={(options, params) => {
-          const filtered = filter(options, params);
-          if (params.inputValue !== "") {
-            filtered.push({
-              title: `Add "${params.inputValue}"`,
-              isOpen: true,
-            });
-          }
-          return filtered;
-        }}
-        id="free-solo-dialog-demo"
-        options={collections as Option[]}
-        getOptionLabel={(option) => {
-          if (typeof option === "string") {
-            // console.log("The option is",option)
-            return option;
-          }
-          return option.title ?? option.slug;
-        }}
-        selectOnFocus
-        clearOnBlur
-        handleHomeEndKeys
-        renderOption={(props, option) => {
-          if (option.isOpen === true) {
-            return <li {...props}>{option.title}</li>;
-          }
-          const { onClick, ...otherProps } = props; //eslint-disable-line @typescript-eslint/no-unused-vars
-          return (
-            <Link href={`/collections/${option.slug}`} passHref>
-              <li {...otherProps}>{option.title}</li>
-            </Link>
-          );
-        }}
-        sx={{ width: 300 }}
-        freeSolo
-        renderInput={(params) => <TextField {...params} label="Collections..." />}
-      />
-      <Dialog open={open} onClose={handleClose}>
-        <form onSubmit={handleSubmit}>
-          <DialogTitle>Add a new collection</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              value={dialogValue.key}
-              onChange={(event) =>
-                setDialogValue({
-                  ...dialogValue,
-                  key: event.target.value,
-                })
-              }
-              label="title"
-              type="text"
-              variant="standard"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Add</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </div>
   );
 };
 
