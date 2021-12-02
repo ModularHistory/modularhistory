@@ -814,12 +814,83 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
-    - name: Checkout repository
+    - name: Check out main branch
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Specify Docker Compose version
+      run: |
+        echo ""
+        echo "Installed version: $(docker compose version)"
+        version=2.2.1
+        docker compose version | grep --quiet "$version" || {
+          echo "Installing Docker Compose version $version ..."
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          echo "Installed version: $(docker compose version)"
+        }
+    - name: Configure Docker Compose
+      shell: bash
+      run: |
+        echo "Configuring Docker Compose..."
+        if [[ -f docker-compose.test.yml ]]; then
+          echo "Using docker-compose.test.yml for default overrides..."
+          cp docker-compose.test.yml docker-compose.override.yml
+        fi
+        echo "Done."
+    - name: Add hosts to /etc/hosts
+      shell: bash
+      run: |
+        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
+        echo "Updating hosts file..."
+        for host in "${hosts[@]}"; do
+          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
+        done
+        echo "Done."
+    - name: Install PyInvoke config
+      run: |
+        sudo cp config/invoke.yaml /etc/invoke.yaml
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.3
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment (A)
+      id: venv-test
+      continue-on-error: true
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: bash config/scripts/install-deps.sh
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
+    - name: Create .env file
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
+        poetry run invoke setup.write-dotenv-file --environment=test
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
         languages: ${{ matrix.language }}
+        setup-python-dependencies: false
     - name: Autobuild
       uses: github/codeql-action/autobuild@v1
     - name: Perform CodeQL Analysis
