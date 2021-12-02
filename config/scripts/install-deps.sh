@@ -57,11 +57,13 @@ if [[ "$IN_VENV" = 0 ]]; then
   _error "
     Failed to create and/or activate virtual environment.
 
+    Python version: $(python --version) (expected: $PYTHON_VERSION)
+
     IN_VENV: $IN_VENV
-    
+
     $(pwd)
 
-    $(ls)
+    $(ls -a)
   "
 else
   echo "$VIRTUAL_ENV" | grep -q "$(pwd)" || {
