@@ -278,7 +278,6 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        python-version: ${{ matrix.python-version }}
         environment: test
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
