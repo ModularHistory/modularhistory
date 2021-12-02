@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source "functions.sh"
+echo "Sourcing functions from $(dirname "$0")/functions.sh ..."
+source "$(dirname $0)/functions.sh"
 
 # Detect operating system.
 os_name=$(uname -s)
