@@ -66,6 +66,7 @@ if [[ "$IN_VENV" = 0 ]]; then
     Python version: $(python --version) (expected: $PYTHON_VERSION)
 
     IN_VENV: $IN_VENV
+    VIRTUAL_ENV: $VIRTUAL_ENV
 
     $(pwd)
 
