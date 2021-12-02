@@ -1,5 +1,15 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+NC='\033[0m'  # No Color
+MAC_OS="MacOS"
+
+function _print_red() {
+  # Print a message with red text.
+  # shellcheck disable=SC2059
+  printf "${RED}$1${NC}\n"
+}
+
 # Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
@@ -34,6 +44,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
 poetry install --no-root || {
+  echo ""
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')

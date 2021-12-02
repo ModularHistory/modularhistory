@@ -11,13 +11,6 @@ BOLD=$(tput bold)
 MAC_OS="MacOS"
 LINUX="Linux"
 
-function _append() {
-  grep -qxF "$1" "$2" || {
-    echo "Appending the following line to $2:" && echo "  $1"
-    echo "$1" >> "$2"
-  }
-}
-
 function _print_red() {
   # Print a message with red text.
   # shellcheck disable=SC2059
@@ -27,6 +20,13 @@ function _print_red() {
 function _error() {
   # Print a message with red text and exit the script with an error status (1).
   _print_red "$1" >&2; exit 1
+}
+
+function _append() {
+  grep -qxF "$1" "$2" || {
+    echo "Appending the following line to $2:" && echo "  $1"
+    echo "$1" >> "$2"
+  }
 }
 
 # Detect operating system.
