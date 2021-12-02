@@ -125,11 +125,11 @@ jobs:
       run: bash config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: invoke debug
+      run: poetry run invoke debug
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        invoke setup.write-dotenv-file --environment=dev
+        poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
