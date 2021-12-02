@@ -43,7 +43,11 @@ fi
   python -m venv .venv
   poetry env use "$HOME/.pyenv/versions/$PYTHON_VERSION/bin/python" &>/dev/null
 }
+[[ -d .venv ]] || {
+  _error "Could not create .venv in $(pwd)."
+}
 
+# Activate the virtual environment.
 echo "Activating virtual environment ..."
 set a
 # shellcheck disable=SC1091
