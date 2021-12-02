@@ -289,7 +289,7 @@ class ModelSerializer(ModeratedModelSerializer):
         fields = ['pk']
 
 
-class TypedModelSerializerMixin(ModelSerializer):
+class TypedModelSerializerMixin(serializers.ModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
     type = serializers.CharField(required=True)
