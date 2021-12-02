@@ -1,5 +1,9 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from ..documents import instant_search_documents_map
 from .filters.elastic_filters import ModulesSearchFilterBackend
 from .filters.post_resolve_filters import ApplyMetaFilterBackend, SortByFilterBackend
 from .filters.pre_resolve_filters import PreResolveFilterBackend
@@ -38,3 +42,34 @@ class ElasticSearchResultsAPIView(ListAPIView):
         self.search = Search()
 
         return self.search
+
+
+class InstantSearchApiView(APIView):
+    """API view used by search-as-you-type fields."""
+
+    def get(self, request):
+        query = request.query_params.get(QUERY_PARAM) or request.data.get(QUERY_PARAM, '')
+        model = request.query_params.get('model') or request.data.get('model')
+        filters = request.data.get('filters', {})
+
+        if model not in instant_search_documents_map:
+            raise ValidationError(
+                f'Invalid instant search model, must be one of: {", ".join(instant_search_documents_map.keys())}'
+            )
+        if not isinstance(filters, dict):
+            raise ValidationError(f'Invalid filters, must be a key-valued object')
+
+        if len(query) == 0:
+            return Response([])
+
+        document = instant_search_documents_map[model]
+        search = document.search()
+
+        if filters:
+            search = search.filter('term', **filters)
+
+        results = search.query(
+            'multi_match', query=query, fields=document.search_fields
+        ).source(document.search_fields)
+
+        return Response([{'id': result.meta.id} | result.to_dict() for result in results])
