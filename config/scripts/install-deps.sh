@@ -82,17 +82,20 @@ if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
 fi
 echo "Virtual environment activated."
 
-# Install project dependencies.
 echo ""
 echo "Installing dependencies ..."
+
 # Install system dependencies.
 if [[ "$os" == "$MAC_OS" ]]; then
   brew install graphviz
 else
   sudo apt-get install -y graphviz graphviz-dev
 fi
+
 # Upgrade pip.
 pip install --upgrade pip
+
+# Install project dependencies.
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
   # shellcheck disable=SC2155
