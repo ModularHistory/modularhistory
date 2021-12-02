@@ -1,8 +1,8 @@
 #!/bin/bash
 
 RED='\033[0;31m'
-NC='\033[0m'  # No Color
-BOLD=$(tput bold)
+NC='\033[0m'  # Reset
+BOLD='\033[1m'
 MAC_OS="MacOS"
 LINUX="Linux"
 
