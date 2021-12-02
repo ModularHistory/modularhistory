@@ -24,7 +24,7 @@ class SourceFileBase64Field(Base64FileField):
         return guessed_extension
 
 
-class SourceFileDrfSerializer(ModelSerializer):
+class SourceFileSerializer(ModelSerializer):
     """Serializer for sources files."""
 
     file = SourceFileBase64Field()

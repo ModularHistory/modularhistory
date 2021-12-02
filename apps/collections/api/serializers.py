@@ -10,7 +10,7 @@ from apps.sources.models.source import Source
 from core.models.serializers import SluggedModelSerializer
 
 
-class CollectionDrfSerializer(SluggedModelSerializer):
+class CollectionSerializer(SluggedModelSerializer):
     """Serializer for collection."""
 
     propositions_serialized = PropositionSerializer(
