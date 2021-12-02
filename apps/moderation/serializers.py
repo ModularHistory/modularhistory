@@ -1,5 +1,8 @@
+from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.python import Serializer
 from rest_framework import serializers
+
+from core.fields import HTMLField
 
 common_instant_search_fields = {
     'attributees': {'model': 'entities.entity'},
@@ -53,9 +56,17 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                     'help_text': getattr(field, 'help_text', None),
                     'choices': self.get_choices_for_field(field, field_name),
                 }
+
                 instant_search_field = self.get_instant_search_field(field_name)
                 if instant_search_field:
                     data.update({'instant_search': instant_search_field})
+
+                try:
+                    if isinstance(self.Meta.model._meta.get_field(field_name), HTMLField):
+                        data.update({'is_html': True})
+                except FieldDoesNotExist:
+                    pass
+
                 fields.append(data)
         return fields
 
