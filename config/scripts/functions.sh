@@ -1,10 +1,17 @@
 #!/bin/bash
 
+set -a
+
 RED='\033[0;31m'
 NC='\033[0m'  # Reset
 BOLD='\033[1m'
 MAC_OS="MacOS"
 LINUX="Linux"
+
+PYTHON_VERSION="3.9.5"
+export PYTHON_VERSION
+
+unset a
 
 function _print_red() {
   # Print a message with red text.

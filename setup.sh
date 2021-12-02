@@ -1,10 +1,14 @@
 #!/bin/bash
 
+set -a
+
 PYTHON_VERSION="3.9.5"
 export PYTHON_VERSION
 
 PROJECT_DIR=$(dirname "$0")
 export PROJECT_DIR
+
+unset a
 
 VOLUMES_DIR="$PROJECT_DIR/_volumes"
 
