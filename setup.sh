@@ -5,22 +5,12 @@ PYTHON_VERSION="3.9.5"
 PROJECT_DIR=$(dirname "$0")
 VOLUMES_DIR="$PROJECT_DIR/_volumes"
 
-RED='\033[0;31m'
-NC='\033[0m'  # No Color
-BOLD=$(tput bold)
-MAC_OS="MacOS"
-LINUX="Linux"
+# Enter the project.
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+echo "Working in $(pwd) ..."
 
-function _print_red() {
-  # Print a message with red text.
-  # shellcheck disable=SC2059
-  printf "${RED}$1${NC}\n"
-}
-
-function _error() {
-  # Print a message with red text and exit the script with an error status (1).
-  _print_red "$1" >&2; exit 1
-}
+# Import functions like _print_error.
+source "config/scripts/functions.sh"
 
 function _append() {
   grep -qxF "$1" "$2" || {
@@ -119,10 +109,6 @@ fi
 
 echo "Detected $os."
 zsh_profile="$HOME/.zshrc"
-
-# Enter the project
-cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
-echo "Working in $(pwd) ..."
 
 # Create shell profiles if they don't already exist.
 touch "$bash_profile"

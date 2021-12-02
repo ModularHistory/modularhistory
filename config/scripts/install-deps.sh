@@ -1,23 +1,15 @@
 #!/bin/bash
 
-RED='\033[0;31m'
-NC='\033[0m'  # No Color
-MAC_OS="MacOS"
-
-function _print_red() {
-  # Print a message with red text.
-  # shellcheck disable=SC2059
-  printf "${RED}$1${NC}\n"
-}
+source "functions.sh"
 
 # Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
-  os='MacOS'
+  os="$MAC_OS"
 elif [[ "$os_name" == Linux* ]]; then
-  os='Linux'
+  os="$LINUX"
 elif [[ "$os_name" == Windows* ]]; then
-  os='Windows'
+  os="$WINDOWS"
   # Exit without error:
   _print_red "
     This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
