@@ -32,6 +32,7 @@ export interface Image extends SearchableModule {
   width: number;
   height: number;
   captionHtml: string;
+  altText: string;
   providerString: string;
   description: string;
   bgImgPosition: string;
