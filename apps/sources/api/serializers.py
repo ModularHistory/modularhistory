@@ -73,7 +73,7 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'location',
             'attributee_html',
             'related_entities',
-            'attributees',
+            'attributions',
             'containment_html',
             'source_containments',
             'file',
