@@ -110,9 +110,12 @@ class WebpagesApiTest(ModerationApiTest):
             'original_edition': self.verified_model.id,
             'location': self.location_ids[0],
             'website': self.website_ids[0],
-            'attributees': self.attributee_ids[:2],
             'related_entities': self.entity_ids[:2],
             'tags': self.topic_ids[:2],
+            'attributions': [
+                {'attributee': attributee_id, 'position': position}
+                for position, attributee_id in enumerate(self.attributee_ids[:2])
+            ],
             'source_containments': [
                 {
                     'container': self.verified_container_id,
@@ -135,9 +138,12 @@ class WebpagesApiTest(ModerationApiTest):
             'original_edition': self.verified_container_id,
             'location': self.location_ids[1],
             'website': self.website_ids[1],
-            'attributees': self.attributee_ids[1:],
             'related_entities': self.entity_ids[1:],
             'tags': self.topic_ids[1:],
+            'attributions': [
+                {'attributee': attributee_id, 'position': position}
+                for position, attributee_id in enumerate(self.attributee_ids[1:])
+            ],
             'source_containments': [
                 {
                     'container': self.verified_container_id,
