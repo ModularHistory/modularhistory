@@ -1,6 +1,6 @@
+import BigAnchor from "@/components/BigAnchor";
 import { SerpModule } from "@/types/modules";
 import { Grid } from "@mui/material";
-import Link from "next/link";
 import { FC } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
 
@@ -14,11 +14,9 @@ const TodayInHistory: FC<TodayInHistoryProps> = ({ modules }: TodayInHistoryProp
       {modules.length ? (
         modules.map((module, index) => (
           <Grid item key={index}>
-            <Link href={module.absoluteUrl}>
-              <a>
-                <ModuleUnionCard module={module} />
-              </a>
-            </Link>
+            <BigAnchor href={module.absoluteUrl}>
+              <ModuleUnionCard module={module} />
+            </BigAnchor>
           </Grid>
         ))
       ) : (
