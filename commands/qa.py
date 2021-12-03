@@ -35,7 +35,12 @@ def lint(context: 'Context', files: str = '**/*.py', mypy: bool = True):
 
 
 @command
-def test(context: 'Context', docker: bool = True, fail_fast: bool = False):
+def test(
+    context: 'Context',
+    docker: bool = True,
+    fail_fast: bool = False,
+    coverage: bool = False,
+):
     """Run tests."""
     pytest_args = [
         '-v',
@@ -45,9 +50,12 @@ def test(context: 'Context', docker: bool = True, fail_fast: bool = False):
     ]
     if fail_fast:
         pytest_args.append('-x')
-    command = f'coverage run -m pytest {" ".join(pytest_args)}'
+    command = f'pytest {" ".join(pytest_args)}'
+    if coverage:
+        command = f'coverage run -m {command}'
     print(command)
     if docker:
         context.run('docker compose up -d webserver')
     context.run(command)
-    context.run('coverage combine')
+    if coverage:
+        context.run('coverage combine')
