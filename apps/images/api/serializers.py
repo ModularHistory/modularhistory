@@ -41,12 +41,13 @@ class ImageSerializer(MediaModelSerializer):
     class Meta(MediaModelSerializer.Meta):
         model = Image
         fields = MediaModelSerializer.Meta.fields + [
-            'provider_string',
             'image',
             'image_type',
             'src_url',
+            'alt_text',
             'width',
             'height',
+            'provider_string',
             'bg_img_position',
             'urls',
         ]

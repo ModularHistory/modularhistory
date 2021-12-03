@@ -87,6 +87,12 @@ class Image(MediaModel):
         help_text='Not yet fully implemented.',
     )
 
+    alt_text = models.CharField(
+        verbose_name=_('alt text'),
+        max_length=255,
+        blank=True,
+    )
+
     tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
