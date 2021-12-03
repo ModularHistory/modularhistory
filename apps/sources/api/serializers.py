@@ -24,6 +24,7 @@ class SourceAttributionSerializer(ModelSerializer):
         fields = ModelSerializer.Meta.fields + [
             # 'source',  # TODO
             'attributee',
+            'position',
         ]
 
 
@@ -54,7 +55,7 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
     date = HistoricDateTimeField(write_only=True, required=True)
     end_date = HistoricDateTimeField(write_only=True, required=False)
 
-    attributions = SourceAttributionSerializer(many=True)
+    attributions = SourceAttributionSerializer(many=True, required=False)
     source_containments = SourceContainmentSerializer(many=True, required=False)
 
     file_serialized = SourceFileSerializer(read_only=True, source='file')
@@ -85,12 +86,6 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
-            'attributees': {
-                'write_only': True,
-                'required': False,
-                'read_only': False,
-                'queryset': Entity.objects.all(),
-            },
             'related_entities': {
                 'write_only': True,
                 'required': False,
