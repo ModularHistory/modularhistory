@@ -27,7 +27,6 @@ const _BigAnchor: FC<HTMLProps<HTMLAnchorElement> & { ref?: ForwardedRef<HTMLAnc
   });
 
 const BigAnchor = styled(_BigAnchor)({
-  margin: 2,
   "&:hover": {
     backgroundColor: "rgba(0,0,0,0.1)",
   },
