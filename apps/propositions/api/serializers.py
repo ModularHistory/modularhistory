@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.images.models import Image
+from apps.moderation.serializers import ModeratedModelSerializer
 from apps.propositions.models import Argument, Citation, Occurrence, Proposition
 from apps.sources.api.serializers import CitationSerializerMixin
 from core.models.model import ModelSerializer
@@ -63,7 +64,7 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
         }
 
 
-class ArgumentSerializer(UniqueFieldsMixin, ModelSerializer):
+class ArgumentSerializer(UniqueFieldsMixin, ModeratedModelSerializer):
     """Serializer for arguments."""
 
     instant_search_fields = {
@@ -84,7 +85,7 @@ class ArgumentSerializer(UniqueFieldsMixin, ModelSerializer):
 
     class Meta:
         model = Argument
-        fields = ModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'conclusion',
             'position',
             'type',
