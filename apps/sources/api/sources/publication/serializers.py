@@ -38,6 +38,10 @@ class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
             'model': 'sources.source',
             'filters': {'model_name': 'sources.webpage'},
         },
+        'website': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.website'},
+        },
     }
 
     date = HistoricDateTimeField(write_only=True, required=False)

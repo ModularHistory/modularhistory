@@ -20,6 +20,8 @@ from core.models.serializers import ModuleSerializer, SerializableField
 class SourceAttributionSerializer(ModeratedModelSerializer):
     """Serializer for source attributions."""
 
+    instant_search_fields = {'attributee': {'model': 'entities.entity'}}
+
     class Meta(ModeratedModelSerializer.Meta):
         model = SourceAttribution
         fields = ModeratedModelSerializer.Meta.fields + [
@@ -132,6 +134,12 @@ class PageNumbersSerializerMixin(TextualSerializerMixin):
 
 class DocumentSerializerMixin(PageNumbersSerializerMixin):
     """DocumentMixin serializer."""
+
+    instant_search_fields = {
+        'collection': {
+            'model': 'sources.collection',
+        },
+    }
 
     collection_serialized = CollectionSerializer(read_only=True, source='collection')
 

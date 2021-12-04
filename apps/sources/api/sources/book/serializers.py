@@ -37,6 +37,13 @@ class BookSerializer(_BookSerializer):
 class SectionSerializer(SourceSerializer):
     """Serializer for book section sources."""
 
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'work': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.book'},
+        },
+    }
+
     class Meta(SourceSerializer.Meta):
         model = Section
         fields = SourceSerializer.Meta.fields + ['type', 'work']

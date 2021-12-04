@@ -25,6 +25,10 @@ class CategorySerializer(ModeratedModelSerializer):
 class CategorizationSerializer(ModeratedModelSerializer):
     """Serializer for Entity-Category relationship."""
 
+    instant_search_fields = {
+        'category': {'model': 'entities.category'},
+    }
+
     category_serialized = CategorySerializer(read_only=True, source='category')
     start_date_serialized = serializers.SerializerMethodField('get_serialized_start_date')
     end_date_serialized = serializers.SerializerMethodField('get_serialized_end_date')

@@ -262,6 +262,8 @@ class ExtendedModel(Model):
 class ModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
 
+    model = serializers.SerializerMethodField()
+
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
         requested_fields = kwargs.pop('fields', set())
@@ -284,7 +286,7 @@ class ModelSerializer(serializers.ModelSerializer):
         return get_model_name(instance)
 
     class Meta:
-        fields = ['pk']
+        fields = ['model', 'pk']
 
 
 class TypedModelSerializerMixin(serializers.ModelSerializer):

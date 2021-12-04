@@ -1,7 +1,6 @@
 from apps.moderation.serializers import ModeratedModelSerializer
 from apps.places.api.serializers import PlaceSerializer
 from apps.sources.models import Collection, Repository
-from core.models.model import ModelSerializer
 
 
 class RepositorySerializer(ModeratedModelSerializer):
@@ -21,6 +20,12 @@ class RepositorySerializer(ModeratedModelSerializer):
 
 class CollectionSerializer(ModeratedModelSerializer):
     """Serializer for document collections."""
+
+    instant_search_fields = {
+        'repository': {
+            'model': 'sources.repository',
+        },
+    }
 
     repository_serialized = RepositorySerializer(read_only=True, source='repository')
 
