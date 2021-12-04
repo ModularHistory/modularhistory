@@ -28,3 +28,11 @@ class ContentContribution(models.Model):
 
     def __str__(self) -> str:
         return f'Contribution by {self.contributor} to {self.change} ({self.date_created})'
+
+
+@classmethod
+def get_serializer(self):
+    """Return the serializer for ContentContribution"""
+    from apps.moderation.api.serializers import ContentContributionSerializer
+
+    return ContentContributionSerializer

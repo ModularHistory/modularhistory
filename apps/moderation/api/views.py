@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.moderation.models import ContentContribution
+from apps.moderation.api.serializers import ContentContributionSerializer
+from apps.moderation.models.contribution import ContentContribution
 
 
 class ContentContributionAPIView(APIView):
@@ -11,4 +12,4 @@ class ContentContributionAPIView(APIView):
         """Return the contents contributed"""
         results = ContentContribution.objects.filter(contributor=request.user)
 
-        return Response([result.serialize() for result in results])
+        return Response([ContentContributionSerializer(result).data for result in results])

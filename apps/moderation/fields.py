@@ -11,12 +11,19 @@ from apps.moderation.serializers import PythonSerializer
 SerializedModel = list[dict]
 
 
+class SerializerJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        if hasattr(obj, 'serialize'):
+            return obj.serialize()
+        return super().default(obj)
+
+
 class SerializedObjectField(JSONField):
     """Model field for storing a serialized model instance."""
 
     def __init__(self, *args, **kwargs):
         """Construct the field."""
-        kwargs['encoder'] = JSONEncoder
+        kwargs['encoder'] = SerializerJSONEncoder
         kwargs['editable'] = False
         super().__init__(*args, **kwargs)
 
