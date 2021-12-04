@@ -286,7 +286,7 @@ class ModelSerializer(serializers.ModelSerializer):
         return get_model_name(instance)
 
     class Meta:
-        fields = ['model', 'pk']
+        fields = ['pk', 'model']
 
 
 class TypedModelSerializerMixin(serializers.ModelSerializer):
