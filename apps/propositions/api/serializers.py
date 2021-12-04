@@ -66,6 +66,18 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
 class ArgumentSerializer(UniqueFieldsMixin, ModelSerializer):
     """Serializer for arguments."""
 
+    instant_search_fields = {
+        'conclusion': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'propositions.conclusion',
+            },
+        },
+        'premises': {
+            'model': 'propositions.proposition',
+        },
+    }
+
     premises_serialized = _PropositionSerializer(
         many=True, read_only=True, source='premises.all'
     )

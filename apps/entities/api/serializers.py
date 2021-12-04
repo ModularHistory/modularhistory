@@ -50,6 +50,23 @@ class EntitySerializer(TypedModuleSerializer):
     )
     timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
 
+    # TODO: Birth/Death fields should not be actually instant search fields since each birth/death proposition can be used once
+    #       we might be able to use extra_kwargs to filter unused birth/death fields
+    instant_search_fields = {
+        'birth': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'propositions.birth',
+            },
+        },
+        'death': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'propositions.death',
+            },
+        },
+    }
+
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
         return serialize_date(instance.birth_date)
