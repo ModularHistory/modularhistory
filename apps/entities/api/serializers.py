@@ -126,14 +126,14 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
             'birth': {
                 'write_only': True,
                 'read_only': False,
-                'queryset': Birth.objects.all().exclude(
+                'queryset': Birth.objects.exclude(
                     pk__in=Entity.objects.filter(birth__isnull=False).values('birth')
                 ),
             },
             'death': {
                 'write_only': True,
                 'read_only': False,
-                'queryset': Death.objects.all().exclude(
+                'queryset': Death.objects.exclude(
                     pk__in=Entity.objects.filter(death__isnull=False).values('death')
                 ),
             },
