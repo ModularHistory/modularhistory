@@ -7,7 +7,6 @@ from apps.entities.models import Categorization, Category
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
 from apps.moderation.serializers import ModeratedModelSerializer
-from core.models.model import ModelSerializer
 from core.models.serializers import TypedModuleSerializer
 
 
@@ -18,7 +17,7 @@ class CategorySerializer(ModeratedModelSerializer):
 
     class Meta(ModeratedModelSerializer.Meta):
         model = Category
-        fields = [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'name',
         ]
 
@@ -40,7 +39,7 @@ class CategorizationSerializer(ModeratedModelSerializer):
 
     class Meta(ModeratedModelSerializer.Meta):
         model = Categorization
-        fields = [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'category',
             'category_serialized',
             'date',

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ListSerializer
 
 from core.fields import HTMLField
+from core.models.model import ModelSerializer
 
 common_instant_search_fields = {
     'attributees': {'model': 'entities.entity'},
@@ -14,7 +15,7 @@ common_instant_search_fields = {
 }
 
 
-class ModeratedModelSerializer(serializers.ModelSerializer):
+class ModeratedModelSerializer(ModelSerializer):
     excluded_moderated_fields = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
     instant_search_fields = {}
@@ -89,7 +90,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                 fields.append(data)
         return fields
 
-    class Meta:
+    class Meta(ModelSerializer.Meta):
         pass
 
 
