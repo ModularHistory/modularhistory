@@ -7,6 +7,7 @@ from apps.entities.models import Categorization, Category
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
 from apps.moderation.serializers import ModeratedModelSerializer
+from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.occurrence import Birth, Death
 from core.models.serializers import TypedModuleSerializer
 
@@ -76,6 +77,10 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     death_date_serialized = serializers.SerializerMethodField(
         'get_serialized_death_date', read_only=True
     )
+
+    birth_serialized = OccurrenceSerializer(read_only=True, source='birth')
+    death_serialized = OccurrenceSerializer(read_only=True, source='death')
+
     timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
 
     def get_serialized_birth_date(self, instance: 'Entity'):
@@ -102,6 +107,8 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
             'death_date_serialized',
             'birth',
             'death',
+            'birth_serialized',
+            'death_serialized',
             'images',
             'cached_images',
             'primary_image',
@@ -117,11 +124,15 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
             },
             # each birth/death proposition can be only used once, so filter out used ones
             'birth': {
+                'write_only': True,
+                'read_only': False,
                 'queryset': Birth.objects.all().exclude(
                     pk__in=Entity.objects.filter(birth__isnull=False).values('birth')
                 ),
             },
             'death': {
+                'write_only': True,
+                'read_only': False,
                 'queryset': Death.objects.all().exclude(
                     pk__in=Entity.objects.filter(death__isnull=False).values('death')
                 ),
