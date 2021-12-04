@@ -292,6 +292,7 @@ class ModelSerializer(ModeratedModelSerializer):
 class TypedModelSerializerMixin(serializers.ModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
+    type_field_name = 'type'
     type = serializers.CharField(required=True)
 
     def get_type_field_choices(self, field):

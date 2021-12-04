@@ -19,6 +19,10 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
 
     instant_search_fields = {}
 
+    # Child classes can override this to type field name and return choices via #get_type_field_choices
+    # could be improved in the future to support multiple types
+    type_field_name: str = None
+
     def get_instant_search_fields(self) -> dict:
         return common_instant_search_fields | self.instant_search_fields
 
@@ -31,9 +35,17 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
             return field_info
         return None
 
+    def get_type_field_choices(self, field):
+        """
+        Return a list of choices for the type field.
+        """
+        return None
+
     def get_choices_for_field(self, field, field_name: str):
         if field_name in self.get_instant_search_fields():
             return None
+        if self.type_field_name and field_name == self.type_field_name:
+            return self.get_type_field_choices(field)
         return getattr(field, 'choices', None)
 
     def get_moderated_fields(self) -> list[dict]:
@@ -51,8 +63,8 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                     'name': field_name,
                     'type': field.__class__.__name__,
                     'editable': not getattr(field, 'read_only', False),
-                    'required': not getattr(field, 'required', False),
-                    'allow_blank': not getattr(field, 'allow_blank', False),
+                    'required': getattr(field, 'required', False),
+                    'allow_blank': getattr(field, 'allow_blank', False),
                     'verbose_name': getattr(field, 'verbose_name', None),
                     'help_text': getattr(field, 'help_text', None),
                     'choices': self.get_choices_for_field(field, field_name),
