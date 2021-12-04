@@ -2,7 +2,7 @@
 
 import pytest
 
-from apps.entities.factories import EntityFactory
+from apps.entities.factories import CategoryFactory, EntityFactory
 from apps.entities.models import Entity
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
@@ -23,6 +23,7 @@ class EntitiesApiTest(ModerationApiTest):
         entity: Entity = EntityFactory.create()
         self.images = [ImageFactory.create().id for _ in range(4)]
         self.tags = [TopicFactory.create().id for _ in range(4)]
+        self.category_ids = [CategoryFactory.create().id for _ in range(4)]
         entity.images.set(shuffled_copy(self.images, size=2))
         entity.tags.set(shuffled_copy(self.tags, size=2))
         self.verified_model = entity
@@ -40,6 +41,14 @@ class EntitiesApiTest(ModerationApiTest):
             'death_date': '2066-06-06 05:03:02',
             'images': self.images[:2],
             'tags': self.tags[:2],
+            'categorizations': [
+                {
+                    'category': category_id,
+                    'date': '0001-01-01 01:01:20.086200',
+                    'end_date': '2066-06-06 05:03:02',
+                }
+                for category_id in self.category_ids[:2]
+            ],
         }
 
     @pytest.fixture()
@@ -55,4 +64,12 @@ class EntitiesApiTest(ModerationApiTest):
             'death_date': '2066-06-06 05:03:02',
             'images': self.images[1:],
             'tags': self.tags[1:],
+            'categorizations': [
+                {
+                    'category': category_id,
+                    'date': '0001-01-01 01:01:20.086200',
+                    'end_date': '2066-06-06 05:03:02',
+                }
+                for category_id in self.category_ids[1:]
+            ],
         }

@@ -1,24 +1,34 @@
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.dates.structures import serialize_date
+from apps.entities.models import Categorization, Category
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
+from apps.moderation.serializers import ModeratedModelSerializer
+from core.models.model import ModelSerializer
 from core.models.serializers import TypedModuleSerializer
 
 
-class CategorySerializer(serializers.Serializer):
+class CategorySerializer(ModeratedModelSerializer):
     """Serializer for Entity Categories."""
 
     name = serializers.ReadOnlyField()
 
+    class Meta(ModeratedModelSerializer.Meta):
+        model = Category
+        fields = [
+            'name',
+        ]
 
-class CategorizationSerializer(serializers.Serializer):
+
+class CategorizationSerializer(ModeratedModelSerializer):
     """Serializer for Entity-Category relationship."""
 
-    category = CategorySerializer()
-    start_date = serializers.SerializerMethodField('get_serialized_start_date')
-    end_date = serializers.SerializerMethodField('get_serialized_end_date')
+    category_serialized = CategorySerializer(read_only=True, source='category')
+    start_date_serialized = serializers.SerializerMethodField('get_serialized_start_date')
+    end_date_serialized = serializers.SerializerMethodField('get_serialized_end_date')
 
     def get_serialized_start_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -28,16 +38,30 @@ class CategorizationSerializer(serializers.Serializer):
         """Return the entity's death date, serialized."""
         return instance.end_date.serialize() if instance.end_date else None
 
+    class Meta(ModeratedModelSerializer.Meta):
+        model = Categorization
+        fields = [
+            'category',
+            'category_serialized',
+            'date',
+            'end_date',
+            'start_date_serialized',
+            'end_date_serialized',
+        ]
+        extra_kwargs = {
+            'category': {'write_only': True},
+            'date': {'write_only': True},
+            'end_date': {'write_only': True},
+        }
 
-class EntitySerializer(TypedModuleSerializer):
+
+class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     """Serializer for entities.
     TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
     """
 
     description = serializers.CharField(required=False)
-    categorizations = CategorizationSerializer(
-        many=True, required=False, source='categorizations.all'
-    )
+    categorizations = CategorizationSerializer(many=True, required=False)
 
     # write only versions are not rendered to output
     birth_date = HistoricDateTimeField(write_only=True, required=False)
