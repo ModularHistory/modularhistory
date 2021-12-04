@@ -12,9 +12,15 @@ if TYPE_CHECKING:
 class OccurrenceManager(SearchableManager):
     """Manager for occurrences."""
 
+    type_filter = 'propositions.occurrence'
+
+    def __init__(self, type_filter: str = 'propositions.occurrence'):
+        self.type_filter = type_filter
+        super().__init__()
+
     def get_queryset(self) -> 'QuerySet[Occurrence]':
         """Return the propositions of type `propositions.occurrence`."""
-        return super().get_queryset().filter(type='propositions.occurrence')
+        return super().get_queryset().filter(type=self.type_filter)
 
 
 class Occurrence(Proposition):
@@ -46,12 +52,16 @@ class Occurrence(Proposition):
 class Birth(Occurrence):
     """A birth of an entity."""
 
+    objects = OccurrenceManager('propositions.birth')
+
     class Meta:
         proxy = True
 
 
 class Death(Occurrence):
     """A death of an entity."""
+
+    objects = OccurrenceManager('propositions.death')
 
     class Meta:
         proxy = True
@@ -60,12 +70,16 @@ class Death(Occurrence):
 class Publication(Occurrence):
     """A publication of a source."""
 
+    objects = OccurrenceManager('propositions.publication')
+
     class Meta:
         proxy = True
 
 
 class Speech(Occurrence):
     """A speech."""
+
+    objects = OccurrenceManager('speech')
 
     class Meta:
         proxy = True

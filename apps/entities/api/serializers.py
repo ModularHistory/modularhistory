@@ -7,6 +7,7 @@ from apps.entities.models import Categorization, Category
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
 from apps.moderation.serializers import ModeratedModelSerializer
+from apps.propositions.models.occurrence import Birth, Death
 from core.models.serializers import TypedModuleSerializer
 
 
@@ -77,23 +78,6 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     )
     timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
 
-    # TODO: Birth/Death fields should not be actually instant search fields since each birth/death proposition can be used once
-    #       we might be able to use extra_kwargs to filter unused birth/death fields
-    instant_search_fields = {
-        'birth': {
-            'model': 'propositions.proposition',
-            'filters': {
-                'type': 'propositions.birth',
-            },
-        },
-        'death': {
-            'model': 'propositions.proposition',
-            'filters': {
-                'type': 'propositions.death',
-            },
-        },
-    }
-
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
         return serialize_date(instance.birth_date)
@@ -130,5 +114,16 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
                 'required': False,
                 'read_only': False,
                 'queryset': Image.objects.all(),
+            },
+            # each birth/death proposition can be only used once, so filter out used ones
+            'birth': {
+                'queryset': Birth.objects.all().exclude(
+                    pk__in=Entity.objects.filter(birth__isnull=False).values('birth')
+                ),
+            },
+            'death': {
+                'queryset': Death.objects.all().exclude(
+                    pk__in=Entity.objects.filter(death__isnull=False).values('death')
+                ),
             },
         }

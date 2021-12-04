@@ -9,6 +9,10 @@ from .moderated_serializers import MODERATED_SERIALIZERS as serializers
 
 @pytest.mark.django_db()
 class TestModeratedSerializers:
+
+    # allow these fields to have choices instead of instant search
+    instant_search_field_exceptions = ['birth', 'death']
+
     @classmethod
     def _test_moderated_fields(cls, fields, serializer):
         for field in fields:
@@ -26,11 +30,10 @@ class TestModeratedSerializers:
         if field_type in ['PrimaryKeyRelatedField', 'ManyRelatedField']:
             choices = field['choices']
 
-            # we might have exceptions to this rule in the future
-            assert choices is None, 'Relation field has choices, expecting instant field'
-
-            if choices is None:
+            if field['name'] not in cls.instant_search_field_exceptions:
+                assert choices is None, 'Relation field has choices, expecting instant field'
                 cls._test_moderated_relation_instant_search_field(field)
+
         elif field_type == 'ListSerializer':
             child_fields = field['child_fields']
             assert child_fields, 'ListSerializer field has no child fields'
