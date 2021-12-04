@@ -58,11 +58,12 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
         field: serializers.Field
 
         for field_name, field in self.get_fields().items():
-            if field_name not in self.excluded_moderated_fields:
+            is_editable = not getattr(field, 'read_only', False)
+            if is_editable and field_name not in self.excluded_moderated_fields:
                 data = {
                     'name': field_name,
                     'type': field.__class__.__name__,
-                    'editable': not getattr(field, 'read_only', False),
+                    'editable': True,  # TODO: remove after front-end code is updated
                     'required': getattr(field, 'required', False),
                     'allow_blank': getattr(field, 'allow_blank', False),
                     'verbose_name': getattr(field, 'verbose_name', None),
