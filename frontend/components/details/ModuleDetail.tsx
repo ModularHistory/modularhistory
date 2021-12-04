@@ -1,5 +1,6 @@
 import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { ModuleUnion } from "@/types/modules";
+import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import { useSession } from "next-auth/client";
 import { FC } from "react";
 import EntityDetail from "../entities/EntityDetail";
@@ -74,6 +75,21 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
           <i className="fa fa-edit" />
         </a>
       )}
+      <div
+        className="bookmark"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <BookmarksIcon
+          style={{
+            fontSize: "25px",
+          }}
+        />
+        <span>&nbsp;Save</span>
+      </div>
       {details}
     </div>
   );
