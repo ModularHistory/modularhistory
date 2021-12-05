@@ -7,12 +7,13 @@ import pytest
 from apps.images.factories import ImageFactory
 from apps.moderation.api.tests import ModerationApiTest, shuffled_copy
 from apps.occurrences.factories import OccurrenceFactory
+from apps.propositions.factories import ArgumentFactory, PropositionFactory
 from apps.topics.factories import TopicFactory
 from apps.topics.models import Topic
 from apps.users.factories import UserFactory
 
 if TYPE_CHECKING:
-    from apps.propositions.models import Occurrence
+    from apps.propositions.models import Argument, Occurrence
     from apps.users.models import User
 
 
@@ -29,10 +30,13 @@ class OccurrencesApiTest(ModerationApiTest):
         occurrence: 'Occurrence' = OccurrenceFactory.create()
         self.image_ids: list[int] = [ImageFactory.create().id for _ in range(4)]
         self.topic_ids: list[int] = [TopicFactory.create().id for _ in range(4)]
+        self.arguments: list[Argument] = [ArgumentFactory.create() for _ in range(4)]
+        self.premise_ids: list[int] = [PropositionFactory.create().id for _ in range(2)]
         for topic_id in self.topic_ids:
             assert Topic.objects.filter(id=topic_id).exists()
         occurrence.images.set(shuffled_copy(self.image_ids, size=2))
         occurrence.tags.set(shuffled_copy(self.topic_ids, size=2))
+        occurrence.arguments.set(shuffled_copy(self.arguments, size=2))
         self.verified_model = occurrence
 
     @pytest.fixture()
@@ -65,4 +69,20 @@ class OccurrencesApiTest(ModerationApiTest):
             'end_date': '2001-01-01T01:05:20',
             'images': self.image_ids[1:],
             'tags': self.topic_ids[1:],
+            # 'arguments': [
+            #     {
+            #         'type': 1,
+            #         'conclusion': self.verified_model.id,
+            #         'position': position,
+            #         'explanation': 'Some explanation',
+            #         # 'premises': [premise_id],
+            #         '_supports': [
+            #             {
+            #                 'premise': premise_id,
+            #                 'position': position,
+            #             }
+            #         ],
+            #     }
+            #     for position, premise_id in enumerate(self.premise_ids)
+            # ],
         }
