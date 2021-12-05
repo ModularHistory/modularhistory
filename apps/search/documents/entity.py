@@ -1,10 +1,10 @@
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
+from apps.entities.models import Category
 from apps.entities.models.entity import Entity
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 
-from ...entities.models import Category
 from .base import Document, InstantSearchDocumentFactory
 
 
