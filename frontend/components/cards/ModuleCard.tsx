@@ -148,7 +148,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
   }
   return (
     <StyledCard
-      className={`m-2 ${className || ""}`}
+      className={`${className || ""}`}
       sx={style}
       data-type={module.model}
       data-testid={"moduleCard"}
