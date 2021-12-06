@@ -2,7 +2,7 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
-from apps.sources.models import Publication, SourceFile
+from apps.sources.models import Collection, Publication, Repository, SourceFile, Website
 from apps.sources.models.source import Source
 
 from .base import Document, InstantSearchDocumentFactory
@@ -37,9 +37,7 @@ SourceInstantSearchDocument = InstantSearchDocumentFactory(
     search_fields=['name'],  # TODO: should we keep mapping fields to 'name'?
     filter_fields=['model_name'],
     field_kwargs={
-        'name': {
-            'attr': 'citation_string'
-        },  # TODO: decide if want to use other fields like title instead of citation_string
+        'name': {'attr': 'citation_string'},
     },
 )
 
@@ -49,4 +47,16 @@ SourcePublicationInstantSearchDocument = InstantSearchDocumentFactory(
 
 SourceFileInstantSearchDocument = InstantSearchDocumentFactory(
     model=SourceFile, search_fields=['name']
+)
+
+SourceDocumentCollectionInstantSearchDocument = InstantSearchDocumentFactory(
+    model=Collection, search_fields=['name']
+)
+
+SourceDocumentRepositoryInstantSearchDocument = InstantSearchDocumentFactory(
+    model=Repository, search_fields=['name']
+)
+
+SourceWebsiteInstantSearchDocument = InstantSearchDocumentFactory(
+    model=Website, search_fields=['name']
 )

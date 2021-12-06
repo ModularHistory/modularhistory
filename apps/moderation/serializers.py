@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ListSerializer
 
 from core.fields import HTMLField
+from core.models.model import ModelSerializer
 
 common_instant_search_fields = {
     'attributees': {'model': 'entities.entity'},
@@ -14,10 +15,14 @@ common_instant_search_fields = {
 }
 
 
-class ModeratedModelSerializer(serializers.ModelSerializer):
+class ModeratedModelSerializer(ModelSerializer):
     excluded_moderated_fields = ['id', 'meta', 'admin_url', 'absolute_url', 'cached_tags']
 
     instant_search_fields = {}
+
+    # Child classes can override this to type field name and return choices via #get_type_field_choices
+    # could be improved in the future to support multiple types
+    type_field_name: str = None
 
     def get_instant_search_fields(self) -> dict:
         return common_instant_search_fields | self.instant_search_fields
@@ -31,9 +36,17 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
             return field_info
         return None
 
+    def get_type_field_choices(self, field):
+        """
+        Return a list of choices for the type field.
+        """
+        return None
+
     def get_choices_for_field(self, field, field_name: str):
         if field_name in self.get_instant_search_fields():
             return None
+        if self.type_field_name and field_name == self.type_field_name:
+            return self.get_type_field_choices(field)
         return getattr(field, 'choices', None)
 
     def get_moderated_fields(self) -> list[dict]:
@@ -46,11 +59,12 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
         field: serializers.Field
 
         for field_name, field in self.get_fields().items():
-            if field_name not in self.excluded_moderated_fields:
+            is_editable = not getattr(field, 'read_only', False)
+            if is_editable and field_name not in self.excluded_moderated_fields:
                 data = {
                     'name': field_name,
                     'type': field.__class__.__name__,
-                    'editable': not getattr(field, 'read_only', False),
+                    'editable': True,  # TODO: remove after front-end code is updated
                     'required': getattr(field, 'required', False),
                     'allow_blank': getattr(field, 'allow_blank', False),
                     'verbose_name': getattr(field, 'verbose_name', None),
@@ -76,7 +90,7 @@ class ModeratedModelSerializer(serializers.ModelSerializer):
                 fields.append(data)
         return fields
 
-    class Meta:
+    class Meta(ModelSerializer.Meta):
         pass
 
 

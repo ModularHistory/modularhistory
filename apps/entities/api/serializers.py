@@ -1,24 +1,39 @@
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.dates.structures import serialize_date
+from apps.entities.models import Categorization, Category
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
+from apps.moderation.serializers import ModeratedModelSerializer
+from apps.propositions.api.serializers import OccurrenceSerializer
+from apps.propositions.models.occurrence import Birth, Death
 from core.models.serializers import TypedModuleSerializer
 
 
-class CategorySerializer(serializers.Serializer):
+class CategorySerializer(ModeratedModelSerializer):
     """Serializer for Entity Categories."""
 
     name = serializers.ReadOnlyField()
 
+    class Meta(ModeratedModelSerializer.Meta):
+        model = Category
+        fields = ModeratedModelSerializer.Meta.fields + [
+            'name',
+        ]
 
-class CategorizationSerializer(serializers.Serializer):
+
+class CategorizationSerializer(ModeratedModelSerializer):
     """Serializer for Entity-Category relationship."""
 
-    category = CategorySerializer()
-    start_date = serializers.SerializerMethodField('get_serialized_start_date')
-    end_date = serializers.SerializerMethodField('get_serialized_end_date')
+    instant_search_fields = {
+        'category': {'model': 'entities.category'},
+    }
+
+    category_serialized = CategorySerializer(read_only=True, source='category')
+    start_date_serialized = serializers.SerializerMethodField('get_serialized_start_date')
+    end_date_serialized = serializers.SerializerMethodField('get_serialized_end_date')
 
     def get_serialized_start_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -28,16 +43,30 @@ class CategorizationSerializer(serializers.Serializer):
         """Return the entity's death date, serialized."""
         return instance.end_date.serialize() if instance.end_date else None
 
+    class Meta(ModeratedModelSerializer.Meta):
+        model = Categorization
+        fields = ModeratedModelSerializer.Meta.fields + [
+            'category',
+            'category_serialized',
+            'date',
+            'end_date',
+            'start_date_serialized',
+            'end_date_serialized',
+        ]
+        extra_kwargs = {
+            'category': {'write_only': True},
+            'date': {'write_only': True},
+            'end_date': {'write_only': True},
+        }
 
-class EntitySerializer(TypedModuleSerializer):
+
+class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     """Serializer for entities.
     TODO: need to validate birth/date is correctly typed occurrence (propositions.Birth/Death) and need to serialize if needed
     """
 
     description = serializers.CharField(required=False)
-    categorizations = CategorizationSerializer(
-        many=True, required=False, source='categorizations.all'
-    )
+    categorizations = CategorizationSerializer(many=True, required=False)
 
     # write only versions are not rendered to output
     birth_date = HistoricDateTimeField(write_only=True, required=False)
@@ -48,6 +77,10 @@ class EntitySerializer(TypedModuleSerializer):
     death_date_serialized = serializers.SerializerMethodField(
         'get_serialized_death_date', read_only=True
     )
+
+    birth_serialized = OccurrenceSerializer(read_only=True, source='birth')
+    death_serialized = OccurrenceSerializer(read_only=True, source='death')
+
     timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
 
     def get_serialized_birth_date(self, instance: 'Entity'):
@@ -74,6 +107,8 @@ class EntitySerializer(TypedModuleSerializer):
             'death_date_serialized',
             'birth',
             'death',
+            'birth_serialized',
+            'death_serialized',
             'images',
             'cached_images',
             'primary_image',
@@ -86,5 +121,20 @@ class EntitySerializer(TypedModuleSerializer):
                 'required': False,
                 'read_only': False,
                 'queryset': Image.objects.all(),
+            },
+            # each birth/death proposition can be only used once, so filter out used ones
+            'birth': {
+                'write_only': True,
+                'read_only': False,
+                'queryset': Birth.objects.exclude(
+                    pk__in=Entity.objects.filter(birth__isnull=False).values('birth')
+                ),
+            },
+            'death': {
+                'write_only': True,
+                'read_only': False,
+                'queryset': Death.objects.exclude(
+                    pk__in=Entity.objects.filter(death__isnull=False).values('death')
+                ),
             },
         }

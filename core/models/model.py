@@ -15,7 +15,6 @@ from django.utils.safestring import SafeString
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
-from apps.moderation.serializers import ModeratedModelSerializer
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.models import get_html_for_view as get_html_for_view_
@@ -260,9 +259,10 @@ class ExtendedModel(Model):
         return placeholder
 
 
-# TODO: Ideally, ModeratedModelSerializer should inherit from ModelSerializer, not vice versa.
-class ModelSerializer(ModeratedModelSerializer):
+class ModelSerializer(serializers.ModelSerializer):
     """Base serializer for ModularHistory's models."""
+
+    model = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -285,13 +285,14 @@ class ModelSerializer(ModeratedModelSerializer):
         """Return the model name of the instance."""
         return get_model_name(instance)
 
-    class Meta(ModeratedModelSerializer.Meta):
-        fields = ['pk']
+    class Meta:
+        fields = ['pk', 'model']
 
 
 class TypedModelSerializerMixin(serializers.ModelSerializer):
     """Base serializer for ModularHistory's typed models."""
 
+    type_field_name = 'type'
     type = serializers.CharField(required=True)
 
     def get_type_field_choices(self, field):

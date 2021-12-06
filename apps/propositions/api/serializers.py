@@ -4,7 +4,14 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.images.models import Image
-from apps.propositions.models import Argument, Citation, Occurrence, Proposition
+from apps.moderation.serializers import ModeratedModelSerializer
+from apps.propositions.models import (
+    Argument,
+    ArgumentSupport,
+    Citation,
+    Occurrence,
+    Proposition,
+)
 from apps.sources.api.serializers import CitationSerializerMixin
 from core.models.model import ModelSerializer
 from core.models.serializers import TypedModuleSerializer
@@ -63,31 +70,52 @@ class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerialize
         }
 
 
-class ArgumentSerializer(UniqueFieldsMixin, ModelSerializer):
+class ArgumentSupportSerializer(ModeratedModelSerializer):
+    """Serializer for argument supports."""
+
+    instant_search_fields = {
+        'premise': {
+            'model': 'propositions.proposition',
+        },
+    }
+
+    class Meta(ModeratedModelSerializer.Meta):
+        model = ArgumentSupport
+        fields = ModeratedModelSerializer.Meta.fields + [
+            # 'argument',
+            'premise',
+            'position',
+        ]
+        # TODO: needs ['argument', 'premise'], ['position', 'argument'] unique_together validators
+
+
+class ArgumentSerializer(WritableNestedModelSerializer, ModeratedModelSerializer):
     """Serializer for arguments."""
 
-    premises_serialized = _PropositionSerializer(
-        many=True, read_only=True, source='premises.all'
-    )
+    instant_search_fields = {
+        'conclusion': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'propositions.conclusion',
+            },
+        },
+        # 'premises': {
+        #     'model': 'propositions.proposition',
+        # },
+    }
 
-    class Meta:
+    _supports = ArgumentSupportSerializer(many=True, required=False)
+
+    class Meta(ModeratedModelSerializer.Meta):
         model = Argument
-        fields = ModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'conclusion',
             'position',
             'type',
             'explanation',
-            'premises',
-            'premises_serialized',
+            # 'premises',
+            '_supports',
         ]
-        extra_kwargs = {
-            'premises': {
-                'write_only': True,
-                'required': False,
-                'read_only': False,
-                'queryset': Proposition.objects.all(),
-            }
-        }
         validators = [
             UniqueTogetherValidator(
                 queryset=Argument.objects.all(),

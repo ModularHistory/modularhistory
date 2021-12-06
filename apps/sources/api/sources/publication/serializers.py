@@ -2,6 +2,7 @@ from drf_writable_nested import UniqueFieldsMixin
 from rest_framework import serializers
 
 from apps.dates.api.fields import HistoricDateTimeField
+from apps.moderation.serializers import ModeratedModelSerializer
 from apps.sources.api.serializers import SourceSerializer, TextualSerializerMixin
 from apps.sources.models import Webpage, Website
 from apps.sources.models.publication import AbstractPublication, Publication
@@ -18,12 +19,13 @@ class PublicationMixinSerializer(serializers.ModelSerializer):
 
 class PublicationSerializer(
     UniqueFieldsMixin,
+    ModeratedModelSerializer,
     TypedModelSerializer,
     PublicationMixinSerializer,
 ):
     """Serializer for publication sources."""
 
-    class Meta(SourceSerializer.Meta):
+    class Meta(PublicationMixinSerializer.Meta):
         model = Publication
         fields = TypedModelSerializer.Meta.fields + PublicationMixinSerializer.Meta.fields
 
@@ -35,6 +37,10 @@ class _WebpageSerializer(SourceSerializer, TextualSerializerMixin):
         'original_edition': {
             'model': 'sources.source',
             'filters': {'model_name': 'sources.webpage'},
+        },
+        'website': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.website'},
         },
     }
 
@@ -67,7 +73,7 @@ class WebpageSerializer(_WebpageSerializer):
     )
 
 
-class WebsiteSerializer(ModelSerializer, PublicationMixinSerializer):
+class WebsiteSerializer(ModeratedModelSerializer, PublicationMixinSerializer):
     """Serializer for website sources."""
 
     class Meta:
