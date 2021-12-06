@@ -3,11 +3,11 @@ import { FC } from "react";
 import TextField from "../forms/StyledTextField";
 
 interface YearSelectProps {
-  label: string;
-  defaultYearValue: string;
-  defaultTypeValue: string;
-  onYearChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
+  label?: string;
+  defaultYearValue?: string;
+  defaultTypeValue?: string;
+  onYearChange?: (value: string) => void;
+  onTypeChange?: (value: string) => void;
   disabled?: boolean;
 }
 
@@ -24,21 +24,21 @@ const YearSelect: FC<YearSelectProps> = ({
   disabled,
 }: YearSelectProps) => {
   return (
-    <>
+    <Grid container item>
       <Grid item xs={6}>
         <TextField
           label={label}
           type={"number"}
           inputProps={{ min: 1 }}
           defaultValue={defaultYearValue}
-          onChange={(e) => onYearChange(e.target.value)}
+          onChange={(e) => onYearChange?.(e.target.value)}
           disabled={disabled}
         />
       </Grid>
       <Grid item xs={6}>
         <TextField
           select
-          onChange={(e) => onTypeChange(e.target.value)}
+          onChange={(e) => onTypeChange?.(e.target.value)}
           defaultValue={defaultTypeValue ?? "CE"}
           disabled={disabled}
         >
@@ -49,7 +49,7 @@ const YearSelect: FC<YearSelectProps> = ({
           ))}
         </TextField>
       </Grid>
-    </>
+    </Grid>
   );
 };
 

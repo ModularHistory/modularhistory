@@ -5,6 +5,7 @@ const sharedRules = {
   "no-unused-vars": "off",
   "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "react/react-in-jsx-scope": ["off"],
+  // "react/jsx-curly-brace-presence": ["warn", { props: "always", children: "always" }],
   "@typescript-eslint/no-explicit-any": "off",
   "@typescript-eslint/explicit-module-boundary-types": "off",
 };

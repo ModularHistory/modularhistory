@@ -1,6 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { InstantSearch } from "@/components/search/InstantSearch";
+import YearSelect from "@/components/search/YearSelect";
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -11,6 +13,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  TextFieldProps,
 } from "@mui/material";
 import { FC, useContext, useEffect, useState } from "react";
 import PageTransitionContext from "../PageTransitionContext";
@@ -70,20 +73,20 @@ interface DynamicFormFieldsProps {
   contentType: string;
 }
 
-interface DField {
+interface Field {
   name: string;
   type:
     | "CharField"
     | "ManyRelatedField"
     | "ListField"
-    | "HistoricDateTimeDrfField"
+    | "HistoricDateTimeField"
     | "PrimaryKeyRelatedField";
   editable: boolean;
   required: boolean;
-  allowBlank: boolean;
+  allowBlank: boolean | null;
   verboseName: string | null;
   helpText: string | null;
-  choices: Record<string, any> | null;
+  choices: Record<string, string> | null;
   style: Record<string, any>;
   instantSearch?: {
     model: string;
@@ -94,16 +97,23 @@ interface DField {
 //Dynamic fields form
 //Can be called using the DynamicForm component or by using the DynamicFormFields prop and specifying the 'type' prop
 const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicFormFieldsProps) => {
-  const [formData, setFormData] = useState<DField[]>([]);
+  const [fields, setFields] = useState<{ required: Field[]; optional: Field[] }>({
+    required: [],
+    optional: [],
+  });
 
-  const getDynamicFields = (contentType: string): Promise<DField[]> =>
+  const getDynamicFields = (contentType: string): Promise<Field[]> =>
     axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => response.data);
 
   const isLoading = useContext(PageTransitionContext);
 
   useEffect(() => {
     getDynamicFields(contentType).then((result) => {
-      setFormData(result.filter((field) => field.editable));
+      const editableFields = result.filter((field) => field.editable);
+      setFields({
+        required: editableFields.filter((field) => field.required),
+        optional: editableFields.filter((field) => !field.required),
+      });
     });
   }, [contentType]);
 
@@ -111,9 +121,6 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
   //   return obj.editable;
   // };
   //
-  const createDisplayName = (str: string) => {
-    return str.replace(/_/g, " ");
-  };
   //
   // const createChoiceValue = (str: string) => {
   //   return str.replace(/<.*?>/g, "");
@@ -121,55 +128,98 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
 
   return (
     <>
-      <Box component={"pre"} maxWidth={"80vw"}>
-        {JSON.stringify(formData, null, 4)}
-      </Box>
-      <Grid container spacing={1}>
-        {formData
-          .map((field) => {
-            if (field.instantSearch) {
-              return (
-                <InstantSearch
-                  label={field.name}
-                  getDataForInput={(input) =>
-                    axiosWithoutAuth
-                      .get(`/api/search/instant/`, {
-                        params: { model: field.instantSearch?.model, query: input },
-                      })
-                      .then(({ data }) => data)
-                  }
-                  labelKey={"name"}
-                />
-              );
-            }
-            switch (field.type) {
-              case "CharField":
-                return (
-                  <TextField
-                    label={createDisplayName(field.name)}
-                    variant="outlined"
-                    helperText={field.helpText}
-                    required={field.required}
-                    sx={{ minWidth: "5rem" }}
-                    multiline
-                  />
-                );
-              default:
-                return null;
-            }
-          })
-          .map((field, index) => (
-            <Grid item key={index}>
-              {field}
-            </Grid>
-          ))}
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Divider textAlign={"left"} sx={{ mb: 2 }}>
+            <b>Required</b>
+          </Divider>
+        </Grid>
+        {fields.required.map((field, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <DynamicField field={field} />
+          </Grid>
+        ))}
+        <Grid item xs={12}>
+          <Divider textAlign={"left"} sx={{ mb: 2 }}>
+            <b>Optional</b>
+          </Divider>
+        </Grid>
+        {fields.optional.map((field, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <DynamicField field={field} />
+          </Grid>
+        ))}
       </Grid>
       <p>* = required field</p>
       <Button variant="contained" sx={{ m: "1rem" }} type="submit">
         Submit
       </Button>
+      <Box component={"pre"} maxWidth={"80vw"}>
+        {JSON.stringify(fields, null, 4)}
+      </Box>
     </>
   );
+};
+
+const DynamicField: FC<{ field: Field }> = ({ field }) => {
+  const commonProps: TextFieldProps = {
+    required: field.required && !(field.type === "CharField" && field.allowBlank),
+    label: createDisplayName(field.name),
+    helperText: field.helpText,
+    variant: "outlined",
+    fullWidth: true,
+  };
+  if (field.instantSearch) {
+    return (
+      <InstantSearch
+        label={field.name}
+        getDataForInput={(input) =>
+          axiosWithoutAuth
+            .get(`/api/search/instant/`, {
+              params: { model: field.instantSearch?.model, query: input },
+            })
+            .then(({ data }) => data)
+        }
+        labelKey={"name"}
+        multiple={field.type === "ManyRelatedField"}
+      />
+    );
+  }
+  switch (field.type) {
+    case "CharField":
+      return <TextField {...commonProps} sx={{ minWidth: "5rem" }} multiline />;
+    case "ListField":
+      return (
+        <Autocomplete
+          multiple
+          id="tags-filled"
+          freeSolo
+          options={[]}
+          renderInput={(params) => <TextField {...params} {...commonProps} />}
+        />
+      );
+    case "PrimaryKeyRelatedField":
+      return (
+        <TextField {...commonProps} select sx={{ minWidth: "5rem" }}>
+          {Object.entries(field.choices ?? {}).map(([id, choice]) => (
+            <MenuItem value={id} key={id}>
+              <span dangerouslySetInnerHTML={{ __html: choice }} />
+            </MenuItem>
+          ))}
+        </TextField>
+      );
+    case "HistoricDateTimeField":
+      return <YearSelect />;
+    default:
+      ((field: never) => {
+        console.error(`Unexpected field type encountered: ${field}`);
+      })(field);
+      return <p>Unrendered: {field.name}</p>;
+  }
+};
+
+const createDisplayName = (str: string) => {
+  return str.replace(/_/g, " ");
 };
 
 export default DynamicForm;

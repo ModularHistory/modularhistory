@@ -1,20 +1,20 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
+import DynamicForm from "@/components/forms/DynamicForm";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory, { TodayInHistoryProps } from "@/components/TodayInHistory";
 import { SerpModule } from "@/types/modules";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, CardHeader, Divider, Grid, Link } from "@mui/material";
+import { Box, Button, CardHeader, Divider, Grid, GridProps, Link } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { SxProps } from "@mui/system";
 import axios from "axios";
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { FC, MouseEventHandler, ReactNode, useRef } from "react";
+import { FC, MouseEventHandler, useRef } from "react";
 
 const StyledCard = styled(Card)({
   padding: "1rem",
@@ -33,20 +33,13 @@ const StyledCardHeader: FC<{ title: string }> = ({ title }) => (
   />
 );
 
-interface GridItemProps {
-  children: ReactNode;
-  sx?: SxProps;
-}
-
 interface HomePageProps {
   featuredModules: SerpModule[];
   todayInHistoryModules: SerpModule[];
 }
 
-const GridItem: FC<GridItemProps> = ({ children, sx }: GridItemProps) => (
-  <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" sx={sx}>
-    {children}
-  </Grid>
+const GridItem: FC<GridProps> = (props: GridProps) => (
+  <Grid item md={12} lg={"auto"} alignItems="center" justifyContent="center" {...props} />
 );
 
 const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: HomePageProps) => {
@@ -94,6 +87,9 @@ const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: Hom
   return (
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
+        <GridItem sx={{ overflowX: "scroll" }} lg={undefined} md={undefined}>
+          <DynamicForm />
+        </GridItem>
         <GridItem>
           <StyledCard raised sx={{ maxWidth: { lg: "50rem" } }}>
             <StyledCardHeader title="About ModularHistory" />

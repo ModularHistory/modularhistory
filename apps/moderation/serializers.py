@@ -1,6 +1,7 @@
 from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.python import Serializer
 from rest_framework import serializers
+from rest_framework.fields import CharField
 from rest_framework.serializers import ListSerializer
 
 from core.fields import HTMLField
@@ -66,7 +67,7 @@ class ModeratedModelSerializer(ModelSerializer):
                     'type': field.__class__.__name__,
                     'editable': True,  # TODO: remove after front-end code is updated
                     'required': getattr(field, 'required', False),
-                    'allow_blank': getattr(field, 'allow_blank', False),
+                    'allow_blank': getattr(field, 'allow_blank', False) if isinstance(field, CharField) else None,
                     'verbose_name': getattr(field, 'verbose_name', None),
                     'help_text': getattr(field, 'help_text', None),
                     'choices': self.get_choices_for_field(field, field_name),

@@ -3,8 +3,8 @@ import { FC, ReactElement, useEffect, useState } from "react";
 
 interface HtmlParserProps {
   html: string;
-  filterFunc: CallableFunction;
-  component: FC<any>;
+  filterFunc?: (element: Element) => boolean;
+  component?: FC<any>;
 }
 
 /**
@@ -18,8 +18,8 @@ interface HtmlParserProps {
  */
 const HtmlParser: FC<HtmlParserProps> = ({
   html,
-  filterFunc,
-  component: Component,
+  filterFunc = () => false,
+  component: Component = () => null,
 }: HtmlParserProps) => {
   const [renderedHTML, setRenderedHTML] = useState(() => (
     <div dangerouslySetInnerHTML={{ __html: html }} />
