@@ -1,22 +1,57 @@
+import axiosWithAuth from "@/axiosWithAuth";
 import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { ModuleUnion } from "@/types/modules";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
+import Button from "@mui/material/Button";
 import { useSession } from "next-auth/client";
-import { FC } from "react";
+import { FC, useState } from "react";
 import EntityDetail from "../entities/EntityDetail";
 import ImageDetail from "../images/ImageDetail";
 import OccurrenceDetail from "../propositions/OccurrenceDetail";
 import QuoteDetail from "../quotes/QuoteDetail";
 import SourceDetail from "../sources/SourceDetail";
 import TopicDetail from "../topics/TopicDetail";
-
 interface ModuleDetailProps {
   module: ModuleUnion;
 }
 
+const TYPE_MAP: Record<string, string> = {
+  "entities.entity": "entities",
+  "propositions.proposition": "propositions",
+  "propositions.occurrence": "propositions",
+  "quotes.quote": "quotes",
+  "sources.source": "sources",
+};
+
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   const [session, loading] = useSession();
+  // TODO: We need to make a query to determine if the module is already saved by the user
+  // instead of just initially setting the state to false.
+  const [isSaved, setIsSaved] = useState(false);
   let details;
+
+  const saveCollectionItem = async () => {
+    if (session?.user) {
+      const key: string | undefined = TYPE_MAP[module.model];
+      if (key) {
+        await axiosWithAuth
+          .post("/api/collections/add_items", {
+            data: {
+              [key]: [module.id],
+            },
+          })
+          .then(function (response) {
+            console.log(JSON.stringify(response.data));
+            setIsSaved(true);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    }
+    return null;
+  };
 
   switch (module.model) {
     // TODO: add more models here as soon as they
@@ -75,21 +110,23 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
           <i className="fa fa-edit" />
         </a>
       )}
-      <div
-        className="bookmark"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <BookmarksIcon
-          style={{
-            fontSize: "25px",
-          }}
-        />
+
+      <Button onClick={saveCollectionItem}>
+        {isSaved ? (
+          <BookmarksIcon
+            style={{
+              fontSize: "25px",
+            }}
+          />
+        ) : (
+          <BookmarkBorderIcon
+            style={{
+              fontSize: "25px",
+            }}
+          />
+        )}
         <span>&nbsp;Save</span>
-      </div>
+      </Button>
       {details}
     </div>
   );
