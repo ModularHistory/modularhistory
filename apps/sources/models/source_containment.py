@@ -5,8 +5,8 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
-from apps.sources.serializers import ContainmentSerializer
 from core.models.relations.moderated import ModeratedPositionedRelation
 
 PHRASE_MAX_LENGTH: int = 12
@@ -50,7 +50,12 @@ class SourceContainment(ModeratedPositionedRelation):
     class Meta:
         ordering = ['position', 'source']
 
-    serializer = ContainmentSerializer
+    @classmethod
+    def get_serializer(self) -> Serializer:
+        """Return the serializer for the entity."""
+        from apps.sources.api.serializers import SourceContainmentSerializer
+
+        return SourceContainmentSerializer
 
     def __str__(self) -> str:
         """Return the containment's string representation."""

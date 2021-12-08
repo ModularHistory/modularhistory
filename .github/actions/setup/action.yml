@@ -9,6 +9,10 @@ inputs:
     description: 'Operating system'
     required: false
     default: ubuntu-latest
+  docker-compose-version:
+    description: 'Docker Compose version'
+    required: false
+    default: 2.2.1
   python-version:
     description: 'Python version'
     required: false
@@ -33,13 +37,26 @@ runs:
         fetch-depth: ${{ inputs.fetch-depth }}
     # Set up Python.
     - name: Set up Python ${{ inputs.python-version }}
-      uses: actions/setup-python@v2.2.2
+      uses: actions/setup-python@v2.3.1
       with:
         python-version: ${{ inputs.python-version }}
     - name: Get full Python version
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Set up docker compose
+    - name: Specify Docker Compose version
+      run: |
+        echo ""
+        echo "Installed version: $(docker compose version)"
+        version=${{ inputs.docker-compose-version }}
+        docker compose version | grep --quiet "$version" || {
+          echo "Installing Docker Compose version $version ..."
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          echo "Installed version: $(docker compose version)"
+        }
     # Configure docker compose.
     - name: Configure Docker Compose
       shell: bash
@@ -68,7 +85,7 @@ runs:
     # Install and configure Poetry.
     - name: Install and configure Poetry
       # https://github.com/snok/install-poetry
-      uses: snok/install-poetry@v1.2
+      uses: snok/install-poetry@v1.3
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -88,10 +105,7 @@ runs:
     # Install Python dependencies if necessary.
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: |
-        poetry --version
-        echo "${{ inputs.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
-        poetry install --no-root
+      run: bash config/scripts/install-deps.sh
     # Make sure Poetry environment is healthy after dependencies are installed.
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}

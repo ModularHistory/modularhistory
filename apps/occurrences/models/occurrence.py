@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
+from rest_framework.serializers import Serializer
 
 from apps.dates.models import DatedModel
-from apps.propositions.serializers import OccurrenceSerializer
 from core.models.module import Module, ModuleManager
 
 if TYPE_CHECKING:
@@ -34,7 +34,13 @@ class Occurrence(Module, DatedModel):
         ordering = ['date']
 
     objects = OccurrenceManager()
-    serializer = OccurrenceSerializer
+
+    @classmethod
+    def get_serializer(self) -> type[Serializer]:
+        """Return the serializer for the entity."""
+        from apps.propositions.api.serializers import OccurrenceSerializer
+
+        return OccurrenceSerializer
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""

@@ -32,6 +32,7 @@ export interface Image extends SearchableModule {
   width: number;
   height: number;
   captionHtml: string;
+  altText: string;
   providerString: string;
   description: string;
   bgImgPosition: string;
@@ -94,6 +95,7 @@ export interface Entity extends SearchableModule, ModuleWithImages {
 }
 
 export interface Collection {
+  absoluteUrl: any;
   model: "collections.collection";
   slug: string;
   title: string;

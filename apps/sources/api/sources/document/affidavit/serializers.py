@@ -1,24 +1,35 @@
-from apps.sources.api.serializers import DocumentDrfSerializerMixin, SourceDrfSerializer
+from apps.sources.api.serializers import DocumentSerializerMixin, SourceSerializer
 from apps.sources.models import Affidavit
 
 
-class _AffidavitDrfSerializer(SourceDrfSerializer, DocumentDrfSerializerMixin):
+class _AffidavitSerializer(SourceSerializer, DocumentSerializerMixin):
     """Serializer for affidavit document sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    instant_search_fields = (
+        SourceSerializer.instant_search_fields
+        | DocumentSerializerMixin.instant_search_fields
+        | {
+            'original_edition': {
+                'model': 'sources.source',
+                'filters': {'model_name': 'sources.affidavit'},
+            },
+        }
+    )
+
+    class Meta(SourceSerializer.Meta):
         location_required = True
         model = Affidavit
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + DocumentDrfSerializerMixin.Meta.fields
-            + ['certifier']
+            SourceSerializer.Meta.fields + DocumentSerializerMixin.Meta.fields + ['certifier']
         )
-        extra_kwargs = SourceDrfSerializer.Meta.extra_kwargs | {
+        extra_kwargs = SourceSerializer.Meta.extra_kwargs | {
             'location': {'required': True, 'write_only': True}
         }
 
 
-class AffidavitDrfSerializer(_AffidavitDrfSerializer):
+class AffidavitSerializer(_AffidavitSerializer):
     """Serializer for affidavit document sources."""
 
-    originalEdition = _AffidavitDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _AffidavitSerializer(
+        read_only=True, source='original_edition'
+    )

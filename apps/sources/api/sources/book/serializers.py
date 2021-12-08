@@ -1,15 +1,22 @@
-from apps.sources.api.serializers import SourceDrfSerializer, TextualDrfSerializerMixin
+from apps.sources.api.serializers import SourceSerializer, TextualSerializerMixin
 from apps.sources.models import Book, Section
 
 
-class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
+class _BookSerializer(SourceSerializer, TextualSerializerMixin):
     """Serializer for book sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'original_edition': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.book'},
+        },
+    }
+
+    class Meta(SourceSerializer.Meta):
         model = Book
         fields = (
-            SourceDrfSerializer.Meta.fields
-            + TextualDrfSerializerMixin.Meta.fields
+            SourceSerializer.Meta.fields
+            + TextualSerializerMixin.Meta.fields
             + [
                 'translator',
                 'publisher',
@@ -21,15 +28,22 @@ class _BookDrfSerializer(SourceDrfSerializer, TextualDrfSerializerMixin):
         )
 
 
-class BookDrfSerializer(_BookDrfSerializer):
+class BookSerializer(_BookSerializer):
     """Serializer for book sources."""
 
-    originalEdition = _BookDrfSerializer(read_only=True, source='original_edition')
+    original_edition_serialized = _BookSerializer(read_only=True, source='original_edition')
 
 
-class SectionDrfSerializer(SourceDrfSerializer):
+class SectionSerializer(SourceSerializer):
     """Serializer for book section sources."""
 
-    class Meta(SourceDrfSerializer.Meta):
+    instant_search_fields = SourceSerializer.instant_search_fields | {
+        'work': {
+            'model': 'sources.source',
+            'filters': {'model_name': 'sources.book'},
+        },
+    }
+
+    class Meta(SourceSerializer.Meta):
         model = Section
-        fields = SourceDrfSerializer.Meta.fields + ['type', 'work']
+        fields = SourceSerializer.Meta.fields + ['type', 'work']

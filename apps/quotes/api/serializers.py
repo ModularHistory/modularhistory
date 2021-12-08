@@ -4,18 +4,18 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
-from apps.sources.api.serializers import CitationDrfSerializerMixin
-from core.models.serializers import DrfModuleSerializer
+from apps.sources.api.serializers import CitationSerializerMixin
+from core.models.serializers import ModuleSerializer
 
 
-class CitationDrfSerializer(CitationDrfSerializerMixin):
+class CitationSerializer(CitationSerializerMixin):
     """Serializer for quote citations."""
 
-    class Meta(CitationDrfSerializerMixin.Meta):
+    class Meta(CitationSerializerMixin.Meta):
         model = Citation
         validators = [
             UniqueTogetherValidator(
@@ -25,14 +25,18 @@ class CitationDrfSerializer(CitationDrfSerializerMixin):
         ]
 
 
-class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
+class QuoteSerializer(WritableNestedModelSerializer, ModuleSerializer):
     """Serializer for quotes."""
 
+    instant_search_fields = {
+        'related_quotes': {'model': 'quotes.quote'},
+    }
+
     title = serializers.CharField(required=False, allow_blank=False)
-    citations = CitationDrfSerializer(many=True, write_only=True, required=False)
-    date = HistoricDateTimeDrfField(write_only=True, required=False)
-    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
-    timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')
+    citations = CitationSerializer(many=True, write_only=True, required=False)
+    date = HistoricDateTimeField(write_only=True, required=False)
+    end_date = HistoricDateTimeField(write_only=True, required=False)
+    timeline = TimelinePositionField(read_only=True, required=False, source='date')
 
     def validate_text(self, value):
         if len(value) < TEXT_MIN_LENGTH:
@@ -41,9 +45,9 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             )
         return value
 
-    class Meta(DrfModuleSerializer.Meta):
+    class Meta(ModuleSerializer.Meta):
         model = Quote
-        fields = DrfModuleSerializer.Meta.fields + [
+        fields = ModuleSerializer.Meta.fields + [
             'text',
             'pretext',
             'context',
@@ -64,7 +68,7 @@ class QuoteDrfSerializer(WritableNestedModelSerializer, DrfModuleSerializer):
             'related_entities',
             'timeline',
         ]
-        extra_kwargs = DrfModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = ModuleSerializer.Meta.extra_kwargs | {
             'text': {'write_only': True},
             'pretext': {'write_only': True},
             'context': {'write_only': True},

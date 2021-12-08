@@ -1,19 +1,27 @@
 from drf_writable_nested import UniqueFieldsMixin, WritableNestedModelSerializer
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps.dates.api.fields import HistoricDateTimeDrfField, TimelinePositionDrfField
+from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.images.models import Image
-from apps.propositions.models import Argument, Citation, Occurrence, Proposition
-from apps.sources.api.serializers import CitationDrfSerializerMixin
-from core.models.model import DrfModelSerializer
-from core.models.serializers import DrfTypedModuleSerializer
-from core.models.titled import TitleCaseDrfField
+from apps.moderation.serializers import ModeratedModelSerializer
+from apps.propositions.models import (
+    Argument,
+    ArgumentSupport,
+    Citation,
+    Occurrence,
+    Proposition,
+)
+from apps.sources.api.serializers import CitationSerializerMixin
+from core.models.model import ModelSerializer
+from core.models.serializers import TypedModuleSerializer
+from core.models.titled import TitleCaseField
 
 
-class CitationDrfSerializer(CitationDrfSerializerMixin):
+class CitationSerializer(CitationSerializerMixin):
     """Serializer for proposition citations."""
 
-    class Meta(CitationDrfSerializerMixin.Meta):
+    class Meta(CitationSerializerMixin.Meta):
         model = Citation
         validators = [
             UniqueTogetherValidator(
@@ -23,17 +31,17 @@ class CitationDrfSerializer(CitationDrfSerializerMixin):
         ]
 
 
-class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSerializer):
+class _PropositionSerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     """Serializer for propositions."""
 
-    date = HistoricDateTimeDrfField(write_only=True, required=False)
-    end_date = HistoricDateTimeDrfField(write_only=True, required=False)
-    citations = CitationDrfSerializer(many=True, write_only=True, required=False)
-    timeline = TimelinePositionDrfField(read_only=True, required=False, source='date')
+    date = HistoricDateTimeField(write_only=True, required=False)
+    end_date = HistoricDateTimeField(write_only=True, required=False)
+    citations = CitationSerializer(many=True, write_only=True, required=False)
+    timeline = TimelinePositionField(read_only=True, required=False, source='date')
 
-    class Meta(DrfTypedModuleSerializer.Meta):
+    class Meta(TypedModuleSerializer.Meta):
         model = Proposition
-        fields = DrfTypedModuleSerializer.Meta.fields + [
+        fields = TypedModuleSerializer.Meta.fields + [
             'summary',
             'elaboration',
             'truncated_elaboration',
@@ -48,9 +56,10 @@ class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSer
             'primary_image',
             'cached_images',
             'timeline',
+            'type',
         ]
         read_only_fields = ['truncated_elaboration']
-        extra_kwargs = DrfTypedModuleSerializer.Meta.extra_kwargs | {
+        extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
             'certainty': {'required': False},
             'images': {
                 'write_only': True,
@@ -61,31 +70,52 @@ class _PropositionDrfSerializer(WritableNestedModelSerializer, DrfTypedModuleSer
         }
 
 
-class ArgumentDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
+class ArgumentSupportSerializer(ModeratedModelSerializer):
+    """Serializer for argument supports."""
+
+    instant_search_fields = {
+        'premise': {
+            'model': 'propositions.proposition',
+        },
+    }
+
+    class Meta(ModeratedModelSerializer.Meta):
+        model = ArgumentSupport
+        fields = ModeratedModelSerializer.Meta.fields + [
+            # 'argument',
+            'premise',
+            'position',
+        ]
+        # TODO: needs ['argument', 'premise'], ['position', 'argument'] unique_together validators
+
+
+class ArgumentSerializer(WritableNestedModelSerializer, ModeratedModelSerializer):
     """Serializer for arguments."""
 
-    premises_serialized = _PropositionDrfSerializer(
-        many=True, read_only=True, source='premises.all'
-    )
+    instant_search_fields = {
+        'conclusion': {
+            'model': 'propositions.proposition',
+            'filters': {
+                'type': 'propositions.conclusion',
+            },
+        },
+        # 'premises': {
+        #     'model': 'propositions.proposition',
+        # },
+    }
 
-    class Meta:
+    _supports = ArgumentSupportSerializer(many=True, required=False)
+
+    class Meta(ModeratedModelSerializer.Meta):
         model = Argument
-        fields = DrfModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'conclusion',
             'position',
             'type',
             'explanation',
-            'premises',
-            'premises_serialized',
+            # 'premises',
+            '_supports',
         ]
-        extra_kwargs = {
-            'premises': {
-                'write_only': True,
-                'required': False,
-                'read_only': False,
-                'queryset': Proposition.objects.all(),
-            }
-        }
         validators = [
             UniqueTogetherValidator(
                 queryset=Argument.objects.all(),
@@ -94,22 +124,23 @@ class ArgumentDrfSerializer(UniqueFieldsMixin, DrfModelSerializer):
         ]
 
 
-class PropositionDrfSerializer(_PropositionDrfSerializer):
+class PropositionSerializer(_PropositionSerializer):
     """Serializer for propositions."""
 
-    arguments = ArgumentDrfSerializer(many=True, required=False)
+    arguments = ArgumentSerializer(many=True, required=False)
 
-    class Meta(_PropositionDrfSerializer.Meta):
+    class Meta(_PropositionSerializer.Meta):
         model = Proposition
-        fields = _PropositionDrfSerializer.Meta.fields + ['arguments']
+        fields = _PropositionSerializer.Meta.fields + ['arguments']
 
 
-class OccurrenceDrfSerializer(PropositionDrfSerializer):
+class OccurrenceSerializer(PropositionSerializer):
     """Serializer for occurrences."""
 
-    title = TitleCaseDrfField()
+    title = TitleCaseField()
+    type = serializers.HiddenField(default='propositions.occurrence')
+    allowed_types = ['propositions.occurrence']
 
-    class Meta(PropositionDrfSerializer.Meta):
+    class Meta(PropositionSerializer.Meta):
         model = Occurrence
-        fields = PropositionDrfSerializer.Meta.fields + ['postscript']
-        allowed_types = ['propositions.occurrence']
+        fields = PropositionSerializer.Meta.fields + ['postscript']

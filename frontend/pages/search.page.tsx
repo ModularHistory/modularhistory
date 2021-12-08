@@ -1,3 +1,4 @@
+import BigAnchor from "@/components/BigAnchor";
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
@@ -100,7 +101,6 @@ const EmptySearchResults: FC = () => (
 
 const SearchFilter: FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-
   return (
     <>
       <Drawer
@@ -261,8 +261,9 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
             viewStateRegistry.get(module.absoluteUrl)?.(inView);
           }}
           key={module.absoluteUrl}
+          style={{ marginBottom: "0.5rem" }}
         >
-          <a
+          <BigAnchor
             href={module.absoluteUrl}
             className={`result 2pane-result`}
             key={module.absoluteUrl}
@@ -271,7 +272,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
             ref={modulesWithRefs[index].ref}
           >
             <ModuleUnionCard module={module} />
-          </a>
+          </BigAnchor>
         </InView>
       ))}
     </Box>

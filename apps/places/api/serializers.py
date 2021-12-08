@@ -1,16 +1,15 @@
 """Serializers for the entities app."""
-
-
+from apps.moderation.serializers import ModeratedModelSerializer
 from apps.places.models import Place
-from core.models.model import DrfTypedModelSerializer
+from core.models.model import TypedModelSerializer
 
 
-class PlaceDrfSerializer(DrfTypedModelSerializer):
+class PlaceSerializer(ModeratedModelSerializer, TypedModelSerializer):
     """Serializer for places."""
 
-    class Meta(DrfTypedModelSerializer.Meta):
+    class Meta(TypedModelSerializer.Meta):
         model = Place
-        fields = DrfTypedModelSerializer.Meta.fields + [
+        fields = TypedModelSerializer.Meta.fields + [
             'string',
             'name',
             'preposition',

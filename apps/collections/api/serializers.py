@@ -1,27 +1,26 @@
 from apps.collections.models import Collection
-from apps.entities.api.serializers import EntityDrfSerializer
-from apps.propositions.api.serializers import PropositionDrfSerializer
-from apps.quotes.api.serializers import QuoteDrfSerializer
-from apps.sources.api.serializers import SourceDrfSerializer
-from core.models.serializers import DrfTypedModuleSerializer
+from apps.entities.api.serializers import EntitySerializer
+from apps.propositions.api.serializers import PropositionSerializer
+from apps.quotes.api.serializers import QuoteSerializer
+from apps.sources.api.serializers import SourceSerializer
+from core.models.serializers import SluggedModelSerializer
 
 
-class CollectionDrfSerializer(DrfTypedModuleSerializer):
+class CollectionSerializer(SluggedModelSerializer):
     """Serializer for collection."""
 
-    propositions = PropositionDrfSerializer(many=True)
-    entities = EntityDrfSerializer(many=True)
-    quotes = QuoteDrfSerializer(many=True)
-    sources = SourceDrfSerializer(many=True)
+    propositions = PropositionSerializer(many=True)
+    entities = EntitySerializer(many=True)
+    quotes = QuoteSerializer(many=True)
+    sources = SourceSerializer(many=True)
 
-    class Meta(DrfTypedModuleSerializer.Meta):
+    class Meta(SluggedModelSerializer.Meta):
         model = Collection
-        fields = DrfTypedModuleSerializer.Meta.fields + [
+        fields = SluggedModelSerializer.Meta.fields + [
             'creator',
             'entities',
             'quotes',
             'sources',
             'propositions',
         ]
-        fields.remove('tags')
         read_only_fields = ['truncated_description']

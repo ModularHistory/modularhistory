@@ -1,5 +1,4 @@
 {
-    "version": "0.1",
     "language": "en",
     "words": [
         "abductive",
@@ -39,6 +38,7 @@
         "grappelli",
         "handlify",
         "HMAC",
+        "hoverable",
         "iframe",
         "iglob",
         "Imgur",
@@ -91,7 +91,6 @@
         "RGBA",
         "scrubadub",
         "SERP",
-        "serpy",
         "sessionid",
         "shasum",
         "shopt",

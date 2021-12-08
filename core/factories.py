@@ -8,11 +8,8 @@ if TYPE_CHECKING:
 
 
 class UniqueFaker(factory.Faker):
-    def generate(self, params):
-        print(f'>>>>>> {params=}')
-        locale = params.pop('locale')
+    def evaluate(self, instance, step, extra):
+        locale = extra.pop('locale')
         subfaker: 'Faker' = self._get_faker(locale)
-        unique_proxy: 'UniqueProxy' = subfaker.unique  # has access to attributes of Faker
-        ret = unique_proxy.format(self.provider, **params)
-        print(f'>>>>>> {ret=}')
-        return unique_proxy.format(self.provider, **params)
+        unique_proxy: 'UniqueProxy' = subfaker.unique
+        return unique_proxy.format(self.provider, **extra)
