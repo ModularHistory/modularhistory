@@ -26,7 +26,7 @@ class CollectionEditItemsView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """Apply items to the collection."""
         data = request.data
         sources = data.get('sources', [])

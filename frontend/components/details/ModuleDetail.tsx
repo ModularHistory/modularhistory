@@ -36,7 +36,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
       const key: string | undefined = TYPE_MAP[module.model];
       if (key) {
         await axiosWithAuth
-          .post("/api/collections/add_items", {
+          .post("/api/collections/add_items/", {
             data: {
               [key]: [module.id],
             },
