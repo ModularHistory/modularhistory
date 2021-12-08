@@ -14,6 +14,8 @@ from apps.collections.models import Collection
 if TYPE_CHECKING:
     from rest_framework.request import Request
 
+COLLECTION_MODULE_TYPES = ('sources', 'propositions', 'entities', 'quotes')
+
 
 class CollectionViewSet(ModelViewSet):
     """API endpoint for viewing and editing collections."""
@@ -65,8 +67,7 @@ class CollectionAddItemsView(CollectionEditItemsView):
     """Add items to the collection."""
 
     def apply_items(self, collection: Collection, items: dict):
-        module_types = ('sources', 'propositions', 'entities', 'quotes')
-        for module_type in module_types:
+        for module_type in COLLECTION_MODULE_TYPES:
             try:
                 objects = items.get(module_type, [])
                 if objects:
