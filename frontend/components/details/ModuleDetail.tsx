@@ -5,15 +5,17 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import Button from "@mui/material/Button";
 import { useSession } from "next-auth/client";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import EntityDetail from "../entities/EntityDetail";
 import ImageDetail from "../images/ImageDetail";
 import OccurrenceDetail from "../propositions/OccurrenceDetail";
 import QuoteDetail from "../quotes/QuoteDetail";
 import SourceDetail from "../sources/SourceDetail";
 import TopicDetail from "../topics/TopicDetail";
+
 interface ModuleDetailProps {
   module: ModuleUnion;
+  isSaved?: boolean;
 }
 
 const TYPE_MAP: Record<string, string> = {
@@ -24,23 +26,40 @@ const TYPE_MAP: Record<string, string> = {
   "sources.source": "sources",
 };
 
-const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
+const ModuleDetail: FC<ModuleDetailProps> = ({
+  module,
+  isSaved: isInitiallySaved,
+}: ModuleDetailProps) => {
   const [session, loading] = useSession();
-  // TODO: We need to make a query to determine if the module is already saved by the user
-  // instead of just initially setting the state to false.
-  const [isSaved, setIsSaved] = useState(false);
-  let details;
+  const [isSaved, setIsSaved] = useState(isInitiallySaved ?? false);
+  const moduleTypeKey: string | undefined = TYPE_MAP[module.model];
+
+  useEffect(() => {
+    // Determine whether the module has been saved by the user.
+    if (session?.user) {
+      axiosWithAuth
+        .get(`/api/collections/my-collection/`) // TODO !!!!!!!!!
+        .then((response) => {
+          if (response.data[moduleTypeKey].some((item: ModuleUnion) => item.pk === module.pk)) {
+            setIsSaved(true);
+          }
+          // console.log(response)
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [session, moduleTypeKey, module.pk]);
 
   const saveCollectionItem = async () => {
     if (session?.user) {
-      const key: string | undefined = TYPE_MAP[module.model];
-      if (key) {
+      if (moduleTypeKey) {
+        const requestBody = {
+          [moduleTypeKey]: [module.pk],
+        };
+        console.log("module", module, "requestBody", requestBody);
         await axiosWithAuth
-          .post("/api/collections/add_items/", {
-            data: {
-              [key]: [module.id],
-            },
-          })
+          .post("/api/collections/add_items/", requestBody)
           .then(function (response) {
             console.log(JSON.stringify(response.data));
             setIsSaved(true);
@@ -53,6 +72,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     return null;
   };
 
+  let details;
   switch (module.model) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.

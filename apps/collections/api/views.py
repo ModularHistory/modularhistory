@@ -64,14 +64,15 @@ class CollectionEditItemsView(APIView):
 class CollectionAddItemsView(CollectionEditItemsView):
     """Add items to the collection."""
 
-    def apply_items(self, collection: Collection, items):
-        try:
-            collection.sources.add(*items['sources'])
-            collection.propositions.add(*items['propositions'])
-            collection.entities.add(*items['entities'])
-            collection.quotes.add(*items['quotes'])
-        except IntegrityError:
-            raise ValidationError('Some items were not found in the database')
+    def apply_items(self, collection: Collection, items: dict):
+        module_types = ('sources', 'propositions', 'entities', 'quotes')
+        for module_type in module_types:
+            try:
+                objects = items.get(module_type, [])
+                if objects:
+                    getattr(collection, module_type).add(*objects)
+            except IntegrityError:
+                raise ValidationError(f'Some {module_type} were not found in the database')
 
 
 class CollectionRemoveItemsView(CollectionEditItemsView):
