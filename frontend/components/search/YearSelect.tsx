@@ -1,14 +1,12 @@
-import { Grid, MenuItem } from "@mui/material";
+import { Grid, MenuItem, TextFieldProps } from "@mui/material";
 import { FC } from "react";
 import TextField from "../forms/StyledTextField";
 
-interface YearSelectProps {
-  label?: string;
+interface YearSelectProps extends Pick<TextFieldProps, "label" | "disabled"> {
   defaultYearValue?: string;
   defaultTypeValue?: string;
   onYearChange?: (value: string) => void;
   onTypeChange?: (value: string) => void;
-  disabled?: boolean;
 }
 
 /**

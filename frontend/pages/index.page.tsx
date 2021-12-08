@@ -87,7 +87,7 @@ const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: Hom
   return (
     <Layout>
       <Grid container justifyContent="center" spacing={{ xs: 2, md: 3, lg: 4 }} sx={{ p: 4 }}>
-        <GridItem sx={{ overflowX: "scroll" }} lg={undefined} md={undefined}>
+        <GridItem lg={undefined} md={undefined}>
           <DynamicForm />
         </GridItem>
         <GridItem>

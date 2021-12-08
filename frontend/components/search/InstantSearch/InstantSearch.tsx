@@ -1,13 +1,21 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import axios, { AxiosRequestConfig } from "axios";
-import React, { FC, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { throttle } from "throttle-debounce";
 
 type Option = Record<string, string>;
 
 export interface InstantSearchProps {
-  label: string;
+  label: ReactNode;
   defaultValue?: Option | Option[] | Promise<Option[]>;
   onChange?: (value: string[]) => void;
   getDataForInput: (input: string, config: AxiosRequestConfig) => Option[] | Promise<Option[]>;

@@ -1,4 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import HTMLEditor from "@/components/forms/HTMLEditor";
 import { InstantSearch } from "@/components/search/InstantSearch";
 import YearSelect from "@/components/search/YearSelect";
 import {
@@ -6,6 +7,7 @@ import {
   Box,
   Button,
   Card,
+  CardContent,
   Divider,
   FormControl,
   Grid,
@@ -15,8 +17,7 @@ import {
   TextField,
   TextFieldProps,
 } from "@mui/material";
-import { FC, useContext, useEffect, useState } from "react";
-import PageTransitionContext from "../PageTransitionContext";
+import { FC, useEffect, useState } from "react";
 
 const DynamicForm: FC = () => {
   const [contentType, setContentType] = useState("");
@@ -27,44 +28,46 @@ const DynamicForm: FC = () => {
 
   return (
     <Card raised>
-      <FormControl sx={{ minWidth: "20rem", m: "1rem" }}>
-        <InputLabel id="select-form-type">Type of Content</InputLabel>
-        <Select
-          labelId="select-form-type"
-          id="select-form"
-          value={contentType}
-          label="Type of Content"
-          onChange={handleContentTypeChange}
-        >
-          <MenuItem value={"none"}>
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={"quotes"}>Quote</MenuItem>
-          <MenuItem value={"entities"}>Entity</MenuItem>
-          <MenuItem value={"images"}>Image</MenuItem>
-          <MenuItem value={"occurrences"}>Occurrence</MenuItem>
-          <MenuItem value={"propositions"}>Proposition</MenuItem>
-          <MenuItem value={"topics"}>Topic</MenuItem>
-        </Select>
-      </FormControl>
-      {contentType && contentType != "none" && (
-        <>
-          <Divider sx={{ borderBottomWidth: 2 }} />
-          <Box
-            sx={{
-              flex: "1 1",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "1.5rem 1rem 1.5rem 1rem",
-            }}
+      <CardContent>
+        <FormControl sx={{ minWidth: "20rem", m: "1rem" }}>
+          <InputLabel id="select-form-type">Type of Content</InputLabel>
+          <Select
+            labelId="select-form-type"
+            id="select-form"
+            value={contentType}
+            label="Type of Content"
+            onChange={handleContentTypeChange}
           >
-            <Box>
-              <DynamicFormFields contentType={contentType} />
+            <MenuItem value={"none"}>
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={"quotes"}>Quote</MenuItem>
+            <MenuItem value={"entities"}>Entity</MenuItem>
+            <MenuItem value={"images"}>Image</MenuItem>
+            <MenuItem value={"occurrences"}>Occurrence</MenuItem>
+            <MenuItem value={"propositions"}>Proposition</MenuItem>
+            <MenuItem value={"topics"}>Topic</MenuItem>
+          </Select>
+        </FormControl>
+        {contentType && contentType != "none" && (
+          <>
+            <Divider sx={{ borderBottomWidth: 2 }} />
+            <Box
+              sx={{
+                flex: "1 1",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "1.5rem 1rem 1.5rem 1rem",
+              }}
+            >
+              <Box>
+                <DynamicFormFields contentType={contentType} />
+              </Box>
             </Box>
-          </Box>
-        </>
-      )}
+          </>
+        )}
+      </CardContent>
     </Card>
   );
 };
@@ -76,11 +79,13 @@ interface DynamicFormFieldsProps {
 interface Field {
   name: string;
   type:
-    | "CharField"
+    | "PrimaryKeyRelatedField"
     | "ManyRelatedField"
-    | "ListField"
+    | "CharField"
     | "HistoricDateTimeField"
-    | "PrimaryKeyRelatedField";
+    | "JSONField"
+    | "ListField"
+    | "ListSerializer";
   editable: boolean;
   required: boolean;
   allowBlank: boolean | null;
@@ -88,10 +93,12 @@ interface Field {
   helpText: string | null;
   choices: Record<string, string> | null;
   style: Record<string, any>;
+  isHtml?: boolean;
   instantSearch?: {
     model: string;
     filters: Record<string, any>;
   };
+  childFields?: Field;
 }
 
 //Dynamic fields form
@@ -105,11 +112,9 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
   const getDynamicFields = (contentType: string): Promise<Field[]> =>
     axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => response.data);
 
-  const isLoading = useContext(PageTransitionContext);
-
   useEffect(() => {
     getDynamicFields(contentType).then((result) => {
-      const editableFields = result.filter((field) => field.editable);
+      const editableFields = result.sort((a, b) => Number(a.isHtml ?? 0) - Number(b.isHtml ?? 0));
       setFields({
         required: editableFields.filter((field) => field.required),
         optional: editableFields.filter((field) => !field.required),
@@ -145,7 +150,13 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
           </Divider>
         </Grid>
         {fields.optional.map((field, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Grid
+            item
+            xs={12}
+            sm={field.isHtml ? undefined : 6}
+            md={field.isHtml ? undefined : 4}
+            key={index}
+          >
             <DynamicField field={field} />
           </Grid>
         ))}
@@ -168,11 +179,12 @@ const DynamicField: FC<{ field: Field }> = ({ field }) => {
     helperText: field.helpText,
     variant: "outlined",
     fullWidth: true,
+    sx: { minWidth: "5rem" },
   };
   if (field.instantSearch) {
     return (
       <InstantSearch
-        label={field.name}
+        label={commonProps.label}
         getDataForInput={(input) =>
           axiosWithoutAuth
             .get(`/api/search/instant/`, {
@@ -180,27 +192,28 @@ const DynamicField: FC<{ field: Field }> = ({ field }) => {
             })
             .then(({ data }) => data)
         }
+        // TODO: set labelKey based on indexed fields?
         labelKey={"name"}
         multiple={field.type === "ManyRelatedField"}
       />
     );
+  } else if (field.isHtml) {
+    return <HTMLEditor />;
   }
   switch (field.type) {
     case "CharField":
-      return <TextField {...commonProps} sx={{ minWidth: "5rem" }} multiline />;
-    case "ListField":
-      return (
+      return field.choices ? (
         <Autocomplete
-          multiple
-          id="tags-filled"
-          freeSolo
-          options={[]}
+          options={Object.keys(field.choices)}
+          getOptionLabel={(optionKey) => field.choices?.[optionKey] ?? ""}
           renderInput={(params) => <TextField {...params} {...commonProps} />}
         />
+      ) : (
+        <TextField {...commonProps} multiline />
       );
     case "PrimaryKeyRelatedField":
       return (
-        <TextField {...commonProps} select sx={{ minWidth: "5rem" }}>
+        <TextField {...commonProps} select>
           {Object.entries(field.choices ?? {}).map(([id, choice]) => (
             <MenuItem value={id} key={id}>
               <span dangerouslySetInnerHTML={{ __html: choice }} />
@@ -209,17 +222,28 @@ const DynamicField: FC<{ field: Field }> = ({ field }) => {
         </TextField>
       );
     case "HistoricDateTimeField":
-      return <YearSelect />;
+      return <YearSelect label={commonProps.label} />;
+    case "ListField":
+      return (
+        <Autocomplete
+          multiple
+          freeSolo
+          options={[]}
+          renderInput={(params) => <TextField {...params} {...commonProps} />}
+        />
+      );
+    case "ListSerializer":
+    case "ManyRelatedField":
+    case "JSONField":
     default:
-      ((field: never) => {
-        console.error(`Unexpected field type encountered: ${field}`);
-      })(field);
-      return <p>Unrendered: {field.name}</p>;
+      console.error(`Unexpected field type encountered: ${JSON.stringify(field, null, 2)}`);
+      return <TextField {...commonProps} disabled />;
   }
 };
 
 const createDisplayName = (str: string) => {
-  return str.replace(/_/g, " ");
+  str = str.replace(/_/g, " ");
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 export default DynamicForm;

@@ -1,0 +1,67 @@
+.buttonWrapper {
+  display: inline-block;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fbfbfb;
+  color: #888;
+  font-size: 18px;
+  border: 0;
+  vertical-align: bottom;
+  height: 34px;
+  width: 36px;
+}
+
+.button:hover,
+.button:focus {
+  background: #f3f3f3;
+  outline: 0;
+}
+
+.button svg {
+  fill: #888;
+}
+
+.active {
+  background: #efefef;
+  color: #444;
+}
+
+.active svg {
+  fill: #444;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px 0 rgba(220, 220, 220, 1);
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.toolbar::after {
+  border-color: rgba(255, 255, 255, 0);
+  border-top-color: #fff;
+  border-width: 4px;
+  margin-left: -4px;
+}
+
+.toolbar::before {
+  border-color: rgba(221, 221, 221, 0);
+  border-top-color: #ddd;
+  border-width: 6px;
+  margin-left: -6px;
+}
+
+.separator {
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  height: 24px;
+  margin: 0 0.5em;
+}
