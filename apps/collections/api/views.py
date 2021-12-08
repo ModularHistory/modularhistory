@@ -59,7 +59,7 @@ class CollectionEditItemsView(APIView):
 
         return Response(CollectionSerializer(collection).data)
 
-    def apply_items(self, collection: Collection, items):
+    def apply_items(self, collection: Collection, items: dict):
         raise NotImplementedError
 
 
@@ -79,7 +79,7 @@ class CollectionAddItemsView(CollectionEditItemsView):
 class CollectionRemoveItemsView(CollectionEditItemsView):
     """Remove items from the collection."""
 
-    def apply_items(self, collection: Collection, items):
+    def apply_items(self, collection: Collection, items: dict):
         collection.sources.remove(*items['sources'])
         collection.propositions.remove(*items['propositions'])
         collection.entities.remove(*items['entities'])
