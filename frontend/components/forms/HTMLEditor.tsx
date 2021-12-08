@@ -10,7 +10,7 @@ import {
   UnderlineButton,
   UnorderedListButton,
 } from "@draft-js-plugins/buttons";
-import Editor from "@draft-js-plugins/editor";
+import Editor, { PluginEditorProps } from "@draft-js-plugins/editor";
 import createLinkifyPlugin from "@draft-js-plugins/linkify";
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar";
 import { ToolbarChildrenProps } from "@draft-js-plugins/static-toolbar/lib/components/Toolbar";
@@ -21,10 +21,14 @@ import { ContentState, EditorState, RichUtils } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
 import { stateFromHTML } from "draft-js-import-html";
 import "draft-js/dist/Draft.css";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import toolbarStyles from "./toolbarStyles.module.css";
 
-const HTMLEditor = () => {
+interface HTMLEditorProps extends Omit<PluginEditorProps, "onChange" | "editorState" | "plugins"> {
+  onChange?: (value: string) => void;
+}
+
+const HTMLEditor: FC<HTMLEditorProps> = ({ onChange, ...editorProps }) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [{ plugins, Toolbar }] = useState(() => {
     const toolbarPlugin = createToolbarPlugin({
@@ -42,11 +46,6 @@ const HTMLEditor = () => {
     };
   });
 
-  const editorRef = useRef<any>(null);
-  useEffect(() => {
-    console.log({ editorRef: editorRef.current });
-  }, [editorRef.current]);
-
   return (
     <Box
       display={"flex"}
@@ -55,7 +54,6 @@ const HTMLEditor = () => {
       border={"1px solid #ddd"}
       padding={"16px"}
       borderRadius={"2px"}
-      marginBottom={"2em"}
       boxShadow={"inset 0px 1px 8px -3px #ABABAB"}
       bgcolor={"#FEFEFE"}
       sx={{
@@ -72,10 +70,13 @@ const HTMLEditor = () => {
       }}
     >
       <Editor
+        {...editorProps}
         editorState={editorState}
-        onChange={setEditorState}
+        onChange={(editorState) => {
+          setEditorState(editorState);
+          onChange?.(stateToHTML(editorState.getCurrentContent()));
+        }}
         plugins={plugins}
-        ref={editorRef}
       />
       <Box mb={2}>
         <Toolbar>
@@ -156,7 +157,6 @@ const HeadlinesPicker: FC<ToolbarChildrenProps> = (props) => {
       window.removeEventListener("click", handleWindowClick);
     };
   }, [props]);
-  console.log("render");
 
   const buttons = [HeadlineOneButton, HeadlineTwoButton, HeadlineThreeButton];
 

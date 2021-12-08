@@ -11,13 +11,14 @@ import {
   Divider,
   FormControl,
   Grid,
+  GridProps,
   InputLabel,
   MenuItem,
   Select,
   TextField,
   TextFieldProps,
 } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 const DynamicForm: FC = () => {
   const [contentType, setContentType] = useState("");
@@ -98,7 +99,7 @@ interface Field {
     model: string;
     filters: Record<string, any>;
   };
-  childFields?: Field;
+  childFields?: Field[];
 }
 
 //Dynamic fields form
@@ -108,6 +109,7 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
     required: [],
     optional: [],
   });
+  const fieldValuesRef = useRef<Record<string, any>>({});
 
   const getDynamicFields = (contentType: string): Promise<Field[]> =>
     axiosWithoutAuth.get(`/api/${contentType}/fields/`).then((response) => response.data);
@@ -136,33 +138,42 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Divider textAlign={"left"} sx={{ mb: 2 }}>
-            <b>Required</b>
+            <strong>Required</strong>
           </Divider>
         </Grid>
         {fields.required.map((field, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <DynamicField field={field} />
-          </Grid>
+          <DynamicField
+            key={index}
+            field={field}
+            onChange={(value) => (fieldValuesRef.current[field.name] = value)}
+            gridProps={{ item: true, xs: 12, sm: 6, md: 4 }}
+          />
         ))}
         <Grid item xs={12}>
           <Divider textAlign={"left"} sx={{ mb: 2 }}>
-            <b>Optional</b>
+            <strong>Optional</strong>
           </Divider>
         </Grid>
         {fields.optional.map((field, index) => (
-          <Grid
-            item
-            xs={12}
-            sm={field.isHtml ? undefined : 6}
-            md={field.isHtml ? undefined : 4}
+          <DynamicField
             key={index}
-          >
-            <DynamicField field={field} />
-          </Grid>
+            field={field}
+            onChange={(value) => (fieldValuesRef.current[field.name] = value)}
+            gridProps={{ item: true, xs: 12, sm: 6, md: 4 }}
+          />
         ))}
       </Grid>
-      <p>* = required field</p>
-      <Button variant="contained" sx={{ m: "1rem" }} type="submit">
+      <Button
+        variant="contained"
+        sx={{ m: "1rem" }}
+        onClick={() => {
+          console.log(fieldValuesRef.current);
+          // axiosWithAuth
+          //   .post(`/api/${contentType}/`, fieldValuesRef.current)
+          //   .then(console.log)
+          //   .catch(console.error);
+        }}
+      >
         Submit
       </Button>
       <Box component={"pre"} maxWidth={"80vw"}>
@@ -172,8 +183,12 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
   );
 };
 
-const DynamicField: FC<{ field: Field }> = ({ field }) => {
-  const commonProps: TextFieldProps = {
+const DynamicField: FC<{ field: Field; gridProps: GridProps; onChange: (state: any) => void }> = ({
+  field,
+  onChange,
+  gridProps,
+}) => {
+  const commonProps: Omit<TextFieldProps, "label"> & { label: string } = {
     required: field.required && !(field.type === "CharField" && field.allowBlank),
     label: createDisplayName(field.name),
     helperText: field.helpText,
@@ -181,64 +196,79 @@ const DynamicField: FC<{ field: Field }> = ({ field }) => {
     fullWidth: true,
     sx: { minWidth: "5rem" },
   };
-  if (field.instantSearch) {
-    return (
-      <InstantSearch
-        label={commonProps.label}
-        getDataForInput={(input) =>
-          axiosWithoutAuth
-            .get(`/api/search/instant/`, {
-              params: { model: field.instantSearch?.model, query: input },
-            })
-            .then(({ data }) => data)
-        }
-        // TODO: set labelKey based on indexed fields?
-        labelKey={"name"}
-        multiple={field.type === "ManyRelatedField"}
-      />
-    );
-  } else if (field.isHtml) {
-    return <HTMLEditor />;
-  }
-  switch (field.type) {
-    case "CharField":
-      return field.choices ? (
-        <Autocomplete
-          options={Object.keys(field.choices)}
-          getOptionLabel={(optionKey) => field.choices?.[optionKey] ?? ""}
-          renderInput={(params) => <TextField {...params} {...commonProps} />}
-        />
-      ) : (
-        <TextField {...commonProps} multiline />
-      );
-    case "PrimaryKeyRelatedField":
+
+  const renderedField = (() => {
+    if (field.instantSearch) {
       return (
-        <TextField {...commonProps} select>
-          {Object.entries(field.choices ?? {}).map(([id, choice]) => (
-            <MenuItem value={id} key={id}>
-              <span dangerouslySetInnerHTML={{ __html: choice }} />
-            </MenuItem>
-          ))}
-        </TextField>
-      );
-    case "HistoricDateTimeField":
-      return <YearSelect label={commonProps.label} />;
-    case "ListField":
-      return (
-        <Autocomplete
-          multiple
-          freeSolo
-          options={[]}
-          renderInput={(params) => <TextField {...params} {...commonProps} />}
+        <InstantSearch
+          label={commonProps.label}
+          getDataForInput={(input) =>
+            axiosWithoutAuth
+              .get(`/api/search/instant/`, {
+                params: { model: field.instantSearch?.model, query: input },
+              })
+              .then(({ data }) => data)
+          }
+          // TODO: set labelKey based on indexed fields?
+          labelKey={"name"}
+          multiple={field.type === "ManyRelatedField"}
+          onChange={onChange}
         />
       );
-    case "ListSerializer":
-    case "ManyRelatedField":
-    case "JSONField":
-    default:
-      console.error(`Unexpected field type encountered: ${JSON.stringify(field, null, 2)}`);
-      return <TextField {...commonProps} disabled />;
-  }
+    } else if (field.isHtml) {
+      gridProps = { ...gridProps, sm: undefined, md: undefined };
+      return <HTMLEditor onChange={onChange} placeholder={commonProps.label} />;
+    }
+    switch (field.type) {
+      case "CharField":
+        return field.choices ? (
+          <Autocomplete
+            options={Object.keys(field.choices)}
+            getOptionLabel={(optionKey) => field.choices?.[optionKey] ?? ""}
+            onChange={(e, value) => onChange(value ? field.choices?.[value] : undefined)}
+            renderInput={(params) => <TextField {...params} {...commonProps} />}
+          />
+        ) : (
+          <TextField
+            {...commonProps}
+            multiline
+            onChange={(e) => {
+              onChange(e.target.value);
+            }}
+          />
+        );
+      case "PrimaryKeyRelatedField":
+        return (
+          <TextField {...commonProps} select onChange={onChange}>
+            {Object.entries(field.choices ?? {}).map(([id, choice]) => (
+              <MenuItem value={id} key={id}>
+                <span dangerouslySetInnerHTML={{ __html: choice }} />
+              </MenuItem>
+            ))}
+          </TextField>
+        );
+      case "HistoricDateTimeField":
+        return <YearSelect label={commonProps.label} onChange={onChange} />;
+      case "ListField":
+        return (
+          <Autocomplete
+            multiple
+            freeSolo
+            options={[]}
+            onChange={onChange}
+            renderInput={(params) => <TextField {...params} {...commonProps} />}
+          />
+        );
+      case "ListSerializer":
+      case "ManyRelatedField":
+      case "JSONField":
+      default:
+        console.error(`Unexpected field type encountered: ${JSON.stringify(field, null, 2)}`);
+        return <TextField {...commonProps} disabled />;
+    }
+  })();
+
+  return <Grid {...gridProps}>{renderedField}</Grid>;
 };
 
 const createDisplayName = (str: string) => {
