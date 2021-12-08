@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import permissions
@@ -8,6 +10,9 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.collections.api.serializers import CollectionSerializer
 from apps.collections.models import Collection
+
+if TYPE_CHECKING:
+    from rest_framework.request import Request
 
 
 class CollectionViewSet(ModelViewSet):
@@ -26,7 +31,7 @@ class CollectionEditItemsView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: 'Request', *args, **kwargs):
         """Apply items to the collection."""
         data = request.data
         sources = data.get('sources', [])
@@ -52,14 +57,14 @@ class CollectionEditItemsView(APIView):
 
         return Response(CollectionSerializer(collection).data)
 
-    def apply_items(self, collection, items):
+    def apply_items(self, collection: Collection, items):
         raise NotImplementedError
 
 
 class CollectionAddItemsView(CollectionEditItemsView):
     """Add items to the collection."""
 
-    def apply_items(self, collection, items):
+    def apply_items(self, collection: Collection, items):
         try:
             collection.sources.add(*items['sources'])
             collection.propositions.add(*items['propositions'])
@@ -72,7 +77,7 @@ class CollectionAddItemsView(CollectionEditItemsView):
 class CollectionRemoveItemsView(CollectionEditItemsView):
     """Remove items from the collection."""
 
-    def apply_items(self, collection, items):
+    def apply_items(self, collection: Collection, items):
         collection.sources.remove(*items['sources'])
         collection.propositions.remove(*items['propositions'])
         collection.entities.remove(*items['entities'])
