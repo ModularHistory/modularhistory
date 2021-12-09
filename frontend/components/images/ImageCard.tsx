@@ -1,4 +1,4 @@
-import { Image } from "@/types/modules";
+import { Image } from "@/types/models";
 import { styled } from "@mui/material/styles";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";

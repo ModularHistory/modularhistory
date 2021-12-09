@@ -3,7 +3,7 @@ import DynamicForm from "@/components/forms/DynamicForm";
 import Layout from "@/components/Layout";
 import SearchButton from "@/components/search/SearchButton";
 import TodayInHistory, { TodayInHistoryProps } from "@/components/TodayInHistory";
-import { SerpModule } from "@/types/modules";
+import { SerpModule } from "@/types/models";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, CardHeader, Divider, Grid, GridProps, Link } from "@mui/material";
 import Card from "@mui/material/Card";

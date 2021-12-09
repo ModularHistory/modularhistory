@@ -1,5 +1,5 @@
 import TodayInHistory from "@/components/TodayInHistory";
-import { Quote } from "@/types/modules";
+import { Quote } from "@/types/models";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";

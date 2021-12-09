@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { FlatPage as FlatPageType } from "@/types/modules";
+import { FlatPage as FlatPageType } from "@/types/models";
 import { Container, useMediaQuery } from "@mui/material";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";

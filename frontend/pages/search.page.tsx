@@ -6,7 +6,7 @@ import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import type { TimelineProps } from "@/components/search/Timeline";
 import { GlobalTheme } from "@/pages/_app.page";
-import { SerpModule } from "@/types/modules";
+import { SerpModule } from "@/types/models";
 import { Box, Container, Drawer, styled, useMediaQuery } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";

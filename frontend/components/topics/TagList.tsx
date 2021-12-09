@@ -1,4 +1,4 @@
-import { Topic } from "@/types/modules";
+import { Topic } from "@/types/models";
 import { FC } from "react";
 import Tag from "./Tag";
 

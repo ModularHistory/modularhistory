@@ -1,6 +1,6 @@
 import ModuleHTML from "@/components/details/ModuleHTML";
 import TagList from "@/components/topics/TagList";
-import { Proposition } from "@/types/modules";
+import { Proposition } from "@/types/models";
 import { Box } from "@mui/material";
 import Slider from "@mui/material/Slider";
 import { useSession } from "next-auth/client";

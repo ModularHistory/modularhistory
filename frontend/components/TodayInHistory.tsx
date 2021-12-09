@@ -1,5 +1,5 @@
 import BigAnchor from "@/components/BigAnchor";
-import { SerpModule } from "@/types/modules";
+import { SerpModule } from "@/types/models";
 import { Grid } from "@mui/material";
 import { FC } from "react";
 import ModuleUnionCard from "./cards/ModuleUnionCard";
