@@ -7,6 +7,8 @@ from rest_framework.validators import UniqueTogetherValidator
 from apps.dates.api.fields import HistoricDateTimeField, TimelinePositionField
 from apps.entities.models import Entity
 from apps.images.models import Image
+from apps.moderation.serializers import ModeratedModelSerializer
+from apps.quotes.models import QuoteAttribution
 from apps.quotes.models.quote import TEXT_MIN_LENGTH, Citation, Quote
 from apps.sources.api.serializers import CitationSerializerMixin
 from core.models.serializers import ModuleSerializer
@@ -22,6 +24,20 @@ class CitationSerializer(CitationSerializerMixin):
                 queryset=Citation.objects.all(),
                 fields=['content_object', 'source', 'position'],
             )
+        ]
+
+
+class QuoteAttributionSerializer(ModeratedModelSerializer):
+    """Serializer for quote attributions."""
+
+    instant_search_fields = {'attributee': {'model': 'entities.entity'}}
+
+    class Meta(ModeratedModelSerializer.Meta):
+        model = QuoteAttribution
+        fields = ModeratedModelSerializer.Meta.fields + [
+            # 'quote',  # TODO
+            'attributee',
+            'position',
         ]
 
 
