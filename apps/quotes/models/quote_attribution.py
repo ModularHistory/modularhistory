@@ -3,6 +3,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.serializers import Serializer
 
 from core.models.relations.moderated import ModeratedPositionedRelation
 
@@ -40,3 +41,10 @@ class QuoteAttribution(ModeratedPositionedRelation):
             )
             if duplications.exists():
                 raise ValidationError('Attribution position should be unique.')
+
+    @classmethod
+    def get_serializer(self) -> type[Serializer]:
+        """Return the serializer for the quote attribution."""
+        from apps.quotes.api.serializers import QuoteAttributionSerializer
+
+        return QuoteAttributionSerializer
