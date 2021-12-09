@@ -1,4 +1,4 @@
-import { ModuleUnion, Topic } from "@/types/modules";
+import { ModuleUnion, Topic } from "@/types/models";
 import { Box } from "@mui/material";
 import React, { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";

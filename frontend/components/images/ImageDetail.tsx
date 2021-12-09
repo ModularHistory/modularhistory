@@ -1,4 +1,4 @@
-import { Image } from "@/types/modules";
+import { Image } from "@/types/models";
 import { FC } from "react";
 import ImageCard from "./ImageCard";
 

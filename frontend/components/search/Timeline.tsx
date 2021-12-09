@@ -1,4 +1,4 @@
-import { SerpModule } from "@/types/modules";
+import { SerpModule } from "@/types/models";
 import Compress from "@mui/icons-material/Compress";
 import {
   Box,

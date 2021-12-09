@@ -169,10 +169,6 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
         """
         return html
 
-    def serialize(self) -> dict:
-        """Return the serialized model instance (dictionary)."""
-        return self.get_serializer()(self).data
-
     @classmethod
     def get_object_html(
         cls,

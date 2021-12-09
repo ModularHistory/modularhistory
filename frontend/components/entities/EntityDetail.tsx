@@ -1,5 +1,5 @@
 import ModuleHTML from "@/components/details/ModuleHTML";
-import { Entity } from "@/types/modules";
+import { Entity } from "@/types/models";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
 

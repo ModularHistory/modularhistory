@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Source } from "@/types/modules";
+import { Source } from "@/types/models";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import { FC } from "react";

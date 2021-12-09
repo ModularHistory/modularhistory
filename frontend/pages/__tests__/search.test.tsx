@@ -1,5 +1,5 @@
 import SearchPage, { SearchProps } from "@/pages/search.page";
-import type { Quote } from "@/types/modules";
+import type { Quote } from "@/types/models";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Partial } from "@react-spring/types";
 import { render, screen } from "@testing-library/react";

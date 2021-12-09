@@ -1,4 +1,4 @@
-import { Topic } from "@/types/modules";
+import { Topic } from "@/types/models";
 import Chip from "@mui/material/Chip";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";

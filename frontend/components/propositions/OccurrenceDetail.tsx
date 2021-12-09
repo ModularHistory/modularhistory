@@ -1,5 +1,5 @@
 import ModuleHTML from "@/components/details/ModuleHTML";
-import { Occurrence } from "@/types/modules";
+import { Occurrence } from "@/types/models";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
 import TagList from "../topics/TagList";

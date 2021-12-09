@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Topic } from "@/types/modules";
+import { Topic } from "@/types/models";
 import { Card, CardContent, CardHeader, styled } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";

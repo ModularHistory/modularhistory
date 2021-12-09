@@ -1,7 +1,7 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { Proposition } from "@/types/modules";
+import { Proposition } from "@/types/models";
 import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";

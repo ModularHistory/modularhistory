@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import { ModuleUnion, Topic } from "@/types/modules";
+import { ModuleUnion, Topic } from "@/types/models";
 import { Divider } from "@mui/material";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";

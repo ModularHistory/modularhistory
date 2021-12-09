@@ -153,6 +153,13 @@ export interface Change {
   unchangedObject?: ModuleUnion;
 }
 
+export interface ContentContribution {
+  id: number;
+  absoluteUrl: string;
+  contributor: User;
+  change: Change;
+}
+
 export interface Issue {
   id: number;
   url: string;

@@ -1,6 +1,6 @@
-import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
+import axiosWithAuth from "@/axiosWithAuth";
 import Layout from "@/components/Layout";
+import { ContentContribution } from "@/types/models";
 import { Card, CardContent, CardHeader, Container, Skeleton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -14,12 +14,14 @@ import Image from "react-bootstrap/Image";
 
 interface UserContributionsPageProps {
   user?: User;
-  usercontributions: any[];
+  contentContributions: ContentContribution[];
 }
+
+const CONTRIBUTION_GUIDELINES_URL_PATH = "/about/contributions";
 
 const UserContributionsPage: FC<UserContributionsPageProps> = ({
   user,
-  usercontributions,
+  contentContributions,
 }: UserContributionsPageProps) => {
   const [session, _loading] = useSession();
   if (!user || _loading) return null;
@@ -55,12 +57,12 @@ const UserContributionsPage: FC<UserContributionsPageProps> = ({
                   My Contributions{" "}
                 </Typography>
                 <>
-                  {usercontributions.length ? (
-                    usercontributions.map((module, index) => (
+                  {contentContributions.length ? (
+                    contentContributions.map((contribution, index) => (
                       <Grid item key={index}>
-                        <Link href={module.absoluteUrl}>
+                        <Link href={contribution.absoluteUrl}>
                           <a>
-                            <ModuleUnionCard module={module} />
+                            {`#${contribution.id} to ${contribution.change.contentObject.title}`}
                           </a>
                         </Link>
                       </Grid>
@@ -75,10 +77,16 @@ const UserContributionsPage: FC<UserContributionsPageProps> = ({
                       </Card>
                     </Grid>
                   ) : (
-                    <p>
-                      Sorry! There are no content contributions made. If you`&apos;`d like to
-                      contribute, please visit (link).
-                    </p>
+                    <div>
+                      <p>You have not contributed to any contributions yet.</p>
+                      <p>
+                        Before making content contributions, please read the{" "}
+                        <Link href={CONTRIBUTION_GUIDELINES_URL_PATH}>
+                          <a>contribution guidelines</a>
+                        </Link>
+                        .
+                      </p>
+                    </div>
                   )}
                 </>
               </Paper>
@@ -96,7 +104,7 @@ export default UserContributionsPage;
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  let usercontributions: UserContributionsPageProps[] = [];
+  let contentContributions: UserContributionsPageProps[] = [];
   if (!session?.user) {
     return {
       redirect: {
@@ -105,17 +113,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  await axiosWithoutAuth
-    .get("http://django:8000/api/moderation/contributions/")
+  await axiosWithAuth
+    .get("http://django:8000/api/moderation/contributions/", {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    })
     .then((response) => {
-      usercontributions = response.data;
+      contentContributions = response.data;
     })
     .catch((error) => {
       console.error(error);
     });
   return {
     props: {
-      usercontributions,
+      contentContributions,
       user: session?.user ?? null,
     },
   };

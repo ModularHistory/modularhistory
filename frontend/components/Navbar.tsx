@@ -130,17 +130,13 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
     accountControls = (
       <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
         <NavDropdown.Item href={`/users/${session.user.handle}`}>Profile</NavDropdown.Item>
+        <NavDropdown.Item href={`/users/${session.user.handle}/contributions`}>
+          My Contributions
+        </NavDropdown.Item>
         <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings
         </NavDropdown.Item>
-        {
-          <>
-            <Divider style={{ margin: "0.5rem 0" }} />
-            <NavDropdown.Item href={`/users/${session.user.handle}/contributions`}>
-              My Contributions
-            </NavDropdown.Item>
-          </>
-        }
+        <Divider style={{ margin: "0.5rem 0" }} />
         {(session.user.isSuperuser && (
           <>
             <Divider style={{ margin: "0.5rem 0" }} />

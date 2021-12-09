@@ -1,6 +1,6 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import { Collection } from "@/types/modules";
+import { Collection } from "@/types/models";
 import ShareIcon from "@mui/icons-material/Share";
 import { Box, Button, Container, useMediaQuery } from "@mui/material";
 import Grid from "@mui/material/Grid";

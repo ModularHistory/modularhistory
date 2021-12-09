@@ -1,7 +1,7 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Occurrence } from "@/types/modules";
+import { Occurrence } from "@/types/models";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";

@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Citation from "@/components/sources/Citation";
-import { Source } from "@/types/modules";
+import { Source } from "@/types/models";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
