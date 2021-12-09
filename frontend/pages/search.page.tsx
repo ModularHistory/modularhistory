@@ -264,8 +264,8 @@ const SearchResultsGrid: FC<LeftPaneProps> = ({
       maxWidth={1800}
       spacing={2}
       padding="1rem"
-      alignItems="center"
-      justifyContent="space-evenly"
+      alignItems="flex-start"
+      justifyContent="flex-start"
     >
       {modules.map((module, index) => (
         <Grid
