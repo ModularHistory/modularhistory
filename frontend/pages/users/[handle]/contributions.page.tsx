@@ -62,7 +62,7 @@ const UserContributionsPage: FC<UserContributionsPageProps> = ({
                       <Grid item key={index}>
                         <Link href={contribution.absoluteUrl}>
                           <a>
-                            {`#${contribution.id} to ${contribution.change.contentObject.title}`}
+                            {`#${contribution.id} to ${contribution.change.contentObject?.title}`}
                           </a>
                         </Link>
                       </Grid>
