@@ -4,8 +4,10 @@ import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import type { TimelineProps } from "@/components/search/Timeline";
+import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
 import { SerpModule } from "@/types/modules";
 import { Divider, Drawer, Grid, Stack, styled } from "@mui/material";
+import Box from "@mui/material/Box";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -131,15 +133,18 @@ const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
     query: { query },
   } = useRouter();
   return (
-    <h1 className="my-0 py-1">
-      {query ? (
-        <small>
-          {count} results for <b>{query}</b>
-        </small>
-      ) : (
-        <small>{count} items</small>
-      )}
-    </h1>
+    <SwipeableEdgeDrawer jutRem={1.5}>
+      <Box position="absolute" bottom="0">
+        {query ? (
+          <small>
+            {count} results for <b>{query}</b>
+          </small>
+        ) : (
+          <small>{count} items</small>
+        )}
+      </Box>
+      <DynamicSearchForm />
+    </SwipeableEdgeDrawer>
   );
 };
 
@@ -179,7 +184,8 @@ const SearchResultsPanes = withRouter(
             viewStateRegistry={viewStateRegistry}
             sx={{
               position: "sticky",
-              top: "60px",
+              top: "5rem",
+              marginTop: "1rem",
               height: "85vh",
               zIndex: 10,
             }}

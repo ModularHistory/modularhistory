@@ -178,7 +178,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item container xs={12} justifyContent="center" paddingY="1rem">
           <SearchButton onClick={submitForm} />
         </Grid>
       </Grid>
