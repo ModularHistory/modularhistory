@@ -2,9 +2,10 @@ from django.conf import settings
 from django.db import models
 
 from apps.moderation.fields import SerializedObjectField
+from core.models import ExtendedModel
 
 
-class ContentContribution(models.Model):
+class ContentContribution(ExtendedModel):
     """A contribution to a change."""
 
     contributor = models.ForeignKey(
@@ -28,3 +29,16 @@ class ContentContribution(models.Model):
 
     def __str__(self) -> str:
         return f'Contribution by {self.contributor} to {self.change} ({self.date_created})'
+
+    def get_absolute_url(self):
+        if self._state.adding:
+            return ''
+        return f'/users/{self.contributor.handle}/contributions/{self.pk}'
+
+
+@classmethod
+def get_serializer(self):
+    """Return the serializer for ContentContribution"""
+    from apps.moderation.api.serializers import ContentContributionSerializer
+
+    return ContentContributionSerializer

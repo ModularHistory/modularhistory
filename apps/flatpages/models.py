@@ -60,6 +60,13 @@ class FlatPage(ModeratedModel):
     class Moderation(ModeratedModel.Moderation):
         excluded_fields = ModeratedModel.Moderation.excluded_fields + ['sites']
 
+    @classmethod
+    def get_serializer(self):
+        """Return the serializer for the entity."""
+        from apps.flatpages.api.serializers import FlatPageSerializer
+
+        return FlatPageSerializer
+
     def __str__(self) -> str:
         return f'{self.path} -- {self.title}'
 

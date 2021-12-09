@@ -1,7 +1,7 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { Quote } from "@/types/modules";
+import { Quote } from "@/types/models";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";

@@ -1,5 +1,5 @@
 import Citation from "@/components/sources/Citation";
-import { Source } from "@/types/modules";
+import { Source } from "@/types/models";
 import { FC } from "react";
 import TagList from "../topics/TagList";
 

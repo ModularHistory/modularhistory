@@ -2,7 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Collection } from "@/types/modules";
+import { Collection } from "@/types/models";
 import { CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";

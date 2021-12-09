@@ -1,5 +1,5 @@
 import PropositionDetail from "@/components/propositions/PropositionDetail";
-import { ModuleUnion } from "@/types/modules";
+import { ModuleUnion } from "@/types/models";
 import { useSession } from "next-auth/client";
 import { FC } from "react";
 import EntityDetail from "../entities/EntityDetail";

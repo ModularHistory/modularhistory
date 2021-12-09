@@ -1,4 +1,4 @@
-import { Argument } from "@/types/modules";
+import { Argument } from "@/types/models";
 import { TreeItem, TreeView } from "@mui/lab";
 import { TreeItemProps } from "@mui/lab/TreeItem";
 import { alpha, Theme } from "@mui/material";

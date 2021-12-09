@@ -3,7 +3,7 @@ import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-import { Occurrence } from "@/types/modules";
+import { Occurrence } from "@/types/models";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";

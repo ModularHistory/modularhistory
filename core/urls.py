@@ -73,6 +73,7 @@ urlpatterns = [
     path('api/forums/', include(_api('forums'), namespace='forums_api')),
     path('api/home/', include(_api('home'), namespace='home_api')),
     path('api/images/', include(_api('images'), namespace='images_api')),
+    path('api/moderation/', include(_api('moderation'), namespace='moderation_api')),
     path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('api/places/', include(_api('places'), namespace='places_api')),
     path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),

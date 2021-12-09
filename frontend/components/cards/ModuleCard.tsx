@@ -1,4 +1,4 @@
-import { Image, ModuleUnion, Source, Topic } from "@/types/modules";
+import { Image, ModuleUnion, Source, Topic } from "@/types/models";
 import { Card } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CSSProperties } from "@mui/styles";

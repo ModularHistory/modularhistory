@@ -1,6 +1,6 @@
 import ModuleDetail from "@/components/details/ModuleDetail";
 import { GlobalTheme } from "@/pages/_app.page";
-import { ModuleUnion } from "@/types/modules";
+import { ModuleUnion } from "@/types/models";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
