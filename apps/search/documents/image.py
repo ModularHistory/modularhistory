@@ -27,7 +27,5 @@ ImageInstantSearchDocument = InstantSearchDocumentFactory(
     model=Image,
     search_fields=['name'],
     filter_fields=['image_type'],
-    field_kwargs={
-        'name': {'attr': '__str__'}
-    },  # TODO: decide if want to use something else for name
+    field_kwargs={'name': {'attr': '__str__'}},
 )

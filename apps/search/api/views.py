@@ -1,3 +1,6 @@
+import logging
+
+from django_elasticsearch_dsl import Document
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -8,7 +11,7 @@ from .filters.elastic_filters import ModulesSearchFilterBackend
 from .filters.post_resolve_filters import ApplyMetaFilterBackend, SortByFilterBackend
 from .filters.pre_resolve_filters import PreResolveFilterBackend
 from .pagination import ElasticPageNumberPagination
-from .search import Search
+from .search import DSLSearch, Search
 
 QUERY_PARAM = 'query'
 
@@ -62,14 +65,17 @@ class InstantSearchApiView(APIView):
         if len(query) == 0:
             return Response([])
 
-        document = instant_search_documents_map[model]
-        search = document.search()
+        document: Document = instant_search_documents_map[model]
+        search: DSLSearch = document.search()
 
         if filters:
             search = search.filter('term', **filters)
 
-        results = search.query(
-            'multi_match', query=query, fields=document.search_fields
-        ).source(document.search_fields)
+        search = search.query('multi_match', query=query, fields=document.search_fields)
 
-        return Response([{'id': result.meta.id} | result.to_dict() for result in results])
+        response = search.source(document.search_fields).execute()
+        logging.info(
+            f'ES InstantSearch took {response.took} ms and returned n={response.hits.total.value} results'
+        )
+
+        return Response([{'id': result.meta.id} | result.to_dict() for result in response])

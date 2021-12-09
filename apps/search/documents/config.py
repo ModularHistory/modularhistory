@@ -12,7 +12,8 @@ instant_search_analyzer = analyzer(
     tokenizer=tokenizer('mono_bi_gram', 'ngram', min_gram=1, max_gram=2),
     filter=['lowercase', 'asciifolding'],
     char_filter=[
-        char_filter('punctuation', 'pattern_replace', pattern=r'[^\w\s]', replacement='')
+        'html_strip',
+        char_filter('punctuation', 'pattern_replace', pattern=r'[^\w\s]', replacement=''),
     ],
 )
 
