@@ -45,7 +45,7 @@ const StyledContainer = styled("div")({
     marginTop: "-9px",
   },
   // to prevent hidden search button when navbar is visible
-  "&:last-child": { marginBottom: "50px" },
+  // "&:last-child": { marginBottom: "50px" },
 });
 
 /**
@@ -174,6 +174,8 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
               defaultChecked:
                 fieldsRef.current.contentTypes?.includes(key) ?? defaultChecked ?? true,
             }))}
+            row
+            outlined
           />
         </Grid>
 

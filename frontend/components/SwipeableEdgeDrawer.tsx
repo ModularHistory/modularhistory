@@ -11,16 +11,13 @@ const Root = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
   zIndex: 100,
   transition: "max-height 0.3s ease",
-  padding: "1rem",
   borderBottom: `2px solid ${theme.palette.mode === "light" ? grey[300] : theme.palette.divider}`,
 }));
 
 const Puller = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  bottom: 6,
   width: 30,
   height: "0.25rem",
-  padding: 3,
+  // padding: 3,
   backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
   borderRadius: 3,
   left: "calc(50% - 15px)",
@@ -29,11 +26,13 @@ const Puller = styled(Box)(({ theme }) => ({
 
 interface SwipeableEdgeDrawerProps {
   jutRem: number;
+  jutContent: ReactNode;
   children: ReactNode;
 }
 
 const SwipeableEdgeDrawer: FC<SwipeableEdgeDrawerProps> = ({
   jutRem,
+  jutContent,
   children,
 }: SwipeableEdgeDrawerProps) => {
   const [open, setOpen] = useState(false);
@@ -43,14 +42,25 @@ const SwipeableEdgeDrawer: FC<SwipeableEdgeDrawerProps> = ({
   };
 
   return (
-    <Root
-      sx={{
-        maxHeight: open ? "80vh" : `${jutRem}rem`,
-        overflowY: open ? "scroll" : "hidden",
-      }}
-    >
-      {children}
-      <Puller onClick={open ? toggleDrawer(false) : toggleDrawer(true)} />
+    <Root sx={{ maxHeight: open ? "80vh" : `${jutRem}rem`, overflowY: open ? "scroll" : "hidden" }}>
+      <Box padding={1}>{children}</Box>
+      <Box
+        position="sticky"
+        bottom={0}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        bgcolor={"inherit"}
+        zIndex={10}
+      >
+        <Box flex={1} display="flex" justifyContent="center">
+          {jutContent}
+        </Box>
+        <Box flex={1} display="flex" justifyContent="center">
+          <Puller onClick={open ? toggleDrawer(false) : toggleDrawer(true)} />
+        </Box>
+        <Box flex={1} />
+      </Box>
     </Root>
   );
 };

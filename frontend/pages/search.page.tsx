@@ -6,8 +6,7 @@ import Pagination from "@/components/Pagination";
 import type { TimelineProps } from "@/components/search/Timeline";
 import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
 import { SerpModule } from "@/types/modules";
-import { Divider, Drawer, Grid, Stack, styled } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Divider, Grid, Stack, styled } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -90,59 +89,57 @@ const EmptySearchResults: FC = () => (
   </div>
 );
 
-const SearchFilter: FC = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
-  return (
-    <>
-      <Drawer
-        open={searchOpen}
-        anchor={"left"}
-        variant={"persistent"}
-        onClose={() => setSearchOpen(false)}
-        className={searchOpen ? "open" : ""}
-        sx={{
-          maxWidth: "0px",
-          transition: "max-width .15s",
-          zIndex: 2,
-          "&.open": { maxWidth: "230px" },
-        }}
-        PaperProps={{
-          sx: {
-            backgroundColor: "whitesmoke",
-            boxShadow: "4px 0 10px -5px #888",
-            position: "sticky",
-            maxHeight: "100vh",
-          },
-        }}
-      >
-        <DynamicSearchForm inSidebar />
-      </Drawer>
-      <SliderToggle
-        id="sliderToggle"
-        className={`btn ${searchOpen ? "open" : ""}`}
-        onClick={() => setSearchOpen(!searchOpen)}
-      >
-        <i className="fas fa-filter" />
-      </SliderToggle>
-    </>
-  );
-};
+// const SearchFilter: FC = () => {
+//   const [searchOpen, setSearchOpen] = useState(false);
+//   return (
+//     <>
+//       <Drawer
+//         open={searchOpen}
+//         anchor={"left"}
+//         variant={"persistent"}
+//         onClose={() => setSearchOpen(false)}
+//         className={searchOpen ? "open" : ""}
+//         sx={{
+//           maxWidth: "0px",
+//           transition: "max-width .15s",
+//           zIndex: 2,
+//           "&.open": { maxWidth: "230px" },
+//         }}
+//         PaperProps={{
+//           sx: {
+//             backgroundColor: "whitesmoke",
+//             boxShadow: "4px 0 10px -5px #888",
+//             position: "sticky",
+//             maxHeight: "100vh",
+//           },
+//         }}
+//       >
+//         <DynamicSearchForm inSidebar />
+//       </Drawer>
+//       <SliderToggle
+//         id="sliderToggle"
+//         className={`btn ${searchOpen ? "open" : ""}`}
+//         onClick={() => setSearchOpen(!searchOpen)}
+//       >
+//         <i className="fas fa-filter" />
+//       </SliderToggle>
+//     </>
+//   );
+// };
 
 const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
   const {
     query: { query },
   } = useRouter();
+  const jutContent = query ? (
+    <small>
+      {count} results for <b>{query}</b>
+    </small>
+  ) : (
+    <small>{count} items</small>
+  );
   return (
-    <SwipeableEdgeDrawer jutRem={1.5}>
-      <Box position="absolute" bottom="0">
-        {query ? (
-          <small>
-            {count} results for <b>{query}</b>
-          </small>
-        ) : (
-          <small>{count} items</small>
-        )}
-      </Box>
+    <SwipeableEdgeDrawer jutRem={1.5} jutContent={jutContent}>
       <DynamicSearchForm />
     </SwipeableEdgeDrawer>
   );
@@ -184,9 +181,9 @@ const SearchResultsPanes = withRouter(
             viewStateRegistry={viewStateRegistry}
             sx={{
               position: "sticky",
-              top: "5rem",
-              marginTop: "1rem",
-              height: "85vh",
+              top: "5.5rem",
+              marginTop: "3.2rem",
+              height: "80vh",
               zIndex: 10,
             }}
           />

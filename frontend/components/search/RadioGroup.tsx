@@ -34,7 +34,11 @@ const RadioGroup: FC<RadioGroupProps> = ({
   // See the demo at
   // https://material-ui.com/components/radio-buttons/#radiogroup
   return (
-    <FormControl component="fieldset" disabled={disabled}>
+    <FormControl
+      component="fieldset"
+      disabled={disabled}
+      sx={{ border: "1px solid lightgray", paddingX: "0.6rem", borderRadius: "4px" }}
+    >
       <FormLabel component="legend">{label}</FormLabel>
       <MuiRadioGroup
         // useState prevents a warning about defaultValue changing after initial render
