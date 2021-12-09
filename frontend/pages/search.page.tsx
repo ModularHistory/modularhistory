@@ -1,3 +1,4 @@
+import BigAnchor from "@/components/BigAnchor";
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
@@ -89,7 +90,6 @@ const EmptySearchResults: FC = () => (
 
 const SearchFilter: FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-
   return (
     <>
       <Drawer
@@ -278,7 +278,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
               // viewStateRegistry.get(module.absoluteUrl)?.(inView);
             }}
           >
-            <a
+            <BigAnchor
               href={module.absoluteUrl}
               key={module.absoluteUrl}
               data-index={index}
@@ -288,7 +288,7 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
               onMouseLeave={() => viewStateRegistry.get(module.absoluteUrl)?.(false)}
             >
               <ModuleUnionCard module={module} className={index == moduleIndex ? "selected" : ""} />
-            </a>
+            </BigAnchor>
           </InView>
         </Grid>
       ))}

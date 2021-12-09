@@ -2,16 +2,15 @@ from typing import Optional
 
 from rest_framework import serializers
 
+from apps.moderation.serializers import ModeratedModelSerializer
 from core.models.model import ModelSerializer
 
 ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 
 
-class SearchableModelSerializer(ModelSerializer):
+class SearchableModelSerializer(ModeratedModelSerializer):
     """Base serializer for searchable models."""
 
-    # TODO: 'model' field should be defined in ModelSerializer but ArticleSerializer cannot resolve 'model' field if it's defined there
-    model = serializers.SerializerMethodField()
     meta = serializers.SerializerMethodField(required=False)
 
     def get_meta(self, model) -> Optional[dict]:
@@ -25,6 +24,5 @@ class SearchableModelSerializer(ModelSerializer):
 
     class Meta(ModelSerializer.Meta):
         fields = ModelSerializer.Meta.fields + [
-            'model',
             'meta',
         ]

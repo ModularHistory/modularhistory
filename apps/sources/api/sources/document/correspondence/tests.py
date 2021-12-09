@@ -52,9 +52,12 @@ class CorrespondencesApiTest(ModerationApiTest):
             'end_date': '2020-01-01 01:01:20.086202',
             'original_publication_date': '0001-01-01T01:01:20.086200Z',
             'original_edition': self.verified_model.id,
-            'attributees': self.attributee_ids[:2],
             'related_entities': self.entity_ids[:2],
             'tags': self.topic_ids[:2],
+            'attributions': [
+                {'attributee': attributee_id, 'position': position}
+                for position, attributee_id in enumerate(self.attributee_ids[:2])
+            ],
             'location': self.location_ids[0],
             'collection': self.collection_ids[0],
             'source_containments': [
@@ -85,9 +88,12 @@ class CorrespondencesApiTest(ModerationApiTest):
             'original_publication_date': '0005-01-01T01:01:20.086200Z',
             'original_edition': self.verified_container_id,
             'location': self.location_ids[1],
-            'attributees': self.attributee_ids[1:],
             'related_entities': self.entity_ids[1:],
             'tags': self.topic_ids[1:],
+            'attributions': [
+                {'attributee': attributee_id, 'position': position}
+                for position, attributee_id in enumerate(self.attributee_ids[1:])
+            ],
             'collection': self.collection_ids[1],
             'source_containments': [
                 {

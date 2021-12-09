@@ -6,6 +6,7 @@ from rest_framework import serializers
 from apps.dates.api.fields import HistoricDateTimeField
 from apps.dates.structures import serialize_date
 from apps.entities.models import Entity
+from apps.moderation.serializers import ModeratedModelSerializer
 from apps.sources.api.sources.document.collection.serializers import CollectionSerializer
 from apps.sources.api.sources.file.serializers import SourceFileSerializer
 from apps.sources.models import AbstractCitation, Source, SourceAttribution, SourceContainment
@@ -16,25 +17,28 @@ from core.models.model import ModelSerializer
 from core.models.serializers import ModuleSerializer, SerializableField
 
 
-class SourceAttributionSerializer(ModelSerializer):
+class SourceAttributionSerializer(ModeratedModelSerializer):
     """Serializer for source attributions."""
 
-    class Meta:
+    instant_search_fields = {'attributee': {'model': 'entities.entity'}}
+
+    class Meta(ModeratedModelSerializer.Meta):
         model = SourceAttribution
-        fields = ModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             # 'source',  # TODO
             'attributee',
+            'position',
         ]
 
 
-class SourceContainmentSerializer(ModelSerializer):
+class SourceContainmentSerializer(ModeratedModelSerializer):
     """Serializer for source containments."""
 
     instant_search_fields = {'container': {'model': 'sources.source'}}
 
-    class Meta:
+    class Meta(ModeratedModelSerializer.Meta):
         model = SourceContainment
-        fields = ModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'container',
             'phrase',
             'page_number',
@@ -54,7 +58,7 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
     date = HistoricDateTimeField(write_only=True, required=True)
     end_date = HistoricDateTimeField(write_only=True, required=False)
 
-    attributions = SourceAttributionSerializer(many=True)
+    attributions = SourceAttributionSerializer(many=True, required=False)
     source_containments = SourceContainmentSerializer(many=True, required=False)
 
     file_serialized = SourceFileSerializer(read_only=True, source='file')
@@ -85,12 +89,6 @@ class SourceSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'url': {'write_only': True},
             'href': {'write_only': True},
             'location': {'required': False, 'write_only': True},
-            'attributees': {
-                'write_only': True,
-                'required': False,
-                'read_only': False,
-                'queryset': Entity.objects.all(),
-            },
             'related_entities': {
                 'write_only': True,
                 'required': False,
@@ -137,6 +135,12 @@ class PageNumbersSerializerMixin(TextualSerializerMixin):
 class DocumentSerializerMixin(PageNumbersSerializerMixin):
     """DocumentMixin serializer."""
 
+    instant_search_fields = {
+        'collection': {
+            'model': 'sources.collection',
+        },
+    }
+
     collection_serialized = CollectionSerializer(read_only=True, source='collection')
 
     class Meta(PageNumbersSerializerMixin.Meta):
@@ -151,7 +155,7 @@ class DocumentSerializerMixin(PageNumbersSerializerMixin):
         ]
 
 
-class CitationSerializerMixin(UniqueFieldsMixin, ModelSerializer):
+class CitationSerializerMixin(UniqueFieldsMixin, ModeratedModelSerializer):
     """Serializer for abstract citations."""
 
     instant_search_fields = {
@@ -163,7 +167,7 @@ class CitationSerializerMixin(UniqueFieldsMixin, ModelSerializer):
 
     class Meta:
         model = AbstractCitation
-        fields = ModelSerializer.Meta.fields + [
+        fields = ModeratedModelSerializer.Meta.fields + [
             'html',
             'source',
             'citation_phrase',

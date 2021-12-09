@@ -7,7 +7,7 @@ import regex
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import SafeString
 
 from apps.moderation.models.searchable import (
@@ -129,10 +129,17 @@ class Module(SearchableModeratedModel, SluggedModel, ModelWithCache):
             if not self._meta.proxy
             else self._meta.proxy_for_model.__name__.lower()
         )
-        return reverse(
-            f'admin:{self._meta.app_label}_{model_name}_change',
-            args=[self.pk],
-        )
+
+        # TODO: fix this to work properly with Birth/Death models
+        admin_reverse = f'admin:{self._meta.app_label}_{model_name}_change'
+        try:
+            return reverse(
+                admin_reverse,
+                args=[self.pk],
+            )
+        except NoReverseMatch:
+            logging.error(f'No admin URL found for model instance. Tried: {admin_reverse}')
+            return self.pk
 
     def get_html_for_view(
         self,
