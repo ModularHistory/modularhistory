@@ -6,7 +6,7 @@ import Pagination from "@/components/Pagination";
 import type { TimelineProps } from "@/components/search/Timeline";
 import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
 import { SerpModule } from "@/types/modules";
-import { Divider, Grid, Stack, styled } from "@mui/material";
+import { Divider, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -33,11 +33,11 @@ const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm")
 
 const Timeline = dynamic(() => import("@/components/search/Timeline"), { ssr: false });
 
-const SliderToggle = styled("button")({
-  border: "2px solid black !important",
-  transition: "transform .15s !important",
-  "&.open": { transform: "translateX(229px) !important" },
-});
+// const SliderToggle = styled("button")({
+//   border: "2px solid black !important",
+//   transition: "transform .15s !important",
+//   "&.open": { transform: "translateX(229px) !important" },
+// });
 
 export interface SearchProps {
   count: number;
@@ -189,7 +189,7 @@ const SearchResultsPanes = withRouter(
           />
           {useMemo(
             () => (
-              <SearchResultsLeftPane
+              <SearchResultsGrid
                 modules={modulesWithRefs}
                 {...{
                   moduleIndex,
@@ -221,7 +221,7 @@ interface LeftPaneProps extends Pick<TimelineProps, "viewStateRegistry"> {
   router: NextRouter;
 }
 
-const SearchResultsLeftPane: FC<LeftPaneProps> = ({
+const SearchResultsGrid: FC<LeftPaneProps> = ({
   modules,
   moduleIndex,
   setModuleIndex,
@@ -259,7 +259,14 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <Grid container maxWidth={1800} spacing={2} paddingRight="1rem">
+    <Grid
+      container
+      maxWidth={1800}
+      spacing={2}
+      padding="1rem"
+      alignItems="center"
+      justifyContent="space-evenly"
+    >
       {modules.map((module, index) => (
         <Grid
           xs={12}
