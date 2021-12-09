@@ -84,7 +84,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
   return (
     <StyledContainer data-testid={"searchForm"}>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} alignItems="center">
         <Grid item xs={12} sm={6} lg={4}>
           <TextField
             label="Query"
@@ -175,11 +175,10 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
                 fieldsRef.current.contentTypes?.includes(key) ?? defaultChecked ?? true,
             }))}
             row
-            outlined
           />
         </Grid>
 
-        <Grid item container xs={12} justifyContent="center" paddingY="1rem">
+        <Grid item container xs={12} md={"auto"} mx={2}>
           <SearchButton onClick={submitForm} />
         </Grid>
       </Grid>

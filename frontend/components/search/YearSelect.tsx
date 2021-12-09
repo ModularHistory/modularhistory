@@ -25,7 +25,7 @@ const YearSelect: FC<YearSelectProps> = ({
 }: YearSelectProps) => {
   return (
     <>
-      <Grid item xs={6}>
+      <Grid item xs={6} sm={8}>
         <TextField
           label={label}
           type={"number"}
@@ -35,7 +35,7 @@ const YearSelect: FC<YearSelectProps> = ({
           disabled={disabled}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={6} sm={4}>
         <TextField
           select
           onChange={(e) => onTypeChange(e.target.value)}
