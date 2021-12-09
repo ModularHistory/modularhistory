@@ -12,6 +12,7 @@ const Root = styled("div")(({ theme }) => ({
   zIndex: 100,
   transition: "max-height 0.3s ease",
   padding: "1rem",
+  borderBottom: `2px solid ${theme.palette.mode === "light" ? grey[300] : theme.palette.divider}`,
 }));
 
 const Puller = styled(Box)(({ theme }) => ({
