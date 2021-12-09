@@ -13,6 +13,7 @@ interface RadioGroupProps {
   onChange: (value: string) => void;
   options: string[];
   disabled?: boolean;
+  row?: boolean;
 }
 
 const RadioGroup: FC<RadioGroupProps> = ({
@@ -21,6 +22,7 @@ const RadioGroup: FC<RadioGroupProps> = ({
   onChange,
   options,
   disabled,
+  row,
 }: RadioGroupProps) => {
   // A component for radio input in the search form.
   // `label` is displayed above the radio group.
@@ -38,6 +40,7 @@ const RadioGroup: FC<RadioGroupProps> = ({
         // useState prevents a warning about defaultValue changing after initial render
         defaultValue={useState(() => defaultValue ?? options[0].toLowerCase())[0]}
         onChange={(e) => onChange(e.target.value)}
+        row={row}
       >
         {options.map((opt) => (
           <FormControlLabel

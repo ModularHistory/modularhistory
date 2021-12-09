@@ -5,6 +5,7 @@ import { FC, ReactNode, useState } from "react";
 
 const Root = styled("div")(({ theme }) => ({
   position: "sticky",
+  width: "100%",
   top: 0,
   backgroundColor: theme.palette.mode === "light" ? grey[100] : theme.palette.background.default,
   // backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],

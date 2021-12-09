@@ -262,13 +262,14 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <Grid container maxWidth={1800} spacing={2}>
+    <Grid container maxWidth={1800} spacing={2} paddingRight="1rem">
       {modules.map((module, index) => (
         <Grid
           xs={12}
           sm={6}
           md={4}
-          xl={3}
+          lg={3}
+          xl={2}
           item
           key={module.absoluteUrl}
           sx={{

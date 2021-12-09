@@ -1,6 +1,6 @@
 import TextField from "@/components/forms/StyledTextField";
 import { EntitiesInstantSearch, TopicsInstantSearch } from "@/components/search/InstantSearch";
-import { Container, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import type { ParsedUrlQueryInput } from "querystring";
@@ -31,9 +31,9 @@ export interface SearchFormProps {
   inSidebar?: boolean;
 }
 
-const StyledContainer = styled(Container)({
-  paddingTop: "20px",
-  // maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
+const StyledContainer = styled("div")({
+  padding: "1rem",
+  display: "flex",
   "& input": {
     backgroundColor: "white",
   },
@@ -65,10 +65,6 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
     fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
   ) as FieldCallbacks;
 
-  // When `sm` is 6, inputs may be rendered side-by-side.
-  // See: https://material-ui.com/components/grid/#grid-with-breakpoints
-  const sm = inSidebar ? 12 : 6;
-
   const submitForm = () => {
     const queryParams = { ...fieldsRef.current };
     for (const name in queryParams) {
@@ -88,8 +84,8 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
   return (
     <StyledContainer data-testid={"searchForm"}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={sm}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6} lg={4}>
           <TextField
             label="Query"
             defaultValue={fieldsRef.current.query}
@@ -100,17 +96,18 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           />
         </Grid>
 
-        <Grid item xs={12} sm={sm}>
+        <Grid item xs={12} sm={"auto"}>
           <RadioGroup
             label={"Ordering"}
             defaultValue={fieldsRef.current.ordering}
             onChange={fieldCallbacks.ordering}
             options={["Relevance", "Date"]}
             disabled={isLoading}
+            row
           />
         </Grid>
 
-        <Grid container item xs={12} sm={sm}>
+        <Grid container item xs={12} sm={"auto"}>
           <YearSelect
             label={"Start year"}
             defaultYearValue={fieldsRef.current.startYear}
@@ -120,7 +117,8 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             disabled={isLoading}
           />
         </Grid>
-        <Grid container item xs={12} sm={sm}>
+
+        <Grid container item xs={12} sm={"auto"}>
           <YearSelect
             label={"End year"}
             defaultYearValue={fieldsRef.current.endYear}
@@ -131,7 +129,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           />
         </Grid>
 
-        <Grid item xs={12} sm={sm}>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
           <EntitiesInstantSearch
             onChange={fieldCallbacks.entities}
             disabled={isLoading}
@@ -139,7 +137,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           />
         </Grid>
 
-        <Grid item xs={12} sm={sm}>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
           <TopicsInstantSearch
             onChange={fieldCallbacks.topics}
             disabled={isLoading}
@@ -147,17 +145,18 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           />
         </Grid>
 
-        <Grid item xs={12} sm={sm}>
+        <Grid item xs={12} sm={"auto"}>
           <RadioGroup
             label={"Quality"}
             defaultValue={fieldsRef.current.quality}
             onChange={fieldCallbacks.quality}
             options={["All", "Verified"]}
             disabled={isLoading}
+            row
           />
         </Grid>
 
-        <Grid item xs={12} sm={sm}>
+        <Grid item xs={12} sm={"auto"}>
           {/* #ContentTypesHardCoded */}
           <CheckboxGroup
             label={"Content Types"}
