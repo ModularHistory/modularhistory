@@ -7,6 +7,7 @@ import regex
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.html import format_html
+from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
 from core.fields.html_field import (
@@ -103,6 +104,13 @@ class AbstractCitation(ModeratedPositionedRelation):
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern
+
+    @classmethod
+    def get_serializer(cls):
+        """Return the serializer for the citation."""
+        return import_string(
+            f'apps.{cls._meta.app_label}.api.serializers.{cls.__name__}Serializer'
+        )
 
     def __str__(self) -> str:
         """Return the citation's string representation."""

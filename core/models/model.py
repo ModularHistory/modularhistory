@@ -2,7 +2,6 @@
 
 import inspect
 import logging
-from pprint import pformat
 from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type, Union
 
 import regex
@@ -191,16 +190,7 @@ class ExtendedModel(Model):
 
     def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
-        try:
-            serialized_instance = self.serializer(self).data
-        except AttributeError as err:
-            logging.error(f'{err}')
-            serialized_instance = ModelSerializer(self).data
-        logging.debug(
-            f'Serialized {self.__class__.__name__.lower()}:\n'
-            f'{pformat(serialized_instance)}'
-        )
-        return serialized_instance
+        return self.get_serializer()(self).data
 
     @classmethod
     def get_object_html(
