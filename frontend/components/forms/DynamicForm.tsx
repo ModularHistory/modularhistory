@@ -1,3 +1,4 @@
+import axiosWithAuth from "@/axiosWithAuth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import HTMLEditor from "@/components/forms/HTMLEditor";
 import { InstantSearch } from "@/components/search/InstantSearch";
@@ -124,15 +125,6 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
     });
   }, [contentType]);
 
-  // const checkField = (obj: any) => {
-  //   return obj.editable;
-  // };
-  //
-  //
-  // const createChoiceValue = (str: string) => {
-  //   return str.replace(/<.*?>/g, "");
-  // };
-
   return (
     <>
       <Grid container spacing={2}>
@@ -168,10 +160,10 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
         sx={{ m: "1rem" }}
         onClick={() => {
           console.log(fieldValuesRef.current);
-          // axiosWithAuth
-          //   .post(`/api/${contentType}/`, fieldValuesRef.current)
-          //   .then(console.log)
-          //   .catch(console.error);
+          axiosWithAuth
+            .post(`/api/${contentType}/`, fieldValuesRef.current)
+            .then(console.log)
+            .catch(console.error);
         }}
       >
         Submit
@@ -271,9 +263,13 @@ const DynamicField: FC<{ field: Field; gridProps: GridProps; onChange: (state: a
   return <Grid {...gridProps}>{renderedField}</Grid>;
 };
 
-const createDisplayName = (str: string) => {
+function createDisplayName(str: string) {
   str = str.replace(/_/g, " ");
   return str.charAt(0).toUpperCase() + str.slice(1);
-};
+}
+
+function stripHTML(str: string) {
+  return str.replace(/<.*?>/g, "");
+}
 
 export default DynamicForm;

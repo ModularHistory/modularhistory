@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, cast
 
 from django_elasticsearch_dsl import Document as ESDocument
 from django_elasticsearch_dsl import fields
@@ -34,7 +34,7 @@ def InstantSearchDocumentFactory(
     filter_fields: list[str] = None,
     field_kwargs: dict = None,
     register=True,
-):
+) -> InstantSearchDocument:
     """Returns an ElasticSearch Document class for the given module class.
 
     All fields are analyzed as instant-search text fields.
@@ -84,4 +84,4 @@ def InstantSearchDocumentFactory(
 
     if register:
         registry.register_document(document_class)
-    return document_class
+    return cast(InstantSearchDocument, document_class)

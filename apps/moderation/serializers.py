@@ -25,6 +25,14 @@ class ModeratedModelSerializer(ModelSerializer):
     # could be improved in the future to support multiple types
     type_field_name: str = None
 
+    change_id = serializers.SerializerMethodField()
+
+    def get_change_id(self, obj):
+        from pprint import pprint
+
+        pprint(obj.__dict__)
+        return obj.change_in_progress.id if obj.change_in_progress else None
+
     def get_instant_search_fields(self) -> dict:
         return common_instant_search_fields | self.instant_search_fields
 
@@ -67,7 +75,9 @@ class ModeratedModelSerializer(ModelSerializer):
                     'type': field.__class__.__name__,
                     'editable': True,  # TODO: remove after front-end code is updated
                     'required': getattr(field, 'required', False),
-                    'allow_blank': getattr(field, 'allow_blank', False) if isinstance(field, CharField) else None,
+                    'allow_blank': getattr(field, 'allow_blank', False)
+                    if isinstance(field, CharField)
+                    else None,
                     'verbose_name': getattr(field, 'verbose_name', None),
                     'help_text': getattr(field, 'help_text', None),
                     'choices': self.get_choices_for_field(field, field_name),
@@ -92,7 +102,7 @@ class ModeratedModelSerializer(ModelSerializer):
         return fields
 
     class Meta(ModelSerializer.Meta):
-        pass
+        fields = ModelSerializer.Meta.fields + ['change_id']
 
 
 class PythonSerializer(Serializer):

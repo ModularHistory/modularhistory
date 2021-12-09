@@ -52,3 +52,16 @@ class ExtendedModelViewSet(ModelViewSet):
             return Response(serializer.get_moderated_fields())
         else:
             return super().retrieve(request, *args, **kwargs)
+
+    def create(self, *args, **kwargs):
+        response = super().create(*args, **kwargs)
+        from pprint import pprint
+
+        pprint(response.__dict__)
+        try:
+            print(response)
+            response.data['change_id'] = 1
+        except Exception as e:
+            print('\n' * 10)
+            print(e)
+        return response
