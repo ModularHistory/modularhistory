@@ -89,7 +89,7 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Get changed files
@@ -117,7 +117,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -208,7 +208,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -348,7 +348,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -435,7 +435,7 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install modules
       run: npm install --prefix frontend/
     - name: Run jest
@@ -460,7 +460,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -586,7 +586,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -714,7 +714,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
@@ -816,7 +816,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
