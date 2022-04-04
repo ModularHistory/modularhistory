@@ -168,7 +168,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -259,7 +259,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -399,7 +399,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -511,7 +511,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -547,7 +547,7 @@ jobs:
             sudo chmod a+w -R "$dir_path"
           } || exit 1
         done
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3.0.1
       id: data-cache
       with:
         path: _volumes/db/init
@@ -637,7 +637,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -673,7 +673,7 @@ jobs:
             sudo chmod a+w -R "$dir_path"
           } || exit 1
         done
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3.0.1
       id: data-cache
       with:
         path: _volumes/db/init
@@ -765,7 +765,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
@@ -787,7 +787,7 @@ jobs:
         poetry run invoke setup.write-dotenv-file --environment=test
     - name: Cache type stubs
       id: cache-stubs
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       with:
         path: .cache/${{ matrix.executable }}
         key: ${{ matrix.python-version }}-${{ matrix.executable }}-types
@@ -867,7 +867,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       id: venv-cache
       with:
         path: .venv
