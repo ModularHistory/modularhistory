@@ -36,7 +36,7 @@
     "next-seo": "^4.28.1",
     "node-fetch": "^3.0.0",
     "nookies": "^2.5.2",
-    "npm": "^8.1.2",
+    "npm": "^8.12.2",
     "prop-types": "^15.7.2",
     "qs": "^6.10.1",
     "ra-data-django-rest-framework": "^0.2.0",
