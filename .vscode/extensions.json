@@ -6,7 +6,6 @@
 	"recommendations": [
 		"alefragnani.read-only-indicator",
 		"batisteo.vscode-django",
-		"coenraads.bracket-pair-colorizer-2",
 		"dbaeumer.vscode-eslint",
 		"donjayamanne.git-extension-pack",
 		"donjayamanne.python-extension-pack",
