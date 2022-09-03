@@ -37,7 +37,7 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
         description={`Learn about the history of ${entity.name}, including occurrences, quotes, and more related to issues that matter to people today.`}
       />
       <ModuleContainer>
-        <ModuleDetail module={entity} />
+        <ModuleDetail module={entity} isSaved={false} />
         {(entity.relatedQuotes?.length ?? 0) > 0 && (
           <>
             <CardHeader

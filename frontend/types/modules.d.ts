@@ -2,7 +2,7 @@ import { User } from "next-auth";
 
 export interface BaseModule {
   model: string;
-  id: number;
+  pk: number;
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
