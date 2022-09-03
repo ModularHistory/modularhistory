@@ -9,7 +9,8 @@ normal=$(tput sgr0)
 echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/dev/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
-    docker compose run django python manage.py makemigrations --check --no-input --dry-run || {
+
+    docker compose run django "python manage.py makemigrations --check --no-input --dry-run" || {
         echo "
         ${bold}Migrations are required${normal}.
         To see what migrations need to be generated, run:
