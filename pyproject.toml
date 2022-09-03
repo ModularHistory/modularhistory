@@ -83,7 +83,7 @@ repository = "https://github.com/ModularHistory/modularhistory"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
-python = "~3.9.9"
+python = "~3.9.13"
 aenum = "^3.1.5"
 aiohttp = { extras = ["speedups"], version = "^3.7.3" }
 appdirs = "^1.4"
