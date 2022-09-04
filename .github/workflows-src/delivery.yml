@@ -119,6 +119,7 @@ jobs:
         DOMAIN: ${{ secrets.DOMAIN }}
         RELOAD_WEBSERVER: ${{ contains(needs.changed-files.outputs.modified-files, 'nginx.conf') }}
         HOST: ${{ secrets.DOMAIN }}
+        HOST_USER: jacob
         TARGET: /var/www/${{ secrets.DOMAIN }}
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         SSH_PORT: ${{ secrets.SSH_PORT }}
@@ -135,10 +136,10 @@ jobs:
           mkdir -p dist/$(dirname "${filepath}")
           cp -r "$filepath" "dist/${filepath}"
         done
-        rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ jacob@${HOST}:${TARGET}
+        rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ ${HOST_USER}@${HOST}:${TARGET}
         echo "Starting SSH session with $HOST..."
-        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} jacob@$HOST "
-          cd ${TARGET} && 
+        ssh -o StrictHostKeyChecking=no -p $SSH_PORT ${HOST_USER}@${HOST} "
+          cd $TARGET && 
           mv docker-compose.prod.yml docker-compose.override.yml
           echo '' && echo 'Setting environment variables...'
           set -a && source .env && echo 'Finished setting environment variables.'
