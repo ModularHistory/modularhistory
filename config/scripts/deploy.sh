@@ -13,14 +13,11 @@ django=django
 celery=celery
 celery_beat=celery_beat
 next=next
-webserver=webserver
 
-# NOTE: The webserver image is pulled but not automatically deployed.
-# TODO: Pull and deploy the webserver image only if necessary?
-images_to_pull=("$django" "$next" "$webserver")
+images_to_pull=("$django" "$next")
 
 # Specify containers to start IF NOT ALREADY RUNNING, in order of startup.
-containers_to_start=("$postgres" "$redis" "$elasticsearch" "$django" "$celery" "$celery_beat" "$next" "$webserver")
+containers_to_start=("$postgres" "$redis" "$elasticsearch" "$django" "$celery" "$celery_beat" "$next")
 
 # Specify containers to deploy with zero downtime, in order of startup.
 # NOTE: These containers will briefly have two instances running simultaneously.
@@ -30,7 +27,7 @@ containers_to_deploy_without_downtime=("$django" "$celery" "$next")
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
     # https://nginx.org/en/docs/beginners_guide.html#control
-    docker compose exec -T "$webserver" nginx -s reload || {
+    nginx -s reload || {
         echo "Failed to reload nginx config file."; exit 1
     }
 }

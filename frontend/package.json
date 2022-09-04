@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "PORT=$(grep '^PORT=' .env | cut -d '=' -f2) next dev",
-    "start": "PORT=$(grep '^PORT=' .env | cut -d '=' -f2) next start",
+    "dev": "next dev",
+    "start": "next start",
     "lint": "next lint",
     "test": "jest"
   },
