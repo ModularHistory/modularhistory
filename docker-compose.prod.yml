@@ -9,8 +9,8 @@ services:
 
   django:
     environment:
-      DOMAIN: "modularhistory.com"
+      DOMAIN: "modularhistory.orega.org"
 
   cypress:
     environment:
-      - CYPRESS_baseUrl=https://www.modularhistory.com/
+      - CYPRESS_baseUrl=https://www.modularhistory.orega.org/

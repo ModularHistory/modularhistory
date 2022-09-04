@@ -80,7 +80,7 @@ module.exports = {
   },
   // images: {
   //   domains: process.env.ENVIRONMENT == "prod" ? [
-  //     'modularhistory.com'
+  //     'modularhistory.orega.org'
   //   ] : [
   //     'modularhistory.dev.net'
   //   ],

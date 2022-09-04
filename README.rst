@@ -10,11 +10,11 @@ ModularHistory
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
     
-.. _ModularHistory.com: https://modularhistory.com/
+.. _modularhistory.orega.org: https://modularhistory.orega.org/
 .. _wiki: https://github.com/ModularHistory/modularhistory/wiki
 
 
-This repository powers ModularHistory.com_.
+This repository powers modularhistory.orega.org_.
 
 Take a look at ModularHistory's wiki_.
 
@@ -33,7 +33,7 @@ Support
 
 Reach out to ModularHistory:
 
--  By email: support@modularhistory.com
+-  By email: support@modularhistory.orega.org
 -  On Facebook: https://www.facebook.com/modularhistory
 -  On Twitter: https://twitter.com/ModularHistory
 

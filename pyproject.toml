@@ -72,11 +72,11 @@ use_parentheses = true
 [tool.poetry]
 name = "modularhistory"
 authors = [
-    "Jacob Fredericksen <jacob@modularhistory.com>",
-    "Matthew Fredericksen <matthew@modularhistory.com>",
+    "Jacob Fredericksen <jacob@modularhistory.orega.org>",
+    "Matthew Fredericksen <matthew@modularhistory.orega.org>",
 ] # TODO: add others?
-description = "ModularHistory (https://modularhistory.com/)"
-homepage = "https://modularhistory.com/"
+description = "ModularHistory (https://modularhistory.orega.org/)"
+homepage = "https://modularhistory.orega.org/"
 license = "ISC"
 readme = "README.rst"
 repository = "https://github.com/ModularHistory/modularhistory"

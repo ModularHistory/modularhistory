@@ -2,7 +2,7 @@
 
 # Meta tags
 META_SITE_PROTOCOL = 'https'
-META_SITE_DOMAIN = 'modularhistory.com'
+META_SITE_DOMAIN = 'modularhistory.orega.org'
 META_SITE_TYPE = 'website'
 META_SITE_NAME = 'ModularHistory'
 META_USE_OG_PROPERTIES = True

@@ -12,9 +12,9 @@ if [[ ! -f "$REDIRECTS_MAP_PATH" ]]; then
 fi
 
 if [[ "$ENVIRONMENT" = prod ]]; then
-    if [[ ! -f /etc/letsencrypt/live/modularhistory.com/fullchain.pem ]]; then
+    if [[ ! -f /etc/letsencrypt/live/modularhistory.orega.org/fullchain.pem ]]; then
         echo 'Getting SSL certificate...' && 
-        certbot certonly --standalone --agree-tos -m "jacob@modularhistory.com" -n -d "${DOMAINS}";
+        certbot certonly --standalone --agree-tos -m "jacob@modularhistory.orega.org" -n -d "${DOMAINS}";
     fi
     echo 'Starting ddclient...' && 
     envsubst < /etc/ddclient/ddclient.conf > /etc/ddclient/ddclient.conf.tmp && 

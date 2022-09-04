@@ -26,7 +26,7 @@ interface CollectionProps {
 
 /**
  * The collections page:
- * http://www.modularhistory.com/collections
+ * http://www.modularhistory.orega.org/collections
  */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   const smallScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
@@ -134,7 +134,7 @@ const DesktopSharingButtons: FC<CollectionProps> = ({ collection }: CollectionPr
 };
 
 const SharingButtonGroup: FC<CollectionProps> = ({ collection }: CollectionProps) => {
-  const url = `https://modularhistory.com${collection.absoluteUrl}`;
+  const url = `https://modularhistory.orega.org${collection.absoluteUrl}`;
   const iconProps = { size: 36, round: true };
   return (
     <>

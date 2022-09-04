@@ -18,7 +18,7 @@ services:
     env_file: .env
     environment:
       PORT: 3002
-      NEXTAUTH_URL: "https://www.modularhistory.com"
+      NEXTAUTH_URL: "https://www.modularhistory.orega.org"
       NEXTAUTH_URL_INTERNAL: "http://next:3002"
     expose:
       - "3002"
