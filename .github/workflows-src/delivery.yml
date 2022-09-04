@@ -138,7 +138,7 @@ jobs:
         rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ jacob@${HOST}:${TARGET}
         echo "Starting SSH session with $HOST..."
         ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} jacob@$HOST "
-          cd /var/www/${DOMAIN} && 
+          cd ${TARGET} && 
           mv docker-compose.prod.yml docker-compose.override.yml
           echo '' && echo 'Setting environment variables...'
           set -a && source .env && echo 'Finished setting environment variables.'
