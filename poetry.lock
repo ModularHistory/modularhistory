@@ -1409,47 +1409,38 @@ pillow = "*"
 svg = ["reportlab", "svglib"]
 
 [[package]]
-name = "elastic-transport"
-version = "8.4.0"
-description = "Transport classes and utilities shared among Python Elastic client libraries"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-certifi = "*"
-urllib3 = ">=1.26.2,<2"
-
-[package.extras]
-develop = ["aiohttp", "mock", "pytest", "pytest-asyncio", "pytest-cov", "pytest-httpserver", "pytest-mock", "requests", "trustme"]
-
-[[package]]
 name = "elasticsearch"
-version = "8.4.0"
+version = "7.17.6"
 description = "Python client for Elasticsearch"
 category = "main"
 optional = false
-python-versions = ">=3.6, <4"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
 
 [package.dependencies]
-elastic-transport = ">=8,<9"
+certifi = "*"
+urllib3 = ">=1.21.1,<2"
 
 [package.extras]
 async = ["aiohttp (>=3,<4)"]
+develop = ["black", "coverage", "jinja2", "mock", "pytest", "pytest-cov", "pyyaml", "requests (>=2.0.0,<3.0.0)", "sphinx (<1.7)", "sphinx-rtd-theme"]
+docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
 requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "elasticsearch-dsl"
-version = "0.0.9"
+version = "7.4.0"
 description = "Python client for Elasticsearch"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
-elasticsearch = ">=1.0.0"
+elasticsearch = ">=7.0.0,<8.0.0"
 python-dateutil = "*"
 six = "*"
+
+[package.extras]
+develop = ["coverage (<5.0.0)", "mock", "pytest (>=3.0.0)", "pytest-cov", "pytest-mock (<3.0.0)", "pytz", "sphinx", "sphinx-rtd-theme"]
 
 [[package]]
 name = "eradicate"
@@ -1870,7 +1861,7 @@ mypy = ">=0.750"
 
 [[package]]
 name = "graphql-core"
-version = "3.2.1"
+version = "3.1.7"
 description = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
 category = "main"
 optional = false
@@ -1878,14 +1869,14 @@ python-versions = ">=3.6,<4"
 
 [[package]]
 name = "graphql-relay"
-version = "3.2.0"
+version = "3.1.5"
 description = "Relay library for graphql-core"
 category = "main"
 optional = false
 python-versions = ">=3.6,<4"
 
 [package.dependencies]
-graphql-core = ">=3.2,<3.3"
+graphql-core = ">=3.1,<3.2"
 
 [[package]]
 name = "gunicorn"
@@ -3981,7 +3972,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.13"
-content-hash = "b3d59a137b07eae9472b72cd5fe1b76dca75766e9dff1b14ec30adb6ee7e1e45"
+content-hash = "dd90da3f5ed2ac1f11b7e1de4044caedece95ac369b1fc0cd65d815b24bdb1e8"
 
 [metadata.files]
 aenum = [
@@ -4742,17 +4733,13 @@ easy-thumbnails = [
     {file = "easy-thumbnails-2.8.3.tar.gz", hash = "sha256:8a3ec61bb8c72fac7f75e811a96e3cd7942ac89cab55ab16549d6d2ce9cdeaa5"},
     {file = "easy_thumbnails-2.8.3-py3-none-any.whl", hash = "sha256:fc697845103b65279df6c5c0834b0c165bdef07edd6220a06a7a05ca934d582c"},
 ]
-elastic-transport = [
-    {file = "elastic-transport-8.4.0.tar.gz", hash = "sha256:b9ad708ceb7fcdbc6b30a96f886609a109f042c0b9d9f2e44403b3133ba7ff10"},
-    {file = "elastic_transport-8.4.0-py3-none-any.whl", hash = "sha256:19db271ab79c9f70f8c43f8f5b5111408781a6176b54ab2e54d713b6d9ceb815"},
-]
 elasticsearch = [
-    {file = "elasticsearch-8.4.0-py3-none-any.whl", hash = "sha256:f7ef925d8dd90922be82a328b20c31cdc8b48af3161bbc2eaa03b65f85668999"},
-    {file = "elasticsearch-8.4.0.tar.gz", hash = "sha256:b97649ea57296715f98947e8ecc987c8363f0fd09782a7206cc69e0ff0b03b9e"},
+    {file = "elasticsearch-7.17.6-py2.py3-none-any.whl", hash = "sha256:2c3400c9e9c7fee46c4732fb32b933577aebb07b5e94df025f6ff1a30d2397d0"},
+    {file = "elasticsearch-7.17.6.tar.gz", hash = "sha256:f4b779fc2a035904b97bef0542110372efd94aa7ab2c13749af73158c08be110"},
 ]
 elasticsearch-dsl = [
-    {file = "elasticsearch-dsl-0.0.9.tar.gz", hash = "sha256:72c108f794a79b154c32cf594a1185459338d6aaec337051f03b2034a16eacbd"},
-    {file = "elasticsearch_dsl-0.0.9-py2.py3-none-any.whl", hash = "sha256:9b5404180d2747fa2e43c2e5cd78d39241cb80d041f492cccdd2a2e6272b0bda"},
+    {file = "elasticsearch-dsl-7.4.0.tar.gz", hash = "sha256:c4a7b93882918a413b63bed54018a1685d7410ffd8facbc860ee7fd57f214a6d"},
+    {file = "elasticsearch_dsl-7.4.0-py2.py3-none-any.whl", hash = "sha256:046ea10820b94c075081b528b4526c5bc776bda4226d702f269a5f203232064b"},
 ]
 eradicate = [
     {file = "eradicate-2.1.0-py3-none-any.whl", hash = "sha256:8bfaca181db9227dc88bdbce4d051a9627604c2243e7d85324f6d6ce0fd08bb2"},
@@ -4948,12 +4935,12 @@ graphene-types = [
     {file = "graphene_types-0.15.1-py3-none-any.whl", hash = "sha256:9f4f795e68cd0c0d241e4567354eba40ba7952cf6cd090c7a091573b36dbec0b"},
 ]
 graphql-core = [
-    {file = "graphql-core-3.2.1.tar.gz", hash = "sha256:9d1bf141427b7d54be944587c8349df791ce60ade2e3cccaf9c56368c133c201"},
-    {file = "graphql_core-3.2.1-py3-none-any.whl", hash = "sha256:f83c658e4968998eed1923a2e3e3eddd347e005ac0315fbb7ca4d70ea9156323"},
+    {file = "graphql-core-3.1.7.tar.gz", hash = "sha256:62ec192150ccecd9a18cfb79e3e72eb7d1fd68fb594ef19c40099b6deec8ef0c"},
+    {file = "graphql_core-3.1.7-py3-none-any.whl", hash = "sha256:9b460f60320be01c7f3b1766cf3e406933003008055079b9d983b8f3988f4400"},
 ]
 graphql-relay = [
-    {file = "graphql-relay-3.2.0.tar.gz", hash = "sha256:1ff1c51298356e481a0be009ccdff249832ce53f30559c1338f22a0e0d17250c"},
-    {file = "graphql_relay-3.2.0-py3-none-any.whl", hash = "sha256:c9b22bd28b170ba1fe674c74384a8ff30a76c8e26f88ac3aa1584dd3179953e5"},
+    {file = "graphql-relay-3.1.5.tar.gz", hash = "sha256:127f40913f11cb847452ef794931261aae3b222eaaf976f7c8430298534e54d3"},
+    {file = "graphql_relay-3.1.5-py3-none-any.whl", hash = "sha256:d1455316182e1017d06f0b4d4a2ce8bafad38253a6c7c5666fc80d5d516ee5c8"},
 ]
 gunicorn = [
     {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},
