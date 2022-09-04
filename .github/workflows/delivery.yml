@@ -53,7 +53,6 @@ env:
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-  SERVER: ${{ secrets.SERVER }}
   SHA: ${{ github.sha }}
   SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
   SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
@@ -284,8 +283,8 @@ jobs:
       env:
         DOMAIN: ${{ secrets.DOMAIN }}
         RELOAD_WEBSERVER: ${{ contains(needs.changed-files.outputs.modified-files, 'nginx.conf') }}
-        SERVER_HOST: ${{ secrets.DOMAIN }}
-        SERVER_TARGET: /var/www/${{ secrets.DOMAIN }}
+        HOST: ${{ secrets.DOMAIN }}
+        TARGET: /var/www/${{ secrets.DOMAIN }}
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         SSH_PORT: ${{ secrets.SSH_PORT }}
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -295,21 +294,21 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-        echo "Transferring files to $SERVER..."
+        echo "Transferring files to $HOST..."
         files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./.config")
         for filepath in "${files_to_transport[@]}"; do
           mkdir -p dist/$(dirname "${filepath}")
           cp -r "$filepath" "dist/${filepath}"
         done
-        rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ jacob@${SERVER}:${SERVER_TARGET}
-        echo "Starting SSH session with $SERVER..."
-        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} jacob@$SERVER << 'ENDSSH'
-          echo "" && echo "Renaming docker-compose.prod.yml to docker-compose.override.yml ..."
+        rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ jacob@${HOST}:${TARGET}
+        echo "Starting SSH session with $HOST..."
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} jacob@$HOST "
+          cd /var/www/${DOMAIN} && 
           mv docker-compose.prod.yml docker-compose.override.yml
-          echo "" && echo "Setting environment variables..."
-          set -a && source .env && echo "Finished setting environment variables."
+          echo '' && echo 'Setting environment variables...'
+          set -a && source .env && echo 'Finished setting environment variables.'
           set +a; bash .config/scripts/deploy.sh
-        ENDSSH
+        "
     - name: Create Sentry release
       uses: getsentry/action-release@v1.2.0
       env:
