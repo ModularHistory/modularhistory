@@ -28,7 +28,6 @@ DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
-print(f">>>>>>> {ROOT_DIR=}")
 
 # --- URL MODIFICATION SETTINGS ---
 # Delegate URL modification to the Nginx reverse proxy server.

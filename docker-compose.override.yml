@@ -52,7 +52,8 @@ services:
       - ./frontend/node_modules:/app/node_modules
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
       - ./static:/static
-
+      - ./static:/app/public/static
+      - ./_volumes/media:/app/public/media
   elasticsearch:
     ports:
       - "9200:9200"

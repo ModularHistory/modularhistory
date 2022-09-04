@@ -4,7 +4,7 @@ echo ""
 echo "Sourcing functions from $(dirname "$0")/functions.sh ..."
 source "$(dirname $0)/functions.sh"
 
-cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+cd "${ROOT_DIR}/backend" || _error "Could not cd into ${PROJECT_DIR}/backend"
 
 # Detect operating system.
 os_name=$(uname -s)

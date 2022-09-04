@@ -13,7 +13,9 @@ ARG ENVIRONMENT=dev
 RUN mkdir -p -- \
   /static \
   /_volumes/static \
-  /_volumes/redirects
+  /_volumes/redirects \
+  /app/public/media \
+  /app/public/static
 
 WORKDIR /app
 

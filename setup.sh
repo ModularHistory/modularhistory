@@ -5,15 +5,15 @@ set -a
 PYTHON_VERSION="3.9.13"
 export PYTHON_VERSION
 
-PROJECT_DIR=$(dirname "$0")
-export PROJECT_DIR
+ROOT_DIR=$(dirname "$0")
+export ROOT_DIR
 
 unset a
 
-VOLUMES_DIR="$PROJECT_DIR/_volumes"
+VOLUMES_DIR="$ROOT_DIR/_volumes"
 
 # Enter the project.
-cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+cd "$ROOT_DIR" || _error "Could not cd into $ROOT_DIR"
 echo "Working in $(pwd) ..."
 
 # Import functions like _print_error.
@@ -135,7 +135,7 @@ function _append_to_sh_profile() {
 function _prompt_to_rerun() {
   read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
   if [[ ! "$CONT" = "n" ]]; then
-    exec bash "$PROJECT_DIR/setup.sh"
+    exec bash "$ROOT_DIR/setup.sh"
   fi
 }
 
@@ -238,7 +238,7 @@ declare -a writable_dirs=(
   "$VOLUMES_DIR/media"
   "$VOLUMES_DIR/static"
   "$VOLUMES_DIR/redirects"
-  "$PROJECT_DIR/frontend/.next"
+  "$ROOT_DIR/frontend/.next"
 )
 
 for writable_dir in "${writable_dirs[@]}"; do
@@ -255,9 +255,9 @@ if [[ "$os" == "$LINUX" ]]; then
     }
   }
   # shellcheck disable=SC2010
-  ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
+  ls -ld "$ROOT_DIR" | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
-    sudo chown -R "$USER":www-data "$PROJECT_DIR"
+    sudo chown -R "$USER":www-data "$ROOT_DIR"
   }
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
@@ -372,7 +372,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
     if [[ $sharing_enabled = true ]]; then
       echo "Docker file sharing is enabled for $HOME/modularhistory."
     else
-      echo "Enabling file sharing for $PROJECT_DIR ..."
+      echo "Enabling file sharing for $ROOT_DIR ..."
       jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" < "$docker_settings_file" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
       test "$(docker ps -q)" && {
@@ -482,4 +482,4 @@ docker compose up -d django next && echo 'Finished.' || {
   "
 }
 
-shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"
+shasum "$ROOT_DIR/setup.sh" > "$ROOT_DIR/.venv/.setup.sha"
