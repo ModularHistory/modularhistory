@@ -88,4 +88,4 @@ EXPOSE 8000
 USER www-data
 
 # Specify the default command to run when the container is started.
-CMD /bin/bash /modularhistory/config/scripts/init/django.sh
+CMD /bin/bash /modularhistory/.config/scripts/init/django.sh

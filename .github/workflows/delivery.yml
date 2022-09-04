@@ -305,7 +305,7 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./config")
+        files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./.config")
         for filepath in "${files_to_transport[@]}"; do
           mkdir -p dist/$(dirname "${filepath}")
           cp "$filepath" "dist/${filepath}"

@@ -4,7 +4,7 @@ services:
   webserver:
     hostname: modularhistory.dev.net
     volumes:
-      - ./config/nginx/dev:/etc/nginx/conf.d
+      - ./.config/nginx/dev:/etc/nginx/conf.d
 
   next:
     environment:
