@@ -65,7 +65,7 @@ services:
     image: next:latest
     user: root # avoid permissions issues with writing in build dir
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules

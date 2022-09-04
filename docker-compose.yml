@@ -37,8 +37,7 @@ services:
     # https://hub.docker.com/r/certbot/certbot/
     image: "certbot/certbot"
     entrypoint: >
-      /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
-      wait $${!}; done;'
+      /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
@@ -54,9 +53,9 @@ services:
     env_file: .env
     environment:
       NEXTAUTH_URL: "https://www.modularhistory.com"
-      NEXTAUTH_URL_INTERNAL: "http://next:3000"
+      NEXTAUTH_URL_INTERNAL: "http://next:3002"
     expose:
-      - "3000"
+      - "3002"
     volumes:
       - ./_volumes/static:/modularhistory/_volumes/static
       - ./_volumes/redirects:/modularhistory/_volumes/redirects
@@ -189,8 +188,7 @@ services:
     expose:
       - "9200"
     healthcheck:
-      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200
-        >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
       timeout: 10s
       retries: 5
