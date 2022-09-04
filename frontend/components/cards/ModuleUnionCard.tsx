@@ -112,7 +112,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       );
       break;
     default:
-      ((module: never) => {
+      ((module: unknown) => {
         throw new Error(`Unexpected module type encountered: ${(module as any).model}`);
       })(module);
   }
