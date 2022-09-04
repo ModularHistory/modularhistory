@@ -300,14 +300,6 @@ jobs:
         no-cache: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
-    - name: Run Snyk to check image for vulnerabilities
-      continue-on-error: true
-      uses: snyk/actions/docker@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        image: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }}
-        args: --file=Dockerfile.${{ matrix.image }}
   pytest:
     name: Run backend integration tests
     runs-on: ubuntu-latest

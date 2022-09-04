@@ -72,14 +72,3 @@ runs:
         no-cache: true
         secret-files: ENV_FILE=./.env
         tags: ${{ inputs.tags }}
-    -
-      name: Run Snyk to check image for vulnerabilities
-      # Snyk can be used to break the build when it detects vulnerabilities.
-      # In this case, we want to upload the issues to GitHub Code Scanning.
-      continue-on-error: true
-      uses: snyk/actions/docker@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        image: ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
-        args: --file=Dockerfile.${{ inputs.image }}
