@@ -42,7 +42,7 @@ def sync(context: 'Context', push: bool = False):
         'This could take a while. Leave this shell running until you '
         'see a "Finished" message. In the meantime, feel free to open '
         'a new shell and start up the app with the following command: \n\n'
-        '    docker compose up -d webserver\n\n'
+        '    docker compose up -d django next\n\n'
         '..........................'
     )
     media.sync(context, push=push)

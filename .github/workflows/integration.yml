@@ -198,7 +198,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        image: [django, next, webserver]
+        image: [django, next]
     environment: test
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date

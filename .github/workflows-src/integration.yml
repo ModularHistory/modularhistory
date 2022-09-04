@@ -118,7 +118,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        image: [ django, next, webserver ]
+        image: [ django, next ]
     environment: test
     steps:
     - includes: ./.github/actions/setup

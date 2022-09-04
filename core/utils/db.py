@@ -297,7 +297,7 @@ def seed(
             pty=True,
         )
     if up:
-        context.run('docker compose up -d webserver')
+        context.run('docker compose up -d django next')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):

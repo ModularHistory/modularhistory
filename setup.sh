@@ -428,7 +428,7 @@ poetry run invoke seed --no-db
 
 # Build Docker images.
 # Note: This requires a .env file.
-image_names=( "django" "next" "webserver" )
+image_names=( "django" "next" )
 for image_name in "${image_names[@]}"; do
   docker compose build "$image_name" || _error "Failed to build $image_name image."
 done
@@ -471,14 +471,14 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker compose up -d webserver && echo 'Finished.' || {
+docker compose up -d django next && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. 
     Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker compose up -d webserver
+      ${BOLD}cd ~/modularhistory && docker compose up -d django next
 
   "
 }

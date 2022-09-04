@@ -1,18 +1,6 @@
 version: "3.8"
 
 services:
-  webserver:
-    build:
-      context: .
-      dockerfile: ./build/Dockerfile.webserver
-      args:
-        ENVIRONMENT: dev
-    hostname: modularhistory.dev.net
-    image: webserver:latest
-    volumes:
-      # Override docker-compose.yml's `./.config/nginx/prod:/etc/nginx/conf.d`
-      - ./.config/nginx/dev:/etc/nginx/conf.d
-
   celery:
     image: django:latest
     user: root

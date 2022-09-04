@@ -20,7 +20,7 @@ docker system info &>/dev/null || {
     done
   }
 }
-docker compose ps | grep "webserver" | grep --quiet "Up" && up=true || up=false
+docker compose ps | grep "django" | grep --quiet "Up" && up=true || up=false
 
 # Determine whether to prompt to (re)run the setup script.
 if [[ ! -f $setup_sha_file ]]; then
@@ -98,7 +98,7 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 }
 
 # Restart any stopped containers, if containers were previously running.
-[[ "$up" = true ]] && docker compose up -d webserver
+[[ "$up" = true ]] && docker compose up -d django next
 
 # Prompt to update hooks if necessary.
 if [[ $post_merge_hook_changed = true ]]; then
