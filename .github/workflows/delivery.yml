@@ -94,7 +94,7 @@ jobs:
       with:
         workflow: .github/workflows/delivery.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -217,7 +217,7 @@ jobs:
       with:
         workflow: .github/workflows/delivery.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9

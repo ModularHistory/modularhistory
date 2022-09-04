@@ -89,7 +89,7 @@ aiohttp = { extras = ["speedups"], version = "^3.7.3" }
 appdirs = "^1.4"
 beautifulsoup4 = "==4.10.0"
 braintree = "^4.8.0"
-celery = "^5.1.2"
+celery = "^5.2.3"
 celery-singleton = "^0.3.1"
 channels = "^3.0"
 channels-redis = "^3.2.0"
@@ -147,7 +147,7 @@ inflect = "^5.0"
 invoke = "^1.4.1"
 jira = "==3.0.1"
 jsonschema = "^3.2.0"
-lxml = "^4.6.4"
+lxml = "^4.9.1"
 millify = "^0.1.1"
 natural-keys = "==2.0.0"
 pafy = "==0.5.5"
@@ -185,12 +185,11 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.15" }
 youtube-dl = "^2021.6.6"
 
-kombu = "<5.2"
-
 # TODO: Delete this after enabling [tool.poetry.group.dev.dependencies]
 [tool.poetry.dev-dependencies]
 # TODO: Use separate test group after it's supported in next Poetry version
 # [tool.poetry.group.test.dependencies]
+black = "^22.8.0"
 coverage = { extras = ["toml"], version = "^5.3" }
 factory-boy = "^3.2.0"
 hypothesis = { extras = ["datetime", "django", "pytest"], version = "^6.29.0" }
@@ -210,7 +209,6 @@ docker-image-size-limit = "^0.4"
 flake8 = "^3.8"
 flake8-annotations = "^2.6.2"
 flake8-bandit = "^2.1.2"
-flake8-black = "^0.2.1"
 flake8-broken-line = "^0.3"
 flake8-bugbear = "^20.1.4"
 flake8-commas = "^2.0.0"
@@ -233,7 +231,7 @@ mypy = "^0.910"
 pep8-naming = "^0.11.1"
 pylint = "^2.11.1"
 pyre-check = "^0.9.8"
-pytype = "^2021.11.02"
+pytype = "^2022.8.3"
 rope = "^0.20.1"
 safety = "^1.9"
 tomlkit = "^0.7.0"

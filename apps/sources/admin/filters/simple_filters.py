@@ -53,7 +53,7 @@ class HasFilePageOffsetFilter(BooleanListFilter):
         for source in sources:
             source_file = source.file
             if bool(source_file.page_offset) == include_if_has_page_offset:
-                ids.append(source.id)
+                ids.append(source.pk)
         return sources.filter(id__in=ids)
 
 
