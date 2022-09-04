@@ -133,7 +133,7 @@ jobs:
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         poetry run invoke setup.write-dotenv-file --environment=dev
     - name: Archive .env file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: dotenv-file
         path: .env
