@@ -137,7 +137,7 @@ jobs:
         echo "Done."
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.3
@@ -260,7 +260,7 @@ jobs:
         echo "Done."
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.3

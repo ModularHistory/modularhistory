@@ -80,7 +80,7 @@ runs:
     # Install PyInvoke config.
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry

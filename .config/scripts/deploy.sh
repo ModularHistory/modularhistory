@@ -137,7 +137,7 @@ docker image prune -a -f; docker system prune -f
 
 # Update config files as necessary.
 echo "" && echo "Updating PyInvoke config..."
-cp config/invoke.yaml "$HOME/.invoke.yaml"
+cp .config/invoke.yaml "$HOME/.invoke.yaml"
 
 echo "" && docker compose ps
 echo "" && echo "Done."

@@ -403,7 +403,7 @@ fi
 }
 
 # Install configuration file for PyInvoke.
-cp config/invoke.yaml "$HOME/.invoke.yaml"
+cp .config/invoke.yaml "$HOME/.invoke.yaml"
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
