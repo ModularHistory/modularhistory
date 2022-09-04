@@ -69,8 +69,8 @@ RUN python -c "import nltk; nltk.download('punkt')" && \
 
 # Add source code.
 COPY . /modularhistory/
-COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY config/invoke.yaml /etc/invoke.yaml
+COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY .config/invoke.yaml /etc/invoke.yaml
 
 # Collect static files.
 RUN python manage.py collectstatic --no-input

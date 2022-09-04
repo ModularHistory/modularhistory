@@ -26,9 +26,9 @@ RUN mkdir -p -- \
   /etc/letsencrypt
 
 COPY core/templates/error.htm /modularhistory/core/templates/error.htm
-COPY config/scripts/init/webserver.sh /modularhistory/config/scripts/init/webserver.sh
-COPY config/nginx /modularhistory/config/nginx
-COPY config/ddclient.conf /etc/ddclient/ddclient.conf
+COPY .config/scripts/init/webserver.sh /modularhistory/config/scripts/init/webserver.sh
+COPY .config/nginx /modularhistory/config/nginx
+COPY .config/ddclient.conf /etc/ddclient/ddclient.conf
 
 RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/cache/nginx \

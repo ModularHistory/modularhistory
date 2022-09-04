@@ -56,7 +56,7 @@ COPY frontend/package*.json /modularhistory/frontend/
 RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
 
 # Copy necessary files.
-COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY .env /modularhistory/.env
 # TODO: Move these static files into frontend?
 COPY core/static /modularhistory/core/static
