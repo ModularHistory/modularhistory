@@ -318,7 +318,7 @@ poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
 # Install the project's Python dependencies.
-bash config/scripts/install-deps.sh
+bash .config/scripts/install-deps.sh
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."

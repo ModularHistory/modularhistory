@@ -28,7 +28,7 @@ services:
 
   django:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/django.sh
+    command: bash .config/scripts/init/django.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
 
   celery:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/celery.sh
+    command: bash .config/scripts/init/celery.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -101,7 +101,7 @@ services:
 
   celery_beat:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/celery_beat.sh
+    command: bash .config/scripts/init/celery_beat.sh
     depends_on:
       postgres:
         condition: service_healthy

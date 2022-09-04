@@ -180,7 +180,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -271,7 +271,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -411,7 +411,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -523,7 +523,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -563,7 +563,7 @@ jobs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
     - name: Run Cypress
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -649,7 +649,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -689,11 +689,11 @@ jobs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
     - name: Run deploy script
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
     - name: Run deploy script x2
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
   check-types:
     name: Check types
     needs: changed-files
@@ -777,7 +777,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -879,7 +879,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug

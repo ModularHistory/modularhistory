@@ -144,7 +144,7 @@ jobs:
           mv docker-compose.prod.yml docker-compose.override.yml
           echo "" && echo "Setting environment variables..."
           set -a && source .env && echo "Finished setting environment variables."
-          set +a; bash config/scripts/deploy.sh
+          set +a; bash .config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
       uses: getsentry/action-release@v1.1.6

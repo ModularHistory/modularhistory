@@ -157,7 +157,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -280,7 +280,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -317,7 +317,7 @@ jobs:
           mv docker-compose.prod.yml docker-compose.override.yml
           echo "" && echo "Setting environment variables..."
           set -a && source .env && echo "Finished setting environment variables."
-          set +a; bash config/scripts/deploy.sh
+          set +a; bash .config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
       uses: getsentry/action-release@v1.1.6
