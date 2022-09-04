@@ -12,7 +12,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.CR_PAT }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Create writable volume directories
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
@@ -39,4 +39,6 @@ runs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
+      env:
+        GHCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: bash .config/scripts/deploy.sh
