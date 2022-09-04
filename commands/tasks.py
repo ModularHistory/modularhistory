@@ -32,7 +32,7 @@ def build(  # noqa: S107
 ):
     """Build the Docker images used by ModularHistory."""
     if not access_token:
-        access_token = config('CR_PAT', default=None)
+        access_token = config('GHCR_PASSWORD', default=None)
     if not all([github_actor, access_token, sha]):
         if os.path.exists(GITHUB_CREDENTIALS_FILE):
             print('Reading credentials...')
@@ -49,7 +49,7 @@ def build(  # noqa: S107
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
     )
-    for image_name in ('django', 'next', 'webserver'):
+    for image_name in ('django', 'next'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
         context.run(f'docker pull {image}:latest', warn=True)

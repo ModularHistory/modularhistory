@@ -35,7 +35,6 @@ env:
   CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
   CONTENT_MANAGER_EMAIL: ${{ secrets.CONTENT_MANAGER_EMAIL }}
   CONTENT_MANAGER_PAT: ${{ secrets.CONTENT_MANAGER_PAT }}
-  CR_PAT: ${{ secrets.CR_PAT }}
   ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
   EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
   EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
@@ -173,7 +172,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.CR_PAT }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build image without cache
       uses: docker/build-push-action@v2
       with:
