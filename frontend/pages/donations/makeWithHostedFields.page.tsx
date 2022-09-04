@@ -70,7 +70,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
       // window.localStorage.setItem("donor", $("#name").val());
 
       // Send the nonce to the server.
-      const response = await axiosWithoutAuth.post("http://django:8000/api/donations/process/", {
+      const response = await axiosWithoutAuth.post("http://django:8002/api/donations/process/", {
         paymentMethodNonce: token,
         amount: $("#amount").val(),
         name: $("#name").val(),
@@ -232,7 +232,7 @@ export default Donate;
 export const getServerSideProps: GetServerSideProps = async () => {
   let clientToken = null;
   await axiosWithoutAuth
-    .get("http://django:8000/api/donations/token/")
+    .get("http://django:8002/api/donations/token/")
     .then((response) => {
       clientToken = response.data;
     })

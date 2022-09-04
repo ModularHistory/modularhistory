@@ -4,6 +4,7 @@ LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularh
 
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
+ARG PORT=8000
 
 # Set environment vars.
 ENV \
@@ -82,8 +83,8 @@ RUN chown -R www-data:www-data /app && \
   chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port
+EXPOSE ${PORT}
 
 # Switch from root to non-root user.
 USER www-data

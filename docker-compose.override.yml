@@ -20,6 +20,7 @@ services:
       dockerfile: backend/Dockerfile.django
       args:
         ENVIRONMENT: dev
+        PORT: 8002
     image: django:latest
     user: root
     volumes:

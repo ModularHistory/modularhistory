@@ -48,6 +48,7 @@ runs:
       with:
         build-args: |
           ENVIRONMENT=${{ inputs.environment }}
+          PORT=8002
         builder: ${{ steps.buildx.outputs.name }}
         cache-from: type=gha,scope=${{ inputs.image }}
         cache-to: type=gha,mode=max,scope=${{ inputs.image }}
@@ -64,6 +65,7 @@ runs:
       with:
         build-args: |
           ENVIRONMENT=${{ inputs.environment }}
+          PORT=8002
         builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./build/Dockerfile.${{ inputs.image }}

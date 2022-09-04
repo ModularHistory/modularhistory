@@ -17,7 +17,7 @@ import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 
 const makeDjangoApiUrl = (endpoint: string) => {
-  return `http://django:8000/api${endpoint}`;
+  return `http://django:8002/api${endpoint}`;
 };
 
 // https://next-auth.js.org/configuration/providers

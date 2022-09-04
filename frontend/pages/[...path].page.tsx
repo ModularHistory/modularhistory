@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const getRedirectPath = async (path: string) => {
     let redirectPath = "";
     await axios
-      .get(`http://django:8000/api/redirects//${path}/`)
+      .get(`http://django:8002/api/redirects//${path}/`)
       .then((response) => {
         redirectPath = response.data.newPath;
       })
@@ -60,7 +60,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     await axios
       // the "extra" slashes around `path` are currently needed to
       // match the `url` attribute of the FlatPage model.
-      .get(`http://django:8000/api/flatpages//${path}/`)
+      .get(`http://django:8002/api/flatpages//${path}/`)
       .then((response) => {
         flatPage = response.data;
         notFound = false;

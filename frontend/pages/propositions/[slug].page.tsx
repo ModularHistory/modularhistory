@@ -87,7 +87,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   let notFound = false;
   const { slug } = params || {};
   await axiosWithoutAuth
-    .get(`http://django:8000/api/propositions/${slug}/`)
+    .get(`http://django:8002/api/propositions/${slug}/`)
     .then((response) => {
       proposition = response.data;
     })

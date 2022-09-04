@@ -4,7 +4,7 @@ import { Container } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
-import React, { FC } from "react";
+import { FC } from "react";
 
 interface EmailConfirmationPageProps {
   message?: string;
@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { key } = context.params || {};
   let message = "Something went wrong.";
   await axios
-    .post("http://django:8000/api/users/auth/email-verification/", { key: key })
+    .post("http://django:8002/api/users/auth/email-verification/", { key: key })
     .then(function () {
       message = "Your e-mail address was verified successfully.";
     })

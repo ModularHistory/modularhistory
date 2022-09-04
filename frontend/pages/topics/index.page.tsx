@@ -8,7 +8,7 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import React, { FC } from "react";
+import { FC } from "react";
 
 interface TopicsProps {
   topicsData: {
@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/graphql/", {
+    .get("http://django:8002/graphql/", {
       params: { query: "{ topics { name slug propositions { slug } } }" },
     })
     .then(({ data }) => {

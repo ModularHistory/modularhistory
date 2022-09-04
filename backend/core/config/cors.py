@@ -17,9 +17,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3002',
     'http://next:3002',
     # Backend server
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://django:8000',
+    'http://localhost:8002',
+    'http://127.0.0.1:8002',
+    'http://django:8002',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = ENVIRONMENT == Environments.DEV

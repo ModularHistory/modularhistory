@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let collectionsData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8000/api/collections/", { params: context.query })
+    .get("http://django:8002/api/collections/", { params: context.query })
     .then((response) => {
       collectionsData = response.data;
     });

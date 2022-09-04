@@ -266,7 +266,7 @@ export const getStaticProps: GetStaticProps = async () => {
   let featuredModules: FeaturedContentProps[] = [];
 
   const tihPromise = axios
-    .get(`http://django:8000/api/home/today_in_history/`)
+    .get(`http://django:8002/api/home/today_in_history/`)
     .then((response) => {
       todayInHistoryModules = response.data;
     })
@@ -275,7 +275,7 @@ export const getStaticProps: GetStaticProps = async () => {
     });
 
   const featuredPromise = axios
-    .get(`http://django:8000/api/home/features/`)
+    .get(`http://django:8002/api/home/features/`)
     .then((response) => {
       featuredModules = response.data;
     })

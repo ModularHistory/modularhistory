@@ -9,7 +9,7 @@ import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -78,7 +78,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params || {};
 
   await axios
-    .get(`http://django:8000/api/collections/${slug}/`)
+    .get(`http://django:8002/api/collections/${slug}/`)
     .then((response) => {
       collection = response.data;
     })

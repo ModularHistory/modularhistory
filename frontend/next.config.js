@@ -38,7 +38,7 @@ module.exports = {
     if (!fs.existsSync(redirectsMapPath)) {
       console.log(`${redirectsMapPath} does not exist.`);
       await require("axios")
-        .get("http://django:8000/api/redirects/")
+        .get("http://django:8002/api/redirects/")
         .then(({ data }) => {
           const results = data["results"];
           if (!Array.isArray(results)) {

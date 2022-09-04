@@ -292,6 +292,7 @@ jobs:
       with:
         build-args: |
           ENVIRONMENT=prod
+          PORT=8002
         builder: ${{ steps.buildx.outputs.name }}
         context: .
         file: ./build/Dockerfile.${{ matrix.image }}

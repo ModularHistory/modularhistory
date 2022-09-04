@@ -317,7 +317,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   await axios
-    .get("http://django:8000/api/search/", {
+    .get("http://django:8002/api/search/", {
       params: context.query,
       paramsSerializer: (params) =>
         // we use qs since otherwise axios formats

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, styled } from "@mui/material";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import React, { FC } from "react";
+import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 const EntityRelatedQuoteCard = styled(Card)({
@@ -90,7 +90,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }`,
   };
   await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
+    .post("http://django:8002/graphql/", body)
     .then((response) => {
       entity = response.data.data.entity;
     })

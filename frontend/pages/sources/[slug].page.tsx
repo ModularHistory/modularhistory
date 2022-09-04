@@ -47,7 +47,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }`,
   };
   await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
+    .post("http://django:8002/graphql/", body)
     .then((response) => {
       source = response.data.data.source;
     })
