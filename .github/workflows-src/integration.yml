@@ -84,7 +84,7 @@ jobs:
     - name: Get changed files
       id: changed-files
       # https://github.com/tj-actions/changed-files
-      uses: tj-actions/changed-files@v11
+      uses: tj-actions/changed-files@v29.0.3
 
   setup-script:
     name: Test setup script
@@ -248,7 +248,7 @@ jobs:
     - 
       name: Cache type stubs
       id: cache-stubs
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: .cache/${{ matrix.executable }}
         key: ${{ matrix.python-version }}-${{ matrix.executable }}-types

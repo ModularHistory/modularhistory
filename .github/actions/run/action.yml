@@ -23,7 +23,7 @@ runs:
             sudo chmod a+w -R "$dir_path"
           } || exit 1
         done
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       id: data-cache
       with:
         path: _volumes/db/init

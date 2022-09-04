@@ -37,7 +37,7 @@ runs:
         fetch-depth: ${{ inputs.fetch-depth }}
     # Set up Python.
     - name: Set up Python ${{ inputs.python-version }}
-      uses: actions/setup-python@v2.3.1
+      uses: actions/setup-python@v4.2.0
       with:
         python-version: ${{ inputs.python-version }}
     - name: Get full Python version
@@ -91,7 +91,7 @@ runs:
         virtualenvs-in-project: true
     # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: venv-cache
       with:
         path: .venv
