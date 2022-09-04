@@ -6,7 +6,7 @@ import mockRouter from "next-router-mock";
 
 describe("TodayInHistory", () => {
   const testModule: Quote = {
-    id: 1,
+    pk: 1,
     verified: false,
     slug: "",
     title: "Test Quote",
