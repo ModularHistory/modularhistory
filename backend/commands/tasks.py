@@ -17,7 +17,7 @@ django.setup()
 
 from django.conf import settings  # noqa: E402
 
-GITHUB_CREDENTIALS_FILE = join(settings.BASE_DIR, '.github/.credentials')
+GITHUB_CREDENTIALS_FILE = join(settings.ROOT_DIR, '.github/.credentials')
 
 
 @command
@@ -93,7 +93,7 @@ def generate_artifacts(context: 'Context'):
         .order_by('-num_quotes')
     )
     text = '\n'.join([topic.name for topic in ordered_topics])
-    with open(join(settings.BASE_DIR, 'topics/topics.txt'), mode='w+') as artifact:
+    with open(join(settings.BASE_DIR, 'apps/topics/topics.txt'), mode='w+') as artifact:
         artifact.write(text)
 
     print('Building topic_cloud.png...')

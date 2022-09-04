@@ -27,6 +27,8 @@ DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+print(f">>>>>>> {ROOT_DIR=}")
 
 # --- URL MODIFICATION SETTINGS ---
 # Delegate URL modification to the Nginx reverse proxy server.
@@ -323,12 +325,12 @@ MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
 # Root for volume directories
-VOLUMES_DIR = os.path.join(BASE_DIR, '_volumes')
+VOLUMES_DIR = os.path.join(ROOT_DIR, '_volumes')
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_URL = '/static/'
-SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'core/static')
+SHARED_STATICFILES_DIR = os.path.join(ROOT_DIR, 'static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
 STATIC_ROOT = os.path.join(VOLUMES_DIR, 'static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
@@ -413,7 +415,7 @@ RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 # https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 SITE_ID = 1
 
-CONFIG_DIR = join(BASE_DIR, '.config')
+CONFIG_DIR = join(ROOT_DIR, '.config')
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

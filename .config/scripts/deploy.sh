@@ -54,7 +54,7 @@ echo "" && echo "Extant containers:" && docker compose ps
 
 # Login to the container registry.
 echo "" && echo "Logging in to the container registry..."
-echo "$GHCR_PASSWORD" | docker login ghcr.io -u iacobfred --password-stdin || {
+docker login ghcr.io -u iacobfred -p "$GHCR_PASSWORD" || {
     echo "GHCR login failed."; exit 1
 }
 

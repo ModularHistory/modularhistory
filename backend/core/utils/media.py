@@ -26,7 +26,7 @@ def backup(
     backups_dir, media_dir = settings.BACKUPS_DIR, settings.MEDIA_ROOT
     backup_files_pattern = join(backups_dir, '*.tar.gz')
     users_media_dir = join(media_dir, 'users')
-    temp_dir = join(settings.BASE_DIR, 'users_media')
+    temp_dir = join(settings.ROOT_DIR, 'users_media')
     exclude_users_media = redact and os.path.exists(users_media_dir)
     if exclude_users_media:
         context.run(f'mv {users_media_dir} {temp_dir}')

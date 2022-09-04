@@ -5,7 +5,7 @@ ModularHistory
 
 .. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/integration/badge.svg
 
-.. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/main/core/static/coverage.svg
+.. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/main/static/coverage.svg
     
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black

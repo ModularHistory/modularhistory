@@ -17,7 +17,7 @@ cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
 echo "Working in $(pwd) ..."
 
 # Import functions like _print_error.
-source "config/scripts/functions.sh"
+source ".config/scripts/functions.sh"
 
 function _append() {
   grep -qxF "$1" "$2" || {
@@ -66,7 +66,7 @@ git --help &>/dev/null || {
 }
 
 # Update git hooks.
-for filepath in config/hooks/*; do
+for filepath in .config/hooks/*; do
   filename=$(basename "$filepath")
   cmp --silent ".git/hooks/$filename" "$filepath" || {
     cat "$filepath" > ".git/hooks/$filename"
@@ -354,7 +354,6 @@ rclone version &>/dev/null || {
   echo "Cleaning up ..."
   rm -r .tmp
 }
-mkdir -p "$HOME/config/rclone"
 
 # Install dotenv linter.
 curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sudo sh -s -- -b /usr/local/bin

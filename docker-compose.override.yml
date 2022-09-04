@@ -5,30 +5,25 @@ services:
     image: django:latest
     user: root
     volumes:
-      - .:/modularhistory
+      - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
     image: django:latest
     volumes:
-      - .:/modularhistory
+      - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   django:
     build:
       context: .
-      dockerfile: ./build/Dockerfile.django
+      dockerfile: backend/Dockerfile.django
       args:
         ENVIRONMENT: dev
-    # deploy:
-    #   restart_policy:
-    #     condition: 'no'
     image: django:latest
     user: root
-    ports:
-      - "8000:8000"
     volumes:
-      - .:/modularhistory
+      - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   github_workflow_preprocessor:
@@ -43,22 +38,20 @@ services:
   next:
     build:
       context: .
-      dockerfile: ./build/Dockerfile.next
+      dockerfile: frontend/Dockerfile.next
       args:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
-      NEXTAUTH_URL: "http://modularhistory.dev.net"
+      NEXTAUTH_URL: "http://localhost:${PORT}"
       REACT_EDITOR: "code"
     image: next:latest
     user: root # avoid permissions issues with writing in build dir
-    ports:
-      - "3002:3002"
     volumes:
-      - ./frontend:/modularhistory/frontend
-      - ./frontend/node_modules:/modularhistory/frontend/node_modules
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-      - ./core/static/:/modularhistory/core/static
+      - ./static:/static
 
   elasticsearch:
     ports:

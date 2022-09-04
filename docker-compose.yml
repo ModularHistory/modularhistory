@@ -20,15 +20,15 @@ services:
       PORT: 3002
       NEXTAUTH_URL: "https://www.modularhistory.orega.org"
       NEXTAUTH_URL_INTERNAL: "http://next:3002"
-    expose:
-      - "3002"
+    ports:
+      - "${PORT}:${PORT}"
     volumes:
-      - ./_volumes/static:/modularhistory/_volumes/static
-      - ./_volumes/redirects:/modularhistory/_volumes/redirects
+      - ./_volumes/static:/_volumes/static
+      - ./_volumes/redirects:/_volumes/redirects
 
   django:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash .config/scripts/init/django.sh
+    command: bash /.config/scripts/init/django.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,14 +47,14 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail http://localhost:8000/healthcheck/ || exit 1"
+          "curl --fail http://localhost:${DJANGO_PORT}/healthcheck/ || exit 1"
         ]
       timeout: 7s
       interval: 30s
       retries: 3
       start_period: 60s
-    expose:
-      - "8000"
+    ports:
+      - "${DJANGO_PORT}:${DJANGO_PORT}"
     user: www-data
     volumes:
       # NOTE: www-data must be granted permission to write to these directories
@@ -62,15 +62,16 @@ services:
       # the container are granted in Dockerfile.django. Permissions to write on
       # the host machine must be granted manually; e.g.,
       #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
-      - ./_volumes/db/backups:/modularhistory/_volumes/db/backups
-      - ./_volumes/static:/modularhistory/_volumes/static
-      - ./_volumes/media:/modularhistory/_volumes/media
-      - ./_volumes/redirects:/modularhistory/_volumes/redirects
+      - ./_volumes/db/backups:/_volumes/db/backups
+      - ./_volumes/static:/_volumes/static
+      - ./_volumes/media:/_volumes/media
+      - ./_volumes/redirects:/_volumes/redirects
+      - ./.config:/.config
       - es_certs:$ELASTIC_CERTS_DIR
 
   celery:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash .config/scripts/init/celery.sh
+    command: bash /.config/scripts/init/celery.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -93,15 +94,16 @@ services:
       start_period: 20s
     user: www-data
     volumes:
-      - ./_volumes/db/backups:/modularhistory/_volumes/db/backups
-      - ./_volumes/db/init:/modularhistory/_volumes/db/init
-      - ./_volumes/static:/modularhistory/_volumes/static
-      - ./_volumes/media:/modularhistory/_volumes/media
-      - ./_volumes/redirects:/modularhistory/_volumes/redirects
+      - ./.config:/.config
+      - ./_volumes/db/backups:/_volumes/db/backups
+      - ./_volumes/db/init:/_volumes/db/init
+      - ./_volumes/static:/_volumes/static
+      - ./_volumes/media:/_volumes/media
+      - ./_volumes/redirects:/_volumes/redirects
 
   celery_beat:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash .config/scripts/init/celery_beat.sh
+    command: bash /.config/scripts/init/celery_beat.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -121,6 +123,8 @@ services:
       interval: 30s
       retries: 3
       start_period: 10s
+    volumes:
+      - ./.config:/.config
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1

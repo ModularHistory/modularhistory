@@ -1,4 +1,4 @@
-import "@/../core/static/styles/base.scss";
+import "@/../../static/styles/base.scss";
 import { DJANGO_CSRF_COOKIE_NAME } from "@/auth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { PageTransitionContextProvider } from "@/components/PageTransitionContext";

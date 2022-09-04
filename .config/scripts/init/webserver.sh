@@ -2,7 +2,7 @@
 
 echo 'Initializing webserver...'
 
-REDIRECTS_MAP_DIR=/modularhistory/_volumes/redirects
+REDIRECTS_MAP_DIR=/_volumes/redirects
 REDIRECTS_MAP_PATH="${REDIRECTS_MAP_DIR}/redirects.map"
 
 if [[ ! -f "$REDIRECTS_MAP_PATH" ]]; then

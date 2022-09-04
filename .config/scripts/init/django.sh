@@ -37,11 +37,11 @@ python manage.py search_index --rebuild -f || {
 
 if [ "$ENVIRONMENT" = prod ]; then
     gunicorn core.asgi:application \
-      --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \
+      --user www-data --bind "0.0.0.0:${DJANGO_PORT:-8000}" -k uvicorn.workers.UvicornWorker \
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
     # Create superuser if necessary.
     python manage.py createsuperuser --no-input --username="$DJANGO_SUPERUSER_EMAIL" --email="$DJANGO_SUPERUSER_EMAIL" &>/dev/null
     # Run the dev server.
-    python manage.py runserver 0.0.0.0:8000
+    python manage.py runserver "0.0.0.0:${DJANGO_PORT:-8000}"
 fi

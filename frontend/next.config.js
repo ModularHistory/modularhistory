@@ -2,18 +2,17 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-// const { withSentryConfig } = require("@sentry/nextjs");
 const fs = require("fs");
-const readline = require("readline");
 const path = require("path");
+const readline = require("readline");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
+
 require("dotenv").config({ path: "../.env" });
-const { SENTRY_FRONTEND_DSN, SHA, VERSION } = process.env;
-process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/modularhistory/frontend";
-process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
+process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/app/frontend";
+process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN;
 process.env.SENTRY_ORG = "modularhistory";
 process.env.SENTRY_PROJECT = "frontend";
-process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`;
+process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
 const basePath = "";
 

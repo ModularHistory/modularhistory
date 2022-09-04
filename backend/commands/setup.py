@@ -219,7 +219,7 @@ def update_hosts(context: 'Context'):
 @command
 def update_git_hooks(context: 'Context'):
     """Update git hooks."""
-    for filepath in iglob(os.path.join(settings.BASE_DIR, 'config/hooks/*')):
+    for filepath in iglob(os.path.join(settings.ROOT_DIR, '.config/hooks/*')):
         filename = os.path.basename(filepath)
         # fmt: off
         context.run(f'''

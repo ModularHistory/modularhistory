@@ -22,7 +22,7 @@ normal=$(tput sgr0)
 #         "; exit 1
 #     }
 #     # TODO: fix this...
-#     # docker compose run django python manage.py graph_models -o core/static/model_graph.png
+#     # docker compose run django python manage.py graph_models -o static/model_graph.png
 # }
 
 echo "Finished pre-push tasks."

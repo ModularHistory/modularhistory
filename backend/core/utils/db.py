@@ -266,38 +266,39 @@ def seed(
         sync(context=context, push=False)
     elif not os.path.isfile(settings.DB_INIT_FILEPATH):
         raise Exception(f'Seed does not exist at {settings.DB_INIT_FILEPATH}.')
-    # Remove the data volume, if it exists
-    print('Stopping containers...')
-    stop_containers = context.run('docker compose down', warn=True)
-    while not stop_containers.ok:
-        input(
-            'Failed to stop containers. Something might be wrong with the Docker '
-            'environment. Here are a couple things to try (in a separate shell):\n'
-            '  - Rerun this command: docker compose down\n'
-            '  - Manually restart docker, then try again to run the same command\n'
-            'Once `docker compose down` is successful, hit enter to continue. '
-        )
+    with context.cd(settings.ROOT_DIR):
+        # Remove the data volume, if it exists
+        print('Stopping containers...')
         stop_containers = context.run('docker compose down', warn=True)
-    print('Wiping postgres data volume...')
-    context.run(f'docker volume rm {db_volume}', warn=True)
-    # Start up the postgres container, automatically running init.sql.
-    print('Initializing postgres data...')
-    context.run('docker compose up -d postgres')
-    print('Waiting for Postgres to finish recreating the database...')
-    sleep(15)  # Give postgres time to recreate the database.
-    if migrate:
-        context.run('docker compose run django python manage.py migrate')
-    if IS_DEV:
-        email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-        context.run(
-            "docker compose run django bash -c '"
-            'python manage.py createsuperuser --no-input '
-            f'--username={email} --email={email} &>/dev/null'
-            "'",
-            pty=True,
-        )
-    if up:
-        context.run('docker compose up -d django next')
+        while not stop_containers.ok:
+            input(
+                'Failed to stop containers. Something might be wrong with the Docker '
+                'environment. Here are a couple things to try (in a separate shell):\n'
+                '  - Rerun this command: docker compose down\n'
+                '  - Manually restart docker, then try again to run the same command\n'
+                'Once `docker compose down` is successful, hit enter to continue. '
+            )
+            stop_containers = context.run('docker compose down', warn=True)
+        print('Wiping postgres data volume...')
+        context.run(f'docker volume rm {db_volume}', warn=True)
+        # Start up the postgres container, automatically running init.sql.
+        print('Initializing postgres data...')
+        context.run('docker compose up -d postgres')
+        print('Waiting for Postgres to finish recreating the database...')
+        sleep(15)  # Give postgres time to recreate the database.
+        if migrate:
+            context.run('docker compose run django python manage.py migrate')
+        if IS_DEV:
+            email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+            context.run(
+                "docker compose run django bash -c '"
+                'python manage.py createsuperuser --no-input '
+                f'--username={email} --email={email} &>/dev/null'
+                "'",
+                pty=True,
+            )
+        if up:
+            context.run('docker compose up -d django next')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):

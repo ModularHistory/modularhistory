@@ -37,11 +37,10 @@ RUN pip install "poetry>=1.0.5"
 RUN curl https://rclone.org/install.sh | bash
 
 # Create and enter the working directory.
-RUN mkdir -p /modularhistory
-WORKDIR /modularhistory
+WORKDIR /app
 
 # Install project dependencies.
-COPY poetry.lock pyproject.toml /modularhistory/
+COPY backend/poetry.lock backend/pyproject.toml /app/
 RUN poetry config virtualenvs.create false
 RUN \
   if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
@@ -55,10 +54,11 @@ RUN \
 
 # Create required directories.
 RUN mkdir -p -- \
-  /modularhistory/_volumes/static \
-  /modularhistory/_volumes/media \
-  /modularhistory/_volumes/db/backups \
-  /modularhistory/_volumes/db/init \
+  /static \
+  /_volumes/static \
+  /_volumes/media \
+  /_volumes/db/backups \
+  /_volumes/db/init \
   /opt/atlas \
   /var/www/nltk_data/corpora
 
@@ -68,7 +68,8 @@ RUN python -c "import nltk; nltk.download('punkt')" && \
 # cp -avr nltk_data/ /var/www/
 
 # Add source code.
-COPY . /modularhistory/
+COPY backend /app/
+COPY static /static
 COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY .config/invoke.yaml /etc/invoke.yaml
 
@@ -76,8 +77,8 @@ COPY .config/invoke.yaml /etc/invoke.yaml
 RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
-RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/_volumes && \
+RUN chown -R www-data:www-data /app && \
+  chmod g+w -R /_volumes && \
   chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
@@ -88,4 +89,4 @@ EXPOSE 8000
 USER www-data
 
 # Specify the default command to run when the container is started.
-CMD /bin/bash /modularhistory/.config/scripts/init/django.sh
+CMD /bin/bash /app/.config/scripts/init/django.sh
