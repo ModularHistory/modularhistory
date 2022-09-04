@@ -8,7 +8,7 @@ BOLD='\033[1m'
 MAC_OS="MacOS"
 LINUX="Linux"
 
-PYTHON_VERSION="3.9.9"
+PYTHON_VERSION="3.9.13"
 export PYTHON_VERSION
 
 unset a

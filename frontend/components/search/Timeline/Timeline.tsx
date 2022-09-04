@@ -1,141 +1,58 @@
 import { SerpModule } from "@/types/modules";
-import Compress from "@mui/icons-material/Compress";
-import {
-  Box,
-  Mark,
-  Slider as MuiSlider,
-  sliderClasses,
-  SliderMark as MuiSliderMark,
-  SliderProps,
-  SliderThumb,
-  styled,
-  Tooltip,
-} from "@mui/material";
-import {
-  ComponentProps,
-  Dispatch,
-  FC,
-  memo,
-  MutableRefObject,
-  RefObject,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Box, Slider as MuiSlider, sliderClasses, SliderProps, styled } from "@mui/material";
+import { FC, TouchEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { throttle } from "throttle-debounce";
+import TimelineMark, { Mark, TimelineMarkModule, TimelineMarkProps } from "./TimelineMark";
+import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 
-const Slider: FC<SliderProps<"span", { componentsProps?: { mark: TimelineMarkProps } }>> = styled(
-  MuiSlider
-)({
-  height: "80vh",
-  position: "fixed",
-  left: "40px",
-  [`& .${sliderClasses.mark}`]: {
-    width: "12px",
-    backgroundColor: "#212529",
-  },
-  [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
-    top: 58,
-    "&:before": { top: -8 },
-  },
-});
+const Slider: FC<SliderProps<"span", { componentsProps?: { mark?: TimelineMarkProps & any } }>> =
+  styled(MuiSlider)({
+    // remove margin and add padding to increase mouse/touch event area
+    margin: 0,
+    marginBottom: 48,
+    // MUI media query attempts to override padding on touch devices
+    // TODO: investigate how to disable default media query and remove "!important"
+    padding: "0 50px !important",
+    [`& .${sliderClasses.mark}`]: {
+      width: "12px",
+      backgroundColor: "#212529",
+    },
+    [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
+      top: 58,
+      "&:before": { top: -8 },
+    },
+  });
 
-const BreakIcon = styled(Compress)({
-  transform: "translate(-25%, -50%)",
-  color: "gray",
-  backgroundColor: "white",
-});
+type MouseOrTouchEvent = Pick<MouseEvent | TouchEvent, "target" | "stopPropagation"> &
+  (
+    | (Pick<TouchEvent, "touches"> & { clientY?: never })
+    | (Pick<MouseEvent, "clientY"> & { touches?: never })
+  );
 
 type PositionedModule<T extends Partial<SerpModule>> = T & Required<Pick<T, "timelinePosition">>;
 
 function positionedModuleTypeGuard<T extends Partial<SerpModule>>(
   module: T
 ): module is PositionedModule<T> {
-  return !(module.timelinePosition == null);
+  return module.timelinePosition != null;
 }
-
-type TimelineMarkModule<T extends HTMLElement> = Required<
-  Pick<SerpModule, "timelinePosition" | "title" | "absoluteUrl">
-> & { ref: RefObject<T> };
-
-interface TimelineMarkProps<T extends HTMLElement = HTMLElement>
-  extends ComponentProps<typeof MuiSliderMark> {
-  modules: Array<TimelineMarkModule<T>>;
-  viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
-}
-
-const TimelineMark: FC<TimelineMarkProps> = memo(
-  function TimelineMark({ modules, viewStateRegistry, ...markProps }) {
-    // Mui passes this prop but doesn't type it.
-    const moduleIndex = (markProps as typeof markProps & { "data-index": number })["data-index"];
-    const isBreak = moduleIndex >= modules.length;
-    const module = isBreak ? undefined : modules[moduleIndex];
-
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [inView, setInView] = useState(module ? isElementInViewport(module.ref.current) : false);
-
-    if (!module) {
-      return (
-        <MuiSliderMark {...markProps} data-testid={"timelineBreak"}>
-          <BreakIcon />
-        </MuiSliderMark>
-      );
-    }
-
-    viewStateRegistry.set(module.absoluteUrl, setInView);
-
-    const handleClick = () => {
-      const moduleCard = module.ref.current;
-      moduleCard?.scrollIntoView({ behavior: "smooth" });
-      moduleCard?.click();
-    };
-
-    return (
-      <Tooltip
-        title={
-          <Box whiteSpace={"nowrap"} onClick={handleClick} data-testid={"timelineTooltip"}>
-            {module.title}
-          </Box>
-        }
-        arrow
-        placement={"right"}
-        open={inView || tooltipOpen}
-        onOpen={() => setTooltipOpen(true)}
-        onClose={() => setTooltipOpen(false)}
-        // MUI mis-types "popper" key as PopperProps instead of Partial<PopperProps>
-        componentsProps={{ popper: { disablePortal: true } as any }}
-      >
-        <MuiSliderMark {...markProps} data-testid={"timelineMark"}>
-          <Box position={"relative"} bottom={"3px"} padding={"5px"} onClick={handleClick} />
-        </MuiSliderMark>
-      </Tooltip>
-    );
-  },
-  (prevProps, nextProps) => {
-    const keys: Array<keyof TimelineMarkProps> = ["modules", "viewStateRegistry"];
-    for (const key of keys) {
-      if (prevProps[key] !== nextProps[key]) return false;
-    }
-    return true;
-  }
-);
 
 export type TimelineProps<T extends HTMLElement = HTMLElement> = {
   modules: Array<
     Omit<TimelineMarkModule<T>, "timelinePosition"> &
       Partial<Pick<TimelineMarkModule<T>, "timelinePosition">>
   >;
-} & Pick<TimelineMarkProps, "viewStateRegistry">;
+} & Pick<TimelineMarkProps, "viewStateRegistry"> &
+  Partial<Pick<SliderProps, "sx">>;
 
-type TimelineCalculations = {
+interface TimelineCalculations extends Required<Pick<SliderProps, "min" | "max">> {
+  marks: Mark[];
   now: number;
   scale: (n: number) => number;
   descale: (n: number) => number;
-} & Required<Pick<SliderProps, "marks" | "min" | "max">>;
+}
 
-const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
+const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
   // Some modules will possibly not have dates. Since we rely on the indexes of
   // marks and modules aligning, we must filter out undated modules.
   const datedModules = useMemo(() => modules.filter(positionedModuleTypeGuard), [modules]);
@@ -148,23 +65,22 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
     if (datedModules.length < 2) return;
     const now = new Date().getFullYear();
 
-    const positions = datedModules.map((m) => m.timelinePosition);
-    const marks: Mark[] = positions.map((position, index) => ({
+    const marks: TimelineCalculations["marks"] = datedModules.map((module, index) => ({
       // add a tiny incremental value to eliminate duplicate keys
-      value: position + index * 10 ** -5,
+      value: module.timelinePosition + index * 10 ** -5,
+      isBreak: false,
+      module,
     }));
 
-    // mark & module indexes must correspond, so we can only sort after creating marks
-    positions.sort((a, b) => a - b);
-
     // lengths of time between consecutive timeline marks
+    const positions = datedModules.map((m) => m.timelinePosition).sort((a, b) => a - b);
     const ranges = positions.slice(1).map((position, index) => position - positions[index]);
     // total time spanned by timeline marks
     const totalRange = positions[positions.length - 1] - positions[0];
-    const averageRange = totalRange / positions.length;
+    const averageRange = totalRange / (positions.length - 1);
     // we use this to normalize the slider scale to 1000 points
     // so the thumbs always appear to slide smooooothly
-    const baseMultiplier = 1e3 / totalRange;
+    const baseMultiplier = Math.max(1e3 / totalRange, 1);
 
     const breaks: (Pick<Mark, "value"> & { length: number })[] = [];
 
@@ -182,11 +98,12 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
         breaks.push(break_);
         marks.push({
           value: break_.value,
-          label: (
+          labelNode: (
             <Box color={"lightgray"}>
               {formatYbp(end - buffer, now)} — {formatYbp(start + buffer, now)}
             </Box>
           ),
+          isBreak: true,
         });
       }
     });
@@ -221,11 +138,59 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
 
     setCalculations({ now, marks, min, max, scale, descale });
     setValue([min, max]);
+    console.log(baseMultiplier);
   }, [datedModules]);
 
-  const thumbRefs: MutableRefObject<HTMLElement | null>[] = [useRef(null), useRef(null)];
+  const thumbRefs = useRef<TimelineThumbProps["refs"]>([]).current;
   const [value, setValue] = useState([0, 100]);
   const handleChange = useCallback((_, value) => setValue(value), []);
+
+  const touchTimeoutRef = useRef<number>();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleMouseOrTouchMove = useCallback(
+    throttle(100, true, (event: MouseOrTouchEvent) => {
+      clearTimeout(touchTimeoutRef.current);
+      const { clientY } = event.touches ? event.touches[0] : event;
+      const measuredMarks = marks.map((mark) => {
+        const { top } = mark.ref?.getBoundingClientRect() ?? {};
+        return { mark, distance: top ? Math.abs(clientY - top) : Number.POSITIVE_INFINITY };
+      });
+      measuredMarks
+        .sort((a, b) => a.distance - b.distance)
+        .forEach(({ mark }, sortIndex) => {
+          viewStateRegistry.get(mark.module?.absoluteUrl ?? String(mark.value))?.(sortIndex < 5);
+        });
+    }),
+    [calculations]
+  );
+
+  const maybeStopPropagation = useCallback(
+    (event: MouseOrTouchEvent) => {
+      // by default the slider will move thumbs to click locations anywhere on the rail,
+      // so we block clicks that are not directly on the thumbs.
+      if (!thumbRefs.includes(event.target as HTMLElement)) {
+        event.stopPropagation();
+      }
+    },
+    [thumbRefs]
+  );
+
+  const handleTouchStart = useCallback(
+    (event: TouchEvent) => {
+      maybeStopPropagation(event);
+      handleMouseOrTouchMove(event);
+    },
+    [maybeStopPropagation, handleMouseOrTouchMove]
+  );
+
+  const handleMouseOrTouchEnd = useCallback(() => {
+    touchTimeoutRef.current = window.setTimeout(() => {
+      for (const setState of viewStateRegistry.values()) {
+        setState(false);
+      }
+    }, 1e3);
+  }, [viewStateRegistry]);
 
   if (calculations === null) {
     return <Slider orientation={"vertical"} value={[0, 100]} disabled />;
@@ -235,12 +200,12 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
 
   return (
     <Slider
-      onMouseDownCapture={(event) => {
-        // by default the slider will move thumbs to click locations anywhere on the rail,
-        // so we block clicks that are not directly on the thumbs.
-        if (!thumbRefs.map((r) => r.current).includes(event.target as HTMLElement))
-          event.stopPropagation();
-      }}
+      onMouseDownCapture={maybeStopPropagation}
+      onTouchStartCapture={handleTouchStart}
+      onMouseLeave={handleMouseOrTouchEnd}
+      onTouchEnd={handleMouseOrTouchEnd}
+      onMouseMove={handleMouseOrTouchMove}
+      onTouchMove={handleMouseOrTouchMove}
       orientation={"vertical"}
       valueLabelDisplay={"on"}
       marks={marks}
@@ -250,13 +215,14 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry }) => {
       max={max}
       valueLabelFormat={(ybp) => formatYbp(descale(ybp), now)}
       componentsProps={{
-        mark: { modules: datedModules, viewStateRegistry },
-        thumb: { disabled: true },
+        mark: { viewStateRegistry, marks },
+        thumb: { refs: thumbRefs },
       }}
       components={{
         Mark: TimelineMark,
-        Thumb: (props) => <SliderThumb {...props} ref={thumbRefs[props["data-index"]]} />,
+        Thumb: TimelineThumb,
       }}
+      sx={sx}
     />
   );
 };
@@ -299,15 +265,4 @@ function formatYbp(ybp: number, thisYear: number) {
     ? year.toPrecision(3)
     : Math.round(year).toString().replace(commaRegex, "$1,");
   return `${yearStr}${multiplier} ${type}`;
-}
-
-function isElementInViewport(el: HTMLElement | null) {
-  if (el === null) return false;
-  const { top, bottom, left, right } = el.getBoundingClientRect();
-  return (
-    top < (window.innerHeight || document.documentElement.clientHeight) &&
-    bottom > 0 &&
-    left < (window.innerWidth || document.documentElement.clientWidth) &&
-    right > 0
-  );
 }

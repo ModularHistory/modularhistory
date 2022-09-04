@@ -79,7 +79,7 @@ jobs:
       modified-files: ${{ steps.changed-files.outputs.modified_files }}
       all-changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Get changed files
@@ -118,7 +118,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        image: [ django, next, webserver ]
+        image: [ django, next ]
     environment: test
     steps:
     - includes: ./.github/actions/setup
@@ -178,7 +178,7 @@ jobs:
     name: Run frontend unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install modules
         run: npm install --prefix frontend/
       - name: Run jest
@@ -224,9 +224,9 @@ jobs:
         environment: test
     - includes: ./.github/actions/run
     - name: Run deploy script
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
     - name: Run deploy script x2
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh
 
   check-types:
     name: Check types

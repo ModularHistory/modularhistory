@@ -413,7 +413,7 @@ RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 # https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 SITE_ID = 1
 
-CONFIG_DIR = join(BASE_DIR, 'config')
+CONFIG_DIR = join(BASE_DIR, '.config')
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

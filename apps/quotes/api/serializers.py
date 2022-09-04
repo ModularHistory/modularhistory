@@ -36,7 +36,7 @@ class QuoteSerializer(WritableNestedModelSerializer, ModuleSerializer):
     citations = CitationSerializer(many=True, write_only=True, required=False)
     date = HistoricDateTimeField(write_only=True, required=False)
     end_date = HistoricDateTimeField(write_only=True, required=False)
-    timeline = TimelinePositionField(read_only=True, required=False, source='date')
+    timeline_position = TimelinePositionField(read_only=True, required=False, source='date')
 
     def validate_text(self, value):
         if len(value) < TEXT_MIN_LENGTH:
@@ -66,7 +66,7 @@ class QuoteSerializer(WritableNestedModelSerializer, ModuleSerializer):
             'attributees',
             'related_quotes',
             'related_entities',
-            'timeline',
+            'timeline_position',
         ]
         extra_kwargs = ModuleSerializer.Meta.extra_kwargs | {
             'text': {'write_only': True},

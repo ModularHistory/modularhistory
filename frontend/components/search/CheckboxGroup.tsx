@@ -18,6 +18,7 @@ interface CheckboxGroupProps {
     defaultChecked?: boolean;
   }>;
   disabled?: boolean;
+  row?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
   onChange,
   options,
   disabled,
+  row,
 }: CheckboxGroupProps) => {
   // prevent a warning about defaultValue changing after initial render
   const defaultChecks = useRef(
@@ -54,9 +56,13 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
   // The component structure below is similar to the demo at
   // https://material-ui.com/components/checkboxes/#checkboxes-with-formgroup
   return (
-    <FormControl component="fieldset" disabled={disabled}>
+    <FormControl
+      component="fieldset"
+      disabled={disabled}
+      sx={{ border: "1px solid lightgray", paddingX: "0.6rem", borderRadius: "4px" }}
+    >
       <FormLabel component="legend">{label}</FormLabel>
-      <FormGroup>
+      <FormGroup row={row}>
         {options.map(({ label, key }) => (
           <FormControlLabel
             control={

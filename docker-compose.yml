@@ -7,42 +7,6 @@ x-common-env-vars:
   POSTGRES_HOST: "postgres"
 
 services:
-  webserver:
-    image: "ghcr.io/modularhistory/webserver:$SHA"
-    depends_on:
-      - next
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      DOMAINS: "modularhistory.com,www.modularhistory.com"
-    ports:
-      - "80:8080"
-      - "443:8443"
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
-      - ./_volumes/media:/modularhistory/_volumes/media
-      - ./_volumes/static:/modularhistory/_volumes/static
-      - ./_volumes/redirects:/modularhistory/_volumes/redirects
-      # Keep the nginx config in a volume to allow for zero-downtime deploys via
-      # `docker compose exec webserver /usr/sbin/nginx -s reload`. Without this, the
-      # container would always have to be stopped (so its static IP address becomes 
-      # available) before starting a replacement container with an updated config.
-      - ./config/nginx/prod:/etc/nginx/conf.d
-      - ./config/nginx:/modularhistory/config/nginx
-
-  certbot:
-    # https://hub.docker.com/r/certbot/certbot/
-    image: "certbot/certbot"
-    entrypoint: >
-      /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &
-      wait $${!}; done;'
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
-
   next:
     image: "ghcr.io/modularhistory/next:$SHA"
     command: npm run start
@@ -53,17 +17,18 @@ services:
         condition: on-failure
     env_file: .env
     environment:
+      PORT: 3002
       NEXTAUTH_URL: "https://www.modularhistory.com"
-      NEXTAUTH_URL_INTERNAL: "http://next:3000"
+      NEXTAUTH_URL_INTERNAL: "http://next:3002"
     expose:
-      - "3000"
+      - "3002"
     volumes:
       - ./_volumes/static:/modularhistory/_volumes/static
       - ./_volumes/redirects:/modularhistory/_volumes/redirects
 
   django:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/django.sh
+    command: bash .config/scripts/init/django.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,7 +70,7 @@ services:
 
   celery:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/celery.sh
+    command: bash .config/scripts/init/celery.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -136,7 +101,7 @@ services:
 
   celery_beat:
     image: "ghcr.io/modularhistory/django:$SHA"
-    command: bash config/scripts/init/celery_beat.sh
+    command: bash .config/scripts/init/celery_beat.sh
     depends_on:
       postgres:
         condition: service_healthy
@@ -189,8 +154,7 @@ services:
     expose:
       - "9200"
     healthcheck:
-      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200
-        >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      test: curl --cacert ${ELASTIC_CERTS_DIR}/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
       timeout: 10s
       retries: 5
@@ -218,7 +182,7 @@ services:
     working_dir: /usr/share/elasticsearch
     volumes:
       - es_certs:/certs
-      - ./config/elasticsearch:$ELASTIC_CERTS_DIR
+      - ./.config/elasticsearch:$ELASTIC_CERTS_DIR
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.1
@@ -250,7 +214,7 @@ services:
       start_period: 20s
     volumes:
       - "data:/data"
-      - ./config/redis:/usr/local/etc/redis
+      - ./.config/redis:/usr/local/etc/redis
 
   postgres:
     image: postgres:14

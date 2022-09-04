@@ -2,7 +2,7 @@
 
 set -a
 
-PYTHON_VERSION="3.9.9"
+PYTHON_VERSION="3.9.13"
 export PYTHON_VERSION
 
 PROJECT_DIR=$(dirname "$0")
@@ -318,7 +318,7 @@ poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
 # Install the project's Python dependencies.
-bash config/scripts/install-deps.sh
+bash .config/scripts/install-deps.sh
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
@@ -403,7 +403,7 @@ fi
 }
 
 # Install configuration file for PyInvoke.
-cp config/invoke.yaml "$HOME/.invoke.yaml"
+cp .config/invoke.yaml "$HOME/.invoke.yaml"
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
@@ -428,7 +428,7 @@ poetry run invoke seed --no-db
 
 # Build Docker images.
 # Note: This requires a .env file.
-image_names=( "django" "next" "webserver" )
+image_names=( "django" "next" )
 for image_name in "${image_names[@]}"; do
   docker compose build "$image_name" || _error "Failed to build $image_name image."
 done
@@ -471,14 +471,14 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker compose up -d webserver && echo 'Finished.' || {
+docker compose up -d django next && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. 
     Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker compose up -d webserver
+      ${BOLD}cd ~/modularhistory && docker compose up -d django next
 
   "
 }

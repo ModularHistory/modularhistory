@@ -8,6 +8,25 @@ NORMAL=$(tput sgr0)
 staged_files="$(git diff --diff-filter=AM --name-only --staged)"
 linting_failed=false
 
+# Update hooks.
+if [[ -d config/hooks ]]; then
+  for filepath in config/hooks/*; do
+    filename=$(basename "$filepath")
+    cmp --silent ".git/hooks/$filename" "$filepath" || {
+      if [[ $filename = "pre-commit" ]]; then
+        # Avoid overwriting the pre-commit hook from within the pre-commit hook.
+        echo "The pre-commit hook has changed."
+        pre_commit_hook_changed=true
+      else
+        echo "Updating $filename hook..."
+        cat "$filepath" > ".git/hooks/$filename"
+        sudo chmod +x ".git/hooks/$filename"
+        echo "Updated $filename hook."
+      fi
+    }
+  done
+fi
+
 echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".scss" -e ".css" && {
     echo "Autoformatting JS/TS code..."
     cd frontend && npx lint-staged && cd ..
@@ -32,7 +51,6 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
                     poetry run pytype --output .cache/pytype $file
             "
         }
-
 
         poetry run flake8 $space_delimited_filepaths || linting_failed=true
 

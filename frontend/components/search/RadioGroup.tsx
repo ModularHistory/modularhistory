@@ -13,6 +13,7 @@ interface RadioGroupProps {
   onChange: (value: string) => void;
   options: string[];
   disabled?: boolean;
+  row?: boolean;
 }
 
 const RadioGroup: FC<RadioGroupProps> = ({
@@ -21,6 +22,7 @@ const RadioGroup: FC<RadioGroupProps> = ({
   onChange,
   options,
   disabled,
+  row,
 }: RadioGroupProps) => {
   // A component for radio input in the search form.
   // `label` is displayed above the radio group.
@@ -32,12 +34,17 @@ const RadioGroup: FC<RadioGroupProps> = ({
   // See the demo at
   // https://material-ui.com/components/radio-buttons/#radiogroup
   return (
-    <FormControl component="fieldset" disabled={disabled}>
+    <FormControl
+      component="fieldset"
+      disabled={disabled}
+      sx={{ border: "1px solid lightgray", paddingX: "0.6rem", borderRadius: "4px" }}
+    >
       <FormLabel component="legend">{label}</FormLabel>
       <MuiRadioGroup
         // useState prevents a warning about defaultValue changing after initial render
         defaultValue={useState(() => defaultValue ?? options[0].toLowerCase())[0]}
         onChange={(e) => onChange(e.target.value)}
+        row={row}
       >
         {options.map((opt) => (
           <FormControlLabel

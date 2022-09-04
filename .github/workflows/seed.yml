@@ -61,7 +61,7 @@ jobs:
       with:
         workflow: .github/workflows/seed.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -104,7 +104,7 @@ jobs:
         echo "Done."
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.3
@@ -124,7 +124,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug

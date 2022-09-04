@@ -1,7 +1,6 @@
 import { Image, ModuleUnion, Source, Topic } from "@/types/modules";
-import { Card } from "@mui/material";
+import { Card, CardProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { CSSProperties } from "@mui/styles";
 import { FC, ReactNode } from "react";
 
 const StyledCard = styled(Card)({
@@ -11,6 +10,7 @@ const StyledCard = styled(Card)({
   textOverflow: "ellipsis",
   minHeight: "15rem",
   minWidth: "15rem",
+  maxWidth: "30rem",
   color: "black",
   "&:first-of-type": {
     marginTop: "0 !important",
@@ -125,20 +125,17 @@ const CardBody = styled("div")({
   },
 });
 
-export interface ModuleCardProps {
+export interface ModuleCardProps extends CardProps {
   module: ModuleUnion;
   header?: string;
-  className?: string;
-  style?: CSSProperties;
   children?: ReactNode;
 }
 
 const ModuleCard: FC<ModuleCardProps> = ({
   module,
   header,
-  className,
-  style,
   children,
+  ...muiCardProps
 }: ModuleCardProps) => {
   let bgImage: Image | undefined;
   if (module.model == "images.image") {
@@ -147,12 +144,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
     bgImage = module.primaryImage;
   }
   return (
-    <StyledCard
-      className={`${className || ""}`}
-      sx={style}
-      data-type={module.model}
-      data-testid={"moduleCard"}
-    >
+    <StyledCard data-type={module.model} data-testid={"moduleCard"} {...muiCardProps}>
       {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED

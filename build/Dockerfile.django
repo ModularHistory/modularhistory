@@ -69,8 +69,8 @@ RUN python -c "import nltk; nltk.download('punkt')" && \
 
 # Add source code.
 COPY . /modularhistory/
-COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY config/invoke.yaml /etc/invoke.yaml
+COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY .config/invoke.yaml /etc/invoke.yaml
 
 # Collect static files.
 RUN python manage.py collectstatic --no-input
@@ -88,4 +88,4 @@ EXPOSE 8000
 USER www-data
 
 # Specify the default command to run when the container is started.
-CMD /bin/bash /modularhistory/config/scripts/init/django.sh
+CMD /bin/bash /modularhistory/.config/scripts/init/django.sh

@@ -32,7 +32,7 @@ runs:
   steps:
     # Check out source code.
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
     # Set up Python.
@@ -80,7 +80,7 @@ runs:
     # Install PyInvoke config.
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
@@ -105,7 +105,7 @@ runs:
     # Install Python dependencies if necessary.
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     # Make sure Poetry environment is healthy after dependencies are installed.
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}

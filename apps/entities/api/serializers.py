@@ -81,7 +81,9 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
     birth_serialized = OccurrenceSerializer(read_only=True, source='birth')
     death_serialized = OccurrenceSerializer(read_only=True, source='death')
 
-    timeline = TimelinePositionField(read_only=True, required=False, source='birth_date')
+    timeline_position = TimelinePositionField(
+        read_only=True, required=False, source='birth_date'
+    )
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
@@ -113,7 +115,7 @@ class EntitySerializer(WritableNestedModelSerializer, TypedModuleSerializer):
             'cached_images',
             'primary_image',
             'reference_urls',
-            'timeline',
+            'timeline_position',
         ]
         extra_kwargs = TypedModuleSerializer.Meta.extra_kwargs | {
             'images': {

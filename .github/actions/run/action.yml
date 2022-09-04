@@ -39,4 +39,4 @@ runs:
         } || exit 1
         poetry run invoke db.seed --remote
     - name: Start up containers
-      run: bash config/scripts/deploy.sh
+      run: bash .config/scripts/deploy.sh

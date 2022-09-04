@@ -278,9 +278,14 @@ class Proposition(  # noqa: WPS215
         if not self.elaboration:
             return None
         elaboration_soup = soupify(self.elaboration, features='html.parser')
-        img_tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find('img')
-        if isinstance(img_tag, Tag):
-            img_tag.decompose()
+        for to_extract in ('a',):
+            tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find(to_extract)
+            if isinstance(tag, Tag):
+                tag.replace_with_children()
+        for to_remove in ('img', 'module', 'figure'):
+            tag: Optional[Union[Tag, NavigableString]] = elaboration_soup.find(to_remove)
+            if isinstance(tag, Tag):
+                tag.decompose()
         truncated_elaboration = (
             truncatechars_html(elaboration_soup.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
             .replace('<p>', '')

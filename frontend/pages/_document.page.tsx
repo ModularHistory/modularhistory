@@ -2,6 +2,7 @@
 
 import createCache from "@emotion/cache";
 import createEmotionServer from "@emotion/server/create-instance";
+import CssBaseline from "@mui/material/CssBaseline";
 import BaseDocument, { DocumentContext, Head, Html, Main, NextScript } from "next/document";
 import React from "react";
 
@@ -50,6 +51,8 @@ class Document extends BaseDocument {
       <Html lang="en">
         <Head>
           <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+
+          <CssBaseline />
 
           {/* Font Awesome */}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />

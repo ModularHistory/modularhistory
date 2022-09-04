@@ -1,13 +1,12 @@
 import BigAnchor from "@/components/BigAnchor";
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
-import ModuleDetail from "@/components/details/ModuleDetail";
 import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import type { TimelineProps } from "@/components/search/Timeline";
-import { GlobalTheme } from "@/pages/_app.page";
+import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
 import { SerpModule } from "@/types/modules";
-import { Box, Container, Drawer, styled, useMediaQuery } from "@mui/material";
+import { Divider, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -20,6 +19,7 @@ import {
   FC,
   memo,
   MouseEventHandler,
+  RefObject,
   SetStateAction,
   useEffect,
   useMemo,
@@ -33,11 +33,11 @@ const DynamicSearchForm = dynamic(() => import("@/components/search/SearchForm")
 
 const Timeline = dynamic(() => import("@/components/search/Timeline"), { ssr: false });
 
-const SliderToggle = styled("button")({
-  border: "2px solid black !important",
-  transition: "transform .15s !important",
-  "&.open": { transform: "translateX(229px) !important" },
-});
+// const SliderToggle = styled("button")({
+//   border: "2px solid black !important",
+//   transition: "transform .15s !important",
+//   "&.open": { transform: "translateX(229px) !important" },
+// });
 
 export interface SearchProps {
   count: number;
@@ -66,21 +66,11 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
       {props.results.length === 0 ? (
         <EmptySearchResults />
       ) : (
-        <>
-          <div className="serp-container">
-            <SearchFilter />
-
-            <div className="results-container">
-              <SearchPageHeader {...props} />
-              {/* force re-mount when results change because a variable number of hooks are used */}
-              <SearchResultsPanes modules={props.results} />
-            </div>
-          </div>
-
-          <Container>
-            <Pagination count={props.totalPages} />
-          </Container>
-        </>
+        <Stack divider={<Divider />} alignItems={"center"}>
+          <SearchPageHeader {...props} />
+          <SearchResultsPanes modules={props.results} />
+          <Pagination count={props.totalPages} />
+        </Stack>
       )}
     </Layout>
   );
@@ -99,58 +89,59 @@ const EmptySearchResults: FC = () => (
   </div>
 );
 
-const SearchFilter: FC = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
-  return (
-    <>
-      <Drawer
-        open={searchOpen}
-        anchor={"left"}
-        variant={"persistent"}
-        onClose={() => setSearchOpen(false)}
-        className={searchOpen ? "open" : ""}
-        sx={{
-          maxWidth: "0px",
-          transition: "max-width .15s",
-          zIndex: 2,
-          "&.open": { maxWidth: "230px" },
-        }}
-        PaperProps={{
-          sx: {
-            backgroundColor: "whitesmoke",
-            boxShadow: "4px 0 10px -5px #888",
-            position: "sticky",
-            maxHeight: "100vh",
-          },
-        }}
-      >
-        <DynamicSearchForm inSidebar />
-      </Drawer>
-      <SliderToggle
-        id="sliderToggle"
-        className={`btn ${searchOpen ? "open" : ""}`}
-        onClick={() => setSearchOpen(!searchOpen)}
-      >
-        <i className="fas fa-filter" />
-      </SliderToggle>
-    </>
-  );
-};
+// const SearchFilter: FC = () => {
+//   const [searchOpen, setSearchOpen] = useState(false);
+//   return (
+//     <>
+//       <Drawer
+//         open={searchOpen}
+//         anchor={"left"}
+//         variant={"persistent"}
+//         onClose={() => setSearchOpen(false)}
+//         className={searchOpen ? "open" : ""}
+//         sx={{
+//           maxWidth: "0px",
+//           transition: "max-width .15s",
+//           zIndex: 2,
+//           "&.open": { maxWidth: "230px" },
+//         }}
+//         PaperProps={{
+//           sx: {
+//             backgroundColor: "whitesmoke",
+//             boxShadow: "4px 0 10px -5px #888",
+//             position: "sticky",
+//             maxHeight: "100vh",
+//           },
+//         }}
+//       >
+//         <DynamicSearchForm inSidebar />
+//       </Drawer>
+//       <SliderToggle
+//         id="sliderToggle"
+//         className={`btn ${searchOpen ? "open" : ""}`}
+//         onClick={() => setSearchOpen(!searchOpen)}
+//       >
+//         <i className="fas fa-filter" />
+//       </SliderToggle>
+//     </>
+//   );
+// };
 
 const SearchPageHeader: FC<SearchProps> = ({ count }: SearchProps) => {
   const {
     query: { query },
   } = useRouter();
+  const jutContent = query ? (
+    <small>
+      {count} results for <b>{query}</b>
+    </small>
+  ) : (
+    <small>{count} items</small>
+  );
   return (
-    <h1 className="my-0 py-1">
-      {query ? (
-        <small>
-          {count} results for <b>{query}</b>
-        </small>
-      ) : (
-        <small>{count} items</small>
-      )}
-    </h1>
+    <SwipeableEdgeDrawer jutRem={1.5} jutContent={jutContent}>
+      <DynamicSearchForm />
+    </SwipeableEdgeDrawer>
   );
 };
 
@@ -176,20 +167,43 @@ const SearchResultsPanes = withRouter(
       // controls whether the modal is open (conditional based on screen size)
       const [isModalOpen, setModalOpen] = useState(false);
 
+      const viewStateRegistry: TimelineProps["viewStateRegistry"] = useMemo(() => new Map(), []);
+      // TODO: no need for useMemo since the whole thang is memoized
+      const modulesWithRefs: (SerpModule & { ref: RefObject<any> })[] = useMemo(
+        () => modules.map((module) => ({ ...module, ref: createRef() })),
+        [modules]
+      );
+
       return (
-        <div className="two-pane-container">
+        <Stack direction={"row"} divider={<Divider orientation={"vertical"} flexItem />}>
+          <Timeline
+            modules={modulesWithRefs}
+            viewStateRegistry={viewStateRegistry}
+            sx={{
+              position: "sticky",
+              top: "5.5rem",
+              marginTop: "3.2rem",
+              height: "80vh",
+              zIndex: 10,
+            }}
+          />
           {useMemo(
             () => (
-              <SearchResultsLeftPane {...{ modules, setModuleIndex, setModalOpen, router }} />
+              <SearchResultsGrid
+                modules={modulesWithRefs}
+                {...{
+                  moduleIndex,
+                  setModuleIndex,
+                  setModalOpen,
+                  router,
+                  viewStateRegistry,
+                }}
+              />
             ),
-            [modules]
+            [modules, moduleIndex, viewStateRegistry]
           )}
-          <SearchResultsRightPane
-            // set key to prevent new details from retaining previous scroll position
-            key={moduleIndex}
-            {...{ module: modules[moduleIndex] ?? modules[0], isModalOpen, setModalOpen }}
-          />
-        </div>
+          <ModuleModal module={modules[moduleIndex]} open={isModalOpen} setOpen={setModalOpen} />
+        </Stack>
       );
     },
     (prevProps, nextProps) => {
@@ -199,18 +213,21 @@ const SearchResultsPanes = withRouter(
   )
 );
 
-interface LeftPaneProps {
-  modules: SerpModule[];
+interface LeftPaneProps extends Pick<TimelineProps, "viewStateRegistry"> {
+  modules: (SerpModule & { ref: RefObject<any> })[];
   setModalOpen: Dispatch<SetStateAction<boolean>>;
+  moduleIndex: number;
   setModuleIndex: Dispatch<SetStateAction<number>>;
   router: NextRouter;
 }
 
-const SearchResultsLeftPane: FC<LeftPaneProps> = ({
+const SearchResultsGrid: FC<LeftPaneProps> = ({
   modules,
+  moduleIndex,
   setModuleIndex,
   setModalOpen,
   router,
+  viewStateRegistry,
 }) => {
   // we are unable to obtain the url anchor during SSR,
   // so we must update the selected module after rendering.
@@ -220,18 +237,15 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
     if (initialIndex > 0) {
       setModuleIndex(initialIndex);
       setTimeout(
-        () => modulesWithRefs[initialIndex].ref.current?.scrollIntoView({ behavior: "smooth" }),
+        () =>
+          modules[initialIndex].ref.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          }),
         100
       );
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
-
-  const modulesWithRefs: TimelineProps<HTMLAnchorElement>["modules"] = useMemo(
-    () => modules.map((module) => ({ ...module, ref: createRef() })),
-    [modules]
-  );
 
   const selectModule: MouseEventHandler = (e) => {
     // This condition allows ctrl-clicking to open details in a new tab.
@@ -245,59 +259,52 @@ const SearchResultsLeftPane: FC<LeftPaneProps> = ({
   };
 
   return (
-    <Box
-      className={"results result-cards"}
-      sx={{
-        "& .selected": {
-          border: "3px solid black",
-          borderRight: "none",
-        },
-      }}
+    <Grid
+      container
+      maxWidth={1800}
+      spacing={2}
+      padding="1rem"
+      alignItems="flex-start"
+      justifyContent="flex-start"
     >
       {modules.map((module, index) => (
-        <InView
-          as="div"
-          onChange={(inView) => {
-            viewStateRegistry.get(module.absoluteUrl)?.(inView);
-          }}
+        <Grid
+          xs={12}
+          sm={6}
+          md={4}
+          lg={3}
+          xl={2}
+          item
           key={module.absoluteUrl}
-          style={{ marginBottom: "0.5rem" }}
+          sx={{
+            "& .selected": {
+              borderLeft: "8px solid #FFE000",
+              borderRadius: "5px",
+            },
+          }}
         >
-          <BigAnchor
-            href={module.absoluteUrl}
-            className={`result 2pane-result`}
-            key={module.absoluteUrl}
-            data-index={index}
-            onClick={selectModule}
-            ref={modulesWithRefs[index].ref}
+          <InView
+            as="div"
+            onChange={(inView) => {
+              // viewStateRegistry.get(module.absoluteUrl)?.(inView);
+            }}
           >
-            <ModuleUnionCard module={module} />
-          </BigAnchor>
-        </InView>
+            <BigAnchor
+              href={module.absoluteUrl}
+              key={module.absoluteUrl}
+              data-index={index}
+              onClick={selectModule}
+              ref={modules[index].ref}
+              onMouseEnter={() => viewStateRegistry.get(module.absoluteUrl)?.(true)}
+              onMouseLeave={() => viewStateRegistry.get(module.absoluteUrl)?.(false)}
+            >
+              <ModuleUnionCard module={module} className={index == moduleIndex ? "selected" : ""} />
+            </BigAnchor>
+          </InView>
+        </Grid>
       ))}
-    </Box>
+    </Grid>
   );
-};
-
-interface RightPaneProps {
-  module: SerpModule;
-  isModalOpen: boolean;
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-const SearchResultsRightPane: FC<RightPaneProps> = ({ module, isModalOpen, setModalOpen }) => {
-  // media query value is based on /core/static/styles/serp.css
-  const smallScreen = useMediaQuery((theme: GlobalTheme) => theme.breakpoints.down("sm"));
-
-  if (smallScreen) {
-    return <ModuleModal module={module} open={isModalOpen} setOpen={setModalOpen} />;
-  } else {
-    return (
-      <div className="card view-detail sticky">
-        <ModuleDetail module={module} key={module.absoluteUrl} />
-      </div>
-    );
-  }
 };
 
 export default Search;

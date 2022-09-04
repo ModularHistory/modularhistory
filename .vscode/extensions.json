@@ -6,7 +6,6 @@
 	"recommendations": [
 		"alefragnani.read-only-indicator",
 		"batisteo.vscode-django",
-		"coenraads.bracket-pair-colorizer-2",
 		"dbaeumer.vscode-eslint",
 		"donjayamanne.git-extension-pack",
 		"donjayamanne.python-extension-pack",
@@ -17,7 +16,6 @@
 		"ms-vsliveshare.vsliveshare-pack",
 		"ms-vscode-remote.remote-containers",
 		"mgmcdermott.vscode-language-babel",
-		"msjsdiag.debugger-for-chrome",
 		"p1c2u.docker-compose",
 		"pkief.material-icon-theme",
 		"streetsidesoftware.code-spell-checker",

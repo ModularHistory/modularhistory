@@ -347,6 +347,7 @@ body {
   width: 100%; }
 
 .main-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1; }

@@ -55,7 +55,7 @@ def test(
         command = f'coverage run -m {command}'
     print(command)
     if docker:
-        context.run('docker compose up -d webserver')
+        context.run('docker compose up -d django next')
     context.run(command)
     if coverage:
         context.run('coverage combine')

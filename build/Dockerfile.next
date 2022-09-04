@@ -56,7 +56,7 @@ COPY frontend/package*.json /modularhistory/frontend/
 RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
 
 # Copy necessary files.
-COPY config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY .env /modularhistory/.env
 # TODO: Move these static files into frontend?
 COPY core/static /modularhistory/core/static
@@ -69,11 +69,11 @@ RUN chown -R www-data:www-data /modularhistory && \
 # Make .next directory writable in dev environment.
 RUN if [ "$ENVIRONMENT" = "dev" ]; then chmod g+w -R /modularhistory/frontend/.next/; fi
 
-# Expose port 3000.
-EXPOSE 3000
+# Expose port 3002.
+EXPOSE 3002
 
 HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
-  CMD curl --fail http://localhost:3000/ || exit 1
+  CMD curl --fail http://localhost:3002/ || exit 1
 
 # Switch from root to non-root user.
 USER www-data

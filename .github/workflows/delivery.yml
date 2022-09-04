@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [django, next, webserver]
+        image: [django, next]
     services:
       postgres:
         image: postgres:14
@@ -94,7 +94,7 @@ jobs:
       with:
         workflow: .github/workflows/delivery.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -137,7 +137,7 @@ jobs:
         echo "Done."
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.3
@@ -157,7 +157,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -217,7 +217,7 @@ jobs:
       with:
         workflow: .github/workflows/delivery.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
@@ -260,7 +260,7 @@ jobs:
         echo "Done."
     - name: Install PyInvoke config
       run: |
-        sudo cp config/invoke.yaml /etc/invoke.yaml
+        sudo cp .config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.3
@@ -280,7 +280,7 @@ jobs:
       run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: bash config/scripts/install-deps.sh
+      run: bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
@@ -290,6 +290,14 @@ jobs:
         poetry run invoke setup.write-dotenv-file --environment=prod
     - name: Deploy images to server
       id: deploy-image
+      env:
+        DOMAIN: ${{ secrets.DOMAIN }}
+        RELOAD_WEBSERVER: ${{ contains(needs.changed-files.outputs.modified-files, 'nginx.conf') }}
+        SERVER_HOST: ${{ secrets.DOMAIN }}
+        SERVER_TARGET: /var/www/${{ secrets.DOMAIN }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
         echo "Adding GitHub to known hosts..."
         mkdir -p ~/.ssh
@@ -297,15 +305,19 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./config")
-        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r "${files_to_transport[@]}" modularhistory@$SERVER:~/
+        files_to_transport=("./.env" "./docker-compose.yml" "./docker-compose.prod.yml" "./.config")
+        for filepath in "${files_to_transport[@]}"; do
+          mkdir -p dist/$(dirname "${filepath}")
+          cp "$filepath" "dist/${filepath}"
+        done
+        rsync -rPv -e "ssh -p ${SSH_PORT:=22} -o 'StrictHostKeyChecking no'" dist/ jacob@${SERVER}:${SERVER_TARGET}
         echo "Starting SSH session with $SERVER..."
-        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} modularhistory@$SERVER << 'ENDSSH'
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} jacob@$SERVER << 'ENDSSH'
           echo "" && echo "Renaming docker-compose.prod.yml to docker-compose.override.yml ..."
           mv docker-compose.prod.yml docker-compose.override.yml
           echo "" && echo "Setting environment variables..."
           set -a && source .env && echo "Finished setting environment variables."
-          set +a; bash config/scripts/deploy.sh
+          set +a; bash .config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
       uses: getsentry/action-release@v1.1.6

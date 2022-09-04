@@ -5,8 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "next lint",
     "start": "next start",
+    "lint": "next lint",
     "test": "jest"
   },
   "dependencies": {
@@ -16,10 +16,10 @@
     "@emotion/react": "^11.4.1",
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.3.0",
-    "@mui/icons-material": "^5.0.1",
-    "@mui/lab": "^5.0.0-alpha.48",
-    "@mui/material": "^5.0.1",
-    "@mui/styles": "^5.0.1",
+    "@mui/icons-material": "^5.2.0",
+    "@mui/lab": "^5.0.0-alpha.58",
+    "@mui/material": "^5.2.2",
+    "@mui/styles": "^5.2.2",
     "@react-spring/web": "^9.2.4",
     "@sentry/browser": "^6.12.0",
     "@sentry/integrations": "^6.12.0",
@@ -36,7 +36,6 @@
     "next-seo": "^4.28.1",
     "node-fetch": "^3.0.0",
     "nookies": "^2.5.2",
-    "npm": "^8.1.2",
     "prop-types": "^15.7.2",
     "qs": "^6.10.1",
     "ra-data-django-rest-framework": "^0.2.0",

@@ -89,6 +89,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
       details = <OccurrenceDetail occurrence={module} />;
       break;
     case "propositions.proposition":
+    case "propositions.conclusion":
       details = <PropositionDetail proposition={module} />;
       break;
     case "quotes.quote":
@@ -106,7 +107,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
       details = <TopicDetail topic={module} />;
       break;
     default:
-      ((module: never) => {
+      ((module: unknown) => {
         throw new Error(`Unexpected module type encountered: ${(module as any).model}`);
       })(module);
   }

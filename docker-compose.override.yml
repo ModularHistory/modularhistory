@@ -1,30 +1,18 @@
 version: "3.8"
 
 services:
-  webserver:
-    build:
-      context: .
-      dockerfile: ./build/Dockerfile.webserver
-      args:
-        ENVIRONMENT: dev
-    hostname: modularhistory.dev.net
-    image: webserver:latest
-    volumes:
-      # Override docker-compose.yml's `./config/nginx/prod:/etc/nginx/conf.d`
-      - ./config/nginx/dev:/etc/nginx/conf.d
-
   celery:
     image: django:latest
     user: root
     volumes:
       - .:/modularhistory
-      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
     image: django:latest
     volumes:
       - .:/modularhistory
-      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   django:
     build:
@@ -41,7 +29,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/modularhistory
-      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   github_workflow_preprocessor:
     command: sh .github/preprocess.sh
@@ -65,11 +53,11 @@ services:
     image: next:latest
     user: root # avoid permissions issues with writing in build dir
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
-      - ./config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+      - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
       - ./core/static/:/modularhistory/core/static
 
   elasticsearch:

@@ -78,6 +78,7 @@ else
   }
 fi
 if [[ ! "$(python --version)" =~ .*"$PYTHON_VERSION".* ]]; then
+  python --version
   _error "Failed to activate Python $PYTHON_VERSION."
 fi
 echo "Virtual environment activated."

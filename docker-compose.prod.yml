@@ -1,11 +1,6 @@
 version: "3.8"
 
 services:
-  webserver:
-    depends_on:
-      - certbot
-      - next
-
   next:
     depends_on:
       - django

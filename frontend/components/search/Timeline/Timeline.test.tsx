@@ -1,10 +1,10 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { createRef } from "react";
-import Timeline, { TimelineProps } from "../Timeline";
+import Timeline, { TimelineProps } from "./Timeline";
 
 describe("Timeline", () => {
-  const markTestId = "timelineMark";
-  const breakTestId = "timelineBreak";
+  const markTestId = "timelineModuleMark";
+  const breakTestId = "timelineBreakMark";
   const tooltipTestId = "timelineTooltip";
 
   let consoleMock: jest.SpyInstance;
@@ -73,7 +73,7 @@ describe("Timeline", () => {
     expect(positioned[2].dataset.testid).toBe(breakTestId);
   });
 
-  it("shows tooltip when told to", async () => {
+  it("registers tooltip state dispatch", async () => {
     const modules = createModules(2);
     const viewStateRegistry: TimelineProps["viewStateRegistry"] = new Map();
     renderTimeline({ modules, viewStateRegistry });
@@ -91,19 +91,19 @@ describe("Timeline", () => {
       expect(marks.map(getMarkPosition).filter((p) => 0 < p && p < 100)).toHaveLength(marks.length);
     }
 
-    it("with close positions", async () => {
+    test("with close positions", async () => {
       const modules = createModules(20, 0.1);
       renderTimeline({ modules });
       expectBounded(await screen.findAllByTestId(markTestId));
     });
 
-    it("with distant positions", async () => {
+    test("with distant positions", async () => {
       const modules = createModules(20, 1e3);
       renderTimeline({ modules });
       expectBounded(await screen.findAllByTestId(markTestId));
     });
 
-    it("with mixed positions", async () => {
+    test("with mixed positions", async () => {
       const modules = [
         ...createModules(5, 0.1),
         ...createModules(5, 1),
