@@ -21,7 +21,7 @@ WORKDIR /app
 
 COPY frontend/package*.json .
 COPY frontend/next.config.js .
-COPY .env .
+COPY .env ..
 
 ##################################
 # BUILDER
