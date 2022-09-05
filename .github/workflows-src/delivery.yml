@@ -29,6 +29,7 @@ env:
   CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
   CONTENT_MANAGER_EMAIL: ${{ secrets.CONTENT_MANAGER_EMAIL }}
   CONTENT_MANAGER_PAT: ${{ secrets.CONTENT_MANAGER_PAT }}
+  DJANGO_PORT: 8002
   ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
   EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
   EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
@@ -119,10 +120,10 @@ jobs:
         host: ${{ secrets.DOMAIN }}
         user: jacob
         target: /var/www/${{ secrets.DOMAIN }}
-        files: .env docker-compose.yml docker-compose.prod.yml .config
+        files: ".env docker-compose.yml docker-compose.prod.yml .config"
         ssh-port: ${{ secrets.SSH_PORT }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        deploy-command: mv docker-compose.prod.yml docker-compose.override.yml; set -a && source .env; set +a; ls -alt; GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
+        deploy-command: "mv docker-compose.prod.yml docker-compose.override.yml; set -a && source .env; set +a; ls -alt; GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh"
     - name: Create Sentry release
       uses: getsentry/action-release@v1.2.0
       env:
