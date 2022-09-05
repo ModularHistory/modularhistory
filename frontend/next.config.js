@@ -7,9 +7,7 @@ const path = require("path");
 const readline = require("readline");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
-// if (!process.env.NODE_ENV === "development") {
-//   require("dotenv").config({ path: "../.env" });
-// }
+require("dotenv").config({ path: "../.env" });
 
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/app/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN;
