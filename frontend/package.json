@@ -14,7 +14,7 @@
     "@draft-js-plugins/inline-toolbar": "^4.1.2",
     "@draft-js-plugins/static-toolbar": "^4.1.2",
     "@emotion/react": "^11.4.1",
-    "@emotion/server": "^11.4.0",
+    "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.97",
@@ -48,7 +48,7 @@
     "react-share": "^4.4.0",
     "react-social-login-buttons": "^3.5.1",
     "react-swipeable-views": "^0.14.0",
-    "sass": "^1.42.0",
+    "sass": "^1.54.8",
     "throttle-debounce": "^3.0.1",
     "universal-cookie": "^4.0.4"
   },
