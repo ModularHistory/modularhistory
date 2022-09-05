@@ -128,7 +128,7 @@ jobs:
       with:
         template-path: .config/template.env
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-container@v0.0.5
+      uses: iacobfred/deploy-docker-container@v0.0.6
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob

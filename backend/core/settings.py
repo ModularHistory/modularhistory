@@ -29,6 +29,12 @@ DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
+DOMAIN = config('DOMAIN', default='localhost')
+PORT = config('DJANGO_PORT', default='8000')
+HTTP_PROTOCOL = 'https' if IS_PROD else 'http'
+# Use the BASE_URL setting to build absolute URLs when necessary.
+BASE_URL = config('BASE_URL', default=f'{HTTP_PROTOCOL}://{DOMAIN}')
+
 # --- URL MODIFICATION SETTINGS ---
 # Delegate URL modification to the Nginx reverse proxy server.
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-PREPEND_WWW
@@ -57,11 +63,6 @@ ALLOWED_HOSTS = config(
     default='localhost, 127.0.0.1, django',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
-HTTP_PROTOCOL = 'https' if IS_PROD else 'http'
-
-DOMAIN = config('DOMAIN', default='localhost')
-# Use the BASE_URL setting to build absolute URLs when necessary.
-BASE_URL = config('BASE_URL', default=f'{HTTP_PROTOCOL}://{DOMAIN}')
 
 ADMINS = (
     config(

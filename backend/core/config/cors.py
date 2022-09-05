@@ -2,6 +2,7 @@
 
 from core.constants.environments import Environments
 from core.environment import ENVIRONMENT
+from django.conf import settings
 
 # https://github.com/adamchainz/django-cors-headers
 
@@ -17,9 +18,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3002',
     'http://next:3002',
     # Backend server
-    'http://localhost:8002',
-    'http://127.0.0.1:8002',
-    'http://django:8002',
+    f'http://localhost:{settings.PORT}',
+    f'http://127.0.0.1:{settings.PORT}',
+    f'http://django:{settings.PORT}',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = ENVIRONMENT == Environments.DEV
