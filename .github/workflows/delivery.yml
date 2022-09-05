@@ -93,7 +93,24 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build image
+      id: build-image
+      # https://github.com/docker/build-push-action
+      uses: docker/build-push-action@v3
+      with:
+        build-args: |
+          ENVIRONMENT=prod
+          PORT=8002
+        builder: ${{ steps.buildx.outputs.name }}
+        context: .
+        file: ./${{ matrix.image }}/Dockerfile.${{ matrix.image }}
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        secret-files: ENV_FILE=./.env
+        tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }},ghcr.io/modularhistory/${{ matrix.image }}:latest
     - name: Build image without cache
+      if: ${{ steps.build-image.outcome == 'failure' }}
       uses: docker/build-push-action@v3
       with:
         build-args: |
