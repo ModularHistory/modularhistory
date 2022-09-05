@@ -71,7 +71,6 @@
     "python.linting.pylintPath": "${workspaceFolder}/backend/.venv/bin/pylint",
     "python.sortImports.path": "${workspaceFolder}/backend/.venv/bin/isort",
     "python.testing.pytestEnabled": false,
-    "python.pythonPath": "${workspaceFolder}/backend/.venv/bin/python",
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.testing.pytestPath": "${workspaceFolder}/backend/.venv/bin/pytest",
     "search.exclude": {

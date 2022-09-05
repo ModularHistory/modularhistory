@@ -14,9 +14,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1',
     'http://modularhistory.dev.net',
     # Frontend server
-    'http://localhost:3002',
-    'http://127.0.0.1:3002',
-    'http://next:3002',
+    f'http://localhost:{settings.FRONTEND_PORT}',
+    f'http://127.0.0.1:{settings.FRONTEND_PORT}',
+    f'http://next:{settings.FRONTEND_PORT}',
     # Backend server
     f'http://localhost:{settings.PORT}',
     f'http://127.0.0.1:{settings.PORT}',
