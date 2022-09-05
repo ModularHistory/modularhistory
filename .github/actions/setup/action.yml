@@ -101,7 +101,7 @@ runs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     # Install Python dependencies if necessary.
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
@@ -109,9 +109,10 @@ runs:
     # Make sure Poetry environment is healthy after dependencies are installed.
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     # Write a .env file.
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }}
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=${{ inputs.environment }} && cd ..
+

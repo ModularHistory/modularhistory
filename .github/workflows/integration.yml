@@ -176,17 +176,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=dev
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=dev && cd ..
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -267,17 +267,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
@@ -400,17 +400,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -512,17 +512,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2.0.0
       with:
@@ -640,17 +640,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2.0.0
       with:
@@ -770,17 +770,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Cache type stubs
       id: cache-stubs
       uses: actions/cache@v3
@@ -872,17 +872,17 @@ jobs:
       id: venv-test
       continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: poetry run invoke debug
+      run: cd backend && poetry run invoke debug && cd ..
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        poetry run invoke setup.write-dotenv-file --environment=test
+        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
