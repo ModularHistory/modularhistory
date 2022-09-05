@@ -82,7 +82,7 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv-action@v0.0.1
+    - uses: iacobfred/generate-dotenv@v0.0.3
       with:
         template-path: .config/template.env
     - includes: ./.github/actions/build
@@ -110,7 +110,7 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv-action@v0.0.1
+    - uses: iacobfred/generate-dotenv@v0.0.3
       with:
         template-path: .config/template.env
     - name: Deploy to server
