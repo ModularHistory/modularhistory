@@ -236,8 +236,8 @@ def update_git_hooks(context: 'Context'):
 def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool = False):
     """Write a .env file."""
     print(f'Creating a .env file for {environment} environment...')
-    destination_file = '.env'
-    dry_destination_file = '.env.tmp'
+    destination_file = os.path.join(settings.ROOT_DIR, ".env")
+    dry_destination_file = os.path.join(settings.ROOT_DIR, '.env.tmp')
     config_dir = settings.CONFIG_DIR
     template_file = join(config_dir, 'env.yaml')
     overrides_file = join(config_dir, f'env.{environment}.yaml')
