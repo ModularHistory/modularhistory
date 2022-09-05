@@ -3,7 +3,7 @@ import TagList from "@/components/topics/TagList";
 import { Proposition } from "@/types/modules";
 import { Box } from "@mui/material";
 import Slider from "@mui/material/Slider";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { FC } from "react";
 import ArgumentSet from "./ArgumentSet";
 
@@ -28,7 +28,8 @@ function getValueLabelFormat(value: number) {
 }
 
 const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: PropositionDetailProps) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const titleHtml = proposition.summary;
   return (
     <>

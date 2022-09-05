@@ -4,7 +4,7 @@ import { ModuleUnion } from "@/types/modules";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import Button from "@mui/material/Button";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { FC, useEffect, useState } from "react";
 import EntityDetail from "../entities/EntityDetail";
 import ImageDetail from "../images/ImageDetail";
@@ -30,7 +30,8 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
   module,
   isSaved: isInitiallySaved,
 }: ModuleDetailProps) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [isSaved, setIsSaved] = useState(isInitiallySaved ?? false);
   const moduleTypeKey: string | undefined = TYPE_MAP[module.model];
 

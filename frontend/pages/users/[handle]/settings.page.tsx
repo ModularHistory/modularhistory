@@ -14,8 +14,8 @@ import Typography from "@mui/material/Typography";
 import { AxiosResponse } from "axios";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
-import { csrfToken, getSession, providers, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
+import { getCsrfToken, getProviders, getSession, useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import { ChangeEvent, FC, ReactNode, useState } from "react";
 import Image from "react-bootstrap/Image";
@@ -60,7 +60,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   socialAccounts,
 }: UserSettingsPageProps) => {
   const theme = useTheme();
-  const [session, _loading] = useSession();
+  const { data: session } = useSession();
   const [value, setValue] = useState(0);
   const handleChange = (event: ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue);
@@ -137,8 +137,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const _providers = await providers();
-  const _csrfToken = await csrfToken(context);
+  const _providers = await getProviders();
+  const _csrfToken = await getCsrfToken(context);
   let socialAccounts = null;
   await axiosWithoutAuth
     .get(makeDjangoApiUrl("/users/me/social-accounts/"), {

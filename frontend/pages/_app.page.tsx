@@ -8,7 +8,7 @@ import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NextPage } from "next";
-import { Provider, signOut, useSession } from "next-auth/client";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
 import dynamic from "next/dynamic";
@@ -38,7 +38,7 @@ interface SessionKillerProps {
 }
 
 const SessionKiller: FC<SessionKillerProps> = ({ children }: SessionKillerProps) => {
-  const [session, _loading] = useSession();
+  const { data: session } = useSession();
   useEffect(() => {
     if (session?.expired) {
       signOut();
@@ -132,7 +132,7 @@ const App: NextPage<ExtendedAppProps> = ({
           style={{ display: "none", visibility: "hidden" }}
         />
       </noscript>
-      <Provider session={pageProps.session}>
+      <SessionProvider session={pageProps.session}>
         <SessionKiller>
           <PageTransitionContextProvider>
             <ThemeProvider theme={theme}>
@@ -141,7 +141,7 @@ const App: NextPage<ExtendedAppProps> = ({
             </ThemeProvider>
           </PageTransitionContextProvider>
         </SessionKiller>
-      </Provider>
+      </SessionProvider>
     </CacheProvider>
   );
 };

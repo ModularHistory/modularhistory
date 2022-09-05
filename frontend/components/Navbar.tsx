@@ -1,9 +1,9 @@
 import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "@/auth";
 import { Divider } from "@mui/material";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, MouseEventHandler } from "react";
+import { FC, MouseEventHandler } from "react";
 import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -94,7 +94,9 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
 
   const router = useRouter();
   // TODO: Create session type and remove this cast to `any`.
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+
+  const loading = status === "loading";
 
   const login: MouseEventHandler = (e) => {
     e.preventDefault();

@@ -1,8 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { AxiosResponse } from "axios";
-import { signIn, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
-import { Component, FC } from "react";
+import { signIn } from "next-auth/react";
+import { FC } from "react";
 import {
   DiscordLoginButton,
   FacebookLoginButton,
@@ -55,7 +55,6 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
   providers,
   accounts,
 }: SocialAccountListProps) => {
-  const [_session, _loading] = useSession();
   return (
     <div>
       {Object.entries(providers).map(

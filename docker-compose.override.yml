@@ -2,14 +2,14 @@ version: "3.8"
 
 services:
   celery:
-    image: django:latest
+    image: backend:latest
     user: root
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
-    image: django:latest
+    image: backend:latest
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
@@ -17,11 +17,11 @@ services:
   django:
     build:
       context: .
-      dockerfile: backend/Dockerfile.django
+      dockerfile: backend/Dockerfile.backend
       args:
         ENVIRONMENT: dev
         PORT: 8002
-    image: django:latest
+    image: backend:latest
     user: root
     volumes:
       - ./backend:/app
@@ -39,14 +39,14 @@ services:
   next:
     build:
       context: .
-      dockerfile: frontend/Dockerfile.next
+      dockerfile: frontend/Dockerfile.frontend
       args:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
       NEXTAUTH_URL: "http://localhost:${PORT}"
       REACT_EDITOR: "code"
-    image: next:latest
+    image: frontend:latest
     user: root # avoid permissions issues with writing in build dir
     volumes:
       - ./frontend:/app

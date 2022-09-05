@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import { Box, Container, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
-import { getSession, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -14,7 +14,8 @@ interface RedirectProps {
 
 const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
   const router = useRouter();
-  const [_session, loading] = useSession();
+  const { data: _session, status } = useSession();
+  const loading = status === "loading";
   const [redirect, setRedirect] = useState(false);
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const redirectPath = path ? `/${path}` : "";

@@ -3,17 +3,18 @@ import { Container } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import { User } from "next-auth";
-import { getSession, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
-import React, { FC } from "react";
+import { FC } from "react";
 import Image from "react-bootstrap/Image";
 
-interface UserProps {
+interface UserDetailPageProps {
   user?: User;
 }
 
-const UserDetailPage: FC<UserProps> = ({ user }: UserProps) => {
-  const [_session, loading] = useSession();
+const UserDetailPage: FC<UserDetailPageProps> = ({ user }: UserDetailPageProps) => {
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   if (!user || loading) return null;
   return (
     <Layout>

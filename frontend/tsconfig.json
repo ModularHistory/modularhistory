@@ -19,7 +19,8 @@
     "jsx": "preserve",
     "sourceMap": true,
     "inlineSources": true,
-    "sourceRoot": "/"
+    "sourceRoot": "/",
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",

@@ -17,7 +17,7 @@ inputs:
     required: false
     default: false
   tags:
-    description: 'Comma-delimited string of tags to apply to the image (e.g., "ghcr.io/modularhistory/django:${{ github.sha }},ghcr.io/modularhistory/django:latest")'
+    description: 'Comma-delimited string of tags to apply to the image (e.g., "ghcr.io/modularhistory/backend:${{ github.sha }},ghcr.io/modularhistory/backend:latest")'
     required: true
   environment:
     description: 'Environment (build argument)'
@@ -53,7 +53,7 @@ runs:
         cache-from: type=gha,scope=${{ inputs.image }}
         cache-to: type=gha,mode=max,scope=${{ inputs.image }}
         context: .
-        file: ./build/Dockerfile.${{ inputs.image }}
+        file: ./${{ inputs.image }}/Dockerfile.${{ inputs.image }}
         load: ${{ ! inputs.push }}
         push: ${{ inputs.push }}
         secret-files: ENV_FILE=./.env
@@ -68,7 +68,7 @@ runs:
           PORT=8002
         builder: ${{ steps.buildx.outputs.name }}
         context: .
-        file: ./build/Dockerfile.${{ inputs.image }}
+        file: ./${{ inputs.image }}/Dockerfile.${{ inputs.image }}
         load: ${{ ! inputs.push }}
         push: ${{ inputs.push }}
         no-cache: true

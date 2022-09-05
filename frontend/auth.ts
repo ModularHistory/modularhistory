@@ -1,8 +1,8 @@
 import axios from "@/axiosWithAuth";
 import { AxiosResponse } from "axios";
 import { Account, Session, User } from "next-auth";
-import { signIn, signOut } from "next-auth/client";
 import { JWT } from "next-auth/jwt";
+import { signIn, signOut } from "next-auth/react";
 import { NextRouter } from "next/router";
 
 export const DJANGO_CSRF_COOKIE_NAME = "csrftoken";
@@ -116,7 +116,7 @@ const getUserFromAuthResponse = (response: AxiosResponse): User | null => {
 };
 
 export const authenticateWithCredentials = async (
-  credentials: Record<string, string>
+  credentials: Record<"username" | "password", string>
 ): Promise<User | null> => {
   const url = makeDjangoApiUrl("/users/auth/login/");
   let user = null;
@@ -158,8 +158,8 @@ export const authenticateWithSocialMediaAccount = async (
     case "facebook":
     case "google":
     case "twitter":
-      credentials.accessToken = account.accessToken;
-      credentials.refreshToken = account.refreshToken;
+      credentials.accessToken = account.accessToken as string | undefined;
+      credentials.refreshToken = account.refreshToken as string | undefined;
       break;
     case "github": {
       // https://next-auth.js.org/providers/github
@@ -173,8 +173,8 @@ export const authenticateWithSocialMediaAccount = async (
           user.email = emails.find((emails) => emails.primary)?.email;
         }
       }
-      credentials.accessToken = account.accessToken;
-      credentials.refreshToken = account.refreshToken;
+      credentials.accessToken = account.accessToken as string | undefined;
+      credentials.refreshToken = account.refreshToken as string | undefined;
       break;
     }
     default:

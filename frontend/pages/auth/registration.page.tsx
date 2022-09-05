@@ -1,19 +1,19 @@
 import { handleLogout } from "@/auth";
 import axios from "@/axiosWithAuth";
-import SocialLogin, { Provider } from "@/components/account/SocialLogin";
+import SocialLogin from "@/components/account/SocialLogin";
 import Layout from "@/components/Layout";
 import { Alert, Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
 import Container from "@mui/material/Container";
 import { GetServerSideProps } from "next";
-import { csrfToken, providers, signIn, useSession } from "next-auth/client";
+import { getCsrfToken, getProviders, signIn, useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
+import { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
 
 interface RegistrationProps {
-  providers: Provider[];
-  csrfToken: string;
+  providers: Awaited<ReturnType<typeof getProviders>>;
+  csrfToken: Awaited<ReturnType<typeof getCsrfToken>>;
 }
 
 const RegistrationPage: FunctionComponent<RegistrationProps> = ({
@@ -24,7 +24,8 @@ const RegistrationPage: FunctionComponent<RegistrationProps> = ({
   const callbackUrl = Array.isArray(router.query?.callbackUrl)
     ? router.query.callbackUrl[0]
     : router.query?.callbackUrl;
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [redirecting, setRedirecting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -197,8 +198,8 @@ export default RegistrationPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
-      providers: await providers(),
-      csrfToken: (await csrfToken(context)) || null,
+      providers: await getProviders(),
+      csrfToken: (await getCsrfToken(context)) || null,
     }, // passed to the page component as props
   };
 };

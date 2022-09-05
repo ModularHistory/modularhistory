@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom/extend-expect";
 
 // mock out user auth
-jest.mock("next-auth/client", () => ({
+jest.mock("next-auth/react", () => ({
   useSession: () => [null, false],
 }));
 

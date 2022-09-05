@@ -1,11 +1,11 @@
 import { AUTH_COOKIES } from "@/auth";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { FunctionComponent, useEffect } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 const Layout: FunctionComponent = ({ children }) => {
-  const [session, _loading] = useSession();
+  const { data: session } = useSession();
 
   // https://next-auth.js.org/tutorials/refresh-token-rotation#client-side
   useEffect(() => {

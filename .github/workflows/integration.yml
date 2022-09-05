@@ -295,7 +295,7 @@ jobs:
           PORT=8002
         builder: ${{ steps.buildx.outputs.name }}
         context: .
-        file: ./build/Dockerfile.${{ matrix.image }}
+        file: ./${{ matrix.image }}/Dockerfile.${{ matrix.image }}
         load: false
         push: true
         no-cache: true

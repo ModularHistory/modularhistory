@@ -8,7 +8,7 @@ x-common-env-vars:
 
 services:
   next:
-    image: "ghcr.io/modularhistory/next:$SHA"
+    image: "ghcr.io/modularhistory/frontend:$SHA"
     command: npm run start
     depends_on:
       - django
@@ -27,7 +27,7 @@ services:
       - ./_volumes/redirects:/_volumes/redirects
 
   django:
-    image: "ghcr.io/modularhistory/django:$SHA"
+    image: "ghcr.io/modularhistory/backend:$SHA"
     command: bash /.config/scripts/init/django.sh
     depends_on:
       postgres:
@@ -59,7 +59,7 @@ services:
     volumes:
       # NOTE: www-data must be granted permission to write to these directories
       # both in the container and on the host machine. Permissions to write in
-      # the container are granted in Dockerfile.django. Permissions to write on
+      # the container are granted in Dockerfile.backend. Permissions to write on
       # the host machine must be granted manually; e.g.,
       #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
       - ./_volumes/db/backups:/_volumes/db/backups
@@ -70,7 +70,7 @@ services:
       - es_certs:$ELASTIC_CERTS_DIR
 
   celery:
-    image: "ghcr.io/modularhistory/django:$SHA"
+    image: "ghcr.io/modularhistory/backend:$SHA"
     command: bash /.config/scripts/init/celery.sh
     depends_on:
       postgres:
@@ -102,7 +102,7 @@ services:
       - ./_volumes/redirects:/_volumes/redirects
 
   celery_beat:
-    image: "ghcr.io/modularhistory/django:$SHA"
+    image: "ghcr.io/modularhistory/backend:$SHA"
     command: bash /.config/scripts/init/celery_beat.sh
     depends_on:
       postgres:
@@ -286,9 +286,9 @@ services:
   cypress:
     # https://github.com/cypress-io/cypress-docker-images
     image: "cypress/included:8.4.1"
-    depends_on:
-      webserver:
-        condition: service_healthy
+    # depends_on:
+    #   webserver:
+    #     condition: service_healthy
     environment:
       - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
     working_dir: /e2e

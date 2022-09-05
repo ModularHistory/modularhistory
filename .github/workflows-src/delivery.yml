@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [ django, next ]
+        image: [ backend, frontend ]
     services:
       postgres:
         image: postgres:14

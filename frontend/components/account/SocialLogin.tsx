@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
-import { signIn } from "next-auth/client";
-import React, { FunctionComponent, ReactElement } from "react";
+import { getProviders, signIn } from "next-auth/react";
+import { FunctionComponent, ReactElement } from "react";
 import {
   DiscordLoginButton,
   FacebookLoginButton,
@@ -26,7 +26,7 @@ export interface Provider {
 }
 
 interface SocialLoginProps {
-  providers: Provider[];
+  providers: Awaited<ReturnType<typeof getProviders>>;
   callbackUrl: string;
   onError: CallableFunction;
 }
@@ -36,6 +36,7 @@ const SocialLogin: FunctionComponent<SocialLoginProps> = ({
   callbackUrl,
   onError,
 }: SocialLoginProps) => {
+  if (!providers) throw new Error("No providers are configured!");
   const socialAuthLoginComponents: ReactElement[] = [];
   const handleSocialLogin = async (provider_id: string) => {
     try {
@@ -49,7 +50,7 @@ const SocialLogin: FunctionComponent<SocialLoginProps> = ({
     if (provider.id === CREDENTIALS_KEY) {
       return null;
     }
-    SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
+    SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id as keyof typeof SOCIAL_LOGIN_BUTTONS];
     socialAuthLoginComponents.push(
       <SocialLoginButton
         key={provider.name}

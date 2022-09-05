@@ -1,18 +1,18 @@
 import { handleLogout } from "@/auth";
-import SocialLogin, { Provider } from "@/components/account/SocialLogin";
+import SocialLogin from "@/components/account/SocialLogin";
 import Layout from "@/components/Layout";
 import { Alert, Box, Button, Divider, Grid, Paper, TextField } from "@mui/material";
 import Container from "@mui/material/Container";
 import { GetServerSideProps } from "next";
-import { csrfToken, providers, signIn, useSession } from "next-auth/client";
+import { getCsrfToken, getProviders, signIn, useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
+import { FormEventHandler, FunctionComponent, useEffect, useState } from "react";
 
 interface SignInPageProps {
-  providers: Provider[];
-  csrfToken: string;
+  providers: Awaited<ReturnType<typeof getProviders>>;
+  csrfToken: Awaited<ReturnType<typeof getCsrfToken>>;
 }
 
 const SignInPage: FunctionComponent<SignInPageProps> = ({
@@ -20,7 +20,8 @@ const SignInPage: FunctionComponent<SignInPageProps> = ({
   csrfToken,
 }: SignInPageProps) => {
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [redirecting, setRedirecting] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -188,8 +189,8 @@ export default SignInPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
-      providers: await providers(),
-      csrfToken: (await csrfToken(context)) || null,
+      providers: await getProviders(),
+      csrfToken: (await getCsrfToken(context)) || null,
     }, // passed to the page component as props
   };
 };
