@@ -1,5 +1,4 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import { AxiosResponse } from "axios";
 import { Provider } from "next-auth/providers";
 import { signIn } from "next-auth/react";
 import { FC } from "react";
@@ -32,14 +31,7 @@ const SocialConnectButton: FC<SocialConnectButtonProps> = ({
   const Button = SOCIAL_LOGIN_BUTTONS[provider.id];
   const handleSocialConnect = async (provider_id: string) => {
     signIn(provider_id);
-    await axiosWithoutAuth
-      .post(`/api/users/auth/${provider_id}/connect/`, {})
-      .then(function (response: AxiosResponse) {
-        console.log(`${response}`);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    await axiosWithoutAuth.post(`/api/users/auth/${provider_id}/connect/`, {});
   };
   return (
     <Button

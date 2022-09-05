@@ -44,7 +44,6 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
           if (response.data[moduleTypeKey].some((item: ModuleUnion) => item.pk === module.pk)) {
             setIsSaved(true);
           }
-          // console.log(response)
         })
         .catch((error) => {
           console.error(error);

@@ -114,7 +114,7 @@ jobs:
       with:
         template-path: .config/template.env
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-container@v0.0.3
+      uses: iacobfred/deploy-docker-container@v0.0.4
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob
@@ -128,7 +128,9 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         deploy-command: |
           mv docker-compose.prod.yml docker-compose.override.yml;
-          set -a && source .env; set +a; 
+          set -a && source .env; set +a; ls -alt;
+          if [ ! -d .config ]; then echo 'Uh oh.'; exit 1; fi;
+          echo 'Running deploy script...';
           GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
     - name: Create Sentry release
       uses: getsentry/action-release@v1.2.0
