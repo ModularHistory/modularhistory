@@ -15,7 +15,9 @@ process.env.SENTRY_PROJECT = "frontend";
 process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
 if (!process.env.DJANGO_PORT) {
-  console.error("DJANGO_PORT is not set.");
+  console.error(`
+    DJANGO_PORT is not set.
+  `);
   process.exit(1);
 }
 
