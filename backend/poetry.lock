@@ -971,7 +971,7 @@ test = ["django-extensions (>=3.0,<4.0)", "openwisp-utils[qa] (>=0.7,<1.0)"]
 
 [[package]]
 name = "django-health-check"
-version = "3.16.7"
+version = "3.17.0"
 description = "Run checks on services like databases, queue servers, celery processes, etc."
 category = "main"
 optional = false
@@ -3209,7 +3209,7 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.9.7"
+version = "1.9.8"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -4482,8 +4482,8 @@ django-flat-json-widget = [
     {file = "django_flat_json_widget-0.1.3-py2.py3-none-any.whl", hash = "sha256:07735656b5bf9517f4b6310810f97e41565840a135d6eff3d006bd7b0455d8b5"},
 ]
 django-health-check = [
-    {file = "django-health-check-3.16.7.tar.gz", hash = "sha256:85b8e4ffa6ebbee3a7214c91ea4a67ce0e918bc8ed9679d054afd9cc9fa17c4f"},
-    {file = "django_health_check-3.16.7-py2.py3-none-any.whl", hash = "sha256:4f4fe32838eb367b9dda51669f128b97f8416eaa66b80b58c50db6fc2cc42356"},
+    {file = "django-health-check-3.17.0.tar.gz", hash = "sha256:d1b8671e79d1de6e3dd1a9c69566222b0bfcfacca8b90511a4407b2d0d3d2778"},
+    {file = "django_health_check-3.17.0-py2.py3-none-any.whl", hash = "sha256:20dc5ccb516a4e7163593fd4026f0a7531e3027b47d23ebe3bd9dbc99ac4354c"},
 ]
 django-image-cropping = [
     {file = "django-image-cropping-1.7.tar.gz", hash = "sha256:971d1a92c9ef14f1bf95996dd4eeed0a00dbb2221bfa762290d9525696243232"},
@@ -6102,8 +6102,8 @@ SecretStorage = [
     {file = "SecretStorage-3.3.3.tar.gz", hash = "sha256:2403533ef369eca6d2ba81718576c5e0f564d5cca1b58f73a8b23e7d4eeebd77"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-1.9.7.tar.gz", hash = "sha256:af0987fc074ada4a166bdc7e9d99d1da7811c6107e4b3416c7052ea1adb77dfc"},
-    {file = "sentry_sdk-1.9.7-py2.py3-none-any.whl", hash = "sha256:d391204a2a59c54b764cd351c44c67eed17b43d51f4dbe3eba48b83b70c93db9"},
+    {file = "sentry-sdk-1.9.8.tar.gz", hash = "sha256:ef4b4d57631662ff81e15c22bf007f7ce07c47321648c8e601fbd22950ed1a79"},
+    {file = "sentry_sdk-1.9.8-py2.py3-none-any.whl", hash = "sha256:7378c08d81da78a4860da7b4900ac51fef38be841d01bc5b7cb249ac51e070c6"},
 ]
 service-identity = [
     {file = "service-identity-21.1.0.tar.gz", hash = "sha256:6e6c6086ca271dc11b033d17c3a8bea9f24ebff920c587da090afc9519419d34"},

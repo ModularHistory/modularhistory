@@ -164,6 +164,9 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
+    # - uses: iacobfred/generate-dotenv@v0.0.4
+    #   with:
+    #     template-path: .config/.env
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
