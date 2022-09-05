@@ -1,11 +1,10 @@
 import { Argument } from "@/types/modules";
 import { TreeItem, TreeView } from "@mui/lab";
-import { TreeItemProps } from "@mui/lab/TreeItem";
-import { alpha, Theme } from "@mui/material";
+import { alpha } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
+import { styled } from "@mui/material/styles";
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import { TransitionProps } from "@mui/material/transitions";
-import { createStyles, withStyles } from "@mui/styles";
 import { animated, useSpring } from "@react-spring/web";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";
@@ -50,20 +49,27 @@ function TransitionComponent(props: TransitionProps) {
   );
 }
 
-const StyledTreeItem = withStyles((theme: Theme) =>
-  createStyles({
-    iconContainer: {
-      "& .close": {
-        opacity: 0.3,
-      },
+const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
+  // override bootstrap css
+  "& button:focus": { outline: "none" },
+  // center the pagination
+  "& > *": {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    justifyContent: "center",
+    display: "flex",
+  },
+  "& .iconContainer": {
+    "& .close": {
+      opacity: 0.3,
     },
-    group: {
-      marginLeft: 7,
-      paddingLeft: 18,
-      borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
-    },
-  })
-)((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
+  },
+  "& .group": {
+    marginLeft: 7,
+    paddingLeft: 18,
+    borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
+  },
+}));
 
 interface ArgumentSetProps {
   argumentSet: Argument[];
@@ -88,6 +94,7 @@ const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) =>
         <StyledTreeItem
           key={argument.pk}
           nodeId={`${argument.pk}`}
+          TransitionComponent={TransitionComponent}
           label={
             <span
               dangerouslySetInnerHTML={{ __html: argument.explanation || `Argument ${index + 1}` }}

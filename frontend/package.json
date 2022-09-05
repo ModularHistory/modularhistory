@@ -19,7 +19,6 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.97",
     "@mui/material": "^5.2.2",
-    "@mui/styles": "^5.2.2",
     "@react-spring/web": "^9.2.4",
     "@sentry/browser": "^7.12.1",
     "@sentry/integrations": "^7.12.1",
