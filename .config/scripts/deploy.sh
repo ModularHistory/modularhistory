@@ -4,6 +4,7 @@
 # before this script is run.
 
 [ -z "$SHA" ] && echo "SHA is not set." && exit 1
+[ -z "$GHCR_PASSWORD" ] && echo "GHCR_PASSWORD is not set." && exit 1
 
 # Specify image/container names.
 postgres=postgres

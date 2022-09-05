@@ -160,8 +160,8 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         deploy-command: |
           mv docker-compose.prod.yml docker-compose.override.yml;
-          set -a && source .env && echo 'Finished setting environment variables.';
-          set +a; bash .config/scripts/deploy.sh
+          set -a && source .env; set +a; 
+          GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
     - name: Create Sentry release
       uses: getsentry/action-release@v1.2.0
       env:
