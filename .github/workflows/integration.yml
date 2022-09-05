@@ -166,7 +166,7 @@ jobs:
       run: cd backend && poetry run invoke debug && cd ..
     # - uses: iacobfred/generate-dotenv@v0.0.4
     #   with:
-    #     template-path: .config/.env
+    #     template-path: .config/_.env
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;

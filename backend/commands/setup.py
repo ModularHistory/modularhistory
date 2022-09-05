@@ -239,8 +239,8 @@ def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool =
     destination_file = join(settings.ROOT_DIR, ".env")
     dry_destination_file = join(settings.ROOT_DIR, '.env.tmp')
     config_dir = settings.CONFIG_DIR
-    template_file = join(config_dir, '.env')
-    overrides_file = join(config_dir, f'.env.{environment}')
+    template_file = join(config_dir, '_.env')
+    overrides_file = join(config_dir, f'_.env.{environment}')
     if dry and os.path.exists(destination_file):
         load_dotenv(dotenv_path=destination_file)
     elif os.path.exists(destination_file):
