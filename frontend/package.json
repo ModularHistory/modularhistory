@@ -21,7 +21,7 @@
     "@mui/material": "^5.2.2",
     "@mui/styles": "^5.2.2",
     "@react-spring/web": "^9.2.4",
-    "@sentry/browser": "^6.12.0",
+    "@sentry/browser": "^7.12.1",
     "@sentry/integrations": "^6.12.0",
     "@sentry/node": "^6.12.0",
     "@sentry/webpack-plugin": "^1.17.1",
