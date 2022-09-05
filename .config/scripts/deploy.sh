@@ -6,24 +6,15 @@
 [ -z "$SHA" ] && echo "SHA is not set." && exit 1
 [ -z "$GHCR_PASSWORD" ] && echo "GHCR_PASSWORD is not set." && exit 1
 
-# Specify image/container names.
-postgres=postgres
-redis=redis
-elasticsearch=elasticsearch
-django=django
-celery=celery
-celery_beat=celery_beat
-next=next
-
-images_to_pull=("$django" "$next")
+images_to_pull=("frontend" "backend")
 
 # Specify containers to start IF NOT ALREADY RUNNING, in order of startup.
-containers_to_start=("$postgres" "$redis" "$elasticsearch" "$django" "$celery" "$celery_beat" "$next")
+containers_to_start=("postgres" "redis" "elasticsearch" "django" "celery" "celery_beat" "next")
 
 # Specify containers to deploy with zero downtime, in order of startup.
 # NOTE: These containers will briefly have two instances running simultaneously.
 # This means celery_beat cannot be included and must be deployed separately (with downtime).
-containers_to_deploy_without_downtime=("$django" "$celery" "$next")
+containers_to_deploy_without_downtime=("django" "celery" "next")
 
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
@@ -61,7 +52,7 @@ docker login ghcr.io -u iacobfred -p "$GHCR_PASSWORD" || {
 
 # Pull new images.
 echo "" && echo "Pulling images for version $SHA ..."
-docker compose pull --include-deps -q "${images_to_pull[@]}" || {
+docker compose pull || {
     echo "Failed to pull required images."; exit 1
 }
 for image_name in "${images_to_pull[@]}"; do
@@ -99,8 +90,8 @@ for container in "${containers_to_deploy_without_downtime[@]}"; do
 done
 
 # Start celery_beat.
-docker compose up -d --no-deps --no-recreate "$celery_beat"
-wait_for_health "$celery_beat"
+docker compose up -d --no-deps --no-recreate "celery_beat"
+wait_for_health "celery_beat"
 
 echo "" && echo "Finished deploying new containers."
 echo "" && docker compose ps
