@@ -2,14 +2,14 @@ version: "3.8"
 
 services:
   celery:
-    image: backend:latest
+    image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
-    image: backend:latest
+    image: "ghcr.io/modularhistory/backend:latest"
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
@@ -21,7 +21,7 @@ services:
       args:
         ENVIRONMENT: dev
         PORT: 8002
-    image: backend:latest
+    image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
       - ./backend:/app
@@ -46,7 +46,7 @@ services:
     environment:
       NEXTAUTH_URL: "http://localhost:${PORT}"
       REACT_EDITOR: "code"
-    image: frontend:latest
+    image: "ghcr.io/modularhistory/frontend:latest"
     user: root # avoid permissions issues with writing in build dir
     volumes:
       - ./frontend:/app

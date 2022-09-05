@@ -67,10 +67,10 @@ services:
       - ./_volumes/media:/_volumes/media
       - ./_volumes/redirects:/_volumes/redirects
       - ./.config:/.config
-      - es_certs:$ELASTIC_CERTS_DIR
+      - es_certs:${ELASTIC_CERTS_DIR}
 
   celery:
-    image: "ghcr.io/modularhistory/backend:$SHA"
+    image: "ghcr.io/modularhistory/backend:${SHA}"
     command: bash /.config/scripts/init/celery.sh
     depends_on:
       postgres:
@@ -102,7 +102,7 @@ services:
       - ./_volumes/redirects:/_volumes/redirects
 
   celery_beat:
-    image: "ghcr.io/modularhistory/backend:$SHA"
+    image: "ghcr.io/modularhistory/backend:${SHA}"
     command: bash /.config/scripts/init/celery_beat.sh
     depends_on:
       postgres:
@@ -146,14 +146,14 @@ services:
       - xpack.ml.enabled=false
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
-      - xpack.security.http.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
-      - xpack.security.http.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
+      - xpack.security.http.ssl.key=${ELASTIC_CERTS_DIR}/modularhistory-es/modularhistory-es.key
+      - xpack.security.http.ssl.certificate_authorities=${ELASTIC_CERTS_DIR}/ca/ca.crt
+      - xpack.security.http.ssl.certificate=${ELASTIC_CERTS_DIR}/modularhistory-es/modularhistory-es.crt
       - xpack.security.transport.ssl.enabled=true
       - xpack.security.transport.ssl.verification_mode=certificate
-      - xpack.security.transport.ssl.certificate_authorities=$ELASTIC_CERTS_DIR/ca/ca.crt
-      - xpack.security.transport.ssl.certificate=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.crt
-      - xpack.security.transport.ssl.key=$ELASTIC_CERTS_DIR/modularhistory-es/modularhistory-es.key
+      - xpack.security.transport.ssl.certificate_authorities=${ELASTIC_CERTS_DIR}/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=${ELASTIC_CERTS_DIR}/modularhistory-es/modularhistory-es.crt
+      - xpack.security.transport.ssl.key=${ELASTIC_CERTS_DIR}/modularhistory-es/modularhistory-es.key
       - xpack.security.http.ssl.client_authentication=optional
     expose:
       - "9200"
@@ -168,7 +168,7 @@ services:
         hard: -1
     volumes:
       - es_data:/usr/share/elasticsearch/data
-      - es_certs:$ELASTIC_CERTS_DIR
+      - es_certs:${ELASTIC_CERTS_DIR}
 
   create_es_certs:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
@@ -186,7 +186,7 @@ services:
     working_dir: /usr/share/elasticsearch
     volumes:
       - es_certs:/certs
-      - ./.config/elasticsearch:$ELASTIC_CERTS_DIR
+      - ./.config/elasticsearch:${ELASTIC_CERTS_DIR}
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.1
