@@ -1,12 +1,5 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-# !! WARNING !!
-# Do not modify this file directly!
-# !! WARNING !!
-#
-# It is generated from: ../workflows-src/cleanup.yml
-# using the script from https://github.com/mithro/actions-includes@main
-
 name: artifact cleanup
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#schedule
@@ -19,12 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/cleanup.yml
     - name: Remove old artifacts
       uses: c-hive/gha-remove-artifacts@v1.2.0
       with:

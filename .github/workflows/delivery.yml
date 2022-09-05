@@ -1,12 +1,5 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-# !! WARNING !!
-# Do not modify this file directly!
-# !! WARNING !!
-#
-# It is generated from: ../workflows-src/delivery.yml
-# using the script from https://github.com/mithro/actions-includes@main
-
 name: delivery
 on:
   push:
@@ -86,12 +79,6 @@ jobs:
         - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/delivery.yml
     - name: Check out main branch
       uses: actions/checkout@v3
     - uses: iacobfred/generate-dotenv@v0.0.4
@@ -135,19 +122,13 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     environment: prod
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/delivery.yml
     - name: Check out main branch
       uses: actions/checkout@v3
     - uses: iacobfred/generate-dotenv@v0.0.4
       with:
         template-path: .config/template.env
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-container@v0.0.4
+      uses: iacobfred/deploy-docker-container@v0.0.5
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob

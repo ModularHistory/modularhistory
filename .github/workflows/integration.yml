@@ -1,12 +1,5 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-# !! WARNING !!
-# Do not modify this file directly!
-# !! WARNING !!
-#
-# It is generated from: ../workflows-src/integration.yml
-# using the script from https://github.com/mithro/actions-includes@main
-
 name: integration
 on:
   pull_request:
@@ -82,12 +75,6 @@ jobs:
       modified-files: ${{ steps.changed-files.outputs.modified_files }}
       all-changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -109,12 +96,6 @@ jobs:
     env:
       TESTING: true
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -200,12 +181,6 @@ jobs:
         image: [django, next]
     environment: test
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -333,12 +308,6 @@ jobs:
     env:
       TESTING: true
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -421,12 +390,6 @@ jobs:
     name: Run frontend unit tests
     runs-on: ubuntu-latest
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - uses: actions/checkout@v3
     - name: Install modules
       run: npm install --prefix frontend/
@@ -445,12 +408,6 @@ jobs:
         browser: [chrome]
         container: [1, 2, 3]
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -573,12 +530,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -703,12 +654,6 @@ jobs:
         python-version: [3.9]
     continue-on-error: ${{ matrix.executable == 'mypy' }}
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
@@ -805,12 +750,6 @@ jobs:
         language: [javascript, python]
     continue-on-error: true
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/integration.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:

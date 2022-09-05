@@ -1,12 +1,5 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-# !! WARNING !!
-# Do not modify this file directly!
-# !! WARNING !!
-#
-# It is generated from: ../workflows-src/seed.yml
-# using the script from https://github.com/mithro/actions-includes@main
-
 name: seed
 on:
   workflow_dispatch:
@@ -54,12 +47,6 @@ jobs:
       RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/seed.yml
     - name: Check out main branch
       uses: actions/checkout@v3
       with:
