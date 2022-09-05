@@ -1,4 +1,8 @@
-FROM python:3.9-buster
+##################################
+# Base
+##################################
+
+FROM python:3.9-buster AS base
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
@@ -32,26 +36,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN pip install "poetry>=1.0.5"
-
 # Install rclone (for media backup/sync).
 RUN curl https://rclone.org/install.sh | bash
 
-# Create and enter the working directory.
-WORKDIR /app
-
-# Install project dependencies.
-COPY backend/poetry.lock backend/pyproject.toml /app/
+RUN pip install "poetry>=1.0.5"
 RUN poetry config virtualenvs.create false
-RUN \
-  if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
-  # TODO: Use this logic after it's supported in next Poetry version
-  # elif [ "$ENVIRONMENT" = "test" ]; then poetry_args="--without dev"; pip_args="--dev"; \
-  # else poetry_args="--without dev,test"; pip_args=""; fi; \
-  else poetry_args="--no-dev"; pip_args=""; fi; \
-  poetry install --no-interaction --no-ansi --no-root $poetry_args || ( \
-  poetry export -f requirements.txt --without-hashes $pip_args -o requirements.txt \
-  && pip install --upgrade pip && pip install -r requirements.txt )
 
 # Create required directories.
 RUN mkdir -p -- \
@@ -62,6 +51,27 @@ RUN mkdir -p -- \
   /_volumes/db/init \
   /opt/atlas \
   /var/www/nltk_data/corpora
+
+# Create and enter the working directory.
+WORKDIR /app
+
+##################################
+# Runner
+##################################
+
+FROM base
+
+# Install project dependencies.
+COPY backend/poetry.lock backend/pyproject.toml /app/
+RUN \
+  if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
+  # TODO: Use this logic after it's supported in next Poetry version
+  # elif [ "$ENVIRONMENT" = "test" ]; then poetry_args="--without dev"; pip_args="--dev"; \
+  # else poetry_args="--without dev,test"; pip_args=""; fi; \
+  else poetry_args="--no-dev"; pip_args=""; fi; \
+  poetry install --no-interaction --no-ansi --no-root $poetry_args || ( \
+  poetry export -f requirements.txt --without-hashes $pip_args -o requirements.txt \
+  && pip install --upgrade pip && pip install -r requirements.txt )
 
 # Download required files.
 RUN python -c "import nltk; nltk.download('punkt')" && \
