@@ -15,8 +15,8 @@ on:
     - '**.md'
     - '**.rst'
     - config/hooks/**
-  schedule:
-  - cron: 0 9 * * *
+  # schedule:
+  # - cron: 0 9 * * *
   workflow_dispatch:
     inputs:
       jobs:
@@ -69,6 +69,7 @@ jobs:
   changed-files:
     name: Get changed files
     runs-on: ubuntu-latest
+    if: github.actor != 'depbot'
     outputs:
       added-files: ${{ steps.changed-files.outputs.added_files }}
       deleted-files: ${{ steps.changed-files.outputs.deleted_files }}

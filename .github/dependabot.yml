@@ -12,7 +12,7 @@ updates:
       interval: "weekly"
   # Maintain Python dependencies.
   - package-ecosystem: "pip"
-    directory: "/"
+    directory: "/backend/"
     schedule:
       interval: "weekly"
   # Maintain Docker dependencies.
