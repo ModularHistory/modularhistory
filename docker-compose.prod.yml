@@ -13,4 +13,4 @@ services:
 
   cypress:
     environment:
-      - CYPRESS_baseUrl=https://www.modularhistory.orega.org/
+      - CYPRESS_baseUrl=https://modularhistory.orega.org/

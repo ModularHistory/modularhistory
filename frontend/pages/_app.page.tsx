@@ -81,7 +81,7 @@ const App: NextPage<ExtendedAppProps> = ({
         description={"History, modularized."}
         openGraph={{
           type: "website",
-          url: "https://www.modularhistory.orega.org/",
+          url: "https://modularhistory.orega.org/",
           site_name: "ModularHistory",
           // description: "History, modularized.",
           // images: [

@@ -8,7 +8,7 @@ x-common-env-vars:
 
 services:
   next:
-    image: "ghcr.io/modularhistory/frontend:$SHA"
+    image: "ghcr.io/modularhistory/frontend:${SHA}"
     command: npm run start
     depends_on:
       - django
@@ -18,7 +18,7 @@ services:
     env_file: .env
     environment:
       PORT: 3002
-      NEXTAUTH_URL: "https://www.modularhistory.orega.org"
+      NEXTAUTH_URL: "https://modularhistory.orega.org"
       NEXTAUTH_URL_INTERNAL: "http://next:3002"
     ports:
       - "${PORT}:${PORT}"
@@ -27,7 +27,7 @@ services:
       - ./_volumes/redirects:/_volumes/redirects
 
   django:
-    image: "ghcr.io/modularhistory/backend:$SHA"
+    image: "ghcr.io/modularhistory/backend:${SHA}"
     command: bash /.config/scripts/init/django.sh
     depends_on:
       postgres:

@@ -26,7 +26,7 @@ interface CollectionProps {
 
 /**
  * The collections page:
- * http://www.modularhistory.orega.org/collections
+ * http://modularhistory.orega.org/collections
  */
 const CollectionDetailPage: FC<CollectionProps> = ({ collection }: CollectionProps) => {
   const smallScreen = useMediaQuery<GlobalTheme>((theme) => theme.breakpoints.down("sm"));
