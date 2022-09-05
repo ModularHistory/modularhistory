@@ -279,7 +279,7 @@ services:
       retries: 2
       start_period: 10s
     ports:
-      - "8002:8002"
+      - "${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
       - "redisinsight:/db"
 

@@ -60,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let entitiesData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8002/api/entities/", { params: context.query })
+    .get(`http://django:${process.env.DJANGO_PORT}/api/entities/`, { params: context.query })
     .then((response) => {
       entitiesData = response.data;
     });

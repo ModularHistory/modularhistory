@@ -26,7 +26,7 @@ export interface Credentials {
 }
 
 export const makeDjangoApiUrl = (endpoint: string): string => {
-  return `http://django:8002/api${endpoint}`;
+  return `http://django:${process.env.DJANGO_PORT}/api${endpoint}`;
 };
 
 export const handleLogin = (router: NextRouter): void => {

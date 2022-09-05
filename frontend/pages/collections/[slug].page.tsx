@@ -78,7 +78,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params || {};
 
   await axios
-    .get(`http://django:8002/api/collections/${slug}/`)
+    .get(`http://django:${process.env.DJANGO_PORT}/api/collections/${slug}/`)
     .then((response) => {
       collection = response.data;
     })

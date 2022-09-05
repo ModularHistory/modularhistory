@@ -14,7 +14,7 @@ import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter";
 
 const makeDjangoApiUrl = (endpoint: string) => {
-  return `http://django:8002/api${endpoint}`;
+  return `http://django:${process.env.DJANGO_PORT}/api${endpoint}`;
 };
 
 // https://next-auth.js.org/configuration/providers

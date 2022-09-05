@@ -68,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     }`,
   };
   await axiosWithoutAuth
-    .post("http://django:8002/graphql/", body)
+    .post(`http://django:${process.env.DJANGO_PORT}/graphql/`, body)
     .then((response) => {
       topics = response.data.data.topicsWithConclusions;
     })

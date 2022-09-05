@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { code } = params || {};
   let message = "";
   await axiosWithoutAuth
-    .get(`http://django:8002/api/errors/${code}`)
+    .get(`http://django:${process.env.DJANGO_PORT}/api/errors/${code}`)
     .then((response) => {
       console.log(response);
     })

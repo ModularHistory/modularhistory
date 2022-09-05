@@ -14,6 +14,11 @@ process.env.SENTRY_ORG = "modularhistory";
 process.env.SENTRY_PROJECT = "frontend";
 process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
+if (!process.env.DJANGO_PORT) {
+  console.error("DJANGO_PORT is not set.");
+  process.exit(1);
+}
+
 const basePath = "";
 
 // Build and upload source maps to Sentry only in production
@@ -38,7 +43,7 @@ module.exports = {
     if (!fs.existsSync(redirectsMapPath)) {
       console.log(`${redirectsMapPath} does not exist.`);
       await require("axios")
-        .get("http://django:8002/api/redirects/")
+        .get(`http://django:${process.env.DJANGO_PORT}/api/redirects/`)
         .then(({ data }) => {
           const results = data["results"];
           if (!Array.isArray(results)) {

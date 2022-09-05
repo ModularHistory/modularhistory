@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params || {};
 
   await axios
-    .get(`http://django:8002/api/occurrences/${slug}/`)
+    .get(`http://django:${process.env.DJANGO_PORT}/api/occurrences/${slug}/`)
     .then((response) => {
       occurrence = response.data;
     })

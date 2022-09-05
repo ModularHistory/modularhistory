@@ -33,7 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { key } = context.params || {};
   let message = "Something went wrong.";
   await axios
-    .post("http://django:8002/api/users/auth/email-verification/", { key: key })
+    .post(`http://django:${process.env.DJANGO_PORT}/api/users/auth/email-verification/`, {
+      key: key,
+    })
     .then(function () {
       message = "Your e-mail address was verified successfully.";
     })

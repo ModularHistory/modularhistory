@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let imagesData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8002/api/images/", { params: context.query })
+    .get(`http://django:${process.env.DJANGO_PORT}/api/images/`, { params: context.query })
     .then((response) => {
       imagesData = response.data;
     });

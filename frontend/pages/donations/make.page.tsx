@@ -153,7 +153,7 @@ export default MakeDonationPage;
 export const getServerSideProps: GetServerSideProps = async () => {
   let clientToken = null;
   await axiosWithoutAuth
-    .get("http://django:8002/api/donations/token/")
+    .get(`http://django:${process.env.DJANGO_PORT}/api/donations/token/`)
     .then((response) => {
       clientToken = response.data;
     })

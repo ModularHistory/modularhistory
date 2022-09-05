@@ -20,7 +20,7 @@ services:
       dockerfile: backend/Dockerfile.backend
       args:
         ENVIRONMENT: dev
-        PORT: 8002
+        PORT: ${DJANGO_PORT}
     image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
