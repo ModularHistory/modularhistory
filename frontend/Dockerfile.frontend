@@ -21,7 +21,6 @@ WORKDIR /app
 
 COPY frontend/package*.json .
 COPY frontend/next.config.js .
-COPY .env ..
 
 ##################################
 # BUILDER
@@ -38,6 +37,7 @@ RUN npm set cache .npm; npm ci || (npm cache clean -f && npm ci)
 # Add source code required for compiling JS.
 COPY static /static
 COPY frontend .
+COPY .env .
 
 # Compile JavaScript.
 RUN npm run build

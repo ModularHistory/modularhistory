@@ -82,6 +82,27 @@ jobs:
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v29.0.3
+  # generate-dotenv-files:
+  #   name: Generate dotenv files
+  #   strategy:
+  #     matrix:
+  #       environment: [test, prod]
+  #   runs-on: ubuntu-latest
+  #   if: github.actor != 'depbot'
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0
+  #   - name: Cache dotenv
+  #     id: cache-dotenv
+  #     uses: actions/cache@v3
+  #     with:
+  #       path: .env
+  #       key: dotenv-${{ github.sha }}-${{ matrix.environment }}
+  #   - if: steps.cache-dotenv.outputs.cache-hit != 'true'
+  #     uses: iacobfred/generate-dotenv@v0.1.0
+  #     with:
+  #       template-path: .config/_.env
   setup-script:
     name: Test setup script
     needs: changed-files
@@ -165,9 +186,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    # - uses: iacobfred/generate-dotenv@v0.0.4
-    #   with:
-    #     template-path: .config/_.env
     - name: Create .env file
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
