@@ -87,7 +87,7 @@ python = "~3.9.13"
 aenum = "^3.1.5"
 aiohttp = { extras = ["speedups"], version = "^3.7.3" }
 appdirs = "^1.4"
-beautifulsoup4 = "==4.10.0"
+beautifulsoup4 = "==4.11.1"
 braintree = "^4.8.0"
 celery = "^5.2.3"
 celery-singleton = "^0.3.1"
