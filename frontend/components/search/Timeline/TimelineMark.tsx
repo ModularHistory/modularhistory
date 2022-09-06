@@ -38,10 +38,10 @@ export type Mark<T extends HTMLElement = HTMLElement> = Exclude<
     ref?: HTMLSpanElement;
   };
 
-export interface TimelineMarkProps extends ComponentProps<typeof MuiSliderMark> {
+export type TimelineMarkProps = ComponentProps<typeof MuiSliderMark> & {
   viewStateRegistry: Map<string, Dispatch<SetStateAction<boolean>>>;
   marks: Mark[];
-}
+};
 
 const TimelineMark: FC<TimelineMarkProps> = memo(
   function TimelineMark({ marks, viewStateRegistry, ...muiMarkProps }) {
