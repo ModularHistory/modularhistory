@@ -98,7 +98,7 @@ const getUserFromAuthResponse = (response: AxiosResponse): User | null => {
   */
   user.accessToken = response.data.accessToken;
   user.refreshToken = response.data.refreshToken;
-  const cookies: string[] = response.headers["set-cookie"];
+  const cookies: string[] = response.headers["set-cookie"] ?? [];
   cookies.forEach((cookie) => {
     if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
       const match = cookie.match(/expires=(.+?);/);
