@@ -130,7 +130,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
       );
     }
     accountControls = (
-      <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
+      <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount>
         <NavDropdown.Item href={`/users/${session.user.handle}`}>Profile</NavDropdown.Item>
         <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings
