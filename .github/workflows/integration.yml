@@ -92,16 +92,11 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Cache dotenv
-      id: cache-dotenv
-      uses: actions/cache@v3
-      with:
-        path: .env
-        key: dotenv-${{ github.sha }}-${{ matrix.environment }}
     - if: steps.cache-dotenv.outputs.cache-hit != 'true'
-      uses: iacobfred/generate-dotenv@v0.0.9
+      uses: iacobfred/generate-dotenv@v0.1.0
       with:
-        template-paths: .config/_.env
+        template-paths: '.config/_.env .config/_.env.${{ matrix.environment }}'
+        cache: true
   setup-script:
     name: Test setup script
     needs: changed-files

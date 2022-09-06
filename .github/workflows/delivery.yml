@@ -81,9 +81,10 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.0.9
+      uses: iacobfred/generate-dotenv@v0.1.0
       with:
         template-paths: .config/_.env
+        cache: true
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
@@ -142,9 +143,10 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.0.9
+      uses: iacobfred/generate-dotenv@v0.1.0
       with:
         template-paths: .config/_.env
+        cache: true
     - name: Deploy to server
       uses: iacobfred/deploy-docker-ssh@v0.2.3
       with:
