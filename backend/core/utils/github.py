@@ -5,6 +5,7 @@ from typing import Optional
 import requests
 from django.conf import settings
 from github import Github
+from base64 import b64encode, b64decode
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
@@ -37,7 +38,8 @@ def accept_credentials(
         print('Reading credentials...')
         with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
             signature = personal_access_token.read()
-            username, pat = signature.split(':')
+            username, obscured_pat = signature.split(':')
+            pat = b64decode(obscured_pat)
     else:
         print(
             '\n'
@@ -49,12 +51,12 @@ def accept_credentials(
         )
         username = input('Enter your GitHub email address: ')
         pat = getpass('Enter your GitHub personal access token: ')
-        signature = f'{username}:{pat}'
         while not pat_is_valid(username, pat):
             print('Invalid GitHub credentials.')
             username = input('Enter your GitHub email address: ')
             pat = input('Enter your Personal Access Token: ')
-            signature = f'{username}:{pat}'
+        obscured_pat = b64encode(pat)
+        signature = f'{username}:{obscured_pat}'
         with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
             file.write(signature)
     return username, pat
