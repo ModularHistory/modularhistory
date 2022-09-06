@@ -60,7 +60,6 @@ env:
   SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 jobs:
   push-image:
     environment: prod
@@ -87,7 +86,7 @@ jobs:
         echo "POSTGRES_DB=modularhistory" >> $GITHUB_ENV
         echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
         echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
-    - uses: iacobfred/generate-dotenv@v0.0.5
+    - uses: iacobfred/generate-dotenv@v0.0.6
       with:
         env: ${{ toJSON(env) }}
         template-path: .config/_.env
@@ -148,7 +147,7 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv@v0.0.5
+    - uses: iacobfred/generate-dotenv@v0.0.6
       with:
         template-path: .config/_.env
     - name: Deploy to server

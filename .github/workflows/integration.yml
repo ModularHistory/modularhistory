@@ -64,7 +64,6 @@ env:
   SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
   SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
-  X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 jobs:
   changed-files:
     name: Get changed files
