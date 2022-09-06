@@ -37,7 +37,7 @@
     "qs": "^6.10.1",
     "ra-data-django-rest-framework": "^0.2.1",
     "react": "17.0.2",
-    "react-bootstrap": "^1.6.3",
+    "react-bootstrap": "^2.5.0",
     "react-braintree-fields": "^1.6.0",
     "react-dom": "17.0.2",
     "react-google-recaptcha-v3": "^1.9.5",
