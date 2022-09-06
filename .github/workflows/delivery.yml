@@ -149,7 +149,7 @@ jobs:
         host: ${{ secrets.DOMAIN }}
         user: jacob
         target: /var/www/${{ secrets.DOMAIN }}
-        files: .env docker-compose.yml docker-compose.prod.yml .config
+        files: '.env docker-compose.yml docker-compose.prod.yml .config'
         ssh-port: ${{ secrets.SSH_PORT }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         command: mv docker-compose.prod.yml docker-compose.override.yml; set -a && source .env; set +a; GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
