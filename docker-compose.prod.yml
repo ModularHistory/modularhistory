@@ -6,6 +6,8 @@ services:
       - django
       - celery
       - celery_beat
+    volumes:
+      - ./.env:/.env
 
   django:
     environment:

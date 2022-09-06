@@ -81,8 +81,15 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv@v0.0.4
+    - name: Add env vars
+      run: |
+        echo "DJANGO_PORT=8002" >> $GITHUB_ENV
+        echo "POSTGRES_DB=modularhistory" >> $GITHUB_ENV
+        echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+        echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
+    - uses: iacobfred/generate-dotenv@v0.0.5
       with:
+        env: ${{ toJSON(env) }}
         template-path: .config/_.env
     - name: Set up Docker Buildx
       id: buildx
@@ -141,7 +148,7 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv@v0.0.4
+    - uses: iacobfred/generate-dotenv@v0.0.5
       with:
         template-path: .config/_.env
     - name: Deploy to server
