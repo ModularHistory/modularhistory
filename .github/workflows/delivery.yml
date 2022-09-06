@@ -80,7 +80,8 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv@v0.0.7
+    - name: Generate .env file
+      uses: iacobfred/generate-dotenv@v0.0.8
       with:
         template-paths: .config/_.env
     - name: Set up Docker Buildx
@@ -141,7 +142,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.0.7
+      uses: iacobfred/generate-dotenv@v0.0.8
       with:
         template-paths: .config/_.env
     - name: Deploy to server
