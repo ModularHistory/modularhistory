@@ -101,7 +101,7 @@ jobs:
     - if: steps.cache-dotenv.outputs.cache-hit != 'true'
       uses: iacobfred/generate-dotenv@v0.0.7
       with:
-        template-path: .config/_.env
+        template-paths: .config/_.env
   setup-script:
     name: Test setup script
     needs: changed-files
