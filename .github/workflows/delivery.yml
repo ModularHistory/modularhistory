@@ -80,15 +80,8 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - name: Add env vars
-      run: |
-        echo "DJANGO_PORT=8002" >> $GITHUB_ENV
-        echo "POSTGRES_DB=modularhistory" >> $GITHUB_ENV
-        echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
-        echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
-    - uses: iacobfred/generate-dotenv@v0.0.6
+    - uses: iacobfred/generate-dotenv@v0.0.7
       with:
-        env: ${{ toJSON(env) }}
         template-path: .config/_.env
     - name: Set up Docker Buildx
       id: buildx
@@ -147,11 +140,11 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-    - uses: iacobfred/generate-dotenv@v0.0.6
+    - uses: iacobfred/generate-dotenv@v0.0.7
       with:
         template-path: .config/_.env
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-ssh@v0.1.0
+      uses: iacobfred/deploy-docker-ssh@v0.1.1
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob
