@@ -149,19 +149,23 @@ const Timeline: FC<TimelineProps> = ({ modules, viewStateRegistry, sx }) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleMouseOrTouchMove = useCallback(
-    throttle(100, true, (event: MouseOrTouchEvent) => {
-      clearTimeout(touchTimeoutRef.current);
-      const { clientY } = event.touches ? event.touches[0] : event;
-      const measuredMarks = marks.map((mark) => {
-        const { top } = mark.ref?.getBoundingClientRect() ?? {};
-        return { mark, distance: top ? Math.abs(clientY - top) : Number.POSITIVE_INFINITY };
-      });
-      measuredMarks
-        .sort((a, b) => a.distance - b.distance)
-        .forEach(({ mark }, sortIndex) => {
-          viewStateRegistry.get(mark.module?.absoluteUrl ?? String(mark.value))?.(sortIndex < 5);
+    throttle(
+      100,
+      (event: MouseOrTouchEvent) => {
+        clearTimeout(touchTimeoutRef.current);
+        const { clientY } = event.touches ? event.touches[0] : event;
+        const measuredMarks = marks.map((mark) => {
+          const { top } = mark.ref?.getBoundingClientRect() ?? {};
+          return { mark, distance: top ? Math.abs(clientY - top) : Number.POSITIVE_INFINITY };
         });
-    }),
+        measuredMarks
+          .sort((a, b) => a.distance - b.distance)
+          .forEach(({ mark }, sortIndex) => {
+            viewStateRegistry.get(mark.module?.absoluteUrl ?? String(mark.value))?.(sortIndex < 5);
+          });
+      },
+      { noLeading: true }
+    ),
     [calculations]
   );
 
