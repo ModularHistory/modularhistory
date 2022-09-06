@@ -216,7 +216,7 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
           }
         */
         const accessTokenExpiry = Date.parse(response.data.accessTokenExpiration);
-        const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
+        const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"] ?? []);
         jwt = {
           ...jwt,
           // Fall back to old refresh token if necessary.
