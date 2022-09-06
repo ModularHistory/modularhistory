@@ -45,10 +45,10 @@
     "react-intersection-observer": "^9.4.0",
     "react-lines-ellipsis": "^0.15.3",
     "react-share": "^4.4.0",
-    "react-social-login-buttons": "^3.5.1",
+    "react-social-login-buttons": "^3.6.1",
     "react-swipeable-views": "^0.14.0",
     "sass": "^1.54.8",
-    "throttle-debounce": "^3.0.1",
+    "throttle-debounce": "^5.0.0",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
@@ -61,7 +61,7 @@
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.9",
     "@types/react-gtm-module": "^2.0.1",
-    "@types/throttle-debounce": "^2.1.0",
+    "@types/throttle-debounce": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "babel-jest": "^29.0.2",
