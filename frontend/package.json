@@ -23,7 +23,7 @@
     "@sentry/browser": "^7.12.1",
     "@sentry/integrations": "^7.12.1",
     "@sentry/node": "^7.12.1",
-    "@sentry/webpack-plugin": "^1.17.1",
+    "@sentry/webpack-plugin": "^1.19.0",
     "axios": "^0.21.4",
     "braintree-web-drop-in-react": "^1.2.1",
     "dotenv": "^16.0.2",
