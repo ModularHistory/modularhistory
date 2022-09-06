@@ -551,6 +551,7 @@ jobs:
     - name: Start up containers
       env:
         GHCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        SHA: ${{ github.sha }}
       run: bash .config/scripts/deploy.sh
     - name: Run Cypress
       env:
