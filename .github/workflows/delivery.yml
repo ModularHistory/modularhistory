@@ -77,8 +77,7 @@ jobs:
     name: Approve workflow continuation
     needs: generate-dotenv
     runs-on: ubuntu-latest
-    # permissions:
-    #   actions: write
+    permissions: write-all
     steps:
     - name: Wait for pending deployments
       run: sleep 15s
@@ -93,11 +92,11 @@ jobs:
         customHeaders: '{"Accept": "application/vnd.github+json"}'
     - name: Show Response
       run: |
-        echo ${{ steps.get-workflow-runs.outputs.response }}
-        echo ${{ steps.get-workflow-runs.outputs.headers }}
-        echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs }}
         echo "Top run:"
-        echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0] }}
+        echo ${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0]) }}
+        echo ""
+        echo "Full response:"
+        echo ${{ steps.get-workflow-runs.outputs.response }}
     # - name: Get pending deployments
     #   id: get-pending-deployments
     #   uses: fjogeleit/http-request-action@v1
