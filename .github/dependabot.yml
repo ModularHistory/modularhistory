@@ -1,21 +1,21 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions.
+  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-  # Maintain JS dependencies.
+  # Maintain JS dependencies
   - package-ecosystem: "npm"
     directory: "/frontend/"
     schedule:
       interval: "weekly"
-  # Maintain Python dependencies.
+  # Maintain Python dependencies
   - package-ecosystem: "pip"
     directory: "/backend/"
     schedule:
       interval: "weekly"
-  # Maintain Docker dependencies.
+  # Maintain dependencies in docker-compose.yml
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -23,3 +23,16 @@ updates:
     ignore:
       # Ignore Python version updates (from 3.8 to 3.9, etc.).
       - dependency-name: "python"
+  # Maintain dependencies in backend Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/backend/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # Ignore Python version updates (from 3.8 to 3.9, etc.).
+      - dependency-name: "python"
+  # Maintain dependencies in frontend Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/frontend/"
+    schedule:
+      interval: "weekly"
