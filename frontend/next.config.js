@@ -9,7 +9,12 @@ const dotenv = require("dotenv");
 const axios = require("axios");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
-dotenv.config({ path: "../.env" });
+const DOTENV_DIR = path.join(__dirname, "..");
+const DOTENV_PATH = path.join(DOTENV_DIR, ".env");
+if (!fs.existsSync(DOTENV_PATH)) {
+  throw new Error(`Missing .env file in ${DOTENV_DIR}`);
+}
+dotenv.config({ path: DOTENV_PATH });
 
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/app/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN;

@@ -79,12 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Wait for pending deployments
-      run: sleep 20s
+      run: sleep 15s
       shell: bash
     - name: Approve pending deployments
       uses: octokit/request-action@v2.1.6
       with:
-        route: GET /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments
+        route: POST /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments
         environment_ids: 98022716
         state: 'approved'
         comment: 'Approved by ${{ github.actor }}'
