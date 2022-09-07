@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { key } = context.params || {};
   let message = "Something went wrong.";
   await axios
-    .post(`http://django:${process.env.DJANGO_PORT}/api/users/auth/email-verification/`, {
+    .post(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/users/auth/email-verification/`, {
       key: key,
     })
     .then(function () {

@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let postsData = {};
 
   await axiosWithoutAuth
-    .get(`http://django:${process.env.DJANGO_PORT}/api/forums/posts/`, { params: context.query })
+    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/forums/posts/`, { params: context.query })
     .then((response) => {
       postsData = response.data;
     });

@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params || {};
 
   await axios
-    .get(`http://django:${process.env.DJANGO_PORT}/api/quotes/${slug}/`)
+    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/quotes/${slug}/`)
     .then((response) => {
       quote = response.data;
     })

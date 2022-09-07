@@ -69,14 +69,30 @@ jobs:
     - name: Generate .env file
       uses: iacobfred/generate-dotenv@v0.1.7
       with:
-        template-paths: .config/_.env
+        template-paths: |
+          .config/_.env
+          .config/_.env.prod
         cache: true
+  continue:
+    needs: generate-dotenv
+    steps:
+    - uses: octokit/request-action@v2
+      id: continue
+      with:
+        route: GET /repos/ModularHistory/modularhistory/actions/runs/${{ github.run_id }}/pending_deployments
+        owner: ModularHistory
+        repo: modularhistory
+        environment_ids: [ 98022716 ]
+        state: 'approved'
+        comment: 'Approved by ${{ github.actor }}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     needs: generate-dotenv
     environment: prod
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      repo: write
     strategy:
       matrix:
         image: [backend, frontend]

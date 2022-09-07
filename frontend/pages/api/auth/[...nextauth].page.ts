@@ -1,7 +1,7 @@
 import {
   authenticateWithCredentials,
   authenticateWithSocialMediaAccount,
-  refreshAccessToken,
+  refreshAccessToken
 } from "@/auth";
 import axiosWithAuth from "@/axiosWithAuth";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
@@ -14,7 +14,7 @@ import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter";
 
 const makeDjangoApiUrl = (endpoint: string) => {
-  return `http://django:${process.env.DJANGO_PORT}/api${endpoint}`;
+  return `http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api${endpoint}`;
 };
 
 // https://next-auth.js.org/configuration/providers

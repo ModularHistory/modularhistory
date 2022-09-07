@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   let topicsData = {};
 
   await axios
-    .get(`http://django:${process.env.DJANGO_PORT}/graphql/`, {
+    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/graphql/`, {
       params: { query: "{ topics { name slug propositions { slug } } }" },
     })
     .then(({ data }) => {

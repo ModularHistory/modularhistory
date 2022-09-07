@@ -90,7 +90,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }`,
   };
   await axiosWithoutAuth
-    .post(`http://django:${process.env.DJANGO_PORT}/graphql/`, body)
+    .post(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/graphql/`, body)
     .then((response) => {
       entity = response.data.data.entity;
     })
