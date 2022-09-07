@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Wait for pending deployments
-      run: sleep 10s
+      run: sleep 20s
       shell: bash
     - name: Approve pending deployments
       uses: octokit/request-action@v2.1.6

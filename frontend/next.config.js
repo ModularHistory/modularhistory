@@ -5,9 +5,11 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
+const dotenv = require("dotenv");
+const axios = require("axios");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
-require("dotenv").config({ path: "../.env" });
+dotenv.config({ path: "../.env" });
 
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/app/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN;
@@ -16,10 +18,8 @@ process.env.SENTRY_PROJECT = "frontend";
 process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
 if (!process.env.DJANGO_PORT) {
-  console.error(`
-    DJANGO_PORT is not set.
-  `);
-  process.exit(1);
+  console.error("DJANGO_PORT is not set; falling back on default port 8000 ...");
+  process.env.DJANGO_PORT = "8000";
 }
 
 const basePath = "";
@@ -45,7 +45,7 @@ module.exports = {
     const redirects = [];
     if (!fs.existsSync(redirectsMapPath)) {
       console.log(`${redirectsMapPath} does not exist.`);
-      await require("axios")
+      await axios
         .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/redirects/`)
         .then(({ data }) => {
           const results = data["results"];

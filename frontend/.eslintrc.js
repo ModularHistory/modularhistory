@@ -36,5 +36,9 @@ module.exports = {
       files: ["*.test.tsx", "**/*.test.tsx"],
       rules: { "@typescript-eslint/no-non-null-assertion": "off" },
     },
+    {
+      files: ["next.config.js"],
+      rules: { "@typescript-eslint/no-var-requires": "off" },
+    },
   ],
 };
