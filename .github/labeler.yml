@@ -1,3 +1,7 @@
+config:
+  - .config/**/*
+  - '*.yml'
+  - '*.yaml'
 source:
   - backend/**/*
   - frontend/**/*
