@@ -83,7 +83,7 @@ jobs:
         route: GET /repos/ModularHistory/modularhistory/actions/runs/${{ github.run_id }}/pending_deployments
         owner: ModularHistory
         repo: modularhistory
-        environment_ids: [ 98022716 ]
+        environment_ids: 98022716
         state: 'approved'
         comment: 'Approved by ${{ github.actor }}'
       env:
@@ -93,20 +93,10 @@ jobs:
     environment: prod
     runs-on: ubuntu-latest
     permissions:
-      repo: write
+      packages: write
     strategy:
       matrix:
         image: [backend, frontend]
-    # services:
-    #   postgres:
-    #     image: postgres:14
-    #     env:
-    #       POSTGRES_DB: postgres
-    #       POSTGRES_USER: postgres
-    #       POSTGRES_PASSWORD: postgres
-    #     ports:
-    #     - 5432:5432
-    #     options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
