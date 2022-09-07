@@ -32,7 +32,6 @@ const PasswordChangeForm: FC<PasswordChangeFormProps> = ({
           new_password1: newPassword,
           new_password2: confirmPassword,
         })
-        .then(console.log)
         .catch(function (error) {
           setError(String(error));
         });

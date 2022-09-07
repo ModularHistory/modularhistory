@@ -67,7 +67,7 @@ const ModuleLink: FC<ModuleLinkProps> = ({ elementProps, children }) => {
           setModule(data);
         })
         .catch((error) => {
-          console.error(error);
+          alert(error); // TODO
           setIsFailure(true);
         });
     }

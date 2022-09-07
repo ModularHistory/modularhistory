@@ -77,7 +77,7 @@ jobs:
     needs: generate-dotenv
     runs-on: ubuntu-latest
     steps:
-    - uses: octokit/request-action@v2
+    - uses: octokit/request-action@v2.1.6
       id: continue
       with:
         route: GET /repos/ModularHistory/modularhistory/actions/runs/${{ github.run_id }}/pending_deployments
