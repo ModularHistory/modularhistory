@@ -93,20 +93,18 @@ jobs:
     - name: Show Response
       run: |
         echo ${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}
-        echo "... as compared to ${{ github.run_id }}"
-    # - name: Get pending deployments
-    #   id: get-pending-deployments
-    #   uses: fjogeleit/http-request-action@v1
-    #   with:
-    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
-    #     method: 'GET'
-    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
-    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
-    # - name: Show Response
-    #   run: |
-    #     echo ${{ steps.get-pending-deployments.outputs.response }}
-    #     echo ${{ steps.get-pending-deployments.outputs.headers }}
-    #     echo ${{ fromJson(steps.get-pending-deployments.outputs.response) }}
+        echo "${{ steps.get-workflow-runs.outputs.response }}"
+    - name: Get pending deployments
+      id: get-pending-deployments
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
+        method: 'GET'
+        bearerToken: ${{ secrets.GITHUB_TOKEN }}
+        customHeaders: '{"Accept": "application/vnd.github+json"}'
+    - name: Show Response
+      run: |
+        echo ${{ steps.get-pending-deployments.outputs.response }}
     # - name: Approve pending deployments
     #   uses: fjogeleit/http-request-action@v1
     #   with:
