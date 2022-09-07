@@ -83,7 +83,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.1.3
+      uses: iacobfred/generate-dotenv@v0.1.5
       with:
         template-paths: .config/_.env
         cache: true
@@ -135,7 +135,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.1.3
+      uses: iacobfred/generate-dotenv@v0.1.5
       with:
         template-paths: .config/_.env
         cache: true

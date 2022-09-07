@@ -40,24 +40,15 @@ export const handleLogin = (router: NextRouter): void => {
 export const handleLogout = (session: Session): void => {
   // Sign out of the back end.
   if (session) {
-    axios
-      .post(
-        DJANGO_LOGOUT_URL,
-        { refresh: session.refreshToken },
-        {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
-        }
-      )
-      .then(function () {
-        // eslint-disable-next-line no-console
-        // console.debug("Signed out.");
-      })
-      .catch(function (error) {
-        // eslint-disable-next-line no-console
-        console.error(`Failed to sign out due to error: ${error}`);
-      });
+    axios.post(
+      DJANGO_LOGOUT_URL,
+      { refresh: session.refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
   }
   // Remove cookies by setting their expiry to a past date.
   AUTH_COOKIES.forEach((cookieName) => {
