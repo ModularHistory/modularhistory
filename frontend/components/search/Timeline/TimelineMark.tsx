@@ -46,7 +46,7 @@ export type TimelineMarkProps = ComponentProps<typeof MuiSliderMark> & {
 const TimelineMark: FC<TimelineMarkProps> = memo(
   function TimelineMark({ marks, viewStateRegistry, ...muiMarkProps }) {
     // Mui passes this prop but doesn't type it.
-    const mark = marks[(muiMarkProps as unknown as { "data-index": number })["data-index"]];
+    const mark = marks[((muiMarkProps as unknown) as { "data-index": number })["data-index"]];
     return mark.isBreak ? (
       <TimelineBreakMark
         mark={mark}

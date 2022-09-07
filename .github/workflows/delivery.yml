@@ -61,7 +61,7 @@ env:
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 jobs:
-  deploy:
+  build:
     environment: prod
     runs-on: ubuntu-latest
     permissions:
@@ -127,6 +127,18 @@ jobs:
         no-cache: true
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }},ghcr.io/modularhistory/${{ matrix.image }}:latest
+  deploy:
+    needs: build
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out main branch
+      uses: actions/checkout@v3
+    - name: Generate .env file
+      uses: iacobfred/generate-dotenv@v0.1.3
+      with:
+        template-paths: .config/_.env
+        cache: true
     - name: Deploy to server
       uses: iacobfred/deploy-docker-ssh@v0.2.5
       with:

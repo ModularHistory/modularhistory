@@ -5,23 +5,24 @@ import { throttle } from "throttle-debounce";
 import TimelineMark, { Mark, TimelineMarkModule, TimelineMarkProps } from "./TimelineMark";
 import TimelineThumb, { TimelineThumbProps } from "./TimelineThumb";
 
-const Slider: FC<SliderProps<"span", { componentsProps?: { mark?: TimelineMarkProps & any } }>> =
-  styled(MuiSlider)({
-    // remove margin and add padding to increase mouse/touch event area
-    margin: 0,
-    marginBottom: 48,
-    // MUI media query attempts to override padding on touch devices
-    // TODO: investigate how to disable default media query and remove "!important"
-    padding: "0 50px !important",
-    [`& .${sliderClasses.mark}`]: {
-      width: "12px",
-      backgroundColor: "#212529",
-    },
-    [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
-      top: 58,
-      "&:before": { top: -8 },
-    },
-  });
+const Slider: FC<
+  SliderProps<"span", { componentsProps?: { mark?: TimelineMarkProps & any } }>
+> = styled(MuiSlider)({
+  // remove margin and add padding to increase mouse/touch event area
+  margin: 0,
+  marginBottom: 48,
+  // MUI media query attempts to override padding on touch devices
+  // TODO: investigate how to disable default media query and remove "!important"
+  padding: "0 50px !important",
+  [`& .${sliderClasses.mark}`]: {
+    width: "12px",
+    backgroundColor: "#212529",
+  },
+  [`.${sliderClasses.thumb}[data-index='0'] .${sliderClasses.valueLabel}`]: {
+    top: 58,
+    "&:before": { top: -8 },
+  },
+});
 
 type MouseOrTouchEvent = Pick<MouseEvent | TouchEvent, "target" | "stopPropagation"> &
   (

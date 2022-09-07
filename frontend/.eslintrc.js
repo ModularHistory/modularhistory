@@ -1,6 +1,6 @@
 // https://eslint.org/docs/user-guide/configuring/
 
-const sharedRules = {
+const rules = {
   "no-console": "off",
   "no-unused-vars": "off",
   "@typescript-eslint/no-unused-vars": [
@@ -20,7 +20,8 @@ module.exports = {
     node: true,
   },
   // https://eslint.org/docs/user-guide/configuring/configuration-files#extending-configuration-files
-  extends: ["eslint:recommended", "next"],
+  extends: ["eslint:recommended", "next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -28,23 +29,9 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: "module",
   },
-  plugins: ["react"],
-  rules: sharedRules,
+  rules,
   // https://eslint.org/docs/user-guide/configuring/configuration-files#how-do-overrides-work
   overrides: [
-    {
-      files: ["*.ts", "*.tsx", "**/*.ts", "**/*.tsx"],
-      extends: [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended",
-        "next",
-      ],
-      // https://www.npmjs.com/package/@typescript-eslint/parser
-      parser: "@typescript-eslint/parser",
-      plugins: ["react", "@typescript-eslint"],
-      rules: sharedRules,
-    },
     {
       files: ["*.test.tsx", "**/*.test.tsx"],
       rules: { "@typescript-eslint/no-non-null-assertion": "off" },
