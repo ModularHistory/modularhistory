@@ -49,7 +49,7 @@ module.exports = {
   async redirects() {
     const redirects = [];
     if (!fs.existsSync(redirectsMapPath)) {
-      console.log(`${redirectsMapPath} does not exist.`);
+      // console.log(`${redirectsMapPath} does not exist.`);
       await axios
         .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/redirects/`)
         .then(({ data }) => {

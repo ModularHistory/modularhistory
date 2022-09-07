@@ -77,6 +77,8 @@ jobs:
     name: Approve workflow continuation
     needs: generate-dotenv
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
     - name: Wait for pending deployments
       run: sleep 15s
