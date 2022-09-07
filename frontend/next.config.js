@@ -9,6 +9,8 @@ const dotenv = require("dotenv");
 const axios = require("axios");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
+// TODO: set vars based on Dockerization
+
 const DOTENV_DIR = path.join(__dirname, "..");
 const DOTENV_PATH = path.join(DOTENV_DIR, ".env");
 if (!fs.existsSync(DOTENV_PATH)) {

@@ -83,18 +83,29 @@ jobs:
     - name: Wait for pending deployments
       run: sleep 15s
       shell: bash
+    - name: Debug
+      run: echo "${{ github.repository }}"
+      shell: bash
     - name: Approve pending deployments
-      uses: octokit/request-action@v2.1.6
-      continue-on-error: true
+      uses: fjogeleit/http-request-action@v1
       with:
-        route: POST /repos/{owner}/{repo}/actions/runs/${{ github.run_id }}/pending_deployments
-        owner: ModularHistory
-        repo: modularhistory
-        environment_ids: 98022716
-        state: 'approved'
-        comment: 'Approved by ${{ github.actor }}'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        url: 'https://api.github.com/repos/ModularHistory/modularhistory/actions/runs/${{ github.run_id }}/pending_deployments'
+        method: 'POST'
+        bearerToken: ${{ secrets.GITHUB_TOKEN }}
+        customHeaders: '{"Accept": "application/vnd.github+json"}'
+        data: '{"environment_ids":[98022716],"state":"approved","comment":"Go!"}'
+    # - name: Approve pending deployments
+    #   uses: octokit/request-action@v2.1.6
+    #   continue-on-error: true
+    #   with:
+    #     route: POST /repos/{owner}/{repo}/actions/runs/${{ github.run_id }}/pending_deployments
+    #     owner: ModularHistory
+    #     repo: modularhistory
+    #     environment_ids: 98022716
+    #     state: 'approved'
+    #     comment: 'Approved by ${{ github.actor }}'
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     name: Build Docker image (${{ matrix.image }})
     needs: generate-dotenv
