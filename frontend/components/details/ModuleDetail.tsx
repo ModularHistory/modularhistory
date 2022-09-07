@@ -45,9 +45,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
             setIsSaved(true);
           }
         })
-        .catch((error) => {
-          console.error(error);
-        });
+        .catch(alert);
     }
   }, [session, moduleTypeKey, module.pk]);
 
@@ -57,7 +55,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({
         const requestBody = {
           [moduleTypeKey]: [module.pk],
         };
-        console.log("module", module, "requestBody", requestBody);
+        // console.log("module", module, "requestBody", requestBody);
         await axiosWithAuth
           .post("/api/collections/add_items/", requestBody)
           .then(function (response) {
