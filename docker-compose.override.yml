@@ -38,7 +38,7 @@ services:
       NEXTAUTH_URL: "http://localhost:${PORT}"
       REACT_EDITOR: "code"
     image: "ghcr.io/modularhistory/frontend:latest"
-    user: root # avoid permissions issues with writing in build dir
+    # user: root # avoid permissions issues with writing in build dir
     volumes:
       - ./frontend:/app
       - ./frontend/node_modules:/app/node_modules

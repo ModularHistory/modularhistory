@@ -4,10 +4,10 @@
 
 FROM node:lts-buster AS base
 
-LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
+ARG ENVIRONMENT
+ARG PORT=3000
 
-# https://docs.docker.com/engine/reference/builder/#arg
-ARG ENVIRONMENT=dev
+LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
 # Create required directories.
 RUN mkdir -p -- \
@@ -31,10 +31,12 @@ COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 # https://hub.docker.com/_/node/
 FROM base AS builder
 
-ARG ENVIRONMENT
+ARG PORT
+
+WORKDIR /app
 
 # Install project dependencies.
-RUN npm set cache .npm; npm ci || (npm cache clean -f && npm ci)
+RUN npm ci || (npm cache clean -f && npm ci)
 
 # Add source code required for compiling JS.
 COPY frontend .
@@ -43,36 +45,36 @@ COPY .env /.env
 # Compile JavaScript.
 RUN npm run build
 
+RUN rm /.env
+
 ##################################
 # RUNNER
 ##################################
 
 FROM base AS runner
 
-# Copy the ENVIRONMENT arg from the previous stage.
-ARG ENVIRONMENT
+ARG PORT
 
-# Copy compiled JavaScript from the builder stage.
-COPY --from=builder /app/.next /app/.next
+WORKDIR /app
 
-# Install required dependencies.
-RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
+ENV NODE_ENV production
+ENV PORT ${PORT}
 
-# Grant necessary permissions to non-root user.
-RUN chown -R www-data:www-data /app && \
-  chmod g+w /usr/local/bin/wait-for-it.sh && \
-  chmod g+w -R /_volumes/static && \
-  chown -R www-data:www-data ./.next
+COPY --from=builder --chown=node:node /app/.next /app/.next
+COPY --from=builder /app/public /app/public
+
+RUN npm ci --production
+
+RUN touch /.env
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-# Expose port 3002.
-EXPOSE 3002
+EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
   CMD curl --fail http://localhost:3002/ || exit 1
 
 # Switch from root to non-root user.
-USER www-data
+USER node
 
 CMD npm run start
