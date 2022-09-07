@@ -92,8 +92,8 @@ jobs:
         customHeaders: '{"Accept": "application/vnd.github+json"}'
     - name: Show Response
       run: |
-        echo ${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}
-        echo "${{ steps.get-workflow-runs.outputs.response }}"
+        echo '${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}'
+        echo '${{ steps.get-workflow-runs.outputs.response }}'
     - name: Get pending deployments
       id: get-pending-deployments
       uses: fjogeleit/http-request-action@v1
@@ -104,7 +104,7 @@ jobs:
         customHeaders: '{"Accept": "application/vnd.github+json"}'
     - name: Show Response
       run: |
-        echo ${{ steps.get-pending-deployments.outputs.response }}
+        echo '${{ steps.get-pending-deployments.outputs.response }}'
     # - name: Approve pending deployments
     #   uses: fjogeleit/http-request-action@v1
     #   with:
