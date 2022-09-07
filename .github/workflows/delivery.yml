@@ -61,7 +61,17 @@ env:
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 jobs:
+  generate-dotenv:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate .env file
+      uses: iacobfred/generate-dotenv@v0.1.6
+      with:
+        template-paths: .config/_.env
+        cache: true
   build:
+    needs: generate-dotenv
     environment: prod
     runs-on: ubuntu-latest
     permissions:

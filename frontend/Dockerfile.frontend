@@ -60,19 +60,30 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV PORT ${PORT}
 
+# Copy compiled JavaScript and any necessary files not already copied to the base image,
+# setting ownership/permissions as necessary.
 COPY --from=builder --chown=node:node /app/.next /app/.next
 COPY --from=builder /app/public /app/public
 
+# Do a clean installation of only production dependencies.
 RUN npm ci --production
 
+# Write an empty dotenv file in the root directory (parent of the app directory)
+# to be overwritten by a volume. The Next.js server reads the dotenv file from
+# this location upon startup.
 RUN touch /.env
 
+# Add local node_modules to PATH.
 ENV PATH /app/node_modules/.bin:$PATH
 
+# Add node to the www-data group.
+RUN usermod -a -G www-data node
+
+# Expose the port specified by the PORT build arg (default: 3000).
 EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
-  CMD curl --fail http://localhost:3002/ || exit 1
+  CMD ["sh", "-c", "curl --fail http://localhost:${PORT}/ || exit 1"]
 
 # Switch from root to non-root user.
 USER node
