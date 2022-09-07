@@ -92,11 +92,8 @@ jobs:
         customHeaders: '{"Accept": "application/vnd.github+json"}'
     - name: Show Response
       run: |
-        echo "Top run:"
-        echo ${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0]) }}
-        echo ""
-        echo "Full response:"
-        echo ${{ steps.get-workflow-runs.outputs.response }}
+        echo ${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}
+        echo "... as compared to ${{ github.run_id }}"
     # - name: Get pending deployments
     #   id: get-pending-deployments
     #   uses: fjogeleit/http-request-action@v1
