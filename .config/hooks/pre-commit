@@ -65,19 +65,6 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
     }
 }
 
-# If workflow YAML files (for CI) have been modified, preprocess the files.
-echo "$staged_files" | grep --quiet ".github/" && {
-    echo "Preprocessing workflow files..."
-    docker compose up github_workflow_preprocessor || {
-        echo "Failed to pre-process workflow files."
-        echo "For more output, try running the following:"
-        echo "  docker compose up github_workflow_preprocessor"
-    }
-    git diff --quiet .github/workflows || {
-        git add .github/workflows
-    }
-}
-
 for file in $staged_files; do
     git add "$file" &>/dev/null
 done
