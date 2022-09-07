@@ -87,7 +87,7 @@ jobs:
       id: get-workflow-runs
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'https://api.github.com/repos/${{ github.repository }}/actions/workflows/delivery/runs'
+        url: 'https://api.github.com/repos/${{ github.repository }}/actions/workflows/delivery.yml/runs'
         method: 'GET'
         bearerToken: ${{ secrets.GITHUB_TOKEN }}
         customHeaders: '{"Accept": "application/vnd.github+json"}'
@@ -96,6 +96,8 @@ jobs:
         echo ${{ steps.get-workflow-runs.outputs.response }}
         echo ${{ steps.get-workflow-runs.outputs.headers }}
         echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs }}
+        echo "Top run:"
+        echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0] }}
     - name: Get pending deployments
       id: get-pending-deployments
       uses: fjogeleit/http-request-action@v1
