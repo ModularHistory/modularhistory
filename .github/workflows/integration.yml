@@ -93,7 +93,7 @@ jobs:
       with:
         fetch-depth: 0
     - if: steps.cache-dotenv.outputs.cache-hit != 'true'
-      uses: iacobfred/generate-dotenv@v0.1.5
+      uses: iacobfred/generate-dotenv@v0.1.6
       with:
         template-paths: '.config/_.env .config/_.env.${{ matrix.environment }}'
         cache: true
@@ -514,12 +514,6 @@ jobs:
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2.0.0
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Create writable volume directories
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
@@ -637,12 +631,6 @@ jobs:
       run: |
         curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
         cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2.0.0
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Create writable volume directories
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" "redirects" )

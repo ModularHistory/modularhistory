@@ -1,15 +1,15 @@
 // https://eslint.org/docs/user-guide/configuring/
 
 const rules = {
-  "no-console": "off",
+  "no-console": "warn",
   "no-unused-vars": "off",
   "@typescript-eslint/no-unused-vars": [
     "warn",
     { varsIgnorePattern: "^_", ignoreRestSiblings: true },
   ],
   "react/react-in-jsx-scope": ["off"],
-  "@typescript-eslint/no-explicit-any": "off",
-  "@typescript-eslint/explicit-module-boundary-types": "off",
+  "@typescript-eslint/no-explicit-any": "warn",
+  "@typescript-eslint/explicit-module-boundary-types": "warn",
 };
 
 module.exports = {
