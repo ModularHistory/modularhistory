@@ -83,8 +83,6 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
       } else {
         location.href = "/donations/error";
       }
-    } catch (err) {
-      console.error(err);
     }
   };
 
