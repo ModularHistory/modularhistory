@@ -19,7 +19,7 @@ containers_to_deploy_without_downtime=("django" "celery" "next")
 reload_nginx () {
     # Reload the nginx configuration file without downtime.
     # https://nginx.org/en/docs/beginners_guide.html#control
-    nginx -s reload || {
+    nginx -s reload || sudo /usr/sbin/service nginx reload || {
         echo "Failed to reload nginx config file."; exit 1
     }
 }
