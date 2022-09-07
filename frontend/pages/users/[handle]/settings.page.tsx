@@ -24,7 +24,7 @@ interface TabPanelProps {
   children?: ReactNode;
   dir?: string;
   index: any;
-  value: any;
+  value: unknown;
 }
 
 function TabPanel(props: TabPanelProps) {

@@ -28,7 +28,7 @@ const allowedModels = new Set([
 ]);
 
 interface ModuleLinkProps {
-  elementProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
+  elementProps: AnchorHTMLAttributes<unknown> & { "data-id"?: string };
   children: ReactNode | string;
 }
 
@@ -46,7 +46,7 @@ const ModuleLink: FC<ModuleLinkProps> = ({ elementProps, children }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [module, setModule] = useState<ModuleUnion>();
-  const requestRef = useRef<Promise<any>>();
+  const requestRef = useRef<Promise<unknown>>();
   const [isFailure, setIsFailure] = useState(false);
 
   // TODO: add "data-model" attribute to anchor tags in our database HTML.

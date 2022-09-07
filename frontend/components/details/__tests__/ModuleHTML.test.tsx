@@ -70,7 +70,7 @@ describe("ModuleHTML", () => {
   });
 
   it("does not use next/link when on search page", async () => {
-    const Wrapper: FC<any> = (props) => <ThemeProvider theme={useTheme()} {...props} />;
+    const Wrapper: FC<unknown> = (props) => <ThemeProvider theme={useTheme()} {...props} />;
     mockRouter.setCurrentUrl("/search");
     const { moduleHTML } = await doubleRender({
       options: {

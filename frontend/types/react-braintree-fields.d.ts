@@ -7,7 +7,7 @@
 //       children: ReactNode;
 //       onAuthorizationSuccess?: () => void;
 //       authorization?: string;
-//       getTokenRef?: () => Promise<any>;
+//       getTokenRef?: () => Promise<unknown>;
 //       onValidityChange?: () => void;
 //       onCardTypeChange?: () => void;
 //       onError?: () => void;

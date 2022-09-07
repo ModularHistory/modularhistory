@@ -11,7 +11,20 @@ import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
 
-const fields = [
+interface Fields {
+  query: string;
+  ordering: string;
+  startYear: string;
+  startYearType: string;
+  endYear: string;
+  endYearType: string;
+  entities: string[];
+  topics: string[];
+  quality: string;
+  contentTypes: string[];
+}
+
+const fields: (keyof Fields)[] = [
   "query",
   "ordering",
   "startYear",
@@ -22,9 +35,9 @@ const fields = [
   "topics",
   "quality",
   "contentTypes",
-] as const;
+];
 type Field = typeof fields[number];
-type FieldsRef = MutableRefObject<Record<Field, any>>;
+type FieldsRef = MutableRefObject<Fields>;
 type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
 
 export interface SearchFormProps {
@@ -54,16 +67,14 @@ const StyledContainer = styled("div")({
  *    forced to display vertically, as when constrained by a sidebar.
  *    If false, the inputs may be rendered side-by-side.
  */
-const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
+const SearchForm: FC<SearchFormProps> = () => {
   const router = useRouter();
   const isLoading = useContext(PageTransitionContext);
 
-  const fieldsRef = useRef(
-    Object.fromEntries(fields.map((name) => [name, router.query[name]]))
-  ) as FieldsRef;
+  const fieldsRef = useRef(Object.fromEntries(fields.map((name) => [name, router.query[name]])));
   const fieldCallbacks = Object.fromEntries(
-    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
-  ) as FieldCallbacks;
+    fields.map((name) => [name, (value: Fields[keyof Fields]) => (fieldsRef.current[name] = value)])
+  );
 
   const submitForm = () => {
     const queryParams = { ...fieldsRef.current };
@@ -99,7 +110,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
         <Grid item xs={12} sm={"auto"}>
           <RadioGroup
             label={"Ordering"}
-            defaultValue={fieldsRef.current.ordering}
+            defaultValue={fieldsRef.current.ordering as string}
             onChange={fieldCallbacks.ordering}
             options={["Relevance", "Date"]}
             disabled={isLoading}
@@ -110,8 +121,8 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
         <Grid container item xs={12} sm={"auto"}>
           <YearSelect
             label={"Start year"}
-            defaultYearValue={fieldsRef.current.startYear}
-            defaultTypeValue={fieldsRef.current.startYearType}
+            defaultYearValue={fieldsRef.current.startYear as string}
+            defaultTypeValue={fieldsRef.current.startYearType as string}
             onYearChange={fieldCallbacks.startYear}
             onTypeChange={fieldCallbacks.startYearType}
             disabled={isLoading}
@@ -121,8 +132,8 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
         <Grid container item xs={12} sm={"auto"}>
           <YearSelect
             label={"End year"}
-            defaultYearValue={fieldsRef.current.endYear}
-            defaultTypeValue={fieldsRef.current.endYearType}
+            defaultYearValue={fieldsRef.current.endYear as string}
+            defaultTypeValue={fieldsRef.current.endYearType as string}
             onYearChange={fieldCallbacks.endYear}
             onTypeChange={fieldCallbacks.endYearType}
             disabled={isLoading}
@@ -133,7 +144,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           <EntitiesInstantSearch
             onChange={fieldCallbacks.entities}
             disabled={isLoading}
-            defaultValue={fieldsRef.current.entities}
+            defaultValue={fieldsRef.current.entities ?? []}
           />
         </Grid>
 
@@ -141,14 +152,14 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           <TopicsInstantSearch
             onChange={fieldCallbacks.topics}
             disabled={isLoading}
-            defaultValue={fieldsRef.current.topics}
+            defaultValue={fieldsRef.current.topics ?? []}
           />
         </Grid>
 
         <Grid item xs={12} sm={"auto"}>
           <RadioGroup
             label={"Quality"}
-            defaultValue={fieldsRef.current.quality}
+            defaultValue={fieldsRef.current.quality as string}
             onChange={fieldCallbacks.quality}
             options={["All", "Verified"]}
             disabled={isLoading}
@@ -160,7 +171,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           {/* #ContentTypesHardCoded */}
           <CheckboxGroup
             label={"Content Types"}
-            defaultValue={fieldsRef.current.contentTypes}
+            defaultValue={fieldsRef.current.contentTypes as string}
             onChange={fieldCallbacks.contentTypes}
             disabled={isLoading}
             options={[

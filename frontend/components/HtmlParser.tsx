@@ -1,6 +1,7 @@
 import { Element, HTMLReactParserOptions } from "html-react-parser";
 import { FC, ReactElement, useEffect, useState } from "react";
 
+// Compare this snippet from frontend/components/details/ModuleLink.tsx:
 interface HtmlParserProps {
   html: string;
   filterFunc: CallableFunction;

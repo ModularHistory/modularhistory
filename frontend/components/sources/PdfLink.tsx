@@ -16,7 +16,7 @@ const StyledSpan = styled("span")({
 });
 
 interface PdfLinkProps {
-  elementProps: AnchorHTMLAttributes<any> & { "data-id"?: string };
+  elementProps: AnchorHTMLAttributes<unknown> & { "data-id"?: string };
   children: ReactNode | string;
 }
 

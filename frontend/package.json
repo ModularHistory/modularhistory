@@ -55,6 +55,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.4.3",
+    "@types/braintree-web-drop-in": "^1.28.0",
     "@types/jquery": "^3.5.14",
     "@types/node": "^18.7.15",
     "@types/qs": "^6.9.7",

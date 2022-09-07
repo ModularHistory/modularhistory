@@ -98,7 +98,7 @@ const DynamicFormFields: FC<DynamicFormFieldsProps> = ({ contentType }: DynamicF
 
   const fieldsRef = useRef({}) as FieldsRef;
   const fieldCallbacks = Object.fromEntries(
-    fields.map((name) => [name, (value: any) => (fieldsRef.current[name] = value)])
+    fields.map((name) => [name, (value: unknown) => (fieldsRef.current[name] = value)])
   ) as FieldCallbacks;
 
   useEffect(() => {

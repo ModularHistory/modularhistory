@@ -1,6 +1,7 @@
 import Layout from "@/components/Layout";
 import { Alert, AlertTitle, Button } from "@mui/material";
 import Container from "@mui/material/Container";
+import { Dropin } from "braintree-web-drop-in";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
@@ -13,7 +14,7 @@ interface DonateProps {
 
 const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
   const [clientToken, setClientToken] = useState(props.clientToken);
-  const [instance, setInstance] = useState<any>();
+  const [instance, setInstance] = useState<Dropin>();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
 
@@ -44,6 +45,7 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
     e.preventDefault();
 
     async function getNonce() {
+      if (!instance) return;
       const { nonce } = await instance.requestPaymentMethod();
       try {
         // Send the nonce to the server.
@@ -120,7 +122,7 @@ const MakeDonationPage: FC<DonateProps> = (props: DonateProps) => {
               options={{
                 authorization: clientToken,
                 paypal: { flow: "vault" },
-                venmo: { allowNewBrowserTab: false, allowDesktop: true },
+                venmo: { allowNewBrowserTab: false },
               }}
               onInstance={setInstance}
             />

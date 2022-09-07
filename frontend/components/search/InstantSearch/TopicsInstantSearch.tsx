@@ -3,7 +3,7 @@ import InstantSearch, { InstantSearchProps } from "@/components/search/InstantSe
 import { FC } from "react";
 
 type TopicsInstantSearchProps = {
-  defaultValue?: number | number[];
+  defaultValue?: number | number[] | string | string[];
 } & Partial<Omit<InstantSearchProps, "defaultValue">>;
 
 const TopicsInstantSearch: FC<TopicsInstantSearchProps> = ({
