@@ -14,6 +14,7 @@ import { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FC, ReactElement, useEffect } from "react";
+import SSRProvider from "react-bootstrap/SSRProvider";
 import TagManager from "react-gtm-module";
 import Cookies from "universal-cookie";
 
@@ -136,8 +137,10 @@ const App: NextPage<ExtendedAppProps> = ({
         <SessionKiller>
           <PageTransitionContextProvider>
             <ThemeProvider theme={theme}>
-              <DynamicPageTransitionProgressBar />
-              <Component {...pageProps} err={err} />
+              <SSRProvider>
+                <DynamicPageTransitionProgressBar />
+                <Component {...pageProps} err={err} />
+              </SSRProvider>
             </ThemeProvider>
           </PageTransitionContextProvider>
         </SessionKiller>

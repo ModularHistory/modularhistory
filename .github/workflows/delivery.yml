@@ -73,7 +73,6 @@ jobs:
         template-paths: |
           .config/_.env
           .config/_.env.prod
-        cache: true
   continue:
     name: Approve workflow continuation
     needs: generate-dotenv
@@ -107,8 +106,9 @@ jobs:
     - name: Generate .env file
       uses: iacobfred/generate-dotenv@v0.1.8
       with:
-        template-paths: .config/_.env
-        cache: true
+        template-paths: |
+          .config/_.env
+          .config/_.env.prod
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
@@ -160,8 +160,9 @@ jobs:
     - name: Generate .env file
       uses: iacobfred/generate-dotenv@v0.1.8
       with:
-        template-paths: .config/_.env
-        cache: true
+        template-paths: |
+          .config/_.env
+          .config/_.env.prod
     - name: Deploy to server
       uses: iacobfred/deploy-docker-ssh@v0.2.8
       with:

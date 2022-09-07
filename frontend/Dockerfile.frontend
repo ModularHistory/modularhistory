@@ -62,7 +62,7 @@ ENV PORT ${PORT}
 
 # Copy compiled JavaScript and any necessary files not already copied to the base image,
 # setting ownership/permissions as necessary.
-COPY --from=builder --chown=node:node /app/.next /app/.next
+COPY --from=builder /app/.next /app/.next
 COPY --from=builder /app/public /app/public
 
 # Do a clean installation of only production dependencies.
@@ -78,6 +78,10 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # Add node to the www-data group.
 RUN usermod -a -G www-data node
+
+# Set ownership/permissions as necessary before switching to node user.
+RUN chown -R node:www-data /app
+RUN chmod g+w -R /app
 
 # Expose the port specified by the PORT build arg (default: 3000).
 EXPOSE ${PORT}
