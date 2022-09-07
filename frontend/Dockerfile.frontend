@@ -85,7 +85,7 @@ EXPOSE ${PORT}
 HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
   CMD ["sh", "-c", "curl --fail http://localhost:${PORT}/ || exit 1"]
 
-# Switch from root to non-root user.
+# Switch to non-root user.
 USER node
 
 CMD npm run start
