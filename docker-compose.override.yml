@@ -46,6 +46,7 @@ services:
       - ./static:/static
       - ./static:/app/public/static
       - ./_volumes/media:/app/public/media
+
   elasticsearch:
     ports:
       - "9200:9200"
