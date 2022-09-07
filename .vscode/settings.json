@@ -83,4 +83,5 @@
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "workbench.editor.limit.enabled": true,
     "workbench.editor.limit.value": 7,
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
 }

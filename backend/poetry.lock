@@ -968,14 +968,14 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-flat-json-widget"
-version = "0.1.3"
+version = "0.2"
 description = "Django Flat JSON Key/Value Widget"
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["django-extensions (>=3.0,<4.0)", "openwisp-utils[qa] (>=0.7,<1.0)"]
+test = ["django-extensions (>=3.1.0,<3.2.0)", "openwisp-utils[qa] (>=1.0.0,<1.1.0)"]
 
 [[package]]
 name = "django-health-check"
@@ -1334,22 +1334,6 @@ description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
-
-[[package]]
-name = "dparse"
-version = "0.5.2"
-description = "A parser for Python dependency files"
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-packaging = "*"
-toml = "*"
-
-[package.extras]
-conda = ["pyyaml"]
-pipenv = ["pipenv"]
 
 [[package]]
 name = "drf-extra-fields"
@@ -3084,21 +3068,6 @@ python-versions = "*"
 dev = ["pytest", "pytest-timeout"]
 
 [[package]]
-name = "safety"
-version = "1.10.3"
-description = "Checks installed dependencies for known vulnerabilities."
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-Click = ">=6.0"
-dparse = ">=0.5.1"
-packaging = "*"
-requests = "*"
-setuptools = "*"
-
-[[package]]
 name = "scrubadub"
 version = "1.2.2"
 description = "Clean personally identifiable information from dirty dirty text."
@@ -3743,7 +3712,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.13"
-content-hash = "acdd832fb3ace8314fabf9ebcc61c3bf4e2b4e82366b709ebff29bc4c88b60ba"
+content-hash = "b841be87908bcca113b2e40c236a6f26a7d96c8b95d43cc32cb332e7c40d5cf0"
 
 [metadata.files]
 aenum = [
@@ -4378,8 +4347,8 @@ django-filter = [
     {file = "django_filter-2.4.0-py3-none-any.whl", hash = "sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1"},
 ]
 django-flat-json-widget = [
-    {file = "django-flat-json-widget-0.1.3.tar.gz", hash = "sha256:4ce5c4013db2408903fd78c5971a4707f3dc2831e4787a6174313d020ffb9164"},
-    {file = "django_flat_json_widget-0.1.3-py2.py3-none-any.whl", hash = "sha256:07735656b5bf9517f4b6310810f97e41565840a135d6eff3d006bd7b0455d8b5"},
+    {file = "django-flat-json-widget-0.2.tar.gz", hash = "sha256:ffc01033a991d2edb41080e9cd73ba232c4848cdb7be27a8e1afa28092b297d4"},
+    {file = "django_flat_json_widget-0.2-py2.py3-none-any.whl", hash = "sha256:648a2d394a5147a86dec935ea2bedced627b8a8279c86966d320de18fd9fb990"},
 ]
 django-health-check = [
     {file = "django-health-check-3.17.0.tar.gz", hash = "sha256:d1b8671e79d1de6e3dd1a9c69566222b0bfcfacca8b90511a4407b2d0d3d2778"},
@@ -4488,10 +4457,6 @@ docker-image-size-limit = [
 docutils = [
     {file = "docutils-0.19-py3-none-any.whl", hash = "sha256:5e1de4d849fee02c63b040a4a3fd567f4ab104defd8a5511fbbc24a8a017efbc"},
     {file = "docutils-0.19.tar.gz", hash = "sha256:33995a6753c30b7f577febfc2c50411fec6aac7f7ffeb7c4cfe5991072dcf9e6"},
-]
-dparse = [
-    {file = "dparse-0.5.2-py3-none-any.whl", hash = "sha256:b1514fb08895d85b18d4eba3b1b7025ff9e6ea07286282021e19def872129975"},
-    {file = "dparse-0.5.2.tar.gz", hash = "sha256:c348994a1f41c85f664d8f5a47442647bc4e22c5af5b1b26ef29aff0fa5dddcd"},
 ]
 drf-extra-fields = [
     {file = "drf-extra-fields-3.4.0.tar.gz", hash = "sha256:6224ae29ddfe80f38e36a1a5f7f1837cec1a4ec90e8960b473d43167f6d427d0"},
@@ -5994,10 +5959,6 @@ restructuredtext-lint = [
 ]
 rope = [
     {file = "rope-0.20.1.tar.gz", hash = "sha256:505a2f6b4ac7b18e0429be179f4d8712243a194da5c866b0731f9d91ce7590bb"},
-]
-safety = [
-    {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
-    {file = "safety-1.10.3.tar.gz", hash = "sha256:30e394d02a20ac49b7f65292d19d38fa927a8f9582cdfd3ad1adbbc66c641ad5"},
 ]
 scrubadub = [
     {file = "scrubadub-1.2.2-py3-none-any.whl", hash = "sha256:11e139a27de0f017dfde71760234fc80059a08c158135b5ae2652b62ad7bede2"},
