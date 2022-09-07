@@ -23,7 +23,7 @@ process.env.SENTRY_PROJECT = "frontend";
 process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
 if (!process.env.DJANGO_PORT) {
-  console.error("DJANGO_PORT is not set; falling back on default port 8000 ...");
+  // console.error("DJANGO_PORT is not set; falling back on default port 8000 ...");
   process.env.DJANGO_PORT = "8000";
 }
 

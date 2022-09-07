@@ -85,8 +85,11 @@ jobs:
       shell: bash
     - name: Approve pending deployments
       uses: octokit/request-action@v2.1.6
+      continue-on-error: true
       with:
-        route: POST /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments
+        route: POST /repos/{owner}/{repo}/actions/runs/${{ github.run_id }}/pending_deployments
+        owner: ModularHistory
+        repo: modularhistory
         environment_ids: 98022716
         state: 'approved'
         comment: 'Approved by ${{ github.actor }}'
