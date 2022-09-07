@@ -77,8 +77,8 @@ jobs:
     name: Approve workflow continuation
     needs: generate-dotenv
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
+    # permissions:
+    #   actions: write
     steps:
     - name: Wait for pending deployments
       run: sleep 15s
@@ -98,27 +98,27 @@ jobs:
         echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs }}
         echo "Top run:"
         echo ${{ fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0] }}
-    - name: Get pending deployments
-      id: get-pending-deployments
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
-        method: 'GET'
-        bearerToken: ${{ secrets.GITHUB_TOKEN }}
-        customHeaders: '{"Accept": "application/vnd.github+json"}'
-    - name: Show Response
-      run: |
-        echo ${{ steps.get-pending-deployments.outputs.response }}
-        echo ${{ steps.get-pending-deployments.outputs.headers }}
-        echo ${{ fromJson(steps.get-pending-deployments.outputs.response) }}
-    - name: Approve pending deployments
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
-        method: 'POST'
-        bearerToken: ${{ secrets.GITHUB_TOKEN }}
-        customHeaders: '{"Accept": "application/vnd.github+json"}'
-        data: '{"environment_ids":[98022716],"state":"approved","comment":"Go!"}'
+    # - name: Get pending deployments
+    #   id: get-pending-deployments
+    #   uses: fjogeleit/http-request-action@v1
+    #   with:
+    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
+    #     method: 'GET'
+    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
+    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
+    # - name: Show Response
+    #   run: |
+    #     echo ${{ steps.get-pending-deployments.outputs.response }}
+    #     echo ${{ steps.get-pending-deployments.outputs.headers }}
+    #     echo ${{ fromJson(steps.get-pending-deployments.outputs.response) }}
+    # - name: Approve pending deployments
+    #   uses: fjogeleit/http-request-action@v1
+    #   with:
+    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
+    #     method: 'POST'
+    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
+    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
+    #     data: '{"environment_ids":[98022716],"state":"approved","comment":"Go!"}'
     # - name: Approve pending deployments
     #   uses: octokit/request-action@v2.1.6
     #   continue-on-error: true
