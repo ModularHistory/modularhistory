@@ -82,18 +82,18 @@ jobs:
     - name: Wait for pending deployments
       run: sleep 15s
       shell: bash
-    - name: Get workflow runs
-      id: get-workflow-runs
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: 'https://api.github.com/repos/${{ github.repository }}/actions/workflows/delivery.yml/runs'
-        method: 'GET'
-        bearerToken: ${{ secrets.GITHUB_TOKEN }}
-        customHeaders: '{"Accept": "application/vnd.github+json"}'
-    - name: Show Response
-      run: |
-        echo '${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}'
-        echo '${{ steps.get-workflow-runs.outputs.response }}'
+    # - name: Get workflow runs
+    #   id: get-workflow-runs
+    #   uses: fjogeleit/http-request-action@v1
+    #   with:
+    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/workflows/delivery.yml/runs'
+    #     method: 'GET'
+    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
+    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
+    # - name: Show Response
+    #   run: |
+    #     echo '${{ toJson(fromJson(steps.get-workflow-runs.outputs.response).workflow_runs[0].id) }}'
+    #     echo '${{ steps.get-workflow-runs.outputs.response }}'
     - name: Get pending deployments
       id: get-pending-deployments
       uses: fjogeleit/http-request-action@v1
@@ -104,7 +104,7 @@ jobs:
         customHeaders: '{"Accept": "application/vnd.github+json"}'
     - name: Show Response
       run: |
-        echo '${{ steps.get-pending-deployments.outputs.response }}'
+        echo '${{ toJson(fromJson(steps.get-pending-deployments.outputs.response)[0]) }}'
     # - name: Approve pending deployments
     #   uses: fjogeleit/http-request-action@v1
     #   with:
