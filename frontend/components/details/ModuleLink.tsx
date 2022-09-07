@@ -2,7 +2,6 @@ import ModuleModal from "@/components/details/ModuleModal";
 import { ModuleUnion } from "@/types/modules";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { AnchorHTMLAttributes, FC, MouseEventHandler, ReactNode, useRef, useState } from "react";
 
 const StyledSpan = styled("span")({
@@ -42,7 +41,6 @@ interface ModuleLinkProps {
  * @constructor
  */
 const ModuleLink: FC<ModuleLinkProps> = ({ elementProps, children }) => {
-  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [module, setModule] = useState<ModuleUnion>();

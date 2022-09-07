@@ -3,8 +3,7 @@ import { EntitiesInstantSearch, TopicsInstantSearch } from "@/components/search/
 import { Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
-import type { ParsedUrlQueryInput } from "querystring";
-import { FC, KeyboardEventHandler, MutableRefObject, useContext, useRef } from "react";
+import { FC, KeyboardEventHandler, useContext, useRef } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
 import RadioGroup from "./RadioGroup";
@@ -37,8 +36,6 @@ const fields: (keyof Fields)[] = [
   "contentTypes",
 ];
 type Field = typeof fields[number];
-type FieldsRef = MutableRefObject<Fields>;
-type FieldCallbacks = Record<Field, (value: ParsedUrlQueryInput[string]) => void>;
 
 export interface SearchFormProps {
   inSidebar?: boolean;

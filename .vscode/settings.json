@@ -50,7 +50,11 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/*.pyc": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        ".cache": true,
+        "**/.next": true,
+        "**/.npm": true,
+        "**/node_modules": true
     },
     "gitlens.currentLine.scrollable": false,
     "php.suggest.basic": false,
