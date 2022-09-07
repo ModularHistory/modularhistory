@@ -105,14 +105,18 @@ jobs:
     - name: Show Response
       run: |
         echo '${{ toJson(fromJson(steps.get-pending-deployments.outputs.response)[0]) }}'
-    # - name: Approve pending deployments
-    #   uses: fjogeleit/http-request-action@v1
-    #   with:
-    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
-    #     method: 'POST'
-    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
-    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
-    #     data: '{"environment_ids":[98022716],"state":"approved","comment":"Go!"}'
+    - name: Approve pending deployments
+      id: approve-pending-deployments
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
+        method: 'POST'
+        bearerToken: ${{ secrets.GITHUB_TOKEN }}
+        customHeaders: '{"Accept": "application/vnd.github+json"}'
+        data: '{"environment_ids":[98022716],"state":"approved","comment":"Go!"}'
+    - name: Show Response
+      run: |
+        echo '${{ steps.approve-pending-deployments.outputs.response }}'
     # - name: Approve pending deployments
     #   uses: octokit/request-action@v2.1.6
     #   continue-on-error: true
