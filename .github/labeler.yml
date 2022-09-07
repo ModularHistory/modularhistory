@@ -1,0 +1,8 @@
+source:
+  - backend/**/*
+  - frontend/**/*
+automation:
+  - .github/workflows/*
+docs:
+  - '*.md'
+  - '*.rst'
