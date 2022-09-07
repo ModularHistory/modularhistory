@@ -2,7 +2,7 @@
 # BASE
 ##################################
 
-FROM node:lts-buster AS base
+FROM node:16.14.2 AS base
 
 ARG ENVIRONMENT
 ARG PORT=3000
@@ -60,8 +60,7 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV PORT ${PORT}
 
-# Copy compiled JavaScript and any necessary files not already copied to the base image,
-# setting ownership/permissions as necessary.
+# Copy compiled JavaScript and any necessary files not already copied to the base image.
 COPY --from=builder /app/.next /app/.next
 COPY --from=builder /app/public /app/public
 
@@ -71,17 +70,13 @@ RUN npm ci --production
 # Write an empty dotenv file in the root directory (parent of the app directory)
 # to be overwritten by a volume. The Next.js server reads the dotenv file from
 # this location upon startup.
-RUN touch /.env
+RUN touch /.env && chown www-data:www-data /.env 
 
 # Add local node_modules to PATH.
 ENV PATH /app/node_modules/.bin:$PATH
 
-# Add node to the www-data group.
-RUN usermod -a -G www-data node
-
-# Set ownership/permissions as necessary before switching to node user.
-RUN chown -R node:www-data /app
-RUN chmod g+w -R /app
+# Set ownership/permissions as necessary before switching to non-root user.
+RUN chown -R www-data:www-data ./.next
 
 # Expose the port specified by the PORT build arg (default: 3000).
 EXPOSE ${PORT}
@@ -90,6 +85,6 @@ HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
   CMD ["sh", "-c", "curl --fail http://localhost:${PORT}/ || exit 1"]
 
 # Switch to non-root user.
-USER node
+USER www-data
 
 CMD npm run start
