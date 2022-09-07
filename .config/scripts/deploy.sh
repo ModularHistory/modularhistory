@@ -52,7 +52,7 @@ docker login ghcr.io -u iacobfred -p "$GHCR_PASSWORD" || {
 
 # Pull new images.
 echo "" && echo "Pulling images for version $SHA ..."
-docker compose pull || {
+docker compose pull --quiet || {
     echo "Failed to pull required images."; exit 1
 }
 for image_name in "${images_to_pull[@]}"; do
