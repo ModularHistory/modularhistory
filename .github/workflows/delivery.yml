@@ -113,7 +113,7 @@ jobs:
         secret-files: ENV_FILE=./.env
         tags: ghcr.io/modularhistory/${{ matrix.image }}:${{ github.sha }},ghcr.io/modularhistory/${{ matrix.image }}:latest
     - name: Build image without cache
-      if: ${{ steps.build-image.outcome == 'failure' }}
+      if: failure()
       uses: docker/build-push-action@v3
       with:
         build-args: |
