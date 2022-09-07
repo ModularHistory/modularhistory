@@ -140,7 +140,7 @@ jobs:
         template-paths: .config/_.env
         cache: true
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-ssh@v0.2.5
+      uses: iacobfred/deploy-docker-ssh@v0.2.7
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob

@@ -93,7 +93,6 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
   menuItems = menuItems || globalMenuItems;
 
   const router = useRouter();
-  // TODO: Create session type and remove this cast to `any`.
   const { data: session, status } = useSession();
 
   const loading = status === "loading";
