@@ -22,6 +22,7 @@ WORKDIR /app
 COPY frontend/package*.json .
 COPY frontend/next.config.js .
 COPY static /static
+COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 
 ##################################
 # BUILDER
@@ -51,26 +52,19 @@ FROM base AS runner
 # Copy the ENVIRONMENT arg from the previous stage.
 ARG ENVIRONMENT
 
-# Copy compiled JavaScript and other necessary code from the builder stage.
+# Copy compiled JavaScript from the builder stage.
 COPY --from=builder /app/.next /app/.next
-# These are in the base image.
-# COPY --from=builder /app/public /app/public
-# COPY --from=builder /app/package*.json /app/
-# COPY --from=builder /app/next.config.js /app/
 
 # Install required dependencies.
 RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
 
-# Copy necessary files.
-COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /app && \
   chmod g+w /usr/local/bin/wait-for-it.sh && \
-  chmod g+w -R /_volumes/static
+  chmod g+w -R /_volumes/static && \
+  chown -R www-data:www-data ./.next
 
-# Make .next directory writable in dev environment.
-RUN if [ "$ENVIRONMENT" = "dev" ]; then chmod g+w -R /app/.next/; fi
+ENV PATH /app/node_modules/.bin:$PATH
 
 # Expose port 3002.
 EXPOSE 3002
