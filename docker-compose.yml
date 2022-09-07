@@ -237,24 +237,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./_volumes/db/init:/docker-entrypoint-initdb.d
 
-  # mongo:
-  #   deploy:
-  #     restart_policy:
-  #       condition: on-failure
-  #       max_attempts: 3
-  #   env_file: .env
-  #   healthcheck:
-  #     test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 20s
-  #   image: mongo
-  #   expose:
-  #     - "27017"
-  #   volumes:
-  #     - data:/data
-
   redisinsight:
     image: redislabs/redisinsight:latest
     profiles: [ "debug" ]

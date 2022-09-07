@@ -21,6 +21,7 @@ WORKDIR /app
 
 COPY frontend/package*.json .
 COPY frontend/next.config.js .
+COPY static /static
 
 ##################################
 # BUILDER
@@ -35,7 +36,6 @@ ARG ENVIRONMENT
 RUN npm set cache .npm; npm ci || (npm cache clean -f && npm ci)
 
 # Add source code required for compiling JS.
-COPY static /static
 COPY frontend .
 COPY .env /.env
 
@@ -51,8 +51,12 @@ FROM base AS runner
 # Copy the ENVIRONMENT arg from the previous stage.
 ARG ENVIRONMENT
 
-# Copy compiled JavaScript from the builder stage.
+# Copy compiled JavaScript and other necessary code from the builder stage.
 COPY --from=builder /app/.next /app/.next
+# These are in the base image.
+# COPY --from=builder /app/public /app/public
+# COPY --from=builder /app/package*.json /app/
+# COPY --from=builder /app/next.config.js /app/
 
 # Install required dependencies.
 RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
