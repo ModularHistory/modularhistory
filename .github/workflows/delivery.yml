@@ -68,7 +68,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.2
+      uses: iacobfred/generate-dotenv@v0.2.3
       with:
         template-paths: |
           .config/_.env
@@ -77,22 +77,14 @@ jobs:
     name: Approve workflow continuation
     needs: generate-dotenv
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      actions: write
+      deployments: write
+      packages: write
     steps:
     - name: Wait for pending deployments
       run: sleep 15s
       shell: bash
-    # - name: Get pending deployments
-    #   id: get-pending-deployments
-    #   uses: fjogeleit/http-request-action@v1
-    #   with:
-    #     url: 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments'
-    #     method: 'GET'
-    #     bearerToken: ${{ secrets.GITHUB_TOKEN }}
-    #     customHeaders: '{"Accept": "application/vnd.github+json"}'
-    # - name: Show Response
-    #   run: |
-    #     echo '${{ toJson(fromJson(steps.get-pending-deployments.outputs.response)[0]) }}'
     - name: Approve pending deployments
       id: approve-pending-deployments
       shell: bash
@@ -116,7 +108,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.2
+      uses: iacobfred/generate-dotenv@v0.2.3
       with:
         template-paths: |
           .config/_.env
@@ -170,7 +162,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.2
+      uses: iacobfred/generate-dotenv@v0.2.3
       with:
         template-paths: |
           .config/_.env
