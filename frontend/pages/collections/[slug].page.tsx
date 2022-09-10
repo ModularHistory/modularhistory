@@ -11,12 +11,12 @@ import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC, useState } from "react";
 import {
-    EmailIcon,
-    EmailShareButton,
-    FacebookIcon,
-    FacebookShareButton,
-    TwitterIcon,
-    TwitterShareButton
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  TwitterIcon,
+  TwitterShareButton,
 } from "react-share";
 import { GlobalTheme } from "../_app.page";
 
@@ -78,7 +78,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params || {};
 
   await axios
-    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/collections/${slug}/`)
+    .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/collections/${slug}/`)
     .then((response) => {
       collection = response.data;
     })

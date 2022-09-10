@@ -4,11 +4,7 @@
 
 FROM python:3.9-buster AS base
 
-LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
-
-# https://docs.docker.com/engine/reference/builder/#arg
-ARG ENVIRONMENT=dev
-ARG PORT=8000
+LABEL org.opencontainers.image.source https://github.com/ModularHistory/
 
 # Set environment vars.
 ENV \
@@ -27,7 +23,10 @@ RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
 # Install packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
+  # Include fdupes for removing duplicate files.
   fdupes \
+  # Include gettext-base for envsubst.
+  gettext-base \
   gnupg2 \
   graphviz graphviz-dev \
   libenchant-dev \
@@ -39,9 +38,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install rclone (for media backup/sync).
 RUN curl https://rclone.org/install.sh | bash
 
-RUN pip install "poetry>=1.0.5"
-RUN poetry config virtualenvs.create false
-
 # Create required directories.
 RUN mkdir -p -- \
   /static \
@@ -52,26 +48,31 @@ RUN mkdir -p -- \
   /opt/atlas \
   /var/www/nltk_data/corpora
 
-# Create and enter the working directory.
+##################################
+# Builder
+##################################
+
+FROM base AS builder
+
 WORKDIR /app
+
+RUN pip install poetry
+
+RUN poetry config virtualenvs.create false
+
+COPY backend/poetry.lock backend/pyproject.toml /app/
+
+RUN poetry install --no-interaction --no-ansi --no-root --no-dev || ( \
+  poetry export -f requirements.txt --without-hashes -o requirements.txt && \
+  pip install --upgrade pip && pip install -r requirements.txt )
 
 ##################################
 # Runner
 ##################################
 
-FROM base
+FROM base AS runner
 
-# Install project dependencies.
-COPY backend/poetry.lock backend/pyproject.toml /app/
-RUN \
-  if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
-  # TODO: Use this logic after it's supported in next Poetry version
-  # elif [ "$ENVIRONMENT" = "test" ]; then poetry_args="--without dev"; pip_args="--dev"; \
-  # else poetry_args="--without dev,test"; pip_args=""; fi; \
-  else poetry_args="--no-dev"; pip_args=""; fi; \
-  poetry install --no-interaction --no-ansi --no-root $poetry_args || ( \
-  poetry export -f requirements.txt --without-hashes $pip_args -o requirements.txt \
-  && pip install --upgrade pip && pip install -r requirements.txt )
+WORKDIR /app
 
 # Download required files.
 RUN python -c "import nltk; nltk.download('punkt')" && \
@@ -92,9 +93,6 @@ RUN chown -R www-data:www-data /app && \
   chmod g+w -R /_volumes && \
   chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
-
-# Expose port
-EXPOSE ${PORT}
 
 # Switch from root to non-root user.
 USER www-data

@@ -3,29 +3,13 @@ version: "3.8"
 x-common-env-vars:
   &common-env-vars
   DOCKERIZED: "True"
+  GLITCHTIP_BASE_URL: "https://glitchtip.orega.org"
   REDIS_HOST: "redis"
   POSTGRES_HOST: "postgres"
+  DJANGO_HOST: "django"
+  NEXTJS_HOST: "next"
 
 services:
-  next:
-    image: "ghcr.io/modularhistory/frontend:${SHA}"
-    command: npm run start
-    depends_on:
-      - django
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      PORT: 3002
-      NEXTAUTH_URL: "https://modularhistory.orega.org"
-      NEXTAUTH_URL_INTERNAL: "http://next:3002"
-    ports:
-      - "${PORT}:${PORT}"
-    volumes:
-      - ./_volumes/static:/_volumes/static
-      - ./_volumes/redirects:/_volumes/redirects
-
   django:
     image: "ghcr.io/modularhistory/backend:${SHA}"
     command: bash /.config/scripts/init/django.sh
@@ -87,7 +71,7 @@ services:
       <<: *common-env-vars
       IS_CELERY: "True"
     healthcheck:
-      test: celery -A core inspect ping -d celery@$$HOSTNAME
+      test: celery -A core inspect ping -d celery@$$HOST
       timeout: 30s
       interval: 30s
       retries: 3
@@ -125,6 +109,24 @@ services:
       start_period: 10s
     volumes:
       - ./.config:/.config
+
+  create_es_certs:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    environment:
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+    command: >
+      bash -c '
+        if [[ ! -f /certs/bundle.zip ]]; then
+          bin/elasticsearch-certutil cert --silent --pem --in "${ELASTIC_CERTS_DIR}/instances.yml" -out /certs/bundle.zip;
+          unzip /certs/bundle.zip -d /certs; 
+        fi;
+        chown -R 1000:0 /certs
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes:
+      - es_certs:/certs
+      - ./.config/elasticsearch:${ELASTIC_CERTS_DIR}
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
@@ -169,24 +171,6 @@ services:
       - es_data:/usr/share/elasticsearch/data
       - es_certs:${ELASTIC_CERTS_DIR}
 
-  create_es_certs:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
-    environment:
-      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
-    command: >
-      bash -c '
-        if [[ ! -f /certs/bundle.zip ]]; then
-          bin/elasticsearch-certutil cert --silent --pem --in "${ELASTIC_CERTS_DIR}/instances.yml" -out /certs/bundle.zip;
-          unzip /certs/bundle.zip -d /certs; 
-        fi;
-        chown -R 1000:0 /certs
-      '
-    user: "0"
-    working_dir: /usr/share/elasticsearch
-    volumes:
-      - es_certs:/certs
-      - ./.config/elasticsearch:${ELASTIC_CERTS_DIR}
-
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.1
     depends_on:
@@ -199,6 +183,25 @@ services:
       # ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
     expose:
       - "5601"
+
+  nextjs:
+    image: "ghcr.io/modularhistory/frontend:${SHA}"
+    command: "npm run start"
+    depends_on:
+      - django
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file: .env
+    environment:
+      PORT: ${NEXTJS_PORT}
+      NEXTAUTH_URL_INTERNAL: "http://nextjs:${NEXTJS_PORT}"
+      NODE_ENV: "production"
+    ports:
+      - "${NEXTJS_PORT}:${NEXTJS_PORT}"
+    volumes:
+      - ./_volumes/static:/_volumes/static
+      - ./_volumes/redirects:/_volumes/redirects
 
   redis:
     image: redis
@@ -264,24 +267,17 @@ services:
     volumes:
       - "redisinsight:/db"
 
-  cypress:
-    # https://github.com/cypress-io/cypress-docker-images
-    image: "cypress/included:8.4.1"
-    # depends_on:
-    #   webserver:
-    #     condition: service_healthy
-    environment:
-      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
-    working_dir: /e2e
+  setup:
+    image: "ghcr.io/modularhistory/backend:${SHA}"
+    env_file: .env
+    command: bash .config/scripts/init/setup.sh
+    working_dir: /media
     volumes:
-      - ./frontend/cypress:/e2e/cypress
-      - ./frontend/cypress.json:/e2e/cypress.json
+      - .:/media
 
 volumes:
   # `data` is used by both redis and mongodb
   data: null
-  letsencrypt: null
-  certbot: null
   postgres_data: null
   es_data: null
   es_certs: null

@@ -1,11 +1,14 @@
 version: "3.8"
 
 services:
-  next:
+  nextjs:
     depends_on:
       - django
       - celery
       - celery_beat
+    environment:
+      NEXTAUTH_URL: "https://modularhistory.orega.org"
+      NODE_ENV: "production"
     volumes:
       - ./.env:/.env
 

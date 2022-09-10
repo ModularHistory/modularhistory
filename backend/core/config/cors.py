@@ -16,7 +16,7 @@ CORS_ALLOWED_ORIGINS = [
     # Frontend server
     f'http://localhost:{settings.FRONTEND_PORT}',
     f'http://127.0.0.1:{settings.FRONTEND_PORT}',
-    f'http://next:{settings.FRONTEND_PORT}',
+    f'http://nextjs:{settings.FRONTEND_PORT}',
     # Backend server
     f'http://localhost:{settings.PORT}',
     f'http://127.0.0.1:{settings.PORT}',

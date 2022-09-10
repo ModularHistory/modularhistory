@@ -17,9 +17,7 @@ __pycache__
 db.sqlite3
 
 # Virtual Python environment
-env/
-venv/
-.venv/
+.venv
 
 # Python
 *.py[cod]

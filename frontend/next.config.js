@@ -42,7 +42,10 @@ const volumesDir = path.join(process.cwd(), "../_volumes");
 const redirectsMapPath = path.join(volumesDir, "redirects/redirects.map");
 const redirectRegex = /(.+) (.+);/;
 
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   // allow tests to be co-located with pages
   pageExtensions: ["page.tsx", "page.ts"],
   async redirects() {
@@ -50,7 +53,7 @@ module.exports = {
     if (!fs.existsSync(redirectsMapPath)) {
       // console.log(`${redirectsMapPath} does not exist.`);
       await axios
-        .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/redirects/`)
+        .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/redirects/`)
         .then(({ data }) => {
           const results = data["results"];
           if (!Array.isArray(results)) {
@@ -89,6 +92,16 @@ module.exports = {
     // can be associated with the release they belong to.
     NEXT_PUBLIC_VERSION: process.env.SENTRY_RELEASE,
   },
+  experimental: {
+    modularizeImports: {
+      "react-bootstrap": {
+        transform: "react-bootstrap/lib/{{member}}",
+      },
+      lodash: {
+        transform: "lodash/{{member}}",
+      },
+    },
+  },
   // images: {
   //   domains: process.env.ENVIRONMENT == "prod" ? [
   //     'modularhistory.orega.org'
@@ -120,3 +133,5 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = nextConfig;

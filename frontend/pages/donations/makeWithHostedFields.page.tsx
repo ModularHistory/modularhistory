@@ -71,7 +71,7 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
 
       // Send the nonce to the server.
       const response = await axiosWithoutAuth.post(
-        `http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/donations/process/`,
+        `http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/donations/process/`,
         {
           paymentMethodNonce: token,
           amount: $("#amount").val(),
@@ -235,7 +235,7 @@ export default Donate;
 export const getServerSideProps: GetServerSideProps = async () => {
   let clientToken = null;
   await axiosWithoutAuth
-    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/donations/token/`)
+    .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/donations/token/`)
     .then((response) => {
       clientToken = response.data;
     })

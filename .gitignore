@@ -18,9 +18,7 @@ _volumes/
 .devcontainer/
 
 # Virtual Python environment
-env/
-venv/
-.venv/
+.venv
 
 # Artifacts
 *.zip

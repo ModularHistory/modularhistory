@@ -23,7 +23,7 @@ import {
   SetStateAction,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 import { InView } from "react-intersection-observer";
 
@@ -317,7 +317,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   await axios
-    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/search/`, {
+    .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/search/`, {
       params: context.query,
       paramsSerializer: (params) =>
         // we use qs since otherwise axios formats

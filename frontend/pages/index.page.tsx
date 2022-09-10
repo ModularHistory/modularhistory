@@ -266,15 +266,13 @@ export const getStaticProps: GetStaticProps = async () => {
   let featuredModules: FeaturedContentProps[] = [];
 
   const tihPromise = axios
-    .get(
-      `http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/home/today_in_history/`
-    )
+    .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/home/today_in_history/`)
     .then((response) => {
       todayInHistoryModules = response.data;
     });
 
   const featuredPromise = axios
-    .get(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api/home/features/`)
+    .get(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api/home/features/`)
     .then((response) => {
       featuredModules = response.data;
     });

@@ -1,7 +1,19 @@
 version: "3.8"
 
 services:
-  next:
+  cypress:
+    # https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:8.4.1"
+    # depends_on:
+    #   webserver:
+    #     condition: service_healthy
+    environment:
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
+  nextjs:
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
     depends_on:

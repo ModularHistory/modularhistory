@@ -26,7 +26,7 @@ export interface Credentials {
 }
 
 export const makeDjangoApiUrl = (endpoint: string): string => {
-  return `http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/api${endpoint}`;
+  return `http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api${endpoint}`;
 };
 
 export const handleLogin = (router: NextRouter): void => {

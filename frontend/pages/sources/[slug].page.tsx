@@ -47,7 +47,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }`,
   };
   await axiosWithoutAuth
-    .post(`http://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/graphql/`, body)
+    .post(`http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/graphql/`, body)
     .then((response) => {
       source = response.data.data.source;
     })

@@ -4,9 +4,6 @@
 
 FROM node:16.14.2 AS base
 
-ARG ENVIRONMENT
-ARG PORT=3000
-
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
 # Create required directories.
@@ -31,8 +28,6 @@ COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 # https://hub.docker.com/_/node/
 FROM base AS builder
 
-ARG PORT
-
 WORKDIR /app
 
 # Install project dependencies.
@@ -53,12 +48,7 @@ RUN rm /.env
 
 FROM base AS runner
 
-ARG PORT
-
 WORKDIR /app
-
-ENV NODE_ENV production
-ENV PORT ${PORT}
 
 # Copy compiled JavaScript and any necessary files not already copied to the base image.
 COPY --from=builder /app/.next /app/.next
@@ -78,11 +68,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 # Set ownership/permissions as necessary before switching to non-root user.
 RUN chown -R www-data:www-data ./.next
 
-# Expose the port specified by the PORT build arg (default: 3000).
-EXPOSE ${PORT}
-
 HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
-  CMD ["sh", "-c", "curl --fail http://localhost:${PORT}/ || exit 1"]
+  CMD ["sh", "-c", "curl --fail http://localhost:${NEXTJS_PORT}/ || exit 1"]
 
 # Switch to non-root user.
 USER www-data

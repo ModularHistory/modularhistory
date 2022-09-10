@@ -14,28 +14,37 @@ services:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
+  cypress:
+    # https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:8.4.1"
+    # depends_on:
+    #   webserver:
+    #     condition: service_healthy
+    environment:
+      - CYPRESS_baseUrl=http://modularhistory.dev.net:8080/
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
+
   django:
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
-      args:
-        ENVIRONMENT: dev
-        PORT: ${DJANGO_PORT}
     image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
-  next:
+  nextjs:
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend
-      args:
-        ENVIRONMENT: dev
     command: npm run dev
     environment:
-      NEXTAUTH_URL: "http://localhost:${PORT}"
+      NEXTAUTH_URL: "http://localhost:${NEXTJS_PORT}"
+      NODE_ENV: "development"
       REACT_EDITOR: "code"
     image: "ghcr.io/modularhistory/frontend:latest"
     # user: root # avoid permissions issues with writing in build dir
