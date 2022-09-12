@@ -162,7 +162,7 @@ jobs:
           .config/_.env
           .config/_.env.prod
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-ssh@v0.2.8
+      uses: iacobfred/deploy-docker-ssh@v0.3.0
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob
