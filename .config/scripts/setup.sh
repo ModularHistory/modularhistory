@@ -135,7 +135,7 @@ function _append_to_sh_profile() {
 function _prompt_to_rerun() {
   read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
   if [[ ! "$CONT" = "n" ]]; then
-    exec bash "$ROOT_DIR/setup.sh"
+    exec bash "$ROOT_DIR/.config/scripts/setup.sh"
   fi
 }
 
@@ -482,4 +482,4 @@ docker compose up -d django next && echo 'Finished.' || {
   "
 }
 
-shasum "$ROOT_DIR/setup.sh" > "$ROOT_DIR/.venv/.setup.sha"
+shasum "$ROOT_DIR/.config/scripts/setup.sh" > "$ROOT_DIR/.venv/.setup.sha"
