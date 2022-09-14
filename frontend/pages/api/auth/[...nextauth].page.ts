@@ -20,30 +20,30 @@ const makeDjangoApiUrl = (endpoint: string) => {
 const providers = [
   // https://next-auth.js.org/providers/discord
   DiscordProvider({
-    clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID ?? "",
-    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET ?? "",
+    clientId: process.env.AUTH_DISCORD_CLIENT_ID ?? "",
+    clientSecret: process.env.AUTH_DISCORD_SECRET ?? "",
     // scope: "identify email",
   }),
   // https://next-auth.js.org/providers/facebook
   FacebookProvider({
-    clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY ?? "",
-    clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET ?? "",
+    clientId: process.env.AUTH_FACEBOOK_KEY ?? "",
+    clientSecret: process.env.AUTH_FACEBOOK_SECRET ?? "",
   }),
   // https://next-auth.js.org/providers/google
   GoogleProvider({
-    clientId: process.env.SOCIAL_AUTH_GOOGLE_CLIENT_ID ?? "",
-    clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET ?? "",
+    clientId: process.env.AUTH_GOOGLE_CLIENT_ID ?? "",
+    clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
     // authorization: GOOGLE_AUTHORIZATION_URL,
   }),
   // https://next-auth.js.org/providers/twitter
   // TwitterProvider({
-  //   clientId: process.env.SOCIAL_AUTH_TWITTER_KEY ?? "",
-  //   clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET ?? "",
+  //   clientId: process.env.AUTH_TWITTER_KEY ?? "",
+  //   clientSecret: process.env.AUTH_TWITTER_SECRET ?? "",
   // }),
   // https://next-auth.js.org/providers/github
   GitHubProvider({
-    clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID ?? "",
-    clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET ?? "",
+    clientId: process.env.AUTH_GITHUB_CLIENT_ID ?? "",
+    clientSecret: process.env.AUTH_GITHUB_SECRET ?? "",
     // scope: "user repo",
   }),
   // https://next-auth.js.org/providers/credentials
