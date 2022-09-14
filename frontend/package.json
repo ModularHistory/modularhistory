@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.98",
-    "@mui/material": "^5.10.3",
+    "@mui/material": "^5.10.5",
     "@react-spring/web": "^9.5.4",
     "@sentry/nextjs": "^7.12.1",
     "axios": "^0.27.2",
