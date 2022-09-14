@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN pip install nltk
+
 # Install rclone (for media backup/sync).
 RUN curl https://rclone.org/install.sh | bash
 
@@ -60,7 +62,7 @@ RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
 
-COPY backend/poetry.lock backend/pyproject.toml /app/
+COPY poetry.lock pyproject.toml /app/
 
 RUN poetry install --no-interaction --no-ansi --no-root --no-dev || ( \
   poetry export -f requirements.txt --without-hashes -o requirements.txt && \
@@ -70,9 +72,9 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev || ( \
 # Runner
 ##################################
 
-FROM base AS runner
+# FROM base AS runner
 
-WORKDIR /app
+# WORKDIR /app
 
 # Download required files.
 RUN python -c "import nltk; nltk.download('punkt')" && \
