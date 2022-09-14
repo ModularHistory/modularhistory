@@ -39,7 +39,6 @@ backups/
 .coverage_html/
 .hypothesis/
 .nox/
-.pyre/
 .selenium/
 .tox/
 htmlcov/
