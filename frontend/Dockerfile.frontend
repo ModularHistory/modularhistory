@@ -36,9 +36,10 @@ RUN npm ci || (npm cache clean -f && npm ci)
 # Add source code required for compiling JS.
 COPY frontend .
 COPY .env /.env
+RUN export $(cat /.env)
 
 # Compile JavaScript.
-RUN npm run build
+RUN SENTRY_PROJECT=${SENTRY_FRONTEND_PROJECT} npm run build
 
 RUN rm /.env
 
