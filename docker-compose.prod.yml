@@ -15,7 +15,3 @@ services:
   django:
     environment:
       DOMAIN: "modularhistory.orega.org"
-
-  cypress:
-    environment:
-      - CYPRESS_baseUrl=https://modularhistory.orega.org/
