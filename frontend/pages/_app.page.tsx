@@ -7,6 +7,7 @@ import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NextPage } from "next";
+import { Session } from "next-auth";
 import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
@@ -45,7 +46,11 @@ const SessionKiller: FC<SessionKillerProps> = ({ children }: SessionKillerProps)
   return children;
 };
 
-interface ExtendedAppProps extends AppProps {
+interface PageProps {
+  session?: Session | null;
+}
+
+interface ExtendedAppProps extends AppProps<PageProps> {
   emotionCache: EmotionCache;
   err?: string;
 }
