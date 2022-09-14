@@ -25,8 +25,6 @@ process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.en
 
 if (!process.env.DJANGO_PORT) process.env.DJANGO_PORT = "8000";
 
-const basePath = "";
-
 const sentryWebpackPluginOptions = {
   // Additional config options for the Sentry Webpack plugin. Keep in mind that
   // the following options are set automatically, and overriding them is not

@@ -2,7 +2,6 @@ import "@/../../static/styles/base.scss";
 import { DJANGO_CSRF_COOKIE_NAME } from "@/auth";
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { PageTransitionContextProvider } from "@/components/PageTransitionContext";
-import { initializeSentry } from "@/sentry";
 import "@/styles/globals.css";
 import createCache from "@emotion/cache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
@@ -17,8 +16,6 @@ import { FC, ReactElement, useEffect } from "react";
 import SSRProvider from "react-bootstrap/SSRProvider";
 import TagManager from "react-gtm-module";
 import Cookies from "universal-cookie";
-
-initializeSentry();
 
 const tagManagerArgs = {
   gtmId: "GTM-P68V7DK",

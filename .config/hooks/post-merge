@@ -13,25 +13,6 @@ poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-docker system info &>/dev/null || {
-  open --background -a Docker && {
-    while ! docker system info &>/dev/null; do 
-      echo "Waiting for Docker to start up..."; sleep 5
-    done
-  }
-}
-docker compose ps | grep "django" | grep --quiet "Up" && up=true || up=false
-
-# Determine whether to prompt to (re)run the setup script.
-if [[ ! -f $setup_sha_file ]]; then
-  prompt_to_run_setup_script=true
-# Otherwise, if on the main branch...
-elif [[ "$branch" = "main" ]]; then
-  # Check if the setup script has changed since it was last run.
-  # echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
-  [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
-fi
-
 # Update hooks.
 if [[ -d config/hooks ]]; then
   for filepath in config/hooks/*; do
@@ -49,6 +30,25 @@ if [[ -d config/hooks ]]; then
       fi
     }
   done
+fi
+
+docker system info &>/dev/null || {
+  open --background -a Docker && {
+    while ! docker system info &>/dev/null; do 
+      echo "Waiting for Docker to start up..."; sleep 5
+    done
+  }
+}
+docker compose ps | grep "django" | grep --quiet "Up" && up=true || up=false
+
+# Determine whether to prompt to (re)run the setup script.
+if [[ ! -f $setup_sha_file ]]; then
+  prompt_to_run_setup_script=true
+# Otherwise, if on the main branch...
+elif [[ "$branch" = "main" ]]; then
+  # Check if the setup script has changed since it was last run.
+  # echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
+  [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
 fi
 
 # If docker-compose.yml files have been updated, stop all running containers so that
