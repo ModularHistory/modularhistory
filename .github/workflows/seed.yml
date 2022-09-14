@@ -27,8 +27,6 @@ jobs:
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
       FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
-      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
-      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_BACKEND_DSN: ${{ secrets.SENTRY_BACKEND_DSN }}

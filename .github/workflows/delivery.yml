@@ -37,8 +37,6 @@ env:
   ENVIRONMENT: prod
   FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
-  IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
   POSTGRES_DB: modularhistory
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
