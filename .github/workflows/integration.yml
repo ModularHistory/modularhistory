@@ -181,7 +181,6 @@ jobs:
       max-parallel: 3
       matrix:
         image: [django, next]
-    environment: test
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
