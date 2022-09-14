@@ -1,6 +1,6 @@
 import { ModuleUnion, Topic } from "@/types/modules";
 import { Box } from "@mui/material";
-import React, { FC } from "react";
+import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard, { ModuleCardProps } from "./ModuleCard";
 
@@ -11,7 +11,7 @@ interface HighlightEllipsisProps {
 function applyHTMLFilter(unsafeHTML: string) {
   // TODO: Replace regex with more formal fix
   return `${unsafeHTML}`.replace(
-    /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)|(<module[^>]*?>.*?<\/module>)|(<\/?blockquote[^>]*?>)/gi,
+    /(<(h[1-6])>.*?<\/h[1-6]>)|(<p><\/p>)|(<div><\/div>)|(<\/?p>)|(<\/?div>)|(<module[^>]*?>[\s\S]*?<\/module>)|(<\/?blockquote[^>]*?>)/gi,
     ""
   );
   //Removing <h>, <p>, <div>, <module> (for images), and <blockquote> tags from content snippet
