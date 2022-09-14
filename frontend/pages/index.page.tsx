@@ -111,22 +111,26 @@ const Home: FC<HomePageProps> = ({ todayInHistoryModules, featuredModules }: Hom
             </CardContent>
           </StyledCard>
         </GridItem>
-        <GridItem>
-          <StyledCard raised>
-            <StyledCardHeader title="Featured Content" />
-            <CardContent>
-              <FeaturedContent modules={featuredModules} />
-            </CardContent>
-          </StyledCard>
-        </GridItem>
-        <GridItem>
-          <StyledCard raised sx={{ minWidth: "20rem" }}>
-            <StyledCardHeader title="Today in History" />
-            <CardContent>
-              <TodayInHistory modules={todayInHistoryModules} />
-            </CardContent>
-          </StyledCard>
-        </GridItem>
+        {featuredModules.length > 0 && (
+          <GridItem>
+            <StyledCard raised>
+              <StyledCardHeader title="Featured Content" />
+              <CardContent>
+                <FeaturedContent modules={featuredModules} />
+              </CardContent>
+            </StyledCard>
+          </GridItem>
+        )}
+        {todayInHistoryModules.length > 0 && (
+          <GridItem>
+            <StyledCard raised sx={{ minWidth: "20rem" }}>
+              <StyledCardHeader title="Today in History" />
+              <CardContent>
+                <TodayInHistory modules={todayInHistoryModules} />
+              </CardContent>
+            </StyledCard>
+          </GridItem>
+        )}
         <GridItem>
           <StyledCard raised hidden>
             <CardContent>

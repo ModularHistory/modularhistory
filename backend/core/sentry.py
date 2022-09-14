@@ -40,7 +40,7 @@ def filter(event, hint):
 
 
 # Initialize the Sentry SDK for error reporting
-SENTRY_DSN = config('SENTRY_DSN')
+SENTRY_DSN = config('SENTRY_BACKEND_DSN')
 sentry_sdk.init(
     before_send=filter,
     # https://docs.sentry.io/platforms/python/configuration/options/#dsn

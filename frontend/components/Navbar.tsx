@@ -25,7 +25,7 @@ const globalMenuItems: GlobalMenuItem[] = [
     submenuItems: [
       { title: "Introduction", path: "/about/introduction", reactive: true },
       { title: "Mission", path: "/about/mission", reactive: true },
-      { title: "Manifesto", path: "/about/manifesto", reactive: true },
+      // { title: "Manifesto", path: "/about/manifesto", reactive: true },
     ],
   },
   { title: "Occurrences", path: "/occurrences", reactive: true },
@@ -129,7 +129,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
       );
     }
     accountControls = (
-      <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount>
+      <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount align="end">
         <NavDropdown.Item href={`/users/${session.user.handle}`}>Profile</NavDropdown.Item>
         <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings

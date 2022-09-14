@@ -49,7 +49,7 @@ env:
   POSTGRES_PASSWORD: postgres
   RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_BACKEND_DSN: ${{ secrets.SENTRY_BACKEND_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
   SHA: ${{ github.sha }}
@@ -80,7 +80,7 @@ jobs:
         fetch-depth: 0
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v29.0.3
+      uses: tj-actions/changed-files@v29.0.4
   generate-dotenv-files:
     name: Generate dotenv files
     strategy:

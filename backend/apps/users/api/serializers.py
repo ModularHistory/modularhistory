@@ -2,10 +2,9 @@
 
 from typing import TYPE_CHECKING
 
+from apps.users.models import SocialAccount, User
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-
-from apps.users.models import SocialAccount, User
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -27,10 +26,14 @@ class SocialLoginSerializer(serializers.Serializer):
 
     def validate(self, attrs: dict):
         request: 'Request' = self.context['request']
-        provider = request.data['account']['provider']
+        account = request.data["account"]
+        provider = account['provider']
         credentials = request.data['credentials']
+        from pprint import pprint
+
+        pprint(request.data)
         uid = credentials['user']['id']
-        access_token = credentials['access_token']
+        access_token = account['access_token']
         if SocialAccount.objects.filter(provider=provider, uid=uid).exists():
             account = SocialAccount.objects.filter(provider=provider, uid=uid).first()
             account.access_token = access_token

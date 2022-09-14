@@ -4,6 +4,15 @@ source "$HOME/.profile"
 RED=$(tput setaf 1)
 BOLD=$(tput bold)
 NORMAL=$(tput sgr0)
+NC='\033[0m' # No Color
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "main" ]; then
+  # shellcheck disable=SC2059
+  printf "\n${RED}Don't commit directly to the main branch.${NC}\n\n"
+  exit 1
+fi
 
 staged_files="$(git diff --diff-filter=AM --name-only --staged)"
 linting_failed=false

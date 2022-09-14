@@ -11,7 +11,6 @@ import DiscordProvider from "next-auth/providers/discord";
 import FacebookProvider from "next-auth/providers/facebook";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import TwitterProvider from "next-auth/providers/twitter";
 
 const makeDjangoApiUrl = (endpoint: string) => {
   return `http://${process.env.DJANGO_HOST}:${process.env.DJANGO_PORT}/api${endpoint}`;
@@ -37,10 +36,10 @@ const providers = [
     // authorization: GOOGLE_AUTHORIZATION_URL,
   }),
   // https://next-auth.js.org/providers/twitter
-  TwitterProvider({
-    clientId: process.env.SOCIAL_AUTH_TWITTER_KEY ?? "",
-    clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET ?? "",
-  }),
+  // TwitterProvider({
+  //   clientId: process.env.SOCIAL_AUTH_TWITTER_KEY ?? "",
+  //   clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET ?? "",
+  // }),
   // https://next-auth.js.org/providers/github
   GitHubProvider({
     clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID ?? "",

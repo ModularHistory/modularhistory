@@ -43,7 +43,7 @@ services:
       dockerfile: frontend/Dockerfile.frontend
     command: npm run dev
     environment:
-      NEXTAUTH_URL: "http://localhost:${NEXTJS_PORT}"
+      NEXTAUTH_URL: "${BASE_URL}"
       NODE_ENV: "development"
       REACT_EDITOR: "code"
     image: "ghcr.io/modularhistory/frontend:latest"

@@ -7,7 +7,7 @@ const path = require("path");
 const readline = require("readline");
 const dotenv = require("dotenv");
 const axios = require("axios");
-const SentryWebpackPlugin = require("@sentry/webpack-plugin");
+const { withSentryConfig } = require("@sentry/nextjs");
 
 // TODO: set vars based on Dockerization
 
@@ -20,23 +20,24 @@ dotenv.config({ path: DOTENV_PATH });
 
 process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/app/frontend";
 process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN;
-process.env.SENTRY_ORG = "modularhistory";
-process.env.SENTRY_PROJECT = "frontend";
+process.env.SENTRY_PROJECT = process.env.SENTRY_FRONTEND_PROJECT;
 process.env.SENTRY_RELEASE = `modularhistory@${process.env.VERSION || process.env.SHA || "latest"}`;
 
 if (!process.env.DJANGO_PORT) process.env.DJANGO_PORT = "8000";
 
 const basePath = "";
 
-// Build and upload source maps to Sentry only in production
-// and only if all necessary env variables are configured.
-const uploadSourceMaps =
-  process.env.ENVIRONMENT === "prod" &&
-  process.env.SENTRY_DSN &&
-  process.env.SENTRY_ORG &&
-  process.env.SENTRY_PROJECT &&
-  process.env.SENTRY_AUTH_TOKEN &&
-  process.env.SHA;
+const sentryWebpackPluginOptions = {
+  // Additional config options for the Sentry Webpack plugin. Keep in mind that
+  // the following options are set automatically, and overriding them is not
+  // recommended:
+  //   release, url, org, project, authToken, configFile, stripPrefix,
+  //   urlPrefix, include, ignore
+
+  silent: true, // Suppresses all logs
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options.
+};
 
 const volumesDir = path.join(process.cwd(), "../_volumes");
 const redirectsMapPath = path.join(volumesDir, "redirects/redirects.map");
@@ -102,36 +103,17 @@ const nextConfig = {
       },
     },
   },
-  // images: {
-  //   domains: process.env.ENVIRONMENT == "prod" ? [
-  //     'modularhistory.orega.org'
-  //   ] : [
-  //     'modularhistory.dev.net'
-  //   ],
-  // },
-  productionBrowserSourceMaps: true,
-  webpack: (config, options) => {
-    if (!options.isServer) {
-      config.resolve.alias["@sentry/node"] = "@sentry/browser";
-    }
-    config.plugins.push(
-      new options.webpack.DefinePlugin({
-        "process.env.NEXT_IS_SERVER": JSON.stringify(options.isServer.toString()),
-      })
-    );
-    if (uploadSourceMaps) {
-      config.plugins.push(
-        new SentryWebpackPlugin({
-          include: ".next",
-          ignore: ["node_modules"],
-          stripPrefix: ["webpack://_N_E/"],
-          urlPrefix: `~${basePath}/_next`,
-          release: process.env.SENTRY_RELEASE,
-        })
-      );
-    }
-    return config;
+  sentry: {
+    // Use `hidden-source-map` rather than `source-map` as the Webpack `devtool`
+    // for client-side builds. (This will be the default starting in
+    // `@sentry/nextjs` version 8.0.0.) See
+    // https://webpack.js.org/configuration/devtool/ and
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/#use-hidden-source-map
+    // for more information.
+    hideSourceMaps: true,
   },
 };
 
-module.exports = nextConfig;
+// Make sure adding Sentry options is the last code to run before exporting, to
+// ensure that your source maps include changes from all other Webpack plugins
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);

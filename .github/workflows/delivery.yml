@@ -44,7 +44,7 @@ env:
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
   RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_BACKEND_DSN: ${{ secrets.SENTRY_BACKEND_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
   SHA: ${{ github.sha }}
@@ -162,7 +162,7 @@ jobs:
           .config/_.env
           .config/_.env.prod
     - name: Deploy to server
-      uses: iacobfred/deploy-docker-ssh@v0.2.8
+      uses: iacobfred/deploy-docker-ssh@v0.3.0
       with:
         host: ${{ secrets.DOMAIN }}
         user: jacob
@@ -171,11 +171,11 @@ jobs:
         ssh-port: ${{ secrets.SSH_PORT }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         command: mv docker-compose.prod.yml docker-compose.override.yml && set -a && source .env && set +a && SHA=${{ github.sha }} GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
-    - name: Create Sentry release
-      uses: getsentry/action-release@v1.2.0
-      env:
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-      with:
-        environment: prod
+    # - name: Create Sentry release
+    #   uses: getsentry/action-release@v1.2.0
+    #   env:
+    #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+    #     SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+    #   with:
+    #     environment: prod
