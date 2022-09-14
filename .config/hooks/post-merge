@@ -48,7 +48,7 @@ if [[ ! -f $setup_sha_file ]]; then
 elif [[ "$branch" = "main" ]]; then
   # Check if the setup script has changed since it was last run.
   # echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
-  [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
+  [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum .config/scripts/setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
 fi
 
 # If docker-compose.yml files have been updated, stop all running containers so that

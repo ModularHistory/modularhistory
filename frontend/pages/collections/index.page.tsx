@@ -3,13 +3,14 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import { Collection } from "@/types/modules";
-import { CardContent } from "@mui/material";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { GetServerSideProps } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { FC } from "react";
-import { Card, Container } from "react-bootstrap";
 
 interface CollectionProps {
   collectionsData: {
