@@ -118,7 +118,7 @@ if [[ $prompt_to_run_setup_script = true ]]; then
     might not function correctly until you run the updated 
     script. To run it, use this command:
     
-      bash setup.sh
+      bash .config/scripts/setup.sh
 
   "
 fi

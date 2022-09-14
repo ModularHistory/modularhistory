@@ -181,7 +181,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
     - name: Run setup script
-      run: bash setup.sh
+      run: bash .config/scripts/setup.sh
       shell: bash
   build:
     name: Build image
