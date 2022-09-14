@@ -50,13 +50,13 @@ RUN mkdir -p -- \
   /opt/atlas \
   /var/www/nltk_data/corpora
 
+WORKDIR /app
+
 ##################################
 # Builder
 ##################################
 
 FROM base AS builder
-
-WORKDIR /app
 
 RUN pip install poetry
 
@@ -74,15 +74,13 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev || ( \
 
 # FROM base AS runner
 
-# WORKDIR /app
-
 # Download required files.
 RUN python -c "import nltk; nltk.download('punkt')" && \
   NLTK_DATA=var/www/nltk_data python -m textblob.download_corpora
 # cp -avr nltk_data/ /var/www/
 
 # Add source code.
-COPY backend /app/
+COPY backend .
 COPY static /static
 COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY .config/invoke.yaml /etc/invoke.yaml
