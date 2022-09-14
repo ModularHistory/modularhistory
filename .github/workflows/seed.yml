@@ -114,10 +114,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=dev && cd ..
     - name: Archive .env file
       uses: actions/upload-artifact@v3
       with:
