@@ -15,15 +15,14 @@ from typing import TYPE_CHECKING, Optional
 from zipfile import BadZipFile, ZipFile
 
 from colorama import Style
-from django.conf import settings
-from dotenv import dotenv_values, load_dotenv
-from requests import Session
-
 from commands.command import command
 from core.constants.strings import NEGATIVE
 from core.utils import db as db_utils
 from core.utils import files as file_utils
 from core.utils import github as github_utils
+from django.conf import settings
+from dotenv import dotenv_values, load_dotenv
+from requests import Session
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -230,63 +229,3 @@ def update_git_hooks(context: 'Context'):
             }}
         ''')
         # fmt: on
-
-
-@command
-def write_dotenv_file(context: 'Context', environment: str = 'prod', dry: bool = False):
-    """Write a .env file."""
-    print(f'Creating a .env file for {environment} environment...')
-    destination_file = join(settings.ROOT_DIR, ".env")
-    dry_destination_file = join(settings.ROOT_DIR, '.env.tmp')
-    config_dir = settings.CONFIG_DIR
-    template_file = join(config_dir, '_.env')
-    overrides_file = join(config_dir, f'_.env.{environment}')
-    if dry and os.path.exists(destination_file):
-        load_dotenv(dotenv_path=destination_file)
-    elif os.path.exists(destination_file):
-        print(f'{destination_file} already exists.')
-        return
-    envsubst = context.run('envsubst -V &>/dev/null && echo ""', warn=True).exited == 0
-    # Write temporary YAML file
-    vars = (
-        context.run(f'envsubst < {template_file}', hide='out').stdout
-        if envsubst
-        else file_utils.envsubst(template_file)
-    ).splitlines()
-    if os.path.exists((overrides_file)):
-        vars += (
-            context.run(f'envsubst < {overrides_file}', hide='out').stdout
-            if envsubst
-            else file_utils.envsubst(overrides_file)
-        ).splitlines()
-    env_vars = {}
-    for line in vars:
-        match = re.match(r'([A-Z_]+): (.*)', line.strip())
-        if not match:
-            continue
-        var_name, var_value = match.group(1), match.group(2)
-        is_wrapped = re.match(r'"[^"]+"$', var_value) or re.match(r"'[^']+'$", var_value)
-        if '=' in var_value and not is_wrapped:
-            var_value = f'"{var_value}"' if not '"' in var_value else f"'{var_value}'"
-        env_vars[var_name] = var_value
-    destination_file = dry_destination_file if dry else destination_file
-    with open(destination_file, 'w') as dotenv_file:
-        for var_name, var_value in sorted(env_vars.items()):
-            dotenv_file.write(f'{var_name}={var_value}\n')
-    # If possible, lint the dotenv file.
-    context.run('dotenv-linter --help &>/dev/null && dotenv-linter', warn=True)
-    # Confirm dotenv can load values.
-    stdout = io.StringIO()
-    with redirect_stdout(stdout):
-        values = dotenv_values(destination_file)
-    error_warning = re.search(
-        r'could not parse statement starting at line (\d+)', stdout.getvalue()
-    )
-    if error_warning:
-        failed_line_number = error_warning.group(1)
-        raise ValueError(f'Failed to parse line {failed_line_number}.')
-    if dry:
-        context.run(f'cat {destination_file} && rm {destination_file}')
-        print(f'Parsed values: {pformat(values)}')
-    else:
-        print('Done.')

@@ -9,7 +9,7 @@ on:
     paths-ignore:
     - .gitignore
     - .github/**
-    - '!.github/integration.yml'
+    - '!.github/workflows/integration.yml'
     - .idea/**
     - .vscode/**
     - '**.md'
@@ -180,16 +180,12 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=dev && cd ..
     - name: Run setup script
-      run: bash setup.sh
+      run: bash .config/scripts/setup.sh
       shell: bash
   build:
     name: Build image
-    needs: changed-files
+    needs: [changed-files, generate-dotenv-files]
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
@@ -265,10 +261,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
@@ -402,10 +394,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Make sure pytest is working
       run: |
         cd backend
@@ -504,10 +492,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Create writable volume directories
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
@@ -621,10 +605,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Create writable volume directories
       run: |
         dir_names=( "db/backups" "db/init" "static" "media" "redirects" )
@@ -739,10 +719,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Cache type stubs
       id: cache-stubs
       uses: actions/cache@v3
@@ -835,10 +811,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: cd backend && poetry run invoke debug && cd ..
-    - name: Create .env file
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin;
-        cd backend && poetry run invoke setup.write-dotenv-file --environment=test && cd ..
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:

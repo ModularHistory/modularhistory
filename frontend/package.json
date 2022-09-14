@@ -44,7 +44,7 @@
     "react-share": "^4.4.0",
     "react-social-login-buttons": "^3.6.1",
     "react-swipeable-views": "^0.14.0",
-    "sass": "^1.54.8",
+    "sass": "^1.54.9",
     "throttle-debounce": "^5.0.0",
     "universal-cookie": "^4.0.4"
   },
@@ -62,7 +62,7 @@
     "@types/throttle-debounce": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
-    "babel-jest": "^29.0.2",
+    "babel-jest": "^29.0.3",
     "eslint": "^8.23.0",
     "eslint-config-next": "^12.3.0",
     "eslint-plugin-jest-dom": "^4.0.2",

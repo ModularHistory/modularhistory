@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 const SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 Sentry.init({
+  autoSessionTracking: false,
   dsn: SENTRY_DSN || "https://dbdf6f1119f54b8a8058ea9ac1ac3b73@glitchtip.orega.org/2",
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1.0,

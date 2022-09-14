@@ -58,7 +58,6 @@ requirements.txt
 .hypothesis/
 .nox/
 .pytype/
-.pyre/
 .selenium/
 .tox/
 .coverage
