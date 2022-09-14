@@ -58,6 +58,7 @@ env:
   SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
   SHA: ${{ github.sha }}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
   generate-dotenv:
     name: Generate .env file
@@ -66,7 +67,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.5
+      uses: iacobfred/generate-dotenv@v0.2.6
       with:
         template-paths: |
           .config/_.env
@@ -106,7 +107,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.5
+      uses: iacobfred/generate-dotenv@v0.2.6
       with:
         template-paths: |
           .config/_.env
@@ -154,7 +155,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Generate .env file
-      uses: iacobfred/generate-dotenv@v0.2.5
+      uses: iacobfred/generate-dotenv@v0.2.6
       with:
         template-paths: |
           .config/_.env

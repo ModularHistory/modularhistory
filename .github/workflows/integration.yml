@@ -62,6 +62,7 @@ env:
   AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
   AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
   AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+
 jobs:
   changed-files:
     name: Get changed files
@@ -84,6 +85,7 @@ jobs:
     strategy:
       matrix:
         environment: [test, prod]
+    environment: ${{ matrix.environment }}
     runs-on: ubuntu-latest
     if: github.actor != 'depbot'
     steps:
@@ -91,7 +93,7 @@ jobs:
       with:
         fetch-depth: 0
     - if: steps.cache-dotenv.outputs.cache-hit != 'true'
-      uses: iacobfred/generate-dotenv@v0.2.5
+      uses: iacobfred/generate-dotenv@v0.2.6
       with:
         template-paths: '.config/_.env .config/_.env.${{ matrix.environment }}'
         cache: true
@@ -167,98 +169,27 @@ jobs:
       with:
         path: .venv
         key: venv-${{ matrix.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment (A)
-      id: venv-test
-      continue-on-error: true
-      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: cd backend && poetry run invoke debug && cd ..
-    - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
-    - name: Test poetry environment (B)
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: cd backend && poetry run invoke debug && cd ..
     - name: Run setup script
       run: bash .config/scripts/setup.sh
       shell: bash
   build:
     name: Build image
+    environment: test
     needs: [changed-files, generate-dotenv-files]
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
       matrix:
         image: [django, next]
-    environment: test
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
+    - name: Generate .env file
+      uses: iacobfred/generate-dotenv@v0.2.6
       with:
-        fetch-depth: 0
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4.2.0
-      with:
-        python-version: 3.9
-    - name: Get full Python version
-      id: full-python-version
-      shell: bash
-      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Specify Docker Compose version
-      run: |
-        echo ""
-        echo "Installed version: $(docker compose version)"
-        version=2.2.1
-        docker compose version | grep --quiet "$version" || {
-          echo "Installing Docker Compose version $version ..."
-          mkdir -p ~/.docker/cli-plugins/
-          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
-          chmod +x ~/.docker/cli-plugins/docker-compose
-          echo "Installed version: $(docker compose version)"
-        }
-    - name: Configure Docker Compose
-      shell: bash
-      run: |
-        echo "Configuring Docker Compose..."
-        if [[ -f docker-compose.test.yml ]]; then
-          echo "Using docker-compose.test.yml for default overrides..."
-          cp docker-compose.test.yml docker-compose.override.yml
-        fi
-        echo "Done."
-    - name: Add hosts to /etc/hosts
-      shell: bash
-      run: |
-        hosts=("postgres" "redis" "elasticsearch" "modularhistory.dev.net")
-        echo "Updating hosts file..."
-        for host in "${hosts[@]}"; do
-          sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
-        done
-        echo "Done."
-    - name: Install PyInvoke config
-      run: |
-        sudo cp .config/invoke.yaml /etc/invoke.yaml
-      shell: bash
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.3
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    - name: Cache Python virtual environment
-      uses: actions/cache@v3
-      id: venv-cache
-      with:
-        path: .venv
-        key: venv-ubuntu-latest-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment (A)
-      id: venv-test
-      continue-on-error: true
-      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: cd backend && poetry run invoke debug && cd ..
-    - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
-    - name: Test poetry environment (B)
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: cd backend && poetry run invoke debug && cd ..
+        template-paths: |
+          .config/_.env
+          .config/_.env.prod
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
