@@ -1,32 +1,45 @@
-version: "3.8"
-
 x-common-env-vars:
   &common-env-vars
   DOCKERIZED: "True"
-  GLITCHTIP_BASE_URL: "https://glitchtip.orega.org"
   REDIS_HOST: "redis"
   POSTGRES_HOST: "postgres"
   DJANGO_HOST: "django"
-  NEXTJS_HOST: "next"
+  NEXTJS_HOST: "nextjs"
+
+x-backend-deps:
+  &backend-deps
+  postgres:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  elasticsearch:
+    condition: service_healthy
+
+x-default:
+  &default
+  deploy:
+    restart_policy:
+      condition: "${DOCKER_DEFAULT_RESTART_POLICY:-unless-stopped}"
+  environment:
+    <<: *common-env-vars
+  env_file: .env
+
+x-django-default:
+  &django-default
+  <<: *default
+  image: "ghcr.io/modularhistory/backend:${SHA:-latest}"
+  depends_on:
+    <<: *backend-deps
+  env_file: .env
+  environment:
+    <<: *common-env-vars
+  user: www-data
 
 services:
   django:
-    image: "ghcr.io/modularhistory/backend:${SHA}"
-    command: bash /.config/scripts/init/django.sh
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      <<: *common-env-vars
-      DJANGO_SETTINGS_MODULE: "core.settings"
+    <<: *django-default
+    command: gunicorn core.asgi:application --user www-data --bind 0.0.0.0:${DJANGO_PORT} -k uvicorn.workers.UvicornWorker --workers 9 --max-requests 100 --max-requests-jitter 50
+    entrypoint: /.config/entrypoints/django
     healthcheck:
       test:
         [
@@ -38,69 +51,42 @@ services:
       retries: 3
       start_period: 60s
     ports:
-      - "${DJANGO_PORT}:${DJANGO_PORT}"
-    user: www-data
+      - "127.0.0.1:${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
       # NOTE: www-data must be granted permission to write to these directories
       # both in the container and on the host machine. Permissions to write in
       # the container are granted in Dockerfile.backend. Permissions to write on
       # the host machine must be granted manually; e.g.,
       #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
-      - ./_volumes/db/backups:/_volumes/db/backups
-      - ./_volumes/static:/_volumes/static
-      - ./_volumes/media:/_volumes/media
-      - ./_volumes/redirects:/_volumes/redirects
+      - ./_volumes:/_volumes
       - ./.config:/.config
       - es_certs:${ELASTIC_CERTS_DIR}
 
   celery:
-    image: "ghcr.io/modularhistory/backend:${SHA}"
-    command: bash /.config/scripts/init/celery.sh
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      django:
-        condition: service_healthy
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
+    <<: *django-default
+    command: celery -A core worker --hostname=%h --loglevel=info -E
+    entrypoint: /.config/entrypoints/celery
     environment:
       <<: *common-env-vars
       IS_CELERY: "True"
     healthcheck:
-      test: celery -A core inspect ping -d celery@$$HOST
+      test: celery -A core inspect ping -d celery@$$HOSTNAME
       timeout: 30s
       interval: 30s
       retries: 3
       start_period: 20s
-    user: www-data
     volumes:
+      - ./_volumes:/_volumes
       - ./.config:/.config
-      - ./_volumes/db/backups:/_volumes/db/backups
-      - ./_volumes/db/init:/_volumes/db/init
-      - ./_volumes/static:/_volumes/static
-      - ./_volumes/media:/_volumes/media
-      - ./_volumes/redirects:/_volumes/redirects
 
   celery_beat:
-    image: "ghcr.io/modularhistory/backend:${SHA}"
-    command: bash /.config/scripts/init/celery_beat.sh
+    <<: *django-default
+    command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile /tmp/celerybeat.pid
+    entrypoint: /.config/entrypoints/celery_beat
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      <<: *backend-deps
       celery:
         condition: service_healthy
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      <<: *common-env-vars
     healthcheck:
       test: [ "CMD-SHELL", "stat -t /tmp/celerybeat.pid || exit 1" ]
       timeout: 20s
@@ -129,14 +115,11 @@ services:
       - ./.config/elasticsearch:${ELASTIC_CERTS_DIR}
 
   elasticsearch:
+    <<: *default
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
     depends_on:
       create_es_certs:
         condition: service_completed_successfully
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
     environment:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
       - node.name=modularhistory-es
@@ -172,10 +155,10 @@ services:
       - es_certs:${ELASTIC_CERTS_DIR}
 
   kibana:
+    <<: *default
     image: docker.elastic.co/kibana/kibana:7.8.1
     depends_on:
       - elasticsearch
-    env_file: .env
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
@@ -185,30 +168,25 @@ services:
       - "5601"
 
   nextjs:
+    <<: *default
     image: "ghcr.io/modularhistory/frontend:${SHA}"
     command: "npm run start"
     depends_on:
       - django
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
     environment:
       PORT: ${NEXTJS_PORT}
       NEXTAUTH_URL_INTERNAL: "http://nextjs:${NEXTJS_PORT}"
       NODE_ENV: "production"
     ports:
-      - "${NEXTJS_PORT}:${NEXTJS_PORT}"
+      - "127.0.0.1:${NEXTJS_PORT}:${NEXTJS_PORT}"
     volumes:
       - ./_volumes/static:/_volumes/static
       - ./_volumes/redirects:/_volumes/redirects
 
   redis:
+    <<: *default
     image: redis
     command: redis-server /usr/local/etc/redis/redis.conf
-    deploy:
-      restart_policy:
-        condition: on-failure
     expose:
       - "6379"
     # TODO: https://stackoverflow.com/questions/47088261/restarting-an-unhealthy-docker-container-based-on-healthcheck
@@ -223,11 +201,8 @@ services:
       - ./.config/redis:/usr/local/etc/redis
 
   postgres:
+    <<: *default
     image: postgres:14
-    # deploy:
-    #   restart_policy:
-    #     condition: 'always'
-    env_file: .env
     expose:
       - "5432"
     healthcheck:
@@ -240,45 +215,45 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./_volumes/db/init:/docker-entrypoint-initdb.d
 
-  redisinsight:
-    image: redislabs/redisinsight:latest
-    profiles: [ "debug" ]
-    depends_on:
-      - redis
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-    env_file: .env
-    environment:
-      REDIS_HOSTS: "local:redis:6379"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl --fail http://localhost:8002/healthcheck/ || exit 1"
-        ]
-      timeout: 7s
-      interval: 15s
-      retries: 2
-      start_period: 10s
-    ports:
-      - "${DJANGO_PORT}:${DJANGO_PORT}"
-    volumes:
-      - "redisinsight:/db"
+  # redisinsight:
+  #   image: redislabs/redisinsight:latest
+  #   profiles: [ "debug" ]
+  #   depends_on:
+  #     - redis
+  #   deploy:
+  #     restart_policy:
+  #       condition: "${DOCKER_DEFAULT_RESTART_POLICY:-unless-stopped}"
+  #       max_attempts: 3
+  #   env_file: .env
+  #   environment:
+  #     REDIS_HOSTS: "local:redis:6379"
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD-SHELL",
+  #         "curl --fail http://localhost:8002/healthcheck/ || exit 1"
+  #       ]
+  #     timeout: 7s
+  #     interval: 15s
+  #     retries: 2
+  #     start_period: 10s
+  #   ports:
+  #     - "127.0.0.1:${DJANGO_PORT}:${DJANGO_PORT}"
+  #   volumes:
+  #     - "redisinsight:/db"
 
   setup:
     image: "ghcr.io/modularhistory/backend:${SHA}"
     env_file: .env
-    command: bash .config/scripts/init/setup.sh
+    entrypoint: .config/entrypoints/setup
+    command: exit 0
     working_dir: /media
     volumes:
       - .:/media
 
 volumes:
-  # `data` is used by both redis and mongodb
   data: null
   postgres_data: null
   es_data: null
   es_certs: null
-  redisinsight: null
+  # redisinsight: null

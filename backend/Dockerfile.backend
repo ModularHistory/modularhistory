@@ -4,6 +4,8 @@
 
 FROM python:3.9-buster AS base
 
+ARG PORT="8000"
+
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/
 
 # Set environment vars.
@@ -13,7 +15,8 @@ ENV \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100
+  PIP_DEFAULT_TIMEOUT=100 \
+  DJANGO_PORT=${PORT}
 
 # Add PostgreSQL repo.
 RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
@@ -50,6 +53,8 @@ RUN mkdir -p -- \
   /opt/atlas \
   /var/www/nltk_data/corpora
 
+RUN chmod g+w -R /_volumes
+
 WORKDIR /app
 
 ##################################
@@ -57,6 +62,8 @@ WORKDIR /app
 ##################################
 
 FROM base AS builder
+
+ARG PORT
 
 RUN pip install poetry
 
@@ -80,7 +87,7 @@ RUN python -c "import nltk; nltk.download('punkt')" && \
 # cp -avr nltk_data/ /var/www/
 
 # Add source code.
-COPY backend .
+COPY --chown=www-data:www-data backend .
 COPY static /static
 COPY .config/scripts/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY .config/invoke.yaml /etc/invoke.yaml
@@ -89,13 +96,13 @@ COPY .config/invoke.yaml /etc/invoke.yaml
 RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
-RUN chown -R www-data:www-data /app && \
-  chmod g+w -R /_volumes && \
-  chmod +x /usr/local/bin/wait-for-it.sh && \
+RUN chmod +x /usr/local/bin/wait-for-it.sh && \
   chown -R www-data:www-data /var/www/nltk_data && chmod g+w -R /var/www/nltk_data
 
 # Switch from root to non-root user.
 USER www-data
 
+EXPOSE ${PORT}
+
 # Specify the default command to run when the container is started.
-CMD /bin/bash /app/.config/scripts/init/django.sh
+CMD ["gunicorn", "core.asgi:application", "--user", "www-data", "--bind", "0.0.0.0:${PORT}", "-k", "uvicorn.workers.UvicornWorker", "--workers", "9", "--max-requests", "100, "--max-requests-jitter", "50"]

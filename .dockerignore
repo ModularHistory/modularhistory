@@ -1,27 +1,29 @@
 .gcloudignore
 .git
 .gitignore
+.gitattributes
+.github
+CODEOWNERS
+README.*
 
 # Docker
 Dockerfile.*
 docker-compose.*
 
 # Volumes (media, static files, etc.)
-_volumes/
-
-# Django
-*.log
-*.pot
-*.pyc
-__pycache__
-db.sqlite3
+_volumes
 
 # Virtual Python environment
 .venv
 
-# Python
+# Python & Django
+*.log
+*.pot
+*.pyc
 *.py[cod]
 *$py.class
+__pycache__
+db.sqlite3
 
 # PyCharm / IntelliJ / Visual Studio Code
 .idea
@@ -77,10 +79,4 @@ yarn-error.log*
 *.sw?
 
 # Cypress
-cypress/
-
-# GitHub
-.github/
-README.md
-LICENSE.txt
-SECURITY.md
+cypress
