@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   cypress:
     # https://github.com/cypress-io/cypress-docker-images

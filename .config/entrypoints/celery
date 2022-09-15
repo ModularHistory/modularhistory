@@ -9,4 +9,5 @@ for dir_name in "${volume_dirs[@]}"; do
         [[ "$ENVIRONMENT" = dev ]] && exit 1
     }
 done
-celery -A core worker --hostname=%h --loglevel=info -E
+
+exec "$@"

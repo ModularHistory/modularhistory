@@ -13,3 +13,4 @@ for filepath in .config/nginx/*.conf; do
     envsubst '$WORKSPACE' < "$filepath" > "_volumes/nginx/${filename}"
 done
 
+exec "$@"
