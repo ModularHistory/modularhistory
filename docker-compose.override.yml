@@ -2,14 +2,12 @@ version: "3.8"
 
 services:
   celery:
-    image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   celery_beat:
-    image: "ghcr.io/modularhistory/backend:latest"
     volumes:
       - ./backend:/app
       - ./.config/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
@@ -32,7 +30,6 @@ services:
       context: .
       dockerfile: backend/Dockerfile.backend
     command: python manage.py runserver "0.0.0.0:${DJANGO_PORT:-8000}"
-    image: "ghcr.io/modularhistory/backend:latest"
     user: root
     volumes:
       - ./backend:/app
