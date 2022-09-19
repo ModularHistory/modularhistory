@@ -3,17 +3,10 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-
-const SENTRY_DSN = process.env.SENTRY_FRONTEND_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
-const SENTRY_ENVIRONMENT =
-  process.env.SENTRY_ENVIRONMENT ||
-  process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ||
-  process.env.NODE_ENV;
+import { baseConfig } from "./sentry.base.config";
 
 Sentry.init({
-  autoSessionTracking: false,
-  dsn: SENTRY_DSN || "https://dbdf6f1119f54b8a8058ea9ac1ac3b73@glitchtip.orega.org/2",
-  environment: SENTRY_ENVIRONMENT,
+  ...baseConfig,
   tracesSampleRate: 0.1,
   // ...
   // Note: if you want to override the automatic release value, do not set a

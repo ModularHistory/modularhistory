@@ -7,13 +7,12 @@ It should be imported ONCE (and only once) by either settings.py or asgi.py.
 import logging
 
 import sentry_sdk
+from core.constants.environments import Environments
+from core.environment import ENVIRONMENT, VERSION
 from decouple import config
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-
-from core.constants.environments import Environments
-from core.environment import ENVIRONMENT, VERSION
 
 SEND_EVENTS = (
     config('SEND_SENTRY_EVENTS', cast=bool, default=False)
@@ -22,6 +21,8 @@ SEND_EVENTS = (
 )
 
 IGNORED_PATTERNS = ("No application configured for scope type 'lifespan'",)
+
+SENTRY_ENVIRONMENT = config('SENTRY_ENVIRONMENT', default=ENVIRONMENT)
 
 
 def filter(event, hint):
@@ -46,7 +47,7 @@ sentry_sdk.init(
     # https://docs.sentry.io/platforms/python/configuration/options/#dsn
     dsn=SENTRY_DSN,
     # https://docs.sentry.io/platforms/python/configuration/environments/
-    environment=ENVIRONMENT,
+    environment=SENTRY_ENVIRONMENT,
     # https://docs.sentry.io/platforms/python/configuration/integrations/
     integrations=[
         CeleryIntegration(),
