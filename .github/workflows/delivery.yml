@@ -16,6 +16,7 @@ on:
     - tests.py
     - setup.sh
     - config/hooks/**
+    - frontend/package*.json
 
 env:
   ADMINS: ${{ secrets.ADMINS }}
