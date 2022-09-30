@@ -65,6 +65,8 @@ ALLOWED_HOSTS = config(
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
+# Example value to be parsed from dotenv:
+# "Jacob, jacob@example.com; Mary, mary@example.com"
 ADMINS = (
     config(
         'ADMINS',
