@@ -2,7 +2,7 @@
 
 set -a
 
-PYTHON_VERSION="3.9.13"
+PYTHON_VERSION="3.9.14"
 export PYTHON_VERSION
 
 ROOT_DIR=$(dirname "$0")

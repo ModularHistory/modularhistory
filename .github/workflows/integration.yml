@@ -84,7 +84,7 @@ jobs:
     name: Generate dotenv files
     strategy:
       matrix:
-        environment: [test, prod]
+        environment: [test]
     environment: ${{ matrix.environment }}
     runs-on: ubuntu-latest
     if: github.actor != 'depbot'
