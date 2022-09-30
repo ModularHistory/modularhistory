@@ -182,7 +182,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        image: [django, next]
+        image: [backend, frontend]
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
