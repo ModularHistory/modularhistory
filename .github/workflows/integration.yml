@@ -260,8 +260,6 @@ jobs:
     steps:
     - name: Check out main branch
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.2.0
       with:
@@ -270,27 +268,6 @@ jobs:
       id: full-python-version
       shell: bash
       run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-    - name: Specify Docker Compose version
-      run: |
-        echo ""
-        echo "Installed version: $(docker compose version)"
-        version=2.2.1
-        docker compose version | grep --quiet "$version" || {
-          echo "Installing Docker Compose version $version ..."
-          mkdir -p ~/.docker/cli-plugins/
-          curl -SL "https://github.com/docker/compose/releases/download/v${version}/docker-compose-linux-x86_64" -o ~/.docker/cli-plugins/docker-compose
-          chmod +x ~/.docker/cli-plugins/docker-compose
-          echo "Installed version: $(docker compose version)"
-        }
-    - name: Configure Docker Compose
-      shell: bash
-      run: |
-        echo "Configuring Docker Compose..."
-        if [[ -f docker-compose.test.yml ]]; then
-          echo "Using docker-compose.test.yml for default overrides..."
-          cp docker-compose.test.yml docker-compose.override.yml
-        fi
-        echo "Done."
     - name: Add hosts to /etc/hosts
       shell: bash
       run: |
@@ -300,40 +277,29 @@ jobs:
           sudo echo "127.0.0.1 $host" | sudo tee -a /etc/hosts
         done
         echo "Done."
-    - name: Install PyInvoke config
-      run: |
-        sudo cp .config/invoke.yaml /etc/invoke.yaml
-      shell: bash
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.3
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
     - name: Cache Python virtual environment
       uses: actions/cache@v3
       id: venv-cache
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment (A)
-      id: venv-test
-      continue-on-error: true
-      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: cd backend && poetry run invoke debug && cd ..
+    - name: Install and configure Poetry
+      if: steps.venv-cache.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1.3
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
       run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
-    - name: Test poetry environment (B)
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
-      run: cd backend && poetry run invoke debug && cd ..
     - name: Make sure pytest is working
       run: |
         cd backend
         echo "def test_pytest(): pass" > nothing.py
-        poetry run pytest nothing.py
+        python -m pytest nothing.py
         cd ..
     - name: Run tests
-      run: cd backend && poetry run invoke test --no-docker; cd ..
+      run: python -m pytest
   jest:
     name: Run frontend unit tests
     runs-on: ubuntu-latest
