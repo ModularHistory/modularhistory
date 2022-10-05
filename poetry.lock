@@ -2575,7 +2575,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pygraphviz"
 version = "1.10"
 description = "Python interface to Graphviz"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -3568,7 +3568,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.13"
-content-hash = "bb79968bab3730bd413bf42cbae75eeb5307e04ac4e4a00c58f28a01fc998ca4"
+content-hash = "9b3062f16ce2ee60d12b81f7e9fe0a577f63a31ea26c551b493152c4f69311c0"
 
 [metadata.files]
 aenum = [
