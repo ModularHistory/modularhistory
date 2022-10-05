@@ -291,15 +291,9 @@ jobs:
         virtualenvs-in-project: true
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
-      run: ROOT_DIR=$(pwd) bash .config/scripts/install-deps.sh
-    - name: Make sure pytest is working
-      run: |
-        cd backend
-        echo "def test_pytest(): pass" > nothing.py
-        python -m pytest nothing.py
-        cd ..
+      run: poetry install --no-root
     - name: Run tests
-      run: python -m pytest
+      run: poetry run pytest
   jest:
     name: Run frontend unit tests
     runs-on: ubuntu-latest

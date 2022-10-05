@@ -96,14 +96,20 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "sources.speech":
     case "sources.webpage":
       content = (
-        <div>{module.citationHtml && <HighlightEllipsis unsafeHTML={module.citationHtml} />}</div>
+        <div>
+          {module.citationHtml && (
+            <HighlightEllipsis unsafeHTML={applyHTMLFilter(module.citationHtml)} />
+          )}
+        </div>
       );
       break;
     case "entities.entity":
     case "entities.person":
     case "entities.organization":
     case "entities.group":
-      content = (highlightSnippet && <HighlightEllipsis unsafeHTML={highlightSnippet} />) || (
+      content = (highlightSnippet && (
+        <HighlightEllipsis unsafeHTML={applyHTMLFilter(highlightSnippet)} />
+      )) || (
         <HTMLEllipsis
           unsafeHTML={applyHTMLFilter(module.truncatedDescription)}
           maxLine="3"
@@ -112,8 +118,8 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       );
       break;
     default:
-      ((module: unknown) => {
-        throw new Error(`Unexpected module type encountered: ${(module as any).model}`);
+      ((module: { model: string }) => {
+        throw new Error(`Unexpected module type encountered: ${module.model}`);
       })(module);
   }
   return (
