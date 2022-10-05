@@ -291,7 +291,7 @@ jobs:
         virtualenvs-in-project: true
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
-      run: poetry install --no-root
+      run: poetry install --no-root --without dev
     - name: Run tests
       run: poetry run pytest
   jest:
