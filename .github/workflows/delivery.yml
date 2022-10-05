@@ -169,7 +169,10 @@ jobs:
         files: '.env docker-compose.yml docker-compose.prod.yml .config'
         ssh-port: ${{ secrets.SSH_PORT }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        command: mv docker-compose.prod.yml docker-compose.override.yml && set -a && source .env && set +a && SHA=${{ github.sha }} GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
+        command: |
+          mv docker-compose.prod.yml docker-compose.override.yml && 
+          set -a && source .env && set +a && 
+          SHA=${{ github.sha }} GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }} bash .config/scripts/deploy.sh
     # - name: Create Sentry release
     #   uses: getsentry/action-release@v1.2.0
     #   env:
