@@ -116,7 +116,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full Python version
@@ -258,7 +258,7 @@ jobs:
     - name: Check out main branch
       uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full Python version
@@ -318,7 +318,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: 3.9
     - name: Get full Python version
@@ -431,7 +431,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: 3.9
     - name: Get full Python version
@@ -545,7 +545,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full Python version
@@ -637,7 +637,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python 3.9
-      uses: actions/setup-python@v4.2.0
+      uses: actions/setup-python@v4.4.0
       with:
         python-version: 3.9
     - name: Get full Python version
