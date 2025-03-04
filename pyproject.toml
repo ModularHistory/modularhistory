@@ -235,7 +235,7 @@ rope = "^0.20.1"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "^0.5.4"
-Werkzeug = "^2.0.1"
+Werkzeug = "^2.2.3"
 wordcloud = "^1.8.0"
 
 [tool.pytest.ini_options]
